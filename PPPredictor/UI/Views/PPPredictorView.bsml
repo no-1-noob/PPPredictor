@@ -1,0 +1,29 @@
+﻿<vertical vertical-fit='PreferredSize' child-align='MiddleLeft' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='https://monkeymanboy.github.io/BSML-Docs/ https://raw.githubusercontent.com/monkeymanboy/BSML-Docs/gh-pages/BSMLSchema.xsd'>
+    <text text='!!Session!!' italics='true' align='Center' font-size='4' />
+    <horizontal horizontal-fit='PreferredSize' pad-left='0' align='Left'>
+      <text text='~sessionRank' italics='true' align='Left' font-size='4' />
+      <text text='[' italics='true' align='Left' font-size='4' />
+      <text text='~sessionRankDiff' font-color='~sessionRankDiffColor' italics='true' align='Left' font-size='4' />
+      <text text=']' italics='true' align='Left' font-size='4' />
+    </horizontal>
+      <horizontal horizontal-fit='PreferredSize' align='Left'>
+        <text text='~sessionCountryRank' italics='true' align='Left' font-size='4' />
+        <text text='[' italics='true' align='Left' font-size='4' />
+        <text text='~sessionCountryRankDiff' font-color='~sessionCountryRankDiffColor' italics='true' align='Left' font-size='4' />
+        <text text=']' italics='true' align='Left' font-size='4' />
+      </horizontal>
+    <horizontal horizontal-fit='PreferredSize' align='Left'>
+      <text text='~sessionPP' italics='true' align='Center' font-size='4' />
+      <text text='[' italics='true' align='Center' font-size='4' />
+      <text text='~sessionPPDiff' font-color='~sessionPPDiffColor' italics='true' align='Center' font-size='4' />
+      <text text=']' italics='true' align='Center' font-size='4' />
+    </horizontal>
+    <horizontal horizontal-fit='PreferredSize' align='Left'>
+      <button text='Refresh Profile' on-click='refresh-profile-clicked' min-width='16' pref-height='8' />
+      <button text='Reset Session' on-click='reset-session-clicked' min-width='16' pref-height='8' />
+    </horizontal>
+    <text text='!!PPPredictor!!' italics='true' align='Center' font-size='4' />
+    <text text='~ppDisplayRaw' italics='true' align='Center' font-size='4' />
+    <slider-setting value='percentage10s' hover-hint='What percentage to calculate PP at (10 increments)' min='0' max='10' increment='1' apply-on-change='true' bind-value='true' show-buttons='true' align='Left'/>
+    <slider-setting value='percentage1s' hover-hint='What percentage to calculate PP at (1 increments)' min='80' max='100' increment='0.01' apply-on-change='true' bind-value='true' show-buttons='true' align='Left'/>
+</vertical>

@@ -1,0 +1,1889 @@
+{
+   "openapi": "3.0.0",
+   "info": {
+      "title": "ScoreSaber Public API",
+      "description": "ScoreSaber's Public API\n\nPlease note this API is in constant development and is subject to change, so if there are any errors please dont hesitate to contact us.\n\nThe current global rate limit is set at a pretty high 400 requests per minute, if for some reason you need higher than this please contact us with your reasoning and we may be able to supply you with special access\n",
+      "contact": {
+         "email": "contact@scoresaber.com"
+      },
+      "version": "1.0.0"
+   },
+   "servers": [
+      {
+         "url": "https://scoresaber.com",
+         "description": "Production server"
+      }
+   ],
+   "tags": [
+      {
+         "name": "Leaderboards",
+         "description": "Leaderboard related queries"
+      },
+      {
+         "name": "Players",
+         "description": "Player related queries"
+      },
+      {
+         "name": "Website User",
+         "description": "User actions"
+      },
+      {
+         "name": "Public Ranking",
+         "description": "Non-protected ranking related queries"
+      },
+      {
+         "name": "Ranking Team",
+         "description": "Ranking Team related operations"
+      },
+      {
+         "name": "Quality Assurance Team",
+         "description": "Quality Assurance Team related operations"
+      },
+      {
+         "name": "Nomination Assessment Team",
+         "description": "Nomination Assessment Team related operations"
+      }
+   ],
+   "paths": {
+      "/api/leaderboards": {
+         "get": {
+            "tags": ["Leaderboards"],
+            "summary": "Get a list of leaderboards based on filters",
+            "parameters": [
+               {
+                  "name": "search",
+                  "in": "query",
+                  "required": false,
+                  "style": "form",
+                  "explode": true,
+                  "schema": {
+                     "type": "string"
+                  }
+               },
+               {
+                  "name": "verified",
+                  "in": "query",
+                  "description": "Filter by verified (⚠️️deprecation notice)",
+                  "required": false,
+                  "style": "form",
+                  "explode": true,
+                  "schema": {
+                     "type": "boolean"
+                  }
+               },
+               {
+                  "name": "ranked",
+                  "in": "query",
+                  "description": "Filter by ranked",
+                  "required": false,
+                  "style": "form",
+                  "explode": true,
+                  "schema": {
+                     "type": "boolean"
+                  }
+               },
+               {
+                  "name": "qualified",
+                  "in": "query",
+                  "description": "Filter by qualified",
+                  "required": false,
+                  "style": "form",
+                  "explode": true,
+                  "schema": {
+                     "type": "boolean"
+                  }
+               },
+               {
+                  "name": "loved",
+                  "in": "query",
+                  "description": "Filter by loved",
+                  "required": false,
+                  "style": "form",
+                  "explode": true,
+                  "schema": {
+                     "type": "boolean"
+                  }
+               },
+               {
+                  "name": "minStar",
+                  "in": "query",
+                  "description": "Filter by minimum star value",
+                  "required": false,
+                  "style": "form",
+                  "explode": true,
+                  "schema": {
+                     "type": "number"
+                  }
+               },
+               {
+                  "name": "maxStar",
+                  "in": "query",
+                  "description": "Filter by maxiumum star value",
+                  "required": false,
+                  "style": "form",
+                  "explode": true,
+                  "schema": {
+                     "type": "number"
+                  }
+               },
+               {
+                  "name": "category",
+                  "in": "query",
+                  "description": "Which category to sort by (0 = trending, date ranked = 1, scores set = 2, star difficulty = 3, author = 4)",
+                  "required": false,
+                  "style": "form",
+                  "explode": true,
+                  "schema": {
+                     "maximum": 4,
+                     "minimum": 0,
+                     "type": "number"
+                  }
+               },
+               {
+                  "name": "sort",
+                  "in": "query",
+                  "description": "Which direction to sort (0 = descending, 1 = ascending)",
+                  "required": false,
+                  "style": "form",
+                  "explode": true,
+                  "schema": {
+                     "maximum": 1,
+                     "minimum": 0,
+                     "type": "number"
+                  }
+               },
+               {
+                  "name": "unique",
+                  "in": "query",
+                  "description": "Only return one leaderboard of each id",
+                  "required": false,
+                  "style": "form",
+                  "explode": true,
+                  "schema": {
+                     "type": "boolean"
+                  }
+               },
+               {
+                  "name": "page",
+                  "in": "query",
+                  "required": false,
+                  "style": "form",
+                  "explode": true,
+                  "schema": {
+                     "type": "integer"
+                  }
+               },
+               {
+                  "name": "withMetadata",
+                  "in": "query",
+                  "description": "(default true)",
+                  "required": false,
+                  "style": "form",
+                  "explode": true,
+                  "schema": {
+                     "type": "boolean"
+                  }
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "A list of leaderboards",
+                  "content": {
+                     "application/json": {
+                        "schema": {
+                           "$ref": "#/components/schemas/LeaderboardInfoCollection"
+                        }
+                     }
+                  }
+               },
+               "422": {
+                  "description": "Invalid parameter"
+               }
+            }
+         }
+      },
+      "/api/leaderboard/by-id/{leaderboardId}/info": {
+         "get": {
+            "tags": ["Leaderboards"],
+            "summary": "Gets leaderboard information by ScoreSaber leaderboardId",
+            "parameters": [
+               {
+                  "name": "leaderboardId",
+                  "in": "path",
+                  "description": "ScoreSaber leaderboardId",
+                  "required": true,
+                  "style": "simple",
+                  "explode": false,
+                  "schema": {
+                     "type": "number"
+                  }
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Leaderboard information",
+                  "content": {
+                     "application/json": {
+                        "schema": {
+                           "$ref": "#/components/schemas/LeaderboardInfo"
+                        }
+                     }
+                  }
+               },
+               "404": {
+                  "description": "Not found"
+               }
+            }
+         }
+      },
+      "/api/leaderboard/by-hash/{hash}/info": {
+         "get": {
+            "tags": ["Leaderboards"],
+            "summary": "Gets leaderboard information by map hash",
+            "parameters": [
+               {
+                  "name": "hash",
+                  "in": "path",
+                  "description": "Map hash",
+                  "required": true,
+                  "style": "simple",
+                  "explode": false,
+                  "schema": {
+                     "type": "string"
+                  }
+               },
+               {
+                  "name": "difficulty",
+                  "in": "query",
+                  "description": "(1 = Easy, 3 = Normal, 5 = Hard, 7 = Expert, 9 = Expert+)",
+                  "required": true,
+                  "style": "form",
+                  "explode": true,
+                  "schema": {
+                     "type": "integer"
+                  }
+               },
+               {
+                  "name": "gameMode",
+                  "in": "query",
+                  "description": "(e.g SoloStandard)",
+                  "required": false,
+                  "style": "form",
+                  "explode": true,
+                  "schema": {
+                     "type": "string"
+                  }
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Leaderboard information",
+                  "content": {
+                     "application/json": {
+                        "schema": {
+                           "$ref": "#/components/schemas/LeaderboardInfo"
+                        }
+                     }
+                  }
+               },
+               "404": {
+                  "description": "Not found"
+               }
+            }
+         }
+      },
+      "/api/leaderboard/by-id/{leaderboardId}/scores": {
+         "get": {
+            "tags": ["Leaderboards"],
+            "summary": "Gets leaderboard scores by ScoreSaber leaderboardId",
+            "parameters": [
+               {
+                  "name": "leaderboardId",
+                  "in": "path",
+                  "description": "ScoreSaber leaderboardId",
+                  "required": true,
+                  "style": "simple",
+                  "explode": false,
+                  "schema": {
+                     "type": "number"
+                  }
+               },
+               {
+                  "name": "countries",
+                  "in": "query",
+                  "description": "Filter by ISO 3166-1 alpha-2 code (comma delimitered)",
+                  "required": false,
+                  "style": "form",
+                  "explode": true,
+                  "schema": {
+                     "type": "string"
+                  }
+               },
+               {
+                  "name": "search",
+                  "in": "query",
+                  "required": false,
+                  "style": "form",
+                  "explode": true,
+                  "schema": {
+                     "type": "string"
+                  }
+               },
+               {
+                  "name": "page",
+                  "in": "query",
+                  "required": false,
+                  "style": "form",
+                  "explode": true,
+                  "schema": {
+                     "type": "integer"
+                  }
+               },
+               {
+                  "name": "withMetadata",
+                  "in": "query",
+                  "description": "(default true)",
+                  "required": false,
+                  "style": "form",
+                  "explode": true,
+                  "schema": {
+                     "type": "boolean"
+                  }
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "A colleciton of Score",
+                  "content": {
+                     "application/json": {
+                        "schema": {
+                           "type": "array",
+                           "items": {
+                              "$ref": "#/components/schemas/ScoreCollection"
+                           }
+                        }
+                     }
+                  }
+               },
+               "404": {
+                  "description": "Not found"
+               }
+            }
+         }
+      },
+      "/api/leaderboard/by-hash/{hash}/scores": {
+         "get": {
+            "tags": ["Leaderboards"],
+            "summary": "Gets leaderboard scores by map hash",
+            "parameters": [
+               {
+                  "name": "hash",
+                  "in": "path",
+                  "description": "Map hash",
+                  "required": true,
+                  "style": "simple",
+                  "explode": false,
+                  "schema": {
+                     "type": "string"
+                  }
+               },
+               {
+                  "name": "difficulty",
+                  "in": "query",
+                  "description": "(1 = Easy, 3 = Normal, 5 = Hard, 7 = Expert, 9 = Expert+)",
+                  "required": true,
+                  "style": "form",
+                  "explode": true,
+                  "schema": {
+                     "type": "integer"
+                  }
+               },
+               {
+                  "name": "countries",
+                  "in": "query",
+                  "description": "Filter by ISO 3166-1 alpha-2 code (comma delimitered)",
+                  "required": false,
+                  "style": "form",
+                  "explode": true,
+                  "schema": {
+                     "type": "string"
+                  }
+               },
+               {
+                  "name": "search",
+                  "in": "query",
+                  "required": false,
+                  "style": "form",
+                  "explode": true,
+                  "schema": {
+                     "type": "string"
+                  }
+               },
+               {
+                  "name": "page",
+                  "in": "query",
+                  "required": false,
+                  "style": "form",
+                  "explode": true,
+                  "schema": {
+                     "type": "integer"
+                  }
+               },
+               {
+                  "name": "gameMode",
+                  "in": "query",
+                  "description": "(e.g SoloStandard)",
+                  "required": false,
+                  "style": "form",
+                  "explode": true,
+                  "schema": {
+                     "type": "string"
+                  }
+               },
+               {
+                  "name": "withMetadata",
+                  "in": "query",
+                  "description": "(default true)",
+                  "required": false,
+                  "style": "form",
+                  "explode": true,
+                  "schema": {
+                     "type": "boolean"
+                  }
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "A collection of Score",
+                  "content": {
+                     "application/json": {
+                        "schema": {
+                           "type": "array",
+                           "items": {
+                              "$ref": "#/components/schemas/ScoreCollection"
+                           }
+                        }
+                     }
+                  }
+               },
+               "404": {
+                  "description": "Not found"
+               }
+            }
+         }
+      },
+      "/api/leaderboard/get-difficulties/{hash}": {
+         "get": {
+            "tags": ["Leaderboards"],
+            "summary": "Gets a leaderboards difficulties by hash",
+            "parameters": [
+               {
+                  "name": "hash",
+                  "in": "path",
+                  "description": "Map hash",
+                  "required": true,
+                  "style": "simple",
+                  "explode": false,
+                  "schema": {
+                     "type": "string"
+                  }
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "An Array of Difficulty",
+                  "content": {
+                     "application/json": {
+                        "schema": {
+                           "type": "array",
+                           "items": {
+                              "$ref": "#/components/schemas/Difficulty"
+                           }
+                        }
+                     }
+                  }
+               },
+               "404": {
+                  "description": "Not found"
+               }
+            }
+         }
+      },
+      "/api/players": {
+         "get": {
+            "tags": ["Players"],
+            "summary": "Get a list of players based on filters",
+            "parameters": [
+               {
+                  "name": "search",
+                  "in": "query",
+                  "required": false,
+                  "style": "form",
+                  "explode": true,
+                  "schema": {
+                     "type": "string"
+                  }
+               },
+               {
+                  "name": "page",
+                  "in": "query",
+                  "required": false,
+                  "style": "form",
+                  "explode": true,
+                  "schema": {
+                     "type": "number"
+                  }
+               },
+               {
+                  "name": "countries",
+                  "in": "query",
+                  "description": "Filter by ISO 3166-1 alpha-2 code (comma delimitered)",
+                  "required": false,
+                  "style": "form",
+                  "explode": true,
+                  "schema": {
+                     "type": "string"
+                  }
+               },
+               {
+                  "name": "withMetadata",
+                  "in": "query",
+                  "description": "(default true)",
+                  "required": false,
+                  "style": "form",
+                  "explode": true,
+                  "schema": {
+                     "type": "boolean"
+                  }
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "A collection of Player",
+                  "content": {
+                     "application/json": {
+                        "schema": {
+                           "type": "array",
+                           "items": {
+                              "$ref": "#/components/schemas/PlayerCollection"
+                           }
+                        }
+                     }
+                  }
+               },
+               "404": {
+                  "description": "Not found"
+               }
+            }
+         }
+      },
+      "/api/players/count": {
+         "get": {
+            "tags": ["Players"],
+            "summary": "Get a list of active players based on filters",
+            "parameters": [
+               {
+                  "name": "search",
+                  "in": "query",
+                  "required": false,
+                  "style": "form",
+                  "explode": true,
+                  "schema": {
+                     "type": "string"
+                  }
+               },
+               {
+                  "name": "countries",
+                  "in": "query",
+                  "description": "Filter by ISO 3166-1 alpha-2 code (comma delimitered)",
+                  "required": false,
+                  "style": "form",
+                  "explode": true,
+                  "schema": {
+                     "type": "string"
+                  }
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "OK",
+                  "content": {
+                     "text/plain": {
+                        "schema": {
+                           "type": "number",
+                           "example": 399
+                        }
+                     }
+                  }
+               },
+               "404": {
+                  "description": "Not found"
+               }
+            }
+         }
+      },
+      "/api/player/{playerId}/basic": {
+         "get": {
+            "tags": ["Players"],
+            "summary": "Gets a players basic information",
+            "parameters": [
+               {
+                  "name": "playerId",
+                  "in": "path",
+                  "required": true,
+                  "style": "simple",
+                  "explode": false,
+                  "schema": {
+                     "type": "number"
+                  }
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "OK",
+                  "content": {
+                     "application/json": {
+                        "schema": {
+                           "type": "array",
+                           "items": {
+                              "$ref": "#/components/schemas/Player"
+                           }
+                        }
+                     }
+                  }
+               },
+               "404": {
+                  "description": "Not found"
+               }
+            }
+         }
+      },
+      "/api/player/{playerId}/full": {
+         "get": {
+            "tags": ["Players"],
+            "summary": "Gets all the players information",
+            "parameters": [
+               {
+                  "name": "playerId",
+                  "in": "path",
+                  "required": true,
+                  "style": "simple",
+                  "explode": false,
+                  "schema": {
+                     "type": "number"
+                  }
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "OK",
+                  "content": {
+                     "application/json": {
+                        "schema": {
+                           "type": "array",
+                           "items": {
+                              "$ref": "#/components/schemas/Player"
+                           }
+                        }
+                     }
+                  }
+               },
+               "404": {
+                  "description": "Not found"
+               }
+            }
+         }
+      },
+      "/api/player/{playerId}/scores": {
+         "get": {
+            "tags": ["Players"],
+            "summary": "Gets scores by playerId",
+            "parameters": [
+               {
+                  "name": "playerId",
+                  "in": "path",
+                  "required": true,
+                  "style": "simple",
+                  "explode": false,
+                  "schema": {
+                     "type": "string"
+                  }
+               },
+               {
+                  "name": "limit",
+                  "in": "query",
+                  "description": "The amount of scores to return",
+                  "required": false,
+                  "style": "form",
+                  "explode": true,
+                  "schema": {
+                     "maximum": 100,
+                     "minimum": 1,
+                     "type": "integer"
+                  }
+               },
+               {
+                  "name": "sort",
+                  "in": "query",
+                  "required": false,
+                  "style": "form",
+                  "explode": true,
+                  "schema": {
+                     "type": "string",
+                     "enum": ["top", "recent"]
+                  }
+               },
+               {
+                  "name": "page",
+                  "in": "query",
+                  "description": "Page",
+                  "required": false,
+                  "style": "form",
+                  "explode": true,
+                  "schema": {
+                     "type": "integer"
+                  }
+               },
+               {
+                  "name": "withMetadata",
+                  "in": "query",
+                  "description": "(default true)",
+                  "required": false,
+                  "style": "form",
+                  "explode": true,
+                  "schema": {
+                     "type": "boolean"
+                  }
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "A collection of PlayerScore",
+                  "content": {
+                     "application/json": {
+                        "schema": {
+                           "type": "array",
+                           "items": {
+                              "$ref": "#/components/schemas/PlayerScoreCollection"
+                           }
+                        }
+                     }
+                  }
+               },
+               "404": {
+                  "description": "Not found"
+               }
+            }
+         }
+      },
+      "/api/user/{playerId}/refresh": {
+         "get": {
+            "tags": ["Website User"],
+            "summary": "Get logged in user information",
+            "parameters": [
+               {
+                  "name": "playerId",
+                  "in": "path",
+                  "required": true,
+                  "style": "simple",
+                  "explode": false,
+                  "schema": {
+                     "type": "number"
+                  }
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "OK"
+               }
+            }
+         }
+      },
+      "/api/user/@me": {
+         "get": {
+            "tags": ["Website User"],
+            "summary": "Get logged in user information",
+            "responses": {
+               "200": {
+                  "description": "OK",
+                  "content": {
+                     "application/json": {
+                        "schema": {
+                           "type": "array",
+                           "items": {
+                              "$ref": "#/components/schemas/UserData"
+                           }
+                        }
+                     }
+                  }
+               },
+               "401": {
+                  "description": "Not logged in"
+               }
+            }
+         }
+      },
+      "/api/user/quest-key": {
+         "get": {
+            "tags": ["Website User"],
+            "summary": "Generates a new quest key if one doesn't exist",
+            "responses": {
+               "200": {
+                  "description": "The quest key",
+                  "content": {
+                     "text/plain": {
+                        "schema": {
+                           "type": "string"
+                        }
+                     }
+                  }
+               },
+               "401": {
+                  "description": "Not logged in"
+               }
+            }
+         }
+      },
+      "/api/ranking/requests/top": {
+         "get": {
+            "tags": ["Public Ranking"],
+            "summary": "Gets the top 6 rank requests -⚠️deprecation notice",
+            "responses": {
+               "200": {
+                  "description": "An Array of RankRequestListing",
+                  "content": {
+                     "application/json": {
+                        "schema": {
+                           "type": "array",
+                           "items": {
+                              "$ref": "#/components/schemas/RankRequestListing"
+                           }
+                        }
+                     }
+                  }
+               }
+            }
+         }
+      },
+      "/api/ranking/requests/belowTop": {
+         "get": {
+            "tags": ["Public Ranking"],
+            "summary": "Gets the rest of the ranking requests - ⚠️deprecation notice",
+            "responses": {
+               "200": {
+                  "description": "An Array of RankRequestListing",
+                  "content": {
+                     "application/json": {
+                        "schema": {
+                           "type": "array",
+                           "items": {
+                              "$ref": "#/components/schemas/RankRequestListing"
+                           }
+                        }
+                     }
+                  }
+               }
+            }
+         }
+      },
+      "/api/ranking/request/{requestId}": {
+         "get": {
+            "tags": ["Public Ranking"],
+            "summary": "Gets rank request information by requestId",
+            "parameters": [
+               {
+                  "name": "requestId",
+                  "in": "path",
+                  "required": true,
+                  "style": "simple",
+                  "explode": false,
+                  "schema": {
+                     "type": "number"
+                  }
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Rank request information",
+                  "content": {
+                     "application/json": {
+                        "schema": {
+                           "$ref": "#/components/schemas/RankRequestInformation"
+                        }
+                     }
+                  }
+               },
+               "404": {
+                  "description": "Not found"
+               }
+            }
+         }
+      },
+      "/api/ranking/request/by-id/{leaderboardId}": {
+         "get": {
+            "tags": ["Public Ranking"],
+            "summary": "Gets rank request information by ScoreSaber leaderboardId",
+            "parameters": [
+               {
+                  "name": "leaderboardId",
+                  "in": "path",
+                  "description": "ScoreSaber leaderboardId",
+                  "required": true,
+                  "style": "simple",
+                  "explode": false,
+                  "schema": {
+                     "type": "number"
+                  }
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Rank request information",
+                  "content": {
+                     "application/json": {
+                        "schema": {
+                           "$ref": "#/components/schemas/RankRequestInformation"
+                        }
+                     }
+                  }
+               },
+               "404": {
+                  "description": "Not found"
+               }
+            }
+         }
+      },
+      "/api/ranking/request/action/rt/create": {
+         "post": {
+            "tags": ["Ranking Team"],
+            "summary": "Creates a rank request",
+            "requestBody": {
+               "content": {
+                  "application/x-www-form-urlencoded": {
+                     "schema": {
+                        "$ref": "#/components/schemas/rt_create_body"
+                     }
+                  }
+               },
+               "required": true
+            },
+            "responses": {
+               "200": {
+                  "description": "The created requestId",
+                  "content": {
+                     "text/plain": {
+                        "schema": {
+                           "type": "number",
+                           "example": 6534
+                        }
+                     }
+                  }
+               },
+               "403": {
+                  "description": "You don't have permission to view this!"
+               }
+            }
+         }
+      },
+      "/api/ranking/request/action/rt/vote": {
+         "post": {
+            "tags": ["Ranking Team"],
+            "summary": "Votes on a given rank request",
+            "requestBody": {
+               "content": {
+                  "application/x-www-form-urlencoded": {
+                     "schema": {
+                        "$ref": "#/components/schemas/rt_vote_body"
+                     }
+                  }
+               },
+               "required": true
+            },
+            "responses": {
+               "200": {
+                  "description": "OK"
+               },
+               "403": {
+                  "description": "You don't have permission to view this!"
+               }
+            }
+         }
+      },
+      "/api/ranking/request/action/rt/comment": {
+         "post": {
+            "tags": ["Ranking Team"],
+            "summary": "Comments on a given rank request",
+            "requestBody": {
+               "content": {
+                  "application/x-www-form-urlencoded": {
+                     "schema": {
+                        "$ref": "#/components/schemas/rt_comment_body"
+                     }
+                  }
+               },
+               "required": true
+            },
+            "responses": {
+               "200": {
+                  "description": "OK"
+               },
+               "403": {
+                  "description": "You don't have permission to view this!"
+               }
+            }
+         }
+      },
+      "/api/ranking/request/action/qat/vote": {
+         "post": {
+            "tags": ["Quality Assurance Team"],
+            "summary": "Votes on a given rank request",
+            "requestBody": {
+               "content": {
+                  "application/x-www-form-urlencoded": {
+                     "schema": {
+                        "$ref": "#/components/schemas/qat_vote_body"
+                     }
+                  }
+               },
+               "required": true
+            },
+            "responses": {
+               "200": {
+                  "description": "OK"
+               },
+               "403": {
+                  "description": "You don't have permission to view this!"
+               }
+            }
+         }
+      },
+      "/api/ranking/request/action/qat/comment": {
+         "post": {
+            "tags": ["Quality Assurance Team"],
+            "summary": "Comments on a given rank request",
+            "requestBody": {
+               "content": {
+                  "application/x-www-form-urlencoded": {
+                     "schema": {
+                        "$ref": "#/components/schemas/qat_comment_body"
+                     }
+                  }
+               },
+               "required": true
+            },
+            "responses": {
+               "200": {
+                  "description": "OK"
+               },
+               "403": {
+                  "description": "You don't have permission to view this!"
+               }
+            }
+         }
+      },
+      "/api/ranking/request/action/nat/replace": {
+         "post": {
+            "tags": ["Nomination Assessment Team"],
+            "summary": "Replaces a rank requests leaderboardId",
+            "requestBody": {
+               "content": {
+                  "application/x-www-form-urlencoded": {
+                     "schema": {
+                        "$ref": "#/components/schemas/nat_replace_body"
+                     }
+                  }
+               },
+               "required": true
+            },
+            "responses": {
+               "200": {
+                  "description": "OK"
+               },
+               "403": {
+                  "description": "You don't have permission to view this!"
+               }
+            }
+         }
+      },
+      "/api/ranking/request/action/nat/qualify": {
+         "post": {
+            "tags": ["Nomination Assessment Team"],
+            "summary": "Qualifies a rank request",
+            "requestBody": {
+               "content": {
+                  "application/x-www-form-urlencoded": {
+                     "schema": {
+                        "$ref": "#/components/schemas/nat_qualify_body"
+                     }
+                  }
+               },
+               "required": true
+            },
+            "responses": {
+               "200": {
+                  "description": "OK"
+               },
+               "403": {
+                  "description": "You don't have permission to view this!"
+               }
+            }
+         }
+      },
+      "/api/ranking/request/action/nat/deny": {
+         "post": {
+            "tags": ["Nomination Assessment Team"],
+            "summary": "Denies a rank request",
+            "requestBody": {
+               "content": {
+                  "application/x-www-form-urlencoded": {
+                     "schema": {
+                        "$ref": "#/components/schemas/nat_deny_body"
+                     }
+                  }
+               },
+               "required": true
+            },
+            "responses": {
+               "200": {
+                  "description": "OK"
+               },
+               "403": {
+                  "description": "You don't have permission to view this!"
+               }
+            }
+         }
+      }
+   },
+   "components": {
+      "schemas": {
+         "Metadata": {
+            "required": ["itemsPerPage", "page", "total"],
+            "type": "object",
+            "properties": {
+               "total": {
+                  "type": "number"
+               },
+               "page": {
+                  "type": "number"
+               },
+               "itemsPerPage": {
+                  "type": "number"
+               }
+            },
+            "additionalProperties": false
+         },
+         "LeaderboardInfo": {
+            "required": [
+               "coverImage",
+               "createdDate",
+               "dailyPlays",
+               "difficulties",
+               "difficulty",
+               "difficultyRaw",
+               "id",
+               "levelAuthorName",
+               "loved",
+               "lovedDate",
+               "maxPP",
+               "maxScore",
+               "playerScore",
+               "plays",
+               "positiveModifiers",
+               "qualified",
+               "qualifiedDate",
+               "ranked",
+               "rankedDate",
+               "songAuthorName",
+               "songHash",
+               "songName",
+               "songSubName",
+               "stars"
+            ],
+            "type": "object",
+            "properties": {
+               "id": {
+                  "type": "number"
+               },
+               "songHash": {
+                  "type": "string"
+               },
+               "songName": {
+                  "type": "string"
+               },
+               "songSubName": {
+                  "type": "string"
+               },
+               "songAuthorName": {
+                  "type": "string"
+               },
+               "levelAuthorName": {
+                  "type": "string"
+               },
+               "difficulty": {
+                  "$ref": "#/components/schemas/Difficulty"
+               },
+               "maxScore": {
+                  "type": "number"
+               },
+               "createdDate": {
+                  "type": "string",
+                  "format": "date-time"
+               },
+               "rankedDate": {
+                  "oneOf": [
+                     {
+                        "type": "string",
+                        "format": "date-time"
+                     },
+                     {
+                        "nullable": true
+                     }
+                  ]
+               },
+               "qualifiedDate": {
+                  "oneOf": [
+                     {
+                        "type": "string",
+                        "format": "date-time"
+                     },
+                     {
+                        "nullable": true
+                     }
+                  ]
+               },
+               "lovedDate": {
+                  "oneOf": [
+                     {
+                        "type": "string",
+                        "format": "date-time"
+                     },
+                     {
+                        "nullable": true
+                     }
+                  ]
+               },
+               "ranked": {
+                  "type": "boolean"
+               },
+               "qualified": {
+                  "type": "boolean"
+               },
+               "loved": {
+                  "type": "boolean"
+               },
+               "maxPP": {
+                  "type": "number"
+               },
+               "stars": {
+                  "type": "number"
+               },
+               "positiveModifiers": {
+                  "type": "boolean"
+               },
+               "plays": {
+                  "type": "number"
+               },
+               "dailyPlays": {
+                  "type": "number"
+               },
+               "coverImage": {
+                  "type": "string"
+               },
+               "playerScore": {
+                  "oneOf": [
+                     {
+                        "$ref": "#/components/schemas/Score"
+                     },
+                     {
+                        "nullable": true
+                     }
+                  ]
+               },
+               "difficulties": {
+                  "type": "array",
+                  "items": {
+                     "$ref": "#/components/schemas/Difficulty"
+                  }
+               }
+            },
+            "additionalProperties": false
+         },
+         "LeaderboardInfoCollection": {
+            "required": ["leaderboards", "metadata"],
+            "type": "object",
+            "properties": {
+               "leaderboards": {
+                  "type": "array",
+                  "items": {
+                     "$ref": "#/components/schemas/LeaderboardInfo"
+                  }
+               },
+               "metadata": {
+                  "$ref": "#/components/schemas/Metadata"
+               }
+            },
+            "additionalProperties": false
+         },
+         "LeaderboardPlayer": {
+            "required": ["country", "id", "name", "permissions", "profilePicture", "role"],
+            "type": "object",
+            "properties": {
+               "id": {
+                  "type": "string"
+               },
+               "name": {
+                  "type": "string"
+               },
+               "profilePicture": {
+                  "type": "string"
+               },
+               "country": {
+                  "type": "string"
+               },
+               "permissions": {
+                  "type": "number"
+               },
+               "role": {
+                  "type": "string"
+               }
+            },
+            "additionalProperties": false
+         },
+         "Difficulty": {
+            "required": ["difficulty", "difficultyRaw", "gameMode", "leaderboardId"],
+            "type": "object",
+            "properties": {
+               "leaderboardId": {
+                  "type": "number"
+               },
+               "difficulty": {
+                  "type": "number"
+               },
+               "gameMode": {
+                  "type": "string"
+               },
+               "difficultyRaw": {
+                  "type": "string"
+               }
+            },
+            "additionalProperties": false
+         },
+         "ScoreCollection": {
+            "required": ["metadata", "scores"],
+            "type": "object",
+            "properties": {
+               "scores": {
+                  "type": "array",
+                  "items": {
+                     "$ref": "#/components/schemas/Score"
+                  }
+               },
+               "metadata": {
+                  "$ref": "#/components/schemas/Metadata"
+               }
+            },
+            "additionalProperties": false
+         },
+         "Score": {
+            "required": [
+               "badCuts",
+               "baseScore",
+               "fullCombo",
+               "hasReplay",
+               "hmd",
+               "id",
+               "maxCombo",
+               "missedNotes",
+               "modifiedScore",
+               "modifiers",
+               "multiplier",
+               "pp",
+               "rank",
+               "timeSet",
+               "weight"
+            ],
+            "type": "object",
+            "properties": {
+               "id": {
+                  "type": "number"
+               },
+               "leaderboardPlayerInfo": {
+                  "$ref": "#/components/schemas/LeaderboardPlayer"
+               },
+               "rank": {
+                  "type": "number"
+               },
+               "baseScore": {
+                  "type": "number"
+               },
+               "modifiedScore": {
+                  "type": "number"
+               },
+               "pp": {
+                  "type": "number"
+               },
+               "weight": {
+                  "type": "number"
+               },
+               "modifiers": {
+                  "type": "string"
+               },
+               "multiplier": {
+                  "type": "number"
+               },
+               "badCuts": {
+                  "type": "number"
+               },
+               "missedNotes": {
+                  "type": "number"
+               },
+               "maxCombo": {
+                  "type": "number"
+               },
+               "fullCombo": {
+                  "type": "boolean"
+               },
+               "hmd": {
+                  "type": "number"
+               },
+               "hasReplay": {
+                  "type": "boolean"
+               },
+               "timeSet": {
+                  "type": "string",
+                  "format": "date-time"
+               }
+            },
+            "additionalProperties": false
+         },
+         "PlayerCollection": {
+            "required": ["metadata", "players"],
+            "type": "object",
+            "properties": {
+               "players": {
+                  "type": "array",
+                  "items": {
+                     "$ref": "#/components/schemas/Player"
+                  }
+               },
+               "metadata": {
+                  "$ref": "#/components/schemas/Metadata"
+               }
+            },
+            "additionalProperties": false
+         },
+         "Player": {
+            "required": [
+               "badges",
+               "banned",
+               "country",
+               "countryRank",
+               "histories",
+               "id",
+               "inactive",
+               "name",
+               "permissions",
+               "pp",
+               "profilePicture",
+               "rank",
+               "role",
+               "scoreStats"
+            ],
+            "type": "object",
+            "properties": {
+               "id": {
+                  "type": "string"
+               },
+               "name": {
+                  "type": "string"
+               },
+               "profilePicture": {
+                  "type": "string"
+               },
+               "country": {
+                  "type": "string"
+               },
+               "pp": {
+                  "type": "number"
+               },
+               "rank": {
+                  "type": "number"
+               },
+               "countryRank": {
+                  "type": "number"
+               },
+               "role": {
+                  "type": "string"
+               },
+               "badges": {
+                  "oneOf": [
+                     {
+                        "type": "array",
+                        "items": {
+                           "$ref": "#/components/schemas/Badge"
+                        }
+                     },
+                     {
+                        "nullable": true
+                     }
+                  ]
+               },
+               "histories": {
+                  "type": "string"
+               },
+               "scoreStats": {
+                  "oneOf": [
+                     {
+                        "$ref": "#/components/schemas/ScoreStats"
+                     },
+                     {
+                        "nullable": true
+                     }
+                  ]
+               },
+               "permissions": {
+                  "type": "number"
+               },
+               "banned": {
+                  "type": "boolean"
+               },
+               "inactive": {
+                  "type": "boolean"
+               }
+            },
+            "additionalProperties": false
+         },
+         "ScoreStats": {
+            "required": ["averageRankedAccuracy", "rankedPlayCount", "replaysWatched", "totalPlayCount", "totalRankedScore", "totalScore"],
+            "type": "object",
+            "properties": {
+               "totalScore": {
+                  "type": "number"
+               },
+               "totalRankedScore": {
+                  "type": "number"
+               },
+               "averageRankedAccuracy": {
+                  "type": "number"
+               },
+               "totalPlayCount": {
+                  "type": "number"
+               },
+               "rankedPlayCount": {
+                  "type": "number"
+               },
+               "replaysWatched": {
+                  "type": "number"
+               }
+            },
+            "additionalProperties": false
+         },
+         "Badge": {
+            "required": ["description", "image"],
+            "type": "object",
+            "properties": {
+               "description": {
+                  "type": "string"
+               },
+               "image": {
+                  "type": "string"
+               }
+            },
+            "additionalProperties": false
+         },
+         "PlayerScoreCollection": {
+            "required": ["metadata", "playerScores"],
+            "type": "object",
+            "properties": {
+               "playerScores": {
+                  "type": "array",
+                  "items": {
+                     "$ref": "#/components/schemas/PlayerScore"
+                  }
+               },
+               "metadata": {
+                  "$ref": "#/components/schemas/Metadata"
+               }
+            },
+            "additionalProperties": false
+         },
+         "PlayerScore": {
+            "required": ["leaderboard", "score"],
+            "type": "object",
+            "properties": {
+               "score": {
+                  "$ref": "#/components/schemas/Score"
+               },
+               "leaderboard": {
+                  "$ref": "#/components/schemas/LeaderboardInfo"
+               }
+            },
+            "additionalProperties": false
+         },
+         "VoteGroup": {
+            "required": ["downvotes", "myVote", "upvotes"],
+            "type": "object",
+            "properties": {
+               "upvotes": {
+                  "type": "number"
+               },
+               "downvotes": {
+                  "type": "number"
+               },
+               "myVote": {
+                  "type": "boolean"
+               },
+               "neutral": {
+                  "type": "number"
+               }
+            },
+            "additionalProperties": false
+         },
+         "RankRequestListing": {
+            "required": ["created_at", "difficultyCount", "leaderboardInfo", "requestId", "totalQATVotes", "totalRankVotes", "weight"],
+            "type": "object",
+            "properties": {
+               "requestId": {
+                  "type": "number"
+               },
+               "weight": {
+                  "type": "number"
+               },
+               "leaderboardInfo": {
+                  "$ref": "#/components/schemas/LeaderboardInfo"
+               },
+               "created_at": {
+                  "type": "string"
+               },
+               "totalRankVotes": {
+                  "$ref": "#/components/schemas/VoteGroup"
+               },
+               "totalQATVotes": {
+                  "$ref": "#/components/schemas/VoteGroup"
+               },
+               "difficultyCount": {
+                  "type": "number"
+               }
+            },
+            "additionalProperties": false
+         },
+         "RankRequestInformation": {
+            "required": [
+               "approved",
+               "created_at",
+               "difficulties",
+               "leaderboardInfo",
+               "qatComments",
+               "qatVotes",
+               "rankComments",
+               "rankVotes",
+               "requestDescription",
+               "requestId",
+               "requestType"
+            ],
+            "type": "object",
+            "properties": {
+               "requestId": {
+                  "type": "number"
+               },
+               "requestDescription": {
+                  "type": "string"
+               },
+               "leaderboardInfo": {
+                  "$ref": "#/components/schemas/LeaderboardInfo"
+               },
+               "created_at": {
+                  "type": "string"
+               },
+               "rankVotes": {
+                  "$ref": "#/components/schemas/VoteGroup"
+               },
+               "qatVotes": {
+                  "$ref": "#/components/schemas/VoteGroup"
+               },
+               "rankComments": {
+                  "type": "array",
+                  "items": {
+                     "$ref": "#/components/schemas/Comment"
+                  }
+               },
+               "qatComments": {
+                  "type": "array",
+                  "items": {
+                     "$ref": "#/components/schemas/Comment"
+                  }
+               },
+               "requestType": {
+                  "type": "number"
+               },
+               "approved": {
+                  "type": "number"
+               },
+               "difficulties": {
+                  "type": "array",
+                  "items": {
+                     "$ref": "#/components/schemas/RankingDifficulty"
+                  }
+               }
+            },
+            "additionalProperties": false
+         },
+         "RankingDifficulty": {
+            "required": ["difficulty", "requestId"],
+            "type": "object",
+            "properties": {
+               "requestId": {
+                  "type": "number"
+               },
+               "difficulty": {
+                  "type": "number"
+               }
+            },
+            "additionalProperties": false
+         },
+         "Comment": {
+            "required": ["comment", "timeStamp", "userId", "username"],
+            "type": "object",
+            "properties": {
+               "username": {
+                  "type": "string"
+               },
+               "userId": {
+                  "type": "string"
+               },
+               "comment": {
+                  "type": "string"
+               },
+               "timeStamp": {
+                  "type": "string"
+               }
+            },
+            "additionalProperties": false
+         },
+         "UserData": {
+            "required": ["permissions", "playerId", "questKey"],
+            "type": "object",
+            "properties": {
+               "playerId": {
+                  "type": "string"
+               },
+               "permissions": {
+                  "type": "number"
+               },
+               "questKey": {
+                  "type": "string"
+               }
+            },
+            "additionalProperties": false
+         },
+         "rt_create_body": {
+            "required": ["description", "leaderboardId", "requestType"],
+            "type": "object",
+            "properties": {
+               "leaderboardId": {
+                  "type": "string"
+               },
+               "requestType": {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "integer",
+                  "description": "(0 = unrank, 1 rank)"
+               },
+               "description": {
+                  "type": "string"
+               }
+            }
+         },
+         "rt_vote_body": {
+            "required": ["requestId", "vote"],
+            "type": "object",
+            "properties": {
+               "requestId": {
+                  "type": "string"
+               },
+               "vote": {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "integer",
+                  "description": "(0 = down, 1 up)"
+               }
+            }
+         },
+         "rt_comment_body": {
+            "required": ["requestId", "vote"],
+            "type": "object",
+            "properties": {
+               "requestId": {
+                  "type": "string"
+               },
+               "comment": {
+                  "type": "string"
+               }
+            }
+         },
+         "qat_vote_body": {
+            "required": ["requestId", "vote"],
+            "type": "object",
+            "properties": {
+               "requestId": {
+                  "type": "string"
+               },
+               "vote": {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "integer",
+                  "description": "(0 = down, 1 up, 2 = neutral)"
+               }
+            }
+         },
+         "qat_comment_body": {
+            "required": ["requestId", "vote"],
+            "type": "object",
+            "properties": {
+               "requestId": {
+                  "type": "string"
+               },
+               "comment": {
+                  "type": "string"
+               }
+            }
+         },
+         "nat_replace_body": {
+            "required": ["description", "leaderboardId", "requestId"],
+            "type": "object",
+            "properties": {
+               "requestId": {
+                  "type": "number",
+                  "description": "The requestId affected"
+               },
+               "leaderboardId": {
+                  "type": "number",
+                  "description": "The leaderboardId to replace the current requests leaderboardId"
+               },
+               "description": {
+                  "type": "string",
+                  "description": "An updated description"
+               }
+            }
+         },
+         "nat_qualify_body": {
+            "required": ["requestId"],
+            "type": "object",
+            "properties": {
+               "requestId": {
+                  "type": "number"
+               }
+            }
+         },
+         "nat_deny_body": {
+            "required": ["requestId"],
+            "type": "object",
+            "properties": {
+               "requestId": {
+                  "type": "number"
+               }
+            }
+         }
+      }
+   }
+}
