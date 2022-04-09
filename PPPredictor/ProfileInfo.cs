@@ -11,15 +11,19 @@ namespace PPPredictor
         private Player sessionPlayer;
         private Player currentPlayer;
         private List<ShortScore> lsScores;
+        private float lastPercentageSelected;
         public ProfileInfo()
         {
             DictBasePP = new Dictionary<string, double>();
+            LastPercentageSelected = 90;
+            LSScores = new List<ShortScore>();
         }
 
         public Player SessionPlayer { get => sessionPlayer; set => sessionPlayer = value; }
         public Player CurrentPlayer { get => currentPlayer; set => currentPlayer = value; }
         public Dictionary<string, double> DictBasePP { get => dictBasePP; set => dictBasePP = value; }
         public List<ShortScore> LSScores { get => lsScores; set => lsScores = value; }
+        public float LastPercentageSelected { get => lastPercentageSelected; set => lastPercentageSelected = value; }
 
         public void addDictBasePP(string hash, int difficulty, double basePp)
         {

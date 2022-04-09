@@ -12,6 +12,7 @@ using Zenject;
 using BS_Utils;
 using BS_Utils.Gameplay;
 using scoresaberapi;
+using BeatSaberMarkupLanguage.Components.Settings;
 
 namespace PPPredictor
 {
@@ -25,8 +26,6 @@ namespace PPPredictor
 
         #region displayValues
         private float _percentage;
-        public int _sliderMin = 50;
-        public int _sliderMax = 60;
         private string _ppDisplayRaw;
         private double _currentSelectionBasePP;
 
@@ -72,7 +71,8 @@ namespace PPPredictor
                 Plugin.Log?.Info("set SessionPlayer");
                 Plugin.ProfileInfo.SessionPlayer = player;
             }
-            _ = PPCalculator.getPlayerScores(userInfo.platformUserId, 100);
+
+            _ = PPCalculator.getPlayerScores(userInfo.platformUserId, 10);
 
             displaySession();
 
@@ -83,8 +83,7 @@ namespace PPPredictor
             floatingScreen.transform.localScale = new Vector3(0.03f, 0.03f, 0.03f);
             floatingScreen.HandleSide = FloatingScreen.Side.Left;
             BSMLParser.instance.Parse(BeatSaberMarkupLanguage.Utilities.GetResourceContent(Assembly.GetExecutingAssembly(), "PPPredictor.UI.Views.PPPredictorView.bsml"), floatingScreen.gameObject, this);
-            Plugin.Log?.Info("PPPredictorViewController Initialize");
-
+            displayInitialPercentages();
             displayPP();
         }
 
@@ -92,6 +91,11 @@ namespace PPPredictor
         {
             Plugin.Log?.Info("PPPredictorViewController Dispose");
         }
+
+        #region UI Components
+        [UIComponent("sliderFine")]
+        private SliderSetting sliderFine;
+        #endregion
 
         #region buttons
         [UIAction("refresh-profile-clicked")]
@@ -118,53 +122,29 @@ namespace PPPredictor
         }
         #endregion
 
-        [UIValue("percentage10s")]
-        private float Percentage10s
+        [UIValue("sliderCoarseValue")]
+        private float SliderCoarseValue
         {
-            get => ((float)Math.Floor(_percentage / 10));
+            get => ((float)Math.Floor(_percentage - _percentage % 10));
             set
             {
-                //SliderMin = value * 10;
-                //SliderMax = (value + 1)*10;
-                Percentage1s = (value * 10) + (_percentage % 10);
-                Plugin.Log?.Info($"Percentage: {_percentage}");
+                sliderFine.slider.minValue = value;
+                sliderFine.slider.maxValue = value + 10;
+                SliderFineValue = (value) + (_percentage % 10);
                 displayPP();
-                /*NotifyPropertyChanged(nameof(PlaylistScrollSpeed));
-                NotifyPropertyChanged(nameof(SoftRestart));*/
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SliderCoarseValue)));
             }
         }
-        [UIValue("percentage1s")]
-        private float Percentage1s
+        [UIValue("sliderFineValue")]
+        private float SliderFineValue
         {
             get => _percentage;
             set
             {
                 _percentage = value;
-                Plugin.Log?.Info($"Percentage: {_percentage}");
+                Plugin.ProfileInfo.LastPercentageSelected = _percentage;
                 displayPP();
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Percentage1s)));
-            }
-        }
-
-        [UIValue("slidermin")]
-        private int SliderMin
-        {
-            get => _sliderMin;
-            set
-            {
-                _sliderMin = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SliderMin)));
-            }
-        }
-
-        [UIValue("slidermax")]
-        private int SliderMax
-        {
-            get => _sliderMax;
-            set
-            {
-                _sliderMax = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SliderMax)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SliderFineValue)));
             }
         }
 
@@ -295,6 +275,7 @@ namespace PPPredictor
             }
         }
 
+        #region helper functions
         private void displayPP()
         {
             double pp = PPCalculator.calculatePPatPercentage(_currentSelectionBasePP, _percentage);
@@ -328,5 +309,12 @@ namespace PPPredictor
             }
             return "white";
         }
+
+        private void displayInitialPercentages()
+        {
+            SliderFineValue = Plugin.ProfileInfo.LastPercentageSelected;
+            SliderCoarseValue = Plugin.ProfileInfo.LastPercentageSelected - Plugin.ProfileInfo.LastPercentageSelected % 10;
+        }
+        #endregion
     }
 }
