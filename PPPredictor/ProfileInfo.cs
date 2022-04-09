@@ -1,7 +1,6 @@
 ﻿using PPPredictor.Utilities;
 using scoresaberapi;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace PPPredictor
 {
@@ -12,11 +11,15 @@ namespace PPPredictor
         private Player currentPlayer;
         private List<ShortScore> lsScores;
         private float lastPercentageSelected;
+        private SVector3 position;
+        private SVector3 eulerAngles;
         public ProfileInfo()
         {
             DictBasePP = new Dictionary<string, double>();
             LastPercentageSelected = 90;
             LSScores = new List<ShortScore>();
+            Position = new SVector3(2.25f, 1.25f, 2.2f);
+            EulerAngles = new SVector3(60, 45, 0);
         }
 
         public Player SessionPlayer { get => sessionPlayer; set => sessionPlayer = value; }
@@ -24,6 +27,8 @@ namespace PPPredictor
         public Dictionary<string, double> DictBasePP { get => dictBasePP; set => dictBasePP = value; }
         public List<ShortScore> LSScores { get => lsScores; set => lsScores = value; }
         public float LastPercentageSelected { get => lastPercentageSelected; set => lastPercentageSelected = value; }
+        public SVector3 Position { get => position; set => position = value; }
+        public SVector3 EulerAngles { get => eulerAngles; set => eulerAngles = value; }
 
         public void addDictBasePP(string hash, int difficulty, double basePp)
         {

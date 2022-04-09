@@ -78,10 +78,11 @@ namespace PPPredictor
 
             levelSelectionNavController.didChangeDifficultyBeatmapEvent += OnDifficultyChanged;
             levelSelectionNavController.didChangeLevelDetailContentEvent += OnDetailContentChanged;
-            floatingScreen = FloatingScreen.CreateFloatingScreen(new Vector2(75, 100), true, new Vector3(2.25f, 1.25f, 2.2f), new Quaternion(0, 0, 0, 0));
-            floatingScreen.transform.eulerAngles = new Vector3(60, 45, 0);
+            floatingScreen = FloatingScreen.CreateFloatingScreen(new Vector2(75, 100), true, Plugin.ProfileInfo.Position, new Quaternion(0, 0, 0, 0));
+            floatingScreen.transform.eulerAngles = Plugin.ProfileInfo.EulerAngles;
             floatingScreen.transform.localScale = new Vector3(0.03f, 0.03f, 0.03f);
             floatingScreen.HandleSide = FloatingScreen.Side.Left;
+            floatingScreen.HandleReleased += OnScreenHandleReleased;
             BSMLParser.instance.Parse(BeatSaberMarkupLanguage.Utilities.GetResourceContent(Assembly.GetExecutingAssembly(), "PPPredictor.UI.Views.PPPredictorView.bsml"), floatingScreen.gameObject, this);
             displayInitialPercentages();
             displayPP();
@@ -89,6 +90,7 @@ namespace PPPredictor
 
         public void Dispose()
         {
+            floatingScreen.HandleReleased -= OnScreenHandleReleased;
             Plugin.Log?.Info("PPPredictorViewController Dispose");
         }
 
@@ -273,6 +275,12 @@ namespace PPPredictor
                 //TODO: disable slider
                 displayPP();
             }
+        }
+
+        private void OnScreenHandleReleased(object sender, FloatingScreenHandleEventArgs args)
+        {
+            Plugin.ProfileInfo.Position = floatingScreen.transform.position;
+            Plugin.ProfileInfo.EulerAngles = floatingScreen.transform.eulerAngles;
         }
 
         #region helper functions
