@@ -43,6 +43,7 @@ namespace PPPredictor
 
         #region internal values
         private string _selectedMapSearchString;
+        public bool _isDataLoading = false;
         #endregion
 
         public PPPredictorViewController(LevelSelectionNavigationController levelSelectionNavController)
@@ -105,9 +106,11 @@ namespace PPPredictor
         {
             UserInfo userInfo = await BS_Utils.Gameplay.GetUserInfo.GetUserAsync();
             Plugin.Log?.Info(userInfo.platformUserId);
+            IsDataLoading = true;
             Player p = await PPCalculator.getProfile(userInfo.platformUserId);
             _ = PPCalculator.getPlayerScores(userInfo.platformUserId, 10);
             Plugin.ProfileInfo.CurrentPlayer = p;
+            IsDataLoading = false;
             displaySession();
         }
 
@@ -116,9 +119,11 @@ namespace PPPredictor
         {
             UserInfo userInfo = await BS_Utils.Gameplay.GetUserInfo.GetUserAsync();
             Plugin.Log?.Info(userInfo.platformUserId);
+            IsDataLoading = true;
             Player p = await PPCalculator.getProfile(userInfo.platformUserId);
             Plugin.ProfileInfo.CurrentPlayer = p;
             Plugin.ProfileInfo.SessionPlayer = p;
+            IsDataLoading = false;
             displaySession();
 
         }
@@ -252,6 +257,25 @@ namespace PPPredictor
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionPPDiffColor)));
             }
             get => _sessionPPDiffColor;
+        }
+
+        [UIValue("isDataLoading")]
+        private bool IsDataLoading
+        {
+            set
+            {
+                Plugin.Log?.Info($"_isDataLoading: {value}");
+                _isDataLoading = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsDataLoading)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsNoDataLoading)));
+            }
+            get => _isDataLoading;
+        }
+
+        [UIValue("isNoDataLoading")]
+        private bool IsNoDataLoading
+        {
+            get => !_isDataLoading;
         }
 
         private async void OnDifficultyChanged(LevelSelectionNavigationController _, IDifficultyBeatmap beatmap)
