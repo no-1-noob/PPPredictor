@@ -111,7 +111,7 @@
     <Compile Include="Installers\PPPPredictorDisplayInstaller.cs" />
     <Compile Include="ProfileInfo.cs" />
     <Compile Include="ProfileInfoMgr.cs" />
-    <Compile Include="UI\PPPredictorFlowCoordinator.cs" />
+    <Compile Include="ShortScore.cs" />
     <Compile Include="UI\ViewController\PPPredictorViewController.cs" />
     <Compile Include="OpenAPIs\scoresaber-public-api-1.0.0.cs" />
     <Compile Include="Plugin.cs" />

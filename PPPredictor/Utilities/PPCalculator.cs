@@ -1,6 +1,9 @@
 ﻿using scoresaberapi;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using IPALogger = IPA.Logging.Logger;
 
@@ -132,20 +135,97 @@ namespace PPPredictor.Utilities
             return new Player();
         }
 
-        static public async Task getScores(Player player)
+        static public async Task getPlayerScores(string userId, int pageSize)
         {
-            /*var scoreSaberClient = new scoresaberapi.scoresaberapi(httpClient);
-            bool hasMoreData = true;
-            while (hasMoreData)
+            try
             {
-                int itemsPerPage = 25;
-                PlayerScoreCollection Playerscore = await scoreSaberClient.Scores3Async(player.Id, itemsPerPage, Sort.Recent, 0, true);
-                if(Playerscore.PlayerScores.Count() < itemsPerPage)
+                var scoreSaberClient = new scoresaberapi.scoresaberapi(httpClient);
+                bool hasMoreData = true;
+                int page = 1;
+                while (hasMoreData)
                 {
-                    hasMoreData = false;
+                    Plugin.Log?.Info($"getPlayerScores page {page}");
+                    PlayerScoreCollection playerscores = await scoreSaberClient.Scores3Async(userId, pageSize, Sort.Recent, page, true);
+                    if (playerscores.Metadata.Page * playerscores.Metadata.ItemsPerPage >= playerscores.Metadata.Total)
+                    {
+                        hasMoreData = false;
+                    }
+                    if (Plugin.ProfileInfo.LSScores == null) Plugin.ProfileInfo.LSScores = new List<ShortScore>();
+                    foreach (PlayerScore scores in playerscores.PlayerScores)
+                    {
+                        string searchString = createSeachString(scores.Leaderboard.SongHash, (int)scores.Leaderboard.Difficulty.Difficulty1);
+                        ShortScore previousScore = Plugin.ProfileInfo.LSScores.Find(x => x.Searchstring == searchString);
+                        ShortScore newScore = new ShortScore(searchString, scores.Score.TimeSet, scores.Leaderboard.MaxScore, scores.Score.ModifiedScore, scores.Score.Pp);
+                        if (previousScore == null)
+                        {
+                            Plugin.ProfileInfo.LSScores.Add(newScore);
+                        }
+                        else
+                        {
+                            if (previousScore.TimeSet >= newScore.TimeSet)
+                            {
+                                hasMoreData = false;
+                            }
+                            else
+                            {
+                                previousScore.TimeSet = newScore.TimeSet;
+                                previousScore.ModifiedScore = newScore.ModifiedScore;
+                            }
+                        }
+                    }
+                    page++;
+                    Thread.Sleep(250);
                 }
-                Playerscore.PlayerScores.
-            }*/
+                Plugin.ProfileInfo.LSScores.Sort();
+            }
+            catch (System.Exception ex)
+            {
+                Plugin.Log?.Error($"Error in PPPredictor: getPlayerScores: {ex.Message}");
+            }
+            
+        }
+    
+        static public double getPlayerScorePPGain(string mapSearchString, double pp)
+        {
+            ShortScore existingScore = Plugin.ProfileInfo.LSScores.Find(x => x.Searchstring == mapSearchString);
+            if(existingScore == null)
+            {
+                return 0;
+            }
+            if(existingScore.Pp >= pp)
+            {
+                return 0;
+            }
+            double ppAfterPlay = 0;
+            int index = 1;
+            bool newPPadded = false;
+            Plugin.ProfileInfo.LSScores.Sort((score1, score2) => score2.Pp.CompareTo(score1.Pp));
+            foreach (ShortScore score in Plugin.ProfileInfo.LSScores)
+            {
+                if (score.Searchstring == mapSearchString) //skip older (lower) score
+                {
+                    continue;
+                }
+                if (!newPPadded && pp >= score.Pp) //add new (potential) pp
+                {
+                    ppAfterPlay += weightPP(pp, index);
+                    newPPadded = true;
+                    index++;
+                }
+                ppAfterPlay += weightPP(score.Pp, index);
+                index++;
+            }
+            return ppAfterPlay - Plugin.ProfileInfo.CurrentPlayer.Pp;
+        }
+
+        static public double weightPP(double rawPP, int index)
+        {
+            return rawPP * Math.Pow(0.965,(index - 1));
+        }
+
+        public static string createSeachString(string hash, int difficulty)
+        {
+            return $"{hash}_{difficulty}";
         }
     }
 }

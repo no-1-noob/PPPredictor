@@ -2615,7 +2615,7 @@ namespace scoresaberapi
         [Newtonsoft.Json.JsonProperty("playerScore", Required = Newtonsoft.Json.Required.AllowNull)]
         public Score PlayerScore { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("difficulties", Required = Newtonsoft.Json.Required.Always)]
+        [Newtonsoft.Json.JsonProperty("difficulties", Required = Newtonsoft.Json.Required.AllowNull)]
         [System.ComponentModel.DataAnnotations.Required]
         public System.Collections.Generic.ICollection<Difficulty> Difficulties { get; set; } = new System.Collections.ObjectModel.Collection<Difficulty>();
 

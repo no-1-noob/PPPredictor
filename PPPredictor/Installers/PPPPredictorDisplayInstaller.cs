@@ -1,5 +1,4 @@
-﻿using PPPredictor.UI;
-using Zenject;
+﻿using Zenject;
 
 namespace PPPredictor
 {

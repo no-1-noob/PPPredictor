@@ -42,6 +42,10 @@ namespace PPPredictor
         private string _sessionPPDiffColor;
         #endregion
 
+        #region internal values
+        private string _selectedMapSearchString;
+        #endregion
+
         public PPPredictorViewController(LevelSelectionNavigationController levelSelectionNavController)
         {
             this.levelSelectionNavController = levelSelectionNavController;
@@ -68,6 +72,7 @@ namespace PPPredictor
                 Plugin.Log?.Info("set SessionPlayer");
                 Plugin.ProfileInfo.SessionPlayer = player;
             }
+            _ = PPCalculator.getPlayerScores(userInfo.platformUserId, 100);
 
             displaySession();
 
@@ -95,6 +100,7 @@ namespace PPPredictor
             UserInfo userInfo = await BS_Utils.Gameplay.GetUserInfo.GetUserAsync();
             Plugin.Log?.Info(userInfo.platformUserId);
             Player p = await PPCalculator.getProfile(userInfo.platformUserId);
+            _ = PPCalculator.getPlayerScores(userInfo.platformUserId, 10);
             Plugin.ProfileInfo.CurrentPlayer = p;
             displaySession();
         }
@@ -271,6 +277,7 @@ namespace PPPredictor
             Plugin.Log?.Info($"DifficultyChanged: {beatmap}");
             Plugin.Log?.Info($"{beatmap.level.levelID}, {beatmap.difficultyRank}");
             _currentSelectionBasePP = await PPCalculator.calculateBasePPForBeatmapAsync(beatmap);
+            _selectedMapSearchString = PPCalculator.createSeachString(_.selectedDifficultyBeatmap.level.levelID.Replace("custom_level_", ""), _.selectedDifficultyBeatmap.difficultyRank);
             //TODO: disable slider
             displayPP();
         }
@@ -282,6 +289,7 @@ namespace PPPredictor
                 Plugin.Log?.Info($"OnDetailContentChanged: {contentType} {_.selectedDifficultyBeatmap}");
                 Plugin.Log?.Info($"{_.selectedDifficultyBeatmap.level.levelID}, {_.selectedDifficultyBeatmap.difficultyRank}");
                 _currentSelectionBasePP = await PPCalculator.calculateBasePPForBeatmapAsync(_.selectedDifficultyBeatmap);
+                _selectedMapSearchString = PPCalculator.createSeachString(_.selectedDifficultyBeatmap.level.levelID.Replace("custom_level_", ""), _.selectedDifficultyBeatmap.difficultyRank);
                 //TODO: disable slider
                 displayPP();
             }
@@ -290,7 +298,8 @@ namespace PPPredictor
         private void displayPP()
         {
             double pp = PPCalculator.calculatePPatPercentage(_currentSelectionBasePP, _percentage);
-            PpDisplayRaw = $"<b>{pp.ToString("F2")}pp</b> <i>[{(pp * 0.1).ToString("F2")}]</i>";
+            double ppGains = PPCalculator.getPlayerScorePPGain(_selectedMapSearchString, pp);
+            PpDisplayRaw = $"<b>{pp.ToString("F2")}pp</b> <i>[{(ppGains).ToString("+0.##;-0.##;0")}pp]</i>";
         }
 
         private void displaySession()
