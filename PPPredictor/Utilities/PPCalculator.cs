@@ -184,43 +184,51 @@ namespace PPPredictor.Utilities
             }
             
         }
-    
+
         static public double getPlayerScorePPGain(string mapSearchString, double pp)
         {
-            ShortScore existingScore = Plugin.ProfileInfo.LSScores.Find(x => x.Searchstring == mapSearchString);
-            if(existingScore == null)
+            if (Plugin.ProfileInfo.LSScores.Count > 0)
             {
-                return 0;
-            }
-            if(existingScore.Pp >= pp)
-            {
-                return 0;
-            }
-            double ppAfterPlay = 0;
-            int index = 1;
-            bool newPPadded = false;
-            Plugin.ProfileInfo.LSScores.Sort((score1, score2) => score2.Pp.CompareTo(score1.Pp));
-            foreach (ShortScore score in Plugin.ProfileInfo.LSScores)
-            {
-                if (score.Searchstring == mapSearchString) //skip older (lower) score
+                double ppAfterPlay = 0;
+                int index = 1;
+                bool newPPadded = false;
+                bool newPPSkiped = false;
+                Plugin.ProfileInfo.LSScores.Sort((score1, score2) => score2.Pp.CompareTo(score1.Pp));
+                foreach (ShortScore score in Plugin.ProfileInfo.LSScores)
                 {
-                    continue;
-                }
-                if (!newPPadded && pp >= score.Pp) //add new (potential) pp
-                {
-                    ppAfterPlay += weightPP(pp, index);
-                    newPPadded = true;
+                    if (score.Searchstring == mapSearchString) //skip older (lower) score
+                    {
+                        if (!newPPadded)
+                        {
+                            ppAfterPlay += weightPP(score.Pp, index);
+                            newPPSkiped = true;
+                            index++;
+                        }
+                        continue;
+                    }
+                    double weightedPP = weightPP(score.Pp, index);
+                    if (!newPPadded && !newPPSkiped)
+                    {
+                        double weightedNewPP = weightPP(pp, index);
+                        if (weightedNewPP >= weightedPP) //add new (potential) pp
+                        {
+                            ppAfterPlay += weightedNewPP;
+                            newPPadded = true;
+                            index++;
+                            weightedPP = weightPP(score.Pp, index);
+                        }
+                    }
+                    ppAfterPlay += weightedPP;
                     index++;
                 }
-                ppAfterPlay += weightPP(score.Pp, index);
-                index++;
+                return ppAfterPlay - Plugin.ProfileInfo.CurrentPlayer.Pp;
             }
-            return ppAfterPlay - Plugin.ProfileInfo.CurrentPlayer.Pp;
+            return pp;
         }
 
         static public double weightPP(double rawPP, int index)
         {
-            return rawPP * Math.Pow(0.965,(index - 1));
+            return rawPP * Math.Pow(0.965, (index - 1));
         }
 
         public static string createSeachString(string hash, int difficulty)
