@@ -142,6 +142,7 @@ namespace PPPredictor.Utilities
                 var scoreSaberClient = new scoresaberapi.scoresaberapi(httpClient);
                 bool hasMoreData = true;
                 int page = 1;
+                List<ShortScore> lsNewScores = new List<ShortScore>();
                 while (hasMoreData)
                 {
                     Plugin.Log?.Info($"getPlayerScores page {page}");
@@ -158,7 +159,7 @@ namespace PPPredictor.Utilities
                         ShortScore newScore = new ShortScore(searchString, scores.Score.TimeSet, scores.Leaderboard.MaxScore, scores.Score.ModifiedScore, scores.Score.Pp);
                         if (previousScore == null)
                         {
-                            Plugin.ProfileInfo.LSScores.Add(newScore);
+                            lsNewScores.Add(newScore);
                         }
                         else
                         {
@@ -168,14 +169,27 @@ namespace PPPredictor.Utilities
                             }
                             else
                             {
-                                previousScore.TimeSet = newScore.TimeSet;
-                                previousScore.ModifiedScore = newScore.ModifiedScore;
+                                lsNewScores.Add(newScore);
                             }
                         }
                     }
                     page++;
                     Thread.Sleep(250);
                 }
+                //Update after fetching all data. So when closing while fetching the incomplete data is not saved.
+                foreach (ShortScore newScore in lsNewScores)
+                {
+                    ShortScore previousScore = Plugin.ProfileInfo.LSScores.Find(x => x.Searchstring == newScore.Searchstring);
+                    if (previousScore == null)
+                    {
+                        Plugin.ProfileInfo.LSScores.Add(newScore);
+                    }
+                    else
+                    {
+                            previousScore.TimeSet = newScore.TimeSet;
+                            previousScore.ModifiedScore = newScore.ModifiedScore;
+                    }
+                };
                 Plugin.ProfileInfo.LSScores.Sort();
             }
             catch (System.Exception ex)
