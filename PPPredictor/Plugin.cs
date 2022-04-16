@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using SiraUtil.Zenject;
+using PPPredictor.UI.ViewController;
 using IPALogger = IPA.Logging.Logger;
 
 namespace PPPredictor
@@ -21,6 +22,8 @@ namespace PPPredictor
         internal static IPALogger Log { get; private set; }
 
         public static ProfileInfo ProfileInfo;
+
+        public static PPPredictorViewController pppViewController;
 
         [Init]
         /// <summary>
@@ -35,6 +38,7 @@ namespace PPPredictor
             ProfileInfo = ProfileInfoMgr.loadProfileInfo();
             zenjector.UseSiraSync();
             zenjector.Install<PPPPredictorDisplayInstaller>(Location.Menu);
+            BeatSaberMarkupLanguage.Settings.BSMLSettings.instance.AddSettingsMenu("PPPredictor", "PPPredictor.UI.Views.PPPredictorSettingsView.bsml", new PPPredictorSettingsViewController());
             Log.Info("PPPredictor initialized.");
         }
 

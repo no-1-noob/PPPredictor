@@ -1,0 +1,4 @@
+﻿<vertical vertical-fit='PreferredSize' child-align='MiddleLeft' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='https://monkeymanboy.github.io/BSML-Docs/ https://raw.githubusercontent.com/monkeymanboy/BSML-Docs/gh-pages/BSMLSchema.xsd'>
+  <bool-setting text='Show window handle' value='window-handle-enabled' bind-value='true'></bool-setting>
+  <button text='Reset cached data and settings' on-click='reset-data' min-width='16' pref-height='8' interactable='true'/>
+</vertical>

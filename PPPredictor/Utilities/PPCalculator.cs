@@ -201,7 +201,7 @@ namespace PPPredictor.Utilities
 
         static public double getPlayerScorePPGain(string mapSearchString, double pp)
         {
-            if (Plugin.ProfileInfo.LSScores.Count > 0)
+            if (Plugin.ProfileInfo.LSScores.Count > 0 && !string.IsNullOrEmpty(mapSearchString) && pp > 0)
             {
                 double ppAfterPlay = 0;
                 int index = 1;

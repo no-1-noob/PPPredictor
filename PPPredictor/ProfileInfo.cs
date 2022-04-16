@@ -1,6 +1,7 @@
 ﻿using PPPredictor.Utilities;
 using scoresaberapi;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace PPPredictor
 {
@@ -13,13 +14,17 @@ namespace PPPredictor
         private float lastPercentageSelected;
         private SVector3 position;
         private SVector3 eulerAngles;
+        private bool windowHandleEnabled;
         public ProfileInfo()
         {
+            dictBasePP = new Dictionary<string, double>();
+            lsScores = new List<ShortScore>();
             DictBasePP = new Dictionary<string, double>();
             LastPercentageSelected = 90;
             LSScores = new List<ShortScore>();
             Position = new SVector3(2.25f, 1.25f, 2.2f);
             EulerAngles = new SVector3(60, 45, 0);
+            WindowHandleEnabled = false;
         }
 
         public Player SessionPlayer { get => sessionPlayer; set => sessionPlayer = value; }
@@ -29,6 +34,7 @@ namespace PPPredictor
         public float LastPercentageSelected { get => lastPercentageSelected; set => lastPercentageSelected = value; }
         public SVector3 Position { get => position; set => position = value; }
         public SVector3 EulerAngles { get => eulerAngles; set => eulerAngles = value; }
+        public bool WindowHandleEnabled { get => windowHandleEnabled; set => windowHandleEnabled = value; }
 
         public void addDictBasePP(string hash, int difficulty, double basePp)
         {
@@ -46,19 +52,5 @@ namespace PPPredictor
             }
             return -1;
         }
-
-        /*public bool insertScores(List<Score> lsScores)
-        {
-            bool needMoreData = !this.lsScores.Any();
-            if (this.lsScores.Any())
-            {
-                needMoreData = this.lsScores.Select(x => x.TimeSet).Max() < lsScores.Select(x => x.TimeSet).Min();
-            }
-            foreach (Score score in lsScores)
-            {
-                oldScore = this.lsScores.Find(x => x.);
-            }
-            this.lsScores.AddRange(lsScores);
-        }*/
     }
 }

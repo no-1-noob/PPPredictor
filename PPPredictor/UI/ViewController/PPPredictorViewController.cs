@@ -1,7 +1,6 @@
 ﻿using BeatSaberMarkupLanguage;
 using BeatSaberMarkupLanguage.Attributes;
 using BeatSaberMarkupLanguage.FloatingScreen;
-using BeatSaberMarkupLanguage.ViewControllers;
 using PPPredictor.Utilities;
 using SiraUtil.Web.SiraSync;
 using System;
@@ -9,16 +8,14 @@ using System.ComponentModel;
 using System.Reflection;
 using UnityEngine;
 using Zenject;
-using BS_Utils;
-using BS_Utils.Gameplay;
 using scoresaberapi;
 using BeatSaberMarkupLanguage.Components.Settings;
 
-namespace PPPredictor
+namespace PPPredictor.UI.ViewController
 {
     [ViewDefinition("PPPredictor.UI.Views.PPPredictorView.bsml")]
     [HotReload(RelativePathToLayout = @"..\Views\PPPredictorView.bsml")]
-    internal class PPPredictorViewController : IInitializable, IDisposable, INotifyPropertyChanged
+    public class PPPredictorViewController : IInitializable, IDisposable, INotifyPropertyChanged
     {
         LevelSelectionNavigationController levelSelectionNavController;
         private FloatingScreen floatingScreen;
@@ -64,35 +61,44 @@ namespace PPPredictor
         }
         public async void Initialize()
         {
-            UserInfo userInfo = await BS_Utils.Gameplay.GetUserInfo.GetUserAsync();
-            Plugin.Log?.Info(userInfo.platformUserId);
-            Player player = await PPCalculator.getProfile(userInfo.platformUserId);
-            if (Plugin.ProfileInfo.SessionPlayer == null)
-            {
-                Plugin.Log?.Info("set SessionPlayer");
-                Plugin.ProfileInfo.SessionPlayer = player;
-            }
-
-            _ = PPCalculator.getPlayerScores(userInfo.platformUserId, 10);
-
-            displaySession();
-
+            Plugin.pppViewController = this;
             levelSelectionNavController.didChangeDifficultyBeatmapEvent += OnDifficultyChanged;
             levelSelectionNavController.didChangeLevelDetailContentEvent += OnDetailContentChanged;
             floatingScreen = FloatingScreen.CreateFloatingScreen(new Vector2(75, 100), true, Plugin.ProfileInfo.Position, new Quaternion(0, 0, 0, 0));
+            floatingScreen.gameObject.name = "BSMLFloatingScreen_PPPredictor";
+            floatingScreen.ShowHandle = Plugin.ProfileInfo.WindowHandleEnabled;
             floatingScreen.transform.eulerAngles = Plugin.ProfileInfo.EulerAngles;
             floatingScreen.transform.localScale = new Vector3(0.03f, 0.03f, 0.03f);
             floatingScreen.HandleSide = FloatingScreen.Side.Left;
             floatingScreen.HandleReleased += OnScreenHandleReleased;
             BSMLParser.instance.Parse(BeatSaberMarkupLanguage.Utilities.GetResourceContent(Assembly.GetExecutingAssembly(), "PPPredictor.UI.Views.PPPredictorView.bsml"), floatingScreen.gameObject, this);
-            displayInitialPercentages();
-            displayPP();
         }
 
         public void Dispose()
         {
             floatingScreen.HandleReleased -= OnScreenHandleReleased;
+            Plugin.pppViewController = null;
             Plugin.Log?.Info("PPPredictorViewController Dispose");
+        }
+
+        [UIAction("#post-parse")]
+        protected async void PostParse()
+        {
+            UserInfo userInfo = await BS_Utils.Gameplay.GetUserInfo.GetUserAsync();
+            Plugin.Log?.Info(userInfo.platformUserId);
+            IsDataLoading = true;
+            Player player = await PPCalculator.getProfile(userInfo.platformUserId);
+            Plugin.ProfileInfo.CurrentPlayer = player;
+            if (Plugin.ProfileInfo.SessionPlayer == null)
+            {
+                Plugin.Log?.Info("set SessionPlayer");
+                Plugin.ProfileInfo.SessionPlayer = player;
+            }
+            displaySession();
+            await PPCalculator.getPlayerScores(userInfo.platformUserId, 100);
+            displayPP();
+            IsDataLoading = false;
+            displayInitialPercentages();
         }
 
         #region UI Components
@@ -107,11 +113,15 @@ namespace PPPredictor
             UserInfo userInfo = await BS_Utils.Gameplay.GetUserInfo.GetUserAsync();
             Plugin.Log?.Info(userInfo.platformUserId);
             IsDataLoading = true;
-            Player p = await PPCalculator.getProfile(userInfo.platformUserId);
-            _ = PPCalculator.getPlayerScores(userInfo.platformUserId, 10);
-            Plugin.ProfileInfo.CurrentPlayer = p;
-            IsDataLoading = false;
+            Player player = await PPCalculator.getProfile(userInfo.platformUserId);
+            Plugin.ProfileInfo.CurrentPlayer = player;
+            if(Plugin.ProfileInfo.SessionPlayer == null)
+            {
+                Plugin.ProfileInfo.SessionPlayer = player;
+            }
+            await PPCalculator.getPlayerScores(userInfo.platformUserId, 10);
             displaySession();
+            IsDataLoading = false;
         }
 
         [UIAction("reset-session-clicked")]
@@ -120,9 +130,9 @@ namespace PPPredictor
             UserInfo userInfo = await BS_Utils.Gameplay.GetUserInfo.GetUserAsync();
             Plugin.Log?.Info(userInfo.platformUserId);
             IsDataLoading = true;
-            Player p = await PPCalculator.getProfile(userInfo.platformUserId);
-            Plugin.ProfileInfo.CurrentPlayer = p;
-            Plugin.ProfileInfo.SessionPlayer = p;
+            Player player = await PPCalculator.getProfile(userInfo.platformUserId);
+            Plugin.ProfileInfo.CurrentPlayer = player;
+            Plugin.ProfileInfo.SessionPlayer = player;
             IsDataLoading = false;
             displaySession();
 
@@ -308,24 +318,36 @@ namespace PPPredictor
         }
 
         #region helper functions
+        public void refreshDisplay()
+        {
+            this.displayPP();
+            this.displaySession();
+        }
         private void displayPP()
         {
             double pp = PPCalculator.calculatePPatPercentage(_currentSelectionBasePP, _percentage);
             double ppGains = PPCalculator.getPlayerScorePPGain(_selectedMapSearchString, pp);
-            PpDisplayRaw = $"<b>{pp.ToString("F2")}pp</b> <i>[{(ppGains).ToString("+0.##;-0.##;0")}pp]</i>";
+            PpDisplayRaw = $"<b>{pp.ToString("F2")}pp</b> <i>[{(ppGains).ToString("+0.##;0")}pp]</i>";
         }
 
         private void displaySession()
         {
-            SessionRank = $"{Plugin.ProfileInfo.SessionPlayer.Rank.ToString()}";
-            SessionCountryRank = $"{Plugin.ProfileInfo.SessionPlayer.CountryRank.ToString()}";
-            SessionPP = $"{Plugin.ProfileInfo.SessionPlayer.Pp.ToString()}pp"; ;
-            SessionCountryRankDiff = (Plugin.ProfileInfo.CurrentPlayer.CountryRank - Plugin.ProfileInfo.SessionPlayer.CountryRank).ToString("+#;-#;0");
-            SessionCountryRankDiffColor = getDisplayColor((Plugin.ProfileInfo.CurrentPlayer.CountryRank - Plugin.ProfileInfo.SessionPlayer.CountryRank), true);
-            SessionRankDiff = (Plugin.ProfileInfo.CurrentPlayer.Rank - Plugin.ProfileInfo.SessionPlayer.Rank).ToString("+#;-#;0");
-            SessionRankDiffColor = getDisplayColor((Plugin.ProfileInfo.CurrentPlayer.Rank - Plugin.ProfileInfo.SessionPlayer.Rank), true);
-            SessionPPDiff = $"{(Plugin.ProfileInfo.CurrentPlayer.Pp - Plugin.ProfileInfo.SessionPlayer.Pp).ToString("+0.##;-0.##;0")}pp";
-            SessionPPDiffColor = getDisplayColor((Plugin.ProfileInfo.CurrentPlayer.Pp - Plugin.ProfileInfo.SessionPlayer.Pp), false);
+            if(Plugin.ProfileInfo.SessionPlayer == null || Plugin.ProfileInfo.CurrentPlayer == null){
+                SessionRank = SessionCountryRank = SessionPP = SessionCountryRankDiff = SessionRankDiff = SessionPPDiff = "-";
+                SessionCountryRankDiffColor = SessionRankDiffColor = SessionPPDiffColor = "white";
+            }
+            else
+            {
+                SessionRank = $"{Plugin.ProfileInfo.SessionPlayer.Rank.ToString()}";
+                SessionCountryRank = $"{Plugin.ProfileInfo.SessionPlayer.CountryRank.ToString()}";
+                SessionPP = $"{Plugin.ProfileInfo.SessionPlayer.Pp.ToString()}pp"; ;
+                SessionCountryRankDiff = (Plugin.ProfileInfo.CurrentPlayer.CountryRank - Plugin.ProfileInfo.SessionPlayer.CountryRank).ToString("+#;-#;0");
+                SessionCountryRankDiffColor = getDisplayColor((Plugin.ProfileInfo.CurrentPlayer.CountryRank - Plugin.ProfileInfo.SessionPlayer.CountryRank), true);
+                SessionRankDiff = (Plugin.ProfileInfo.CurrentPlayer.Rank - Plugin.ProfileInfo.SessionPlayer.Rank).ToString("+#;-#;0");
+                SessionRankDiffColor = getDisplayColor((Plugin.ProfileInfo.CurrentPlayer.Rank - Plugin.ProfileInfo.SessionPlayer.Rank), true);
+                SessionPPDiff = $"{(Plugin.ProfileInfo.CurrentPlayer.Pp - Plugin.ProfileInfo.SessionPlayer.Pp).ToString("+0.##;-0.##;0")}pp";
+                SessionPPDiffColor = getDisplayColor((Plugin.ProfileInfo.CurrentPlayer.Pp - Plugin.ProfileInfo.SessionPlayer.Pp), false);
+            }
         }
 
         private string getDisplayColor(double value, bool invert)

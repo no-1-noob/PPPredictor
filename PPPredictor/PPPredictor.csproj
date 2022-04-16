@@ -112,6 +112,7 @@
     <Compile Include="ProfileInfo.cs" />
     <Compile Include="ProfileInfoMgr.cs" />
     <Compile Include="ShortScore.cs" />
+    <Compile Include="UI\ViewController\PPPredictorSettingsViewController.cs" />
     <Compile Include="UI\ViewController\PPPredictorViewController.cs" />
     <Compile Include="OpenAPIs\scoresaber-public-api-1.0.0.cs" />
     <Compile Include="Plugin.cs" />
@@ -136,6 +137,7 @@
     </None>
     <None Include="PPPredictor.csproj.user" Condition="Exists('PPPredictor.csproj.user')" />
     <EmbeddedResource Include="UI\Views\PPPredictorView.bsml" />
+    <EmbeddedResource Include="UI\Views\PPPredictorSettingsView.bsml" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="BeatSaberModdingTools.Tasks">
