@@ -46,7 +46,6 @@ namespace PPPredictor.UI.ViewController
         public PPPredictorViewController(LevelSelectionNavigationController levelSelectionNavController)
         {
             this.levelSelectionNavController = levelSelectionNavController;
-            Plugin.Log?.Info("PPPredictorViewController ctor");
         }
 
         private ISiraSyncService siraSyncService;
@@ -57,7 +56,6 @@ namespace PPPredictor.UI.ViewController
         public void Construct(ISiraSyncService siraSyncService)
         {
             this.siraSyncService = siraSyncService;
-            Plugin.Log?.Info("PPPredictorViewController Inject");
         }
         public async void Initialize()
         {
@@ -83,20 +81,17 @@ namespace PPPredictor.UI.ViewController
             levelSelectionNavController.didActivateEvent -= OnLevelSelectionActivated;
             levelSelectionNavController.didDeactivateEvent -= OnLevelSelectionDeactivated;
             Plugin.pppViewController = null;
-            Plugin.Log?.Info("PPPredictorViewController Dispose");
         }
 
         [UIAction("#post-parse")]
         protected async void PostParse()
         {
             UserInfo userInfo = await BS_Utils.Gameplay.GetUserInfo.GetUserAsync();
-            Plugin.Log?.Info(userInfo.platformUserId);
             IsDataLoading = true;
             Player player = await PPCalculator.getProfile(userInfo.platformUserId);
             Plugin.ProfileInfo.CurrentPlayer = player;
             if (Plugin.ProfileInfo.SessionPlayer == null)
             {
-                Plugin.Log?.Info("set SessionPlayer");
                 Plugin.ProfileInfo.SessionPlayer = player;
             }
             displaySession();
@@ -116,7 +111,6 @@ namespace PPPredictor.UI.ViewController
         private async void RefreshProfileClicked()
         {
             UserInfo userInfo = await BS_Utils.Gameplay.GetUserInfo.GetUserAsync();
-            Plugin.Log?.Info(userInfo.platformUserId);
             IsDataLoading = true;
             Player player = await PPCalculator.getProfile(userInfo.platformUserId);
             Plugin.ProfileInfo.CurrentPlayer = player;
@@ -133,7 +127,6 @@ namespace PPPredictor.UI.ViewController
         private async void ResetSessionClicked()
         {
             UserInfo userInfo = await BS_Utils.Gameplay.GetUserInfo.GetUserAsync();
-            Plugin.Log?.Info(userInfo.platformUserId);
             IsDataLoading = true;
             Player player = await PPCalculator.getProfile(userInfo.platformUserId);
             Plugin.ProfileInfo.CurrentPlayer = player;
@@ -279,7 +272,6 @@ namespace PPPredictor.UI.ViewController
         {
             set
             {
-                Plugin.Log?.Info($"_isDataLoading: {value}");
                 _isDataLoading = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsDataLoading)));
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsNoDataLoading)));
@@ -295,8 +287,6 @@ namespace PPPredictor.UI.ViewController
 
         private async void OnDifficultyChanged(LevelSelectionNavigationController _, IDifficultyBeatmap beatmap)
         {
-            Plugin.Log?.Info($"DifficultyChanged: {beatmap}");
-            Plugin.Log?.Info($"{beatmap.level.levelID}, {beatmap.difficultyRank}");
             _currentSelectionBasePP = await PPCalculator.calculateBasePPForBeatmapAsync(beatmap);
             _selectedMapSearchString = PPCalculator.createSeachString(_.selectedDifficultyBeatmap.level.levelID.Replace("custom_level_", ""), _.selectedDifficultyBeatmap.difficultyRank);
             //TODO: disable slider
@@ -307,23 +297,18 @@ namespace PPPredictor.UI.ViewController
         {
             if(contentType == StandardLevelDetailViewController.ContentType.OwnedAndReady)
             {
-                Plugin.Log?.Info($"OnDetailContentChanged: {contentType} {_.selectedDifficultyBeatmap}");
-                Plugin.Log?.Info($"{_.selectedDifficultyBeatmap.level.levelID}, {_.selectedDifficultyBeatmap.difficultyRank}");
                 _currentSelectionBasePP = await PPCalculator.calculateBasePPForBeatmapAsync(_.selectedDifficultyBeatmap);
                 _selectedMapSearchString = PPCalculator.createSeachString(_.selectedDifficultyBeatmap.level.levelID.Replace("custom_level_", ""), _.selectedDifficultyBeatmap.difficultyRank);
-                //TODO: disable slider
                 displayPP();
             }
         }
 
         private void OnLevelSelectionActivated(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
         {
-            Plugin.Log?.Info($"OnLevelSelectionActivated");
             togglePPPView(true);
         }
         private void OnLevelSelectionDeactivated(bool removedFromHierarchy, bool screenSystemDisabling)
         {
-            Plugin.Log?.Info($"OnLevelSelectionDeactivated");
             togglePPPView(false);
         }
 
