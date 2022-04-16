@@ -32,7 +32,7 @@ namespace PPPredictor.UI.ViewController
         private void refreshSettingsDisplay()
         {
             WindowHandleEnabled = Plugin.ProfileInfo.WindowHandleEnabled;
-            Plugin.pppViewController?.refreshDisplay(); //Needed for canceling of settings
+            Plugin.pppViewController?.resetDisplay(); //Needed for canceling of settings
         }
     }
 }

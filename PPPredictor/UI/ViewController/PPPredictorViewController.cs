@@ -318,8 +318,10 @@ namespace PPPredictor.UI.ViewController
         }
 
         #region helper functions
-        public void refreshDisplay()
+        public void resetDisplay()
         {
+            floatingScreen.transform.eulerAngles = Plugin.ProfileInfo.EulerAngles;
+            floatingScreen.transform.position = Plugin.ProfileInfo.Position;
             this.displayPP();
             this.displaySession();
         }

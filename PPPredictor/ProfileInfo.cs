@@ -22,8 +22,8 @@ namespace PPPredictor
             DictBasePP = new Dictionary<string, double>();
             LastPercentageSelected = 90;
             LSScores = new List<ShortScore>();
-            Position = new SVector3(2.25f, 1.25f, 2.2f);
-            EulerAngles = new SVector3(60, 45, 0);
+            Position = new SVector3(2.5f, 0.05f, 2.0f);
+            EulerAngles = new SVector3(88, 60, 0);
             WindowHandleEnabled = false;
         }
 

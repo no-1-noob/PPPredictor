@@ -174,7 +174,7 @@ namespace PPPredictor.Utilities
                         }
                     }
                     page++;
-                    Thread.Sleep(250);
+                    await Task.Delay(250);
                 }
                 //Update after fetching all data. So when closing while fetching the incomplete data is not saved.
                 foreach (ShortScore newScore in lsNewScores)
