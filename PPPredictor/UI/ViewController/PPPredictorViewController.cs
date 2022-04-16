@@ -64,8 +64,11 @@ namespace PPPredictor.UI.ViewController
             Plugin.pppViewController = this;
             levelSelectionNavController.didChangeDifficultyBeatmapEvent += OnDifficultyChanged;
             levelSelectionNavController.didChangeLevelDetailContentEvent += OnDetailContentChanged;
+            levelSelectionNavController.didActivateEvent += OnLevelSelectionActivated;
+            levelSelectionNavController.didDeactivateEvent += OnLevelSelectionDeactivated;
             floatingScreen = FloatingScreen.CreateFloatingScreen(new Vector2(75, 100), true, Plugin.ProfileInfo.Position, new Quaternion(0, 0, 0, 0));
             floatingScreen.gameObject.name = "BSMLFloatingScreen_PPPredictor";
+            floatingScreen.gameObject.SetActive(false);
             floatingScreen.ShowHandle = Plugin.ProfileInfo.WindowHandleEnabled;
             floatingScreen.transform.eulerAngles = Plugin.ProfileInfo.EulerAngles;
             floatingScreen.transform.localScale = new Vector3(0.03f, 0.03f, 0.03f);
@@ -77,6 +80,8 @@ namespace PPPredictor.UI.ViewController
         public void Dispose()
         {
             floatingScreen.HandleReleased -= OnScreenHandleReleased;
+            levelSelectionNavController.didActivateEvent -= OnLevelSelectionActivated;
+            levelSelectionNavController.didDeactivateEvent -= OnLevelSelectionDeactivated;
             Plugin.pppViewController = null;
             Plugin.Log?.Info("PPPredictorViewController Dispose");
         }
@@ -309,6 +314,22 @@ namespace PPPredictor.UI.ViewController
                 //TODO: disable slider
                 displayPP();
             }
+        }
+
+        private void OnLevelSelectionActivated(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
+        {
+            Plugin.Log?.Info($"OnLevelSelectionActivated");
+            togglePPPView(true);
+        }
+        private void OnLevelSelectionDeactivated(bool removedFromHierarchy, bool screenSystemDisabling)
+        {
+            Plugin.Log?.Info($"OnLevelSelectionDeactivated");
+            togglePPPView(false);
+        }
+
+        private void togglePPPView(bool active)
+        {
+            this.floatingScreen.gameObject.SetActive(active);
         }
 
         private void OnScreenHandleReleased(object sender, FloatingScreenHandleEventArgs args)
