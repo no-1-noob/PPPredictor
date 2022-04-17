@@ -3,9 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
-using IPALogger = IPA.Logging.Logger;
 
 namespace PPPredictor.Utilities
 {
@@ -58,7 +56,6 @@ namespace PPPredictor.Utilities
                     double basePP = Plugin.ProfileInfo.findBasePP(hash, beatmap.difficultyRank);
                     if (basePP < 0)
                     {
-                        Plugin.Log?.Info("PP Not found in dict");
                         var scoreSaberClient = new scoresaberapi.scoresaberapi(httpClient);
                         Task<LeaderboardInfo> downloadingMapInfo = scoreSaberClient.Info2Async(hash, beatmap.difficultyRank, null);
                         var mapInfo = await downloadingMapInfo;
@@ -73,10 +70,6 @@ namespace PPPredictor.Utilities
                         }
                         basePP = mapInfo.Stars * basePPMultiplier;
                         Plugin.ProfileInfo.addDictBasePP(hash, beatmap.difficultyRank, basePP);
-                    }
-                    else
-                    {
-                        Plugin.Log?.Info("PP found in dict");
                     }
                     return basePP;
                 }
@@ -126,7 +119,6 @@ namespace PPPredictor.Utilities
             long longUserId = 0;
             if(long.TryParse(userId, out longUserId))
             {
-                Plugin.Log?.Info(longUserId.ToString());
                 var scoreSaberClient = new scoresaberapi.scoresaberapi(httpClient);
                 Task<Player> playerInfo = scoreSaberClient.BasicAsync(longUserId);
                 var player = await playerInfo;
@@ -145,7 +137,6 @@ namespace PPPredictor.Utilities
                 List<ShortScore> lsNewScores = new List<ShortScore>();
                 while (hasMoreData)
                 {
-                    Plugin.Log?.Info($"getPlayerScores page {page}");
                     PlayerScoreCollection playerscores = await scoreSaberClient.Scores3Async(userId, pageSize, Sort.Recent, page, true);
                     if (playerscores.Metadata.Page * playerscores.Metadata.ItemsPerPage >= playerscores.Metadata.Total)
                     {
