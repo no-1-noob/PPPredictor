@@ -147,7 +147,7 @@ namespace PPPredictor.Utilities
                     {
                         string searchString = createSeachString(scores.Leaderboard.SongHash, (int)scores.Leaderboard.Difficulty.Difficulty1);
                         ShortScore previousScore = Plugin.ProfileInfo.LSScores.Find(x => x.Searchstring == searchString);
-                        ShortScore newScore = new ShortScore(searchString, scores.Score.TimeSet, scores.Leaderboard.MaxScore, scores.Score.ModifiedScore, scores.Score.Pp);
+                        ShortScore newScore = new ShortScore(searchString, scores.Score.TimeSet, scores.Score.Pp);
                         if (previousScore == null)
                         {
                             lsNewScores.Add(newScore);
@@ -178,7 +178,7 @@ namespace PPPredictor.Utilities
                     else
                     {
                             previousScore.TimeSet = newScore.TimeSet;
-                            previousScore.ModifiedScore = newScore.ModifiedScore;
+                            previousScore.Pp = newScore.Pp;
                     }
                 };
                 Plugin.ProfileInfo.LSScores.Sort();

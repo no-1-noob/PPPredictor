@@ -23,7 +23,7 @@ namespace PPPredictor.UI.ViewController
 
         #region displayValues
         private float _percentage;
-        private string _ppDisplayRaw;
+        private string _ppDisplayRaw = "";
         private double _currentSelectionBasePP;
 
         private string _sessionRank;
