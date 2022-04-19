@@ -33,7 +33,12 @@
       <button text='Reset Session' on-click='reset-session-clicked' min-width='16' pref-height='8' interactable='~isNoDataLoading' />
     </horizontal>
     <text text='!!PPPredictor!!' italics='true' align='Center' font-size='4' />
-    <text text='~ppDisplayRaw' italics='true' align='Center' font-size='4' />
+    <horizontal horizontal-fit='PreferredSize' align='Center' child-align='MiddleLeft'>
+      <text text='~ppGainRaw' italics='true' align='Center' font-size='4' />
+      <text text='[' italics='true' align='Center' font-size='4' />
+      <text text='~ppGainWeighted' font-color='~ppGainDiffColor' italics='true' align='Center' font-size='4' />
+      <text text=']' italics='true' align='Center' font-size='4' />
+    </horizontal>
   <vertical preferred-width='50'>
     <slider-setting id='sliderCoarse' text='' preferred-width='100' value='sliderCoarseValue' hover-hint='What percentage to calculate PP at (coarse adjust)' interactable='~isNoDataLoading' mi='0' max='90' increment='10' apply-on-change='true' bind-value='true' show-buttons='true' align='Left' anchor-pos-x='50000' anchor-min-x='5000'/>
     <slider-setting id='sliderFine' text='' value='sliderFineValue' hover-hint='What percentage to calculate PP at (fine adjust)' interactable='~isNoDataLoading' min='0' max='100' increment='0.01' apply-on-change='true' bind-value='true' show-buttons='true' align='Left' />

@@ -240,5 +240,12 @@ namespace PPPredictor.Utilities
         {
             return $"{hash}_{difficulty}";
         }
+
+        public static double zeroizer(double pp)
+        {
+            if (pp < -0.01 || pp > 0.01) return pp;
+            if ((pp > -0.01 && pp < 0) || (pp < 0.01 && pp > 0)) return 0;
+            return pp;
+        }
     }
 }

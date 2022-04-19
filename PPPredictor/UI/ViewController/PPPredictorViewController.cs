@@ -23,7 +23,10 @@ namespace PPPredictor.UI.ViewController
 
         #region displayValues
         private float _percentage;
-        private string _ppDisplayRaw = "";
+        private string _ppGainRaw = "";
+        private string _ppGainWeighted = "";
+        private string _ppGainDiffColor = "";
+
         private double _currentSelectionBasePP;
 
         private string _sessionRank;
@@ -163,15 +166,37 @@ namespace PPPredictor.UI.ViewController
             }
         }
 
-        [UIValue("ppDisplayRaw")]
-        private string PpDisplayRaw
+        [UIValue("ppGainRaw")]
+        private string PPGainRaw
         {
             set
             {
-                _ppDisplayRaw = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PpDisplayRaw)));
+                _ppGainRaw = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PPGainRaw)));
             }
-            get => _ppDisplayRaw;
+            get => _ppGainRaw;
+        }
+
+        [UIValue("ppGainWeighted")]
+        private string PPGainWeighted
+        {
+            set
+            {
+                _ppGainWeighted = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PPGainWeighted)));
+            }
+            get => _ppGainWeighted;
+        }
+
+        [UIValue("ppGainDiffColor")]
+        private string PPGainDiffColor
+        {
+            set
+            {
+                _ppGainDiffColor = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PPGainDiffColor)));
+            }
+            get => _ppGainDiffColor;
         }
 
         [UIValue("sessionRank")]
@@ -334,8 +359,10 @@ namespace PPPredictor.UI.ViewController
         private void displayPP()
         {
             double pp = PPCalculator.calculatePPatPercentage(_currentSelectionBasePP, _percentage);
-            double ppGains = PPCalculator.getPlayerScorePPGain(_selectedMapSearchString, pp);
-            PpDisplayRaw = $"<b>{pp.ToString("F2")}pp</b> <i>[{(ppGains).ToString("+0.##;0")}pp]</i>";
+            double ppGains = PPCalculator.zeroizer(PPCalculator.getPlayerScorePPGain(_selectedMapSearchString, pp));
+            PPGainRaw = $"{pp.ToString("F2")}pp";
+            PPGainWeighted = $"{ppGains.ToString("+0.##;-0.##;0")}pp";
+            PPGainDiffColor = getDisplayColor(ppGains, false);
         }
 
         private void displaySession()
@@ -353,7 +380,7 @@ namespace PPPredictor.UI.ViewController
                 SessionCountryRankDiffColor = getDisplayColor((Plugin.ProfileInfo.CurrentPlayer.CountryRank - Plugin.ProfileInfo.SessionPlayer.CountryRank), true);
                 SessionRankDiff = (Plugin.ProfileInfo.CurrentPlayer.Rank - Plugin.ProfileInfo.SessionPlayer.Rank).ToString("+#;-#;0");
                 SessionRankDiffColor = getDisplayColor((Plugin.ProfileInfo.CurrentPlayer.Rank - Plugin.ProfileInfo.SessionPlayer.Rank), true);
-                SessionPPDiff = $"{(Plugin.ProfileInfo.CurrentPlayer.Pp - Plugin.ProfileInfo.SessionPlayer.Pp).ToString("+0.##;-0.##;0")}pp";
+                SessionPPDiff = $"{(PPCalculator.zeroizer(Plugin.ProfileInfo.CurrentPlayer.Pp - Plugin.ProfileInfo.SessionPlayer.Pp)).ToString("+0.##;-0.##;0")}pp";
                 SessionPPDiffColor = getDisplayColor((Plugin.ProfileInfo.CurrentPlayer.Pp - Plugin.ProfileInfo.SessionPlayer.Pp), false);
             }
         }
