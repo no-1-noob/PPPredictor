@@ -3,10 +3,12 @@
   "id": "PPPredictor",
   "name": "PPPredictor",
   "author": "No.1 N[][]b",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "",
   "gameVersion": "1.19.0",
   "dependsOn": {
-    "BSIPA": "^4.2.0"
+    "BSIPA": "^4.2.0",
+    "BeatSaberMarkupLanguage": "^1.6.1",
+    "SiraUtil": "^3.0.3"
   }
 }

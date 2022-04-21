@@ -1,14 +1,4 @@
 ﻿using IPA;
-using IPA.Config;
-using IPA.Config.Stores;
-using PPPredictor.Utilities;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using UnityEngine;
-using UnityEngine.SceneManagement;
 using SiraUtil.Zenject;
 using PPPredictor.UI.ViewController;
 using IPALogger = IPA.Logging.Logger;

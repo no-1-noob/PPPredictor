@@ -2796,7 +2796,7 @@ namespace scoresaberapi
         [Newtonsoft.Json.JsonProperty("countryRank", Required = Newtonsoft.Json.Required.Always)]
         public double CountryRank { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("role", Required = Newtonsoft.Json.Required.Always)]
+        [Newtonsoft.Json.JsonProperty("role", Required = Newtonsoft.Json.Required.AllowNull)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Role { get; set; }
 

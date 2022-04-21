@@ -29,16 +29,16 @@ namespace PPPredictor.UI.ViewController
 
         private double _currentSelectionBasePP;
 
-        private string _sessionRank;
-        private string _sessionCountryRank;
-        private string _sessionPP;
+        private string _sessionRank = "";
+        private string _sessionCountryRank = "";
+        private string _sessionPP = "";
 
-        private string _sessionCountryRankDiff;
-        private string _sessionCountryRankDiffColor;
-        private string _sessionRankDiff;
-        private string _sessionRankDiffColor;
-        private string _sessionPPDiff;
-        private string _sessionPPDiffColor;
+        private string _sessionCountryRankDiff = "";
+        private string _sessionCountryRankDiffColor = "white";
+        private string _sessionRankDiff = "";
+        private string _sessionRankDiffColor = "white";
+        private string _sessionPPDiff = "";
+        private string _sessionPPDiffColor = "white";
         #endregion
 
         #region internal values
@@ -113,17 +113,7 @@ namespace PPPredictor.UI.ViewController
         [UIAction("refresh-profile-clicked")]
         private async void RefreshProfileClicked()
         {
-            UserInfo userInfo = await BS_Utils.Gameplay.GetUserInfo.GetUserAsync();
-            IsDataLoading = true;
-            Player player = await PPCalculator.getProfile(userInfo.platformUserId);
-            Plugin.ProfileInfo.CurrentPlayer = player;
-            if(Plugin.ProfileInfo.SessionPlayer == null)
-            {
-                Plugin.ProfileInfo.SessionPlayer = player;
-            }
-            await PPCalculator.getPlayerScores(userInfo.platformUserId, 10);
-            displaySession();
-            IsDataLoading = false;
+            refreshCurrentData(10);
         }
 
         [UIAction("reset-session-clicked")]
@@ -349,6 +339,20 @@ namespace PPPredictor.UI.ViewController
         }
 
         #region helper functions
+        public async void refreshCurrentData(int fetchLength)
+        {
+            UserInfo userInfo = await BS_Utils.Gameplay.GetUserInfo.GetUserAsync();
+            IsDataLoading = true;
+            Player player = await PPCalculator.getProfile(userInfo.platformUserId);
+            Plugin.ProfileInfo.CurrentPlayer = player;
+            if (Plugin.ProfileInfo.SessionPlayer == null)
+            {
+                Plugin.ProfileInfo.SessionPlayer = player;
+            }
+            await PPCalculator.getPlayerScores(userInfo.platformUserId, fetchLength);
+            displaySession();
+            IsDataLoading = false;
+        }
         public void resetDisplay()
         {
             floatingScreen.transform.eulerAngles = Plugin.ProfileInfo.EulerAngles;
