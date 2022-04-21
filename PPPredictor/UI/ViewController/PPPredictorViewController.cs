@@ -25,7 +25,7 @@ namespace PPPredictor.UI.ViewController
         private float _percentage;
         private string _ppGainRaw = "";
         private string _ppGainWeighted = "";
-        private string _ppGainDiffColor = "";
+        private string _ppGainDiffColor = "white";
 
         private double _currentSelectionBasePP;
 
