@@ -9,7 +9,7 @@ namespace PPPredictor
         public override void InstallBindings()
         {
             Container.BindInterfacesTo<PPPredictorViewController>().AsSingle();
-            //Container.BindInterfacesTo<PPPredictorEventsMgr>().AsSingle();
+            Container.BindInterfacesTo<PPPredictorEventsMgr>().AsSingle();
         }
     }
 }

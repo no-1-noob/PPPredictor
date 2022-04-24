@@ -47,6 +47,9 @@
     <Reference Include="BS_Utils">
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Beat Saber\Plugins\BS_Utils.dll</HintPath>
     </Reference>
+    <Reference Include="LeaderboardCore">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Beat Saber\Plugins\LeaderboardCore.dll</HintPath>
+    </Reference>
     <Reference Include="SiraUtil">
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Beat Saber\Plugins\SiraUtil.dll</HintPath>
     </Reference>
@@ -110,6 +113,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Installers\PPPPredictorDisplayInstaller.cs" />
+    <Compile Include="PPPredictorEventsMgr.cs" />
     <Compile Include="ProfileInfo.cs" />
     <Compile Include="ProfileInfoMgr.cs" />
     <Compile Include="ShortScore.cs" />
@@ -120,6 +124,8 @@
     <Compile Include="Configuration\PluginConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\PPCalculator.cs" />
+    <Compile Include="Utilities\PPGainResult.cs" />
+    <Compile Include="Utilities\RankGainResult.cs" />
     <Compile Include="Utilities\SVector3.cs" />
   </ItemGroup>
   <ItemGroup>
