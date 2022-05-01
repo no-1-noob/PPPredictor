@@ -714,7 +714,7 @@ namespace scoresaberapi
         /// <param name="withMetadata">(default true)</param>
         /// <returns>A collection of Player</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PlayerCollection>> PlayersAsync(string search, double? page, string countries, bool? withMetadata)
+        public System.Threading.Tasks.Task<PlayerCollection> PlayersAsync(string search, double? page, string countries, bool? withMetadata)
         {
             return PlayersAsync(search, page, countries, withMetadata, System.Threading.CancellationToken.None);
         }
@@ -725,7 +725,7 @@ namespace scoresaberapi
         /// <param name="withMetadata">(default true)</param>
         /// <returns>A collection of Player</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PlayerCollection>> PlayersAsync(string search, double? page, string countries, bool? withMetadata, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<PlayerCollection> PlayersAsync(string search, double? page, string countries, bool? withMetadata, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/players?");
@@ -779,7 +779,7 @@ namespace scoresaberapi
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<PlayerCollection>>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<PlayerCollection>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);

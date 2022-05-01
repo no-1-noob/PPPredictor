@@ -2,6 +2,8 @@
 using SiraUtil.Zenject;
 using PPPredictor.UI.ViewController;
 using IPALogger = IPA.Logging.Logger;
+using scoresaberapi;
+using System.Collections.Generic;
 
 namespace PPPredictor
 {
@@ -12,6 +14,8 @@ namespace PPPredictor
         internal static IPALogger Log { get; private set; }
 
         public static ProfileInfo ProfileInfo;
+
+        public static List<Player> lsPlayerRankings;
 
         public static PPPredictorViewController pppViewController;
 
@@ -26,6 +30,7 @@ namespace PPPredictor
             Instance = this;
             Log = logger;
             ProfileInfo = ProfileInfoMgr.loadProfileInfo();
+            lsPlayerRankings = new List<Player>();
             zenjector.UseSiraSync();
             zenjector.Install<PPPPredictorDisplayInstaller>(Location.Menu);
             BeatSaberMarkupLanguage.Settings.BSMLSettings.instance.AddSettingsMenu("PPPredictor", "PPPredictor.UI.Views.PPPredictorSettingsView.bsml", new PPPredictorSettingsViewController());

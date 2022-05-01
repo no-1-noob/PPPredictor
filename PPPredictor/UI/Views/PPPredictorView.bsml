@@ -38,6 +38,18 @@
     </vertical>
   <vertical vertical-fit='PreferredSize' preferred-width='60' bg='panel-top' pad-top='1' pad-bottom='1'>
     <text text='!!PPPredictor!!' italics='true' align='Center' font-size='4' />
+    <horizontal horizontal-fit='PreferredSize' align='Left' child-align='MiddleLeft'>
+      <text text='~predictedRank' italics='true' align='Left' font-size='4' />
+      <text text='[' italics='true' align='Left' font-size='4' />
+      <text text='~predictedRankDiff' font-color='~predictedRankDiffColor' italics='true' align='Left' font-size='4' />
+      <text text=']' italics='true' align='Left' font-size='4' />
+    </horizontal>
+    <horizontal horizontal-fit='PreferredSize' align='Left' child-align='MiddleLeft'>
+      <text text='~predictedCountryRank' italics='true' align='Left' font-size='4' />
+      <text text='[' italics='true' align='Left' font-size='4' />
+      <text text='~predictedCountryRankDiff' font-color='~predictedCountryRankDiffColor' italics='true' align='Left' font-size='4' />
+      <text text=']' italics='true' align='Left' font-size='4' />
+    </horizontal>
     <horizontal horizontal-fit='PreferredSize' align='Center' child-align='MiddleLeft'>
       <text text='~ppGainRaw' italics='true' align='Center' font-size='4' />
       <text text='[' italics='true' align='Center' font-size='4' />

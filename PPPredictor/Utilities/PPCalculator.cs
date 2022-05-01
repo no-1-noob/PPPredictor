@@ -190,7 +190,7 @@ namespace PPPredictor.Utilities
             
         }
 
-        static public double getPlayerScorePPGain(string mapSearchString, double pp)
+        static public PPGainResult getPlayerScorePPGain(string mapSearchString, double pp)
         {
             if (Plugin.ProfileInfo.LSScores.Count > 0 && !string.IsNullOrEmpty(mapSearchString) && pp > 0)
             {
@@ -226,9 +226,41 @@ namespace PPPredictor.Utilities
                     ppAfterPlay += weightedPP;
                     index++;
                 }
-                return ppAfterPlay - Plugin.ProfileInfo.CurrentPlayer.Pp;
+                return new PPGainResult(ppAfterPlay, ppAfterPlay - Plugin.ProfileInfo.CurrentPlayer.Pp);
             }
-            return pp;
+            return new PPGainResult(Plugin.ProfileInfo.CurrentPlayer.Pp, pp);
+        }
+
+        static public async Task<RankGainResult> getPlayerRankGain(double pp)
+        {
+            await Task.Delay(3000);
+            int index = 0;
+            double bestRankFetched = Plugin.lsPlayerRankings.Select(x => x.Rank).DefaultIfEmpty(-1).Min();
+            double fetchIndexPage = bestRankFetched > 0 ? Math.Floor((bestRankFetched - 1) / 50)+ 1 : Math.Floor(Plugin.ProfileInfo.CurrentPlayer.Rank / 50)+1;
+            var scoreSaberClient = new scoresaberapi.scoresaberapi(httpClient);
+            bool needMoreData = true;
+            while (needMoreData)
+            {
+                int indexOfBetterPlayer = Plugin.lsPlayerRankings.FindIndex(x => x.Pp > pp);
+                //Plugin.lsPlayerRankings.Select(x => x.Rank)?.Min() != 1 ||
+                if (indexOfBetterPlayer != -1 ||  fetchIndexPage == 1)
+                {
+                    //Found a better player or already fetched until rank 1
+                    needMoreData = false;
+                    continue;
+                }
+                else
+                {
+                    PlayerCollection playerscores = await scoreSaberClient.PlayersAsync(null, fetchIndexPage, null, true);
+                    Plugin.lsPlayerRankings.AddRange(playerscores.Players);
+                }
+                fetchIndexPage--;
+                await Task.Delay(3000);
+            }
+            double rankAfterPlay = Plugin.lsPlayerRankings.Where(x => x.Pp <= pp).Select(x => x.Rank).Min();
+
+            double rankCountryAfterPlay = Plugin.lsPlayerRankings.Where(x => x.Pp <= pp && x.Country == Plugin.ProfileInfo.CurrentPlayer.Country).Select(x => x.CountryRank).Min();
+            return new RankGainResult(rankAfterPlay, rankCountryAfterPlay);
         }
 
         static public double weightPP(double rawPP, int index)

@@ -32,13 +32,23 @@ namespace PPPredictor.UI.ViewController
         private string _sessionRank = "";
         private string _sessionCountryRank = "";
         private string _sessionPP = "";
-
         private string _sessionCountryRankDiff = "";
         private string _sessionCountryRankDiffColor = "white";
         private string _sessionRankDiff = "";
         private string _sessionRankDiffColor = "white";
         private string _sessionPPDiff = "";
         private string _sessionPPDiffColor = "white";
+
+        private string _predictedRank = "";
+        private string _predictedRankDiff = "";
+        private string _predictedRankDiffColor = "white";
+        private string _predictedCountryRank = "";
+        private string _predictedCountryRankDiff = "";
+        private string _predictedCountryRankDiffColor = "white";
+
+        private bool _rankGainRunning = false;
+        private double lastPPGainCall = 0;
+
         #endregion
 
         #region internal values
@@ -189,6 +199,7 @@ namespace PPPredictor.UI.ViewController
             get => _ppGainDiffColor;
         }
 
+        #region UI Values session
         [UIValue("sessionRank")]
         private string SessionRank
         {
@@ -281,6 +292,70 @@ namespace PPPredictor.UI.ViewController
             }
             get => _sessionPPDiffColor;
         }
+        #endregion
+        #region UI Values Predicted Rank
+
+        [UIValue("predictedRank")]
+        private string PredictedRank
+        {
+            set
+            {
+                _predictedRank = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedRank)));
+            }
+            get => _predictedRank;
+        }
+        [UIValue("predictedRankDiff")]
+        private string PredictedRankDiff
+        {
+            set
+            {
+                _predictedRankDiff = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedRankDiff)));
+            }
+            get => _predictedRankDiff;
+        }
+        [UIValue("predictedRankDiffColor")]
+        private string PredictedRankDiffColor
+        {
+            set
+            {
+                _predictedRankDiffColor = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedRankDiffColor)));
+            }
+            get => _predictedRankDiffColor;
+        }
+        [UIValue("predictedCountryRank")]
+        private string PredictedCountryRank
+        {
+            set
+            {
+                _predictedCountryRank = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedCountryRank)));
+            }
+            get => _predictedCountryRank;
+        }
+        [UIValue("predictedCountryRankDiff")]
+        private string PredictedCountryRankDiff
+        {
+            set
+            {
+                _predictedCountryRankDiff = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedCountryRankDiff)));
+            }
+            get => _predictedCountryRankDiff;
+        }
+        [UIValue("predictedCountryRankDiffColor")]
+        private string PredictedCountryRankDiffColor
+        {
+            set
+            {
+                _predictedCountryRankDiffColor = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedCountryRankDiffColor)));
+            }
+            get => _predictedCountryRankDiffColor;
+        }
+        #endregion
 
         [UIValue("isDataLoading")]
         private bool IsDataLoading
@@ -351,6 +426,7 @@ namespace PPPredictor.UI.ViewController
             }
             await PPCalculator.getPlayerScores(userInfo.platformUserId, fetchLength);
             displaySession();
+            displayPP(true);
             IsDataLoading = false;
         }
         public void resetDisplay()
@@ -360,13 +436,40 @@ namespace PPPredictor.UI.ViewController
             this.displayPP();
             this.displaySession();
         }
-        private void displayPP()
+        private async void displayPP(bool fetchRankGain = false)
         {
             double pp = PPCalculator.calculatePPatPercentage(_currentSelectionBasePP, _percentage);
-            double ppGains = PPCalculator.zeroizer(PPCalculator.getPlayerScorePPGain(_selectedMapSearchString, pp));
+            PPGainResult ppGainResult = PPCalculator.getPlayerScorePPGain(_selectedMapSearchString, pp);
+            double ppGains = PPCalculator.zeroizer(ppGainResult.PpGain);
             PPGainRaw = $"{pp.ToString("F2")}pp";
             PPGainWeighted = $"{ppGains.ToString("+0.##;-0.##;0")}pp";
             PPGainDiffColor = getDisplayColor(ppGains, false);
+
+            RankGainResult rankGain = new RankGainResult(1, 2, 3, 4);
+            if (fetchRankGain)
+            {
+                if (_rankGainRunning)
+                {
+                    lastPPGainCall = ppGainResult.PpTotal;
+                    return;
+                }
+                
+                if (lastPPGainCall == 0)
+                {
+                    _rankGainRunning = true;
+                    rankGain = await PPCalculator.getPlayerRankGain(ppGainResult.PpTotal);
+                    _rankGainRunning = false;
+                }
+                if(lastPPGainCall > 0)
+                {
+                    _rankGainRunning = true;
+                    rankGain = await PPCalculator.getPlayerRankGain(lastPPGainCall);
+                    _rankGainRunning = false;
+                    lastPPGainCall = 0;
+                }
+            }
+            displayRankGain(rankGain);
+
         }
 
         private void displaySession()
@@ -387,6 +490,16 @@ namespace PPPredictor.UI.ViewController
                 SessionPPDiff = $"{(PPCalculator.zeroizer(Plugin.ProfileInfo.CurrentPlayer.Pp - Plugin.ProfileInfo.SessionPlayer.Pp)).ToString("+0.##;-0.##;0")}pp";
                 SessionPPDiffColor = getDisplayColor((Plugin.ProfileInfo.CurrentPlayer.Pp - Plugin.ProfileInfo.SessionPlayer.Pp), false);
             }
+        }
+
+        private void displayRankGain(RankGainResult rankGainResult)
+        {
+            PredictedRank = $"{rankGainResult.RankGlobal.ToString("N0")}";
+            PredictedRankDiff = rankGainResult.RankGainGlobal.ToString("+#;-#;0");
+            PredictedRankDiffColor = getDisplayColor(rankGainResult.RankGainGlobal, false);
+            PredictedCountryRank = $"{rankGainResult.RankCountry.ToString("N0")}";
+            PredictedCountryRankDiff = rankGainResult.RankGainCountry.ToString("+#;-#;0");
+            PredictedCountryRankDiffColor = getDisplayColor(rankGainResult.RankGainCountry, false);
         }
 
         private string getDisplayColor(double value, bool invert)
