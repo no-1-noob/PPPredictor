@@ -233,8 +233,6 @@ namespace PPPredictor.Utilities
 
         static public async Task<RankGainResult> getPlayerRankGain(double pp)
         {
-            await Task.Delay(3000);
-            int index = 0;
             double bestRankFetched = Plugin.lsPlayerRankings.Select(x => x.Rank).DefaultIfEmpty(-1).Min();
             double fetchIndexPage = bestRankFetched > 0 ? Math.Floor((bestRankFetched - 1) / 50)+ 1 : Math.Floor(Plugin.ProfileInfo.CurrentPlayer.Rank / 50)+1;
             var scoreSaberClient = new scoresaberapi.scoresaberapi(httpClient);
@@ -255,7 +253,7 @@ namespace PPPredictor.Utilities
                     Plugin.lsPlayerRankings.AddRange(playerscores.Players);
                 }
                 fetchIndexPage--;
-                await Task.Delay(3000);
+                await Task.Delay(250);
             }
             double rankAfterPlay = Plugin.lsPlayerRankings.Where(x => x.Pp <= pp).Select(x => x.Rank).Min();
 

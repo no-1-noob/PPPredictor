@@ -109,9 +109,9 @@ namespace PPPredictor.UI.ViewController
             }
             displaySession();
             await PPCalculator.getPlayerScores(userInfo.platformUserId, 100);
+            displayInitialPercentages();
             displayPP();
             IsDataLoading = false;
-            displayInitialPercentages();
         }
 
         #region UI Components
@@ -426,7 +426,7 @@ namespace PPPredictor.UI.ViewController
             }
             await PPCalculator.getPlayerScores(userInfo.platformUserId, fetchLength);
             displaySession();
-            displayPP(true);
+            displayPP();
             IsDataLoading = false;
         }
         public void resetDisplay()
@@ -436,7 +436,7 @@ namespace PPPredictor.UI.ViewController
             this.displayPP();
             this.displaySession();
         }
-        private async void displayPP(bool fetchRankGain = false)
+        private async void displayPP()
         {
             double pp = PPCalculator.calculatePPatPercentage(_currentSelectionBasePP, _percentage);
             PPGainResult ppGainResult = PPCalculator.getPlayerScorePPGain(_selectedMapSearchString, pp);
@@ -446,27 +446,25 @@ namespace PPPredictor.UI.ViewController
             PPGainDiffColor = getDisplayColor(ppGains, false);
 
             RankGainResult rankGain = new RankGainResult(1, 2, 3, 4);
-            if (fetchRankGain)
+            displayRankGain(null);
+            if (_rankGainRunning)
             {
-                if (_rankGainRunning)
-                {
-                    lastPPGainCall = ppGainResult.PpTotal;
-                    return;
-                }
+                lastPPGainCall = ppGainResult.PpTotal;
+                return;
+            }
                 
-                if (lastPPGainCall == 0)
-                {
-                    _rankGainRunning = true;
-                    rankGain = await PPCalculator.getPlayerRankGain(ppGainResult.PpTotal);
-                    _rankGainRunning = false;
-                }
-                if(lastPPGainCall > 0)
-                {
-                    _rankGainRunning = true;
-                    rankGain = await PPCalculator.getPlayerRankGain(lastPPGainCall);
-                    _rankGainRunning = false;
-                    lastPPGainCall = 0;
-                }
+            if (lastPPGainCall == 0)
+            {
+                _rankGainRunning = true;
+                rankGain = await PPCalculator.getPlayerRankGain(ppGainResult.PpTotal);
+                _rankGainRunning = false;
+            }
+            if(lastPPGainCall > 0)
+            {
+                _rankGainRunning = true;
+                rankGain = await PPCalculator.getPlayerRankGain(lastPPGainCall);
+                _rankGainRunning = false;
+                lastPPGainCall = 0;
             }
             displayRankGain(rankGain);
 
@@ -494,12 +492,24 @@ namespace PPPredictor.UI.ViewController
 
         private void displayRankGain(RankGainResult rankGainResult)
         {
-            PredictedRank = $"{rankGainResult.RankGlobal.ToString("N0")}";
-            PredictedRankDiff = rankGainResult.RankGainGlobal.ToString("+#;-#;0");
-            PredictedRankDiffColor = getDisplayColor(rankGainResult.RankGainGlobal, false);
-            PredictedCountryRank = $"{rankGainResult.RankCountry.ToString("N0")}";
-            PredictedCountryRankDiff = rankGainResult.RankGainCountry.ToString("+#;-#;0");
-            PredictedCountryRankDiffColor = getDisplayColor(rankGainResult.RankGainCountry, false);
+            if (rankGainResult != null)
+            {
+                PredictedRank = $"{rankGainResult.RankGlobal.ToString("N0")}";
+                PredictedRankDiff = rankGainResult.RankGainGlobal.ToString("+#;-#;0");
+                PredictedRankDiffColor = getDisplayColor(rankGainResult.RankGainGlobal, false);
+                PredictedCountryRank = $"{rankGainResult.RankCountry.ToString("N0")}";
+                PredictedCountryRankDiff = rankGainResult.RankGainCountry.ToString("+#;-#;0");
+                PredictedCountryRankDiffColor = getDisplayColor(rankGainResult.RankGainCountry, false);
+            }
+            else
+            {
+                PredictedRank = "...";
+                PredictedRankDiff = "?";
+                PredictedRankDiffColor = getDisplayColor(0, false);
+                PredictedCountryRank = "...";
+                PredictedCountryRankDiff = "?";
+                PredictedCountryRankDiffColor = getDisplayColor(0, false);
+            }
         }
 
         private string getDisplayColor(double value, bool invert)

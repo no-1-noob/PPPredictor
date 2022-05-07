@@ -38,23 +38,32 @@
     </vertical>
   <vertical vertical-fit='PreferredSize' preferred-width='60' bg='panel-top' pad-top='1' pad-bottom='1'>
     <text text='!!PPPredictor!!' italics='true' align='Center' font-size='4' />
-    <horizontal horizontal-fit='PreferredSize' align='Left' child-align='MiddleLeft'>
-      <text text='~predictedRank' italics='true' align='Left' font-size='4' />
-      <text text='[' italics='true' align='Left' font-size='4' />
-      <text text='~predictedRankDiff' font-color='~predictedRankDiffColor' italics='true' align='Left' font-size='4' />
-      <text text=']' italics='true' align='Left' font-size='4' />
-    </horizontal>
-    <horizontal horizontal-fit='PreferredSize' align='Left' child-align='MiddleLeft'>
-      <text text='~predictedCountryRank' italics='true' align='Left' font-size='4' />
-      <text text='[' italics='true' align='Left' font-size='4' />
-      <text text='~predictedCountryRankDiff' font-color='~predictedCountryRankDiffColor' italics='true' align='Left' font-size='4' />
-      <text text=']' italics='true' align='Left' font-size='4' />
-    </horizontal>
-    <horizontal horizontal-fit='PreferredSize' align='Center' child-align='MiddleLeft'>
-      <text text='~ppGainRaw' italics='true' align='Center' font-size='4' />
-      <text text='[' italics='true' align='Center' font-size='4' />
-      <text text='~ppGainWeighted' font-color='~ppGainDiffColor' italics='true' align='Center' font-size='4' />
-      <text text=']' italics='true' align='Center' font-size='4' />
+    <horizontal horizontal-fit='PreferredSize' pad-left='0' align='Center' child-align='MiddleLeft'>
+      <vertical vertical-fit='PreferredSize' child-align='MiddleLeft'>
+        <text text='Global' align='Left' font-size='4' />
+        <text text='Country ' align='Left' font-size='4' />
+        <text text='PP ' align='Left' font-size='4' />
+      </vertical>
+      <vertical vertical-fit='PreferredSize' preferred-width='30' child-align='MiddleLeft'>
+        <horizontal horizontal-fit='PreferredSize' align='Left' child-align='MiddleLeft'>
+          <text text='~predictedRank' italics='true' align='Left' font-size='4' />
+          <text text='[' italics='true' align='Left' font-size='4' />
+          <text text='~predictedRankDiff' font-color='~predictedRankDiffColor' italics='true' align='Left' font-size='4' />
+          <text text=']' italics='true' align='Left' font-size='4' />
+        </horizontal>
+        <horizontal horizontal-fit='PreferredSize' align='Left' child-align='MiddleLeft'>
+          <text text='~predictedCountryRank' italics='true' align='Left' font-size='4' />
+          <text text='[' italics='true' align='Left' font-size='4' />
+          <text text='~predictedCountryRankDiff' font-color='~predictedCountryRankDiffColor' italics='true' align='Left' font-size='4' />
+          <text text=']' italics='true' align='Left' font-size='4' />
+        </horizontal>
+        <horizontal horizontal-fit='PreferredSize' align='Center' child-align='MiddleLeft'>
+          <text text='~ppGainRaw' italics='true' align='Center' font-size='4' />
+          <text text='[' italics='true' align='Center' font-size='4' />
+          <text text='~ppGainWeighted' font-color='~ppGainDiffColor' italics='true' align='Center' font-size='4' />
+          <text text=']' italics='true' align='Center' font-size='4' />
+        </horizontal>
+      </vertical>
     </horizontal>
     <vertical preferred-width='50'>
       <slider-setting id='sliderCoarse' text='' preferred-width='100' value='sliderCoarseValue' hover-hint='What percentage to calculate PP at (coarse adjust)' interactable='~isNoDataLoading' mi='0' max='90' increment='10' apply-on-change='true' bind-value='true' show-buttons='true' align='Left' anchor-pos-x='50000' anchor-min-x='5000'/>
