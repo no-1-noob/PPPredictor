@@ -478,9 +478,18 @@ namespace PPPredictor.UI.ViewController
             }
             else
             {
-                SessionRank = $"{Plugin.ProfileInfo.SessionPlayer.Rank.ToString()}";
-                SessionCountryRank = $"{Plugin.ProfileInfo.SessionPlayer.CountryRank.ToString()}";
-                SessionPP = $"{Plugin.ProfileInfo.SessionPlayer.Pp.ToString()}pp"; ;
+                if (Plugin.ProfileInfo.DisplaySessionValues)
+                {
+                    SessionRank = $"{Plugin.ProfileInfo.SessionPlayer.Rank.ToString()}";
+                    SessionCountryRank = $"{Plugin.ProfileInfo.SessionPlayer.CountryRank.ToString()}";
+                    SessionPP = $"{Plugin.ProfileInfo.SessionPlayer.Pp.ToString()}pp"; ;
+                }
+                else
+                {
+                    SessionRank = $"{Plugin.ProfileInfo.CurrentPlayer.Rank.ToString()}";
+                    SessionCountryRank = $"{Plugin.ProfileInfo.CurrentPlayer.CountryRank.ToString()}";
+                    SessionPP = $"{Plugin.ProfileInfo.CurrentPlayer.Pp.ToString()}pp";
+                }
                 SessionCountryRankDiff = (Plugin.ProfileInfo.CurrentPlayer.CountryRank - Plugin.ProfileInfo.SessionPlayer.CountryRank).ToString("+#;-#;0");
                 SessionCountryRankDiffColor = getDisplayColor((Plugin.ProfileInfo.CurrentPlayer.CountryRank - Plugin.ProfileInfo.SessionPlayer.CountryRank), true);
                 SessionRankDiff = (Plugin.ProfileInfo.CurrentPlayer.Rank - Plugin.ProfileInfo.SessionPlayer.Rank).ToString("+#;-#;0");

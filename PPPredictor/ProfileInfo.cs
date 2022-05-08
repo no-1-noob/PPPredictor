@@ -15,6 +15,7 @@ namespace PPPredictor
         private SVector3 position;
         private SVector3 eulerAngles;
         private bool windowHandleEnabled;
+        private bool displaySessionValues;
         public ProfileInfo()
         {
             dictBasePP = new Dictionary<string, double>();
@@ -25,6 +26,7 @@ namespace PPPredictor
             Position = new SVector3(2.5f, 0.05f, 2.0f);
             EulerAngles = new SVector3(88, 60, 0);
             WindowHandleEnabled = false;
+            DisplaySessionValues = false;
         }
 
         public Player SessionPlayer { get => sessionPlayer; set => sessionPlayer = value; }
@@ -35,6 +37,7 @@ namespace PPPredictor
         public SVector3 Position { get => position; set => position = value; }
         public SVector3 EulerAngles { get => eulerAngles; set => eulerAngles = value; }
         public bool WindowHandleEnabled { get => windowHandleEnabled; set => windowHandleEnabled = value; }
+        public bool DisplaySessionValues { get => displaySessionValues; set => displaySessionValues = value; }
 
         public void addDictBasePP(string hash, int difficulty, double basePp)
         {

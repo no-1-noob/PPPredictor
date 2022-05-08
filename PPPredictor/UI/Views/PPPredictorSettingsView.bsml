@@ -1,4 +1,7 @@
 ﻿<vertical vertical-fit='PreferredSize' child-align='MiddleLeft' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='https://monkeymanboy.github.io/BSML-Docs/ https://raw.githubusercontent.com/monkeymanboy/BSML-Docs/gh-pages/BSMLSchema.xsd'>
+  <text text='Session' italics='true' align='Center' font-size='4' />
+  <bool-setting text='Display session values' hover-hint='Display the Rank/PP value from the start of the session instead of the current value' value='display-session-values' bind-value='true'></bool-setting>
+  <text text='General' italics='true' align='Center' font-size='4' />
   <bool-setting text='Show window handle' value='window-handle-enabled' bind-value='true'></bool-setting>
   <button text='Reset cached data and settings' on-click='reset-data' min-width='16' pref-height='8' interactable='true'/>
 </vertical>

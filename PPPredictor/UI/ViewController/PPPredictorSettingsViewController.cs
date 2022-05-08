@@ -27,11 +27,23 @@ namespace PPPredictor.UI.ViewController
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(WindowHandleEnabled)));
             }
         }
+
+        [UIValue("display-session-values")]
+        public bool DisplaySessionValues
+        {
+            get => Plugin.ProfileInfo.DisplaySessionValues;
+            set
+            {
+                Plugin.ProfileInfo.DisplaySessionValues = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DisplaySessionValues)));
+            }
+        }
         #endregion
 
         private void refreshSettingsDisplay()
         {
             WindowHandleEnabled = Plugin.ProfileInfo.WindowHandleEnabled;
+            DisplaySessionValues = Plugin.ProfileInfo.DisplaySessionValues;
             Plugin.pppViewController?.resetDisplay(); //Needed for canceling of settings
         }
     }
