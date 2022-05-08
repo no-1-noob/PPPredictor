@@ -1,4 +1,6 @@
 ﻿using scoresaberapi;
+using SongCore.Utilities;
+using SongDetailsCache.Structs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,40 +47,19 @@ namespace PPPredictor.Utilities
             {0.6, 0.25},
             {0.0, 0.0}, };
 
-
-        static public async Task<double> calculateBasePPForBeatmapAsync(IDifficultyBeatmap beatmap)
+        static public double calculateBasePPForBeatmapAsync2(LevelSelectionNavigationController _, IDifficultyBeatmap beatmap)
         {
-            try
+            Song song;
+            Plugin.songDetails.songs.FindByHash(Hashing.GetCustomLevelHash(_.selectedBeatmapLevel as CustomBeatmapLevel), out song);
+            if (song.mapId > 0)
             {
-                if (beatmap.level.levelID.StartsWith("custom_level_"))
+                SongDifficulty songDiff;
+                if (song.GetDifficulty(out songDiff, (MapDifficulty)beatmap.difficulty))
                 {
-                    string hash = beatmap.level.levelID.Replace("custom_level_", "");
-                    double basePP = Plugin.ProfileInfo.findBasePP(hash, beatmap.difficultyRank);
-                    if (basePP < 0)
-                    {
-                        var scoreSaberClient = new scoresaberapi.scoresaberapi(httpClient);
-                        Task<LeaderboardInfo> downloadingMapInfo = scoreSaberClient.Info2Async(hash, beatmap.difficultyRank, null);
-                        var mapInfo = await downloadingMapInfo;
-                        Task<ScoreCollection> downloadingLeaderboard = scoreSaberClient.Scores2Async(hash, beatmap.difficultyRank, null, null, null, null, true);
-                        var scoreCollection = await downloadingLeaderboard;
-                        if (scoreCollection.Scores.Count() > 0)
-                        {
-                            double topScorePercentage = scoreCollection.Scores.ElementAt(0).ModifiedScore / mapInfo.MaxScore;
-                            double multiplierAtTopScore = calculateMultiplierAtPercentage(topScorePercentage);
-                            double calculateStarRating = scoreCollection.Scores.ElementAt(0).Pp / multiplierAtTopScore / basePPMultiplier;
-                            mapInfo.Stars = calculateStarRating;
-                        }
-                        basePP = mapInfo.Stars * basePPMultiplier;
-                        Plugin.ProfileInfo.addDictBasePP(hash, beatmap.difficultyRank, basePP);
-                    }
-                    return basePP;
+                    return songDiff.stars * basePPMultiplier;
                 }
-                return 0;
             }
-            catch (System.Exception)
-            {
-                return -1;
-            }
+            return -1;
         }
 
         static public double calculatePPatPercentage(double basePP, double percentage)

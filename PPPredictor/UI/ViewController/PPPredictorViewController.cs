@@ -10,6 +10,7 @@ using UnityEngine;
 using Zenject;
 using scoresaberapi;
 using BeatSaberMarkupLanguage.Components.Settings;
+using SongCore.Utilities;
 
 namespace PPPredictor.UI.ViewController
 {
@@ -70,7 +71,7 @@ namespace PPPredictor.UI.ViewController
         {
             this.siraSyncService = siraSyncService;
         }
-        public async void Initialize()
+        public void Initialize()
         {
             Plugin.pppViewController = this;
             levelSelectionNavController.didChangeDifficultyBeatmapEvent += OnDifficultyChanged;
@@ -115,13 +116,13 @@ namespace PPPredictor.UI.ViewController
 
         #region buttons
         [UIAction("refresh-profile-clicked")]
-        private async void RefreshProfileClicked()
+        private void RefreshProfileClicked()
         {
             refreshCurrentData(10);
         }
 
         [UIAction("reset-session-clicked")]
-        private async void ResetSessionClicked()
+        private void ResetSessionClicked()
         {
             updateCurrentAndCheckResetSession(true);
         }
@@ -362,20 +363,19 @@ namespace PPPredictor.UI.ViewController
             get => !_isDataLoading;
         }
 
-        private async void OnDifficultyChanged(LevelSelectionNavigationController _, IDifficultyBeatmap beatmap)
+        private void OnDifficultyChanged(LevelSelectionNavigationController _, IDifficultyBeatmap beatmap)
         {
-            _currentSelectionBasePP = await PPCalculator.calculateBasePPForBeatmapAsync(beatmap);
-            _selectedMapSearchString = PPCalculator.createSeachString(_.selectedDifficultyBeatmap.level.levelID.Replace("custom_level_", ""), _.selectedDifficultyBeatmap.difficultyRank);
-            //TODO: disable slider
+            _currentSelectionBasePP = PPCalculator.calculateBasePPForBeatmapAsync2(_, beatmap);
+            _selectedMapSearchString = PPCalculator.createSeachString(Hashing.GetCustomLevelHash(_.selectedBeatmapLevel as CustomBeatmapLevel), _.selectedDifficultyBeatmap.difficultyRank);
             displayPP();
         }
 
-        private async void OnDetailContentChanged(LevelSelectionNavigationController _, StandardLevelDetailViewController.ContentType contentType)
+        private void OnDetailContentChanged(LevelSelectionNavigationController _, StandardLevelDetailViewController.ContentType contentType)
         {
             if(contentType == StandardLevelDetailViewController.ContentType.OwnedAndReady)
             {
-                _currentSelectionBasePP = await PPCalculator.calculateBasePPForBeatmapAsync(_.selectedDifficultyBeatmap);
-                _selectedMapSearchString = PPCalculator.createSeachString(_.selectedDifficultyBeatmap.level.levelID.Replace("custom_level_", ""), _.selectedDifficultyBeatmap.difficultyRank);
+                _currentSelectionBasePP = PPCalculator.calculateBasePPForBeatmapAsync2(_, _.selectedDifficultyBeatmap);
+                _selectedMapSearchString = PPCalculator.createSeachString(Hashing.GetCustomLevelHash(_.selectedBeatmapLevel as CustomBeatmapLevel), _.selectedDifficultyBeatmap.difficultyRank);
                 displayPP();
             }
         }
@@ -409,7 +409,6 @@ namespace PPPredictor.UI.ViewController
             Plugin.ProfileInfo.CurrentPlayer = player;
             if (doResetSession || Plugin.ProfileInfo.SessionPlayer == null || needsResetSession())
             {
-                Plugin.Log?.Error("RESET SESSION");
                 Plugin.ProfileInfo.LastSessionReset = DateTime.Now;
                 Plugin.ProfileInfo.SessionPlayer = player;
             }

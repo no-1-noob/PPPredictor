@@ -4,6 +4,7 @@ using PPPredictor.UI.ViewController;
 using IPALogger = IPA.Logging.Logger;
 using scoresaberapi;
 using System.Collections.Generic;
+using SongDetailsCache;
 
 namespace PPPredictor
 {
@@ -12,6 +13,7 @@ namespace PPPredictor
     {
         internal static Plugin Instance { get; private set; }
         internal static IPALogger Log { get; private set; }
+        internal static SongDetails songDetails { get; private set; }
 
         public static ProfileInfo ProfileInfo;
 
@@ -30,6 +32,7 @@ namespace PPPredictor
             Instance = this;
             Log = logger;
             ProfileInfo = ProfileInfoMgr.loadProfileInfo();
+            songDetails = SongDetails.Init().Result;
             lsPlayerRankings = new List<Player>();
             zenjector.UseSiraSync();
             zenjector.Install<PPPPredictorDisplayInstaller>(Location.Menu);
