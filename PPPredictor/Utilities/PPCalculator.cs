@@ -182,27 +182,24 @@ namespace PPPredictor.Utilities
                 Plugin.ProfileInfo.LSScores.Sort((score1, score2) => score2.Pp.CompareTo(score1.Pp));
                 foreach (ShortScore score in Plugin.ProfileInfo.LSScores)
                 {
+                    double weightedPP = weightPP(score.Pp, index);
+                    double weightedNewPP = weightPP(pp, index);
                     if (score.Searchstring == mapSearchString) //skip older (lower) score
                     {
                         if (!newPPadded)
                         {
-                            ppAfterPlay += weightPP(score.Pp, index);
+                            ppAfterPlay += Math.Max(weightedPP, weightedNewPP); //Special case for improvement of your top play
                             newPPSkiped = true;
                             index++;
                         }
                         continue;
                     }
-                    double weightedPP = weightPP(score.Pp, index);
-                    if (!newPPadded && !newPPSkiped)
+                    if (!newPPadded && !newPPSkiped && weightedNewPP >= weightedPP) //add new (potential) pp
                     {
-                        double weightedNewPP = weightPP(pp, index);
-                        if (weightedNewPP >= weightedPP) //add new (potential) pp
-                        {
-                            ppAfterPlay += weightedNewPP;
-                            newPPadded = true;
-                            index++;
-                            weightedPP = weightPP(score.Pp, index);
-                        }
+                        ppAfterPlay += weightedNewPP;
+                        newPPadded = true;
+                        index++;
+                        weightedPP = weightPP(score.Pp, index);
                     }
                     ppAfterPlay += weightedPP;
                     index++;

@@ -67,7 +67,7 @@
     </horizontal>
     <vertical preferred-width='50'>
       <slider-setting id='sliderCoarse' text='' preferred-width='100' value='sliderCoarseValue' hover-hint='What percentage to calculate PP at (coarse adjust)' interactable='~isNoDataLoading' mi='0' max='90' increment='10' apply-on-change='true' bind-value='true' show-buttons='true' align='Left' anchor-pos-x='50000' anchor-min-x='5000'/>
-      <slider-setting id='sliderFine' text='' value='sliderFineValue' hover-hint='What percentage to calculate PP at (fine adjust)' interactable='~isNoDataLoading' min='0' max='100' increment='0.01' apply-on-change='true' bind-value='true' show-buttons='true' align='Left' />
+      <slider-setting id='sliderFine' text='' value='sliderFineValue' hover-hint='What percentage to calculate PP at (fine adjust)' interactable='~isNoDataLoading' min='0' max='100' increment='0.1' apply-on-change='true' bind-value='true' show-buttons='true' align='Left' />
     </vertical>
   </vertical>
 </vertical>
