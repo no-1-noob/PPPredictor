@@ -1,7 +1,7 @@
 ﻿using PPPredictor.Utilities;
 using scoresaberapi;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 
 namespace PPPredictor
 {
@@ -16,6 +16,9 @@ namespace PPPredictor
         private SVector3 eulerAngles;
         private bool windowHandleEnabled;
         private bool displaySessionValues;
+        private int resetSessionHours;
+        private DateTime lastSessionReset;
+
         public ProfileInfo()
         {
             dictBasePP = new Dictionary<string, double>();
@@ -27,7 +30,9 @@ namespace PPPredictor
             EulerAngles = new SVector3(88, 60, 0);
             WindowHandleEnabled = false;
             DisplaySessionValues = false;
-        }
+            ResetSessionHours = 12;
+            LastSessionReset = new DateTime();
+    }
 
         public Player SessionPlayer { get => sessionPlayer; set => sessionPlayer = value; }
         public Player CurrentPlayer { get => currentPlayer; set => currentPlayer = value; }
@@ -38,6 +43,8 @@ namespace PPPredictor
         public SVector3 EulerAngles { get => eulerAngles; set => eulerAngles = value; }
         public bool WindowHandleEnabled { get => windowHandleEnabled; set => windowHandleEnabled = value; }
         public bool DisplaySessionValues { get => displaySessionValues; set => displaySessionValues = value; }
+        public int ResetSessionHours { get => resetSessionHours; set => resetSessionHours = value; }
+        public DateTime LastSessionReset { get => lastSessionReset; set => lastSessionReset = value; }
 
         public void addDictBasePP(string hash, int difficulty, double basePp)
         {

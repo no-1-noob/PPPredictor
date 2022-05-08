@@ -38,12 +38,23 @@ namespace PPPredictor.UI.ViewController
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DisplaySessionValues)));
             }
         }
+        [UIValue("reset-session-hours")]
+        public int ResetSessionHours
+        {
+            get => Plugin.ProfileInfo.ResetSessionHours;
+            set
+            {
+                Plugin.ProfileInfo.ResetSessionHours = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ResetSessionHours)));
+            }
+        }
         #endregion
 
         private void refreshSettingsDisplay()
         {
             WindowHandleEnabled = Plugin.ProfileInfo.WindowHandleEnabled;
             DisplaySessionValues = Plugin.ProfileInfo.DisplaySessionValues;
+            ResetSessionHours = Plugin.ProfileInfo.ResetSessionHours;
             Plugin.pppViewController?.resetDisplay(); //Needed for canceling of settings
         }
     }

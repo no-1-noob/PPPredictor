@@ -99,15 +99,9 @@ namespace PPPredictor.UI.ViewController
         [UIAction("#post-parse")]
         protected async void PostParse()
         {
-            UserInfo userInfo = await BS_Utils.Gameplay.GetUserInfo.GetUserAsync();
+            updateCurrentAndCheckResetSession(false);
             IsDataLoading = true;
-            Player player = await PPCalculator.getProfile(userInfo.platformUserId);
-            Plugin.ProfileInfo.CurrentPlayer = player;
-            if (Plugin.ProfileInfo.SessionPlayer == null)
-            {
-                Plugin.ProfileInfo.SessionPlayer = player;
-            }
-            displaySession();
+            UserInfo userInfo = await BS_Utils.Gameplay.GetUserInfo.GetUserAsync();
             await PPCalculator.getPlayerScores(userInfo.platformUserId, 100);
             displayInitialPercentages();
             displayPP();
@@ -129,14 +123,7 @@ namespace PPPredictor.UI.ViewController
         [UIAction("reset-session-clicked")]
         private async void ResetSessionClicked()
         {
-            UserInfo userInfo = await BS_Utils.Gameplay.GetUserInfo.GetUserAsync();
-            IsDataLoading = true;
-            Player player = await PPCalculator.getProfile(userInfo.platformUserId);
-            Plugin.ProfileInfo.CurrentPlayer = player;
-            Plugin.ProfileInfo.SessionPlayer = player;
-            IsDataLoading = false;
-            displaySession();
-
+            updateCurrentAndCheckResetSession(true);
         }
         #endregion
 
@@ -414,27 +401,44 @@ namespace PPPredictor.UI.ViewController
         }
 
         #region helper functions
-        public async void refreshCurrentData(int fetchLength)
-        {
-            UserInfo userInfo = await BS_Utils.Gameplay.GetUserInfo.GetUserAsync();
+
+        private async void updateCurrentAndCheckResetSession(bool doResetSession){
             IsDataLoading = true;
+            UserInfo userInfo = await BS_Utils.Gameplay.GetUserInfo.GetUserAsync();
             Player player = await PPCalculator.getProfile(userInfo.platformUserId);
             Plugin.ProfileInfo.CurrentPlayer = player;
-            if (Plugin.ProfileInfo.SessionPlayer == null)
+            if (doResetSession || Plugin.ProfileInfo.SessionPlayer == null || needsResetSession())
             {
+                Plugin.Log?.Error("RESET SESSION");
+                Plugin.ProfileInfo.LastSessionReset = DateTime.Now;
                 Plugin.ProfileInfo.SessionPlayer = player;
             }
-            await PPCalculator.getPlayerScores(userInfo.platformUserId, fetchLength);
             displaySession();
+            IsDataLoading = false;
+        }
+
+        private bool needsResetSession()
+        {
+            return
+                Plugin.ProfileInfo.ResetSessionHours > 0
+                && (DateTime.Now - Plugin.ProfileInfo.LastSessionReset).TotalHours > Plugin.ProfileInfo.ResetSessionHours;
+        }
+        public async void refreshCurrentData(int fetchLength)
+        {
+            updateCurrentAndCheckResetSession(false);
+            IsDataLoading = true;
+            UserInfo userInfo = await BS_Utils.Gameplay.GetUserInfo.GetUserAsync();
+            await PPCalculator.getPlayerScores(userInfo.platformUserId, fetchLength);
             displayPP();
             IsDataLoading = false;
         }
+
         public void resetDisplay()
         {
             floatingScreen.transform.eulerAngles = Plugin.ProfileInfo.EulerAngles;
             floatingScreen.transform.position = Plugin.ProfileInfo.Position;
+            updateCurrentAndCheckResetSession(false);
             this.displayPP();
-            this.displaySession();
         }
         private async void displayPP()
         {
