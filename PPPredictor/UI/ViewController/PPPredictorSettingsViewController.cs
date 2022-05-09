@@ -1,4 +1,5 @@
 ﻿using BeatSaberMarkupLanguage.Attributes;
+using BeatSaberMarkupLanguage.Parser;
 using System.ComponentModel;
 
 namespace PPPredictor.UI.ViewController
@@ -10,11 +11,13 @@ namespace PPPredictor.UI.ViewController
         public event PropertyChangedEventHandler PropertyChanged;
 
         #region settings
+        [UIParams]
+        private readonly BSMLParserParams bsmlParserParams;
+
         [UIAction("reset-data")]
         private void ResetData()
         {
-            Plugin.ProfileInfo = new ProfileInfo();
-            refreshSettingsDisplay();
+            bsmlParserParams.EmitEvent("open-reset-modal");
         }
 
         [UIValue("window-handle-enabled")]
@@ -50,12 +53,22 @@ namespace PPPredictor.UI.ViewController
         }
         #endregion
 
+        #region modal actions
+        [UIAction("confirm-reset-modal")]
+        private void ConfirmResetModal()
+        {
+            Plugin.ProfileInfo = new ProfileInfo();
+            refreshSettingsDisplay();
+            bsmlParserParams.EmitEvent("close-reset-modal");
+        }
+        #endregion
+
         private void refreshSettingsDisplay()
         {
             WindowHandleEnabled = Plugin.ProfileInfo.WindowHandleEnabled;
             DisplaySessionValues = Plugin.ProfileInfo.DisplaySessionValues;
             ResetSessionHours = Plugin.ProfileInfo.ResetSessionHours;
-            Plugin.pppViewController?.resetDisplay(); //Needed for canceling of settings
+            Plugin.pppViewController?.resetDisplay(true); //Needed for canceling of settings
         }
     }
 }

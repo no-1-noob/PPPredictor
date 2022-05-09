@@ -5,4 +5,13 @@
   <text text='General' italics='true' align='Center' font-size='4' />
   <bool-setting text='Show window handle' value='window-handle-enabled' bind-value='true'></bool-setting>
   <button text='Reset cached data and settings' on-click='reset-data' min-width='16' pref-height='8' interactable='true'/>
+  <modal id='resetModal' show-event='open-reset-modal' hide-event='close-reset-modal' click-off-closes="true" anchor-pos-y='10' size-delta-x='80' size-delta-y='15' move-to-center='true'>
+    <vertical horizontal-fit='PreferredSize' vertical-fit='PreferredSize'>
+      <text text='Do you want to reset your settings and fetch all data again?'></text>
+      <horizontal horizontal-fit='PreferredSize' spacing='2' pad-left='0' align='Center' child-align='MiddleLeft'>
+        <button text='Reset' on-click='confirm-reset-modal'/>
+        <button text='Cancel' click-event='close-reset-modal'/>
+      </horizontal>
+    </vertical>
+  </modal>
 </vertical>

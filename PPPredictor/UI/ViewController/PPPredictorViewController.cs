@@ -11,6 +11,7 @@ using Zenject;
 using scoresaberapi;
 using BeatSaberMarkupLanguage.Components.Settings;
 using SongCore.Utilities;
+using System.Threading.Tasks;
 
 namespace PPPredictor.UI.ViewController
 {
@@ -100,13 +101,7 @@ namespace PPPredictor.UI.ViewController
         [UIAction("#post-parse")]
         protected async void PostParse()
         {
-            updateCurrentAndCheckResetSession(false);
-            IsDataLoading = true;
-            UserInfo userInfo = await BS_Utils.Gameplay.GetUserInfo.GetUserAsync();
-            await PPCalculator.getPlayerScores(userInfo.platformUserId, 100);
-            displayInitialPercentages();
-            displayPP();
-            IsDataLoading = false;
+            resetDisplay(false);
         }
 
         #region UI Components
@@ -122,9 +117,9 @@ namespace PPPredictor.UI.ViewController
         }
 
         [UIAction("reset-session-clicked")]
-        private void ResetSessionClicked()
+        private async void ResetSessionClicked()
         {
-            updateCurrentAndCheckResetSession(true);
+            await updateCurrentAndCheckResetSession(true);
         }
         #endregion
 
@@ -402,7 +397,7 @@ namespace PPPredictor.UI.ViewController
 
         #region helper functions
 
-        private async void updateCurrentAndCheckResetSession(bool doResetSession){
+        private async Task updateCurrentAndCheckResetSession(bool doResetSession){
             IsDataLoading = true;
             UserInfo userInfo = await BS_Utils.Gameplay.GetUserInfo.GetUserAsync();
             Player player = await PPCalculator.getProfile(userInfo.platformUserId);
@@ -424,7 +419,7 @@ namespace PPPredictor.UI.ViewController
         }
         public async void refreshCurrentData(int fetchLength)
         {
-            updateCurrentAndCheckResetSession(false);
+            await updateCurrentAndCheckResetSession(false);
             IsDataLoading = true;
             UserInfo userInfo = await BS_Utils.Gameplay.GetUserInfo.GetUserAsync();
             await PPCalculator.getPlayerScores(userInfo.platformUserId, fetchLength);
@@ -432,12 +427,17 @@ namespace PPPredictor.UI.ViewController
             IsDataLoading = false;
         }
 
-        public void resetDisplay()
+        public async void resetDisplay(bool resetAll)
         {
             floatingScreen.transform.eulerAngles = Plugin.ProfileInfo.EulerAngles;
             floatingScreen.transform.position = Plugin.ProfileInfo.Position;
-            updateCurrentAndCheckResetSession(false);
-            this.displayPP();
+            await updateCurrentAndCheckResetSession(resetAll);
+            IsDataLoading = true;
+            UserInfo userInfo = await BS_Utils.Gameplay.GetUserInfo.GetUserAsync();
+            await PPCalculator.getPlayerScores(userInfo.platformUserId, 100);
+            displayInitialPercentages();
+            displayPP();
+            IsDataLoading = false;
         }
         private async void displayPP()
         {
