@@ -358,19 +358,21 @@ namespace PPPredictor.UI.ViewController
             get => !_isDataLoading;
         }
 
-        private void OnDifficultyChanged(LevelSelectionNavigationController _, IDifficultyBeatmap beatmap)
+        private void OnDifficultyChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
         {
-            _currentSelectionBasePP = PPCalculator.calculateBasePPForBeatmapAsync2(_, beatmap);
-            _selectedMapSearchString = PPCalculator.createSeachString(Hashing.GetCustomLevelHash(_.selectedBeatmapLevel as CustomBeatmapLevel), _.selectedDifficultyBeatmap.difficultyRank);
+            _currentSelectionBasePP = PPCalculator.calculateBasePPForBeatmapAsync(lvlSelectionNavigationCtrl, beatmap);
+            CustomBeatmapLevel selectedCustomBeatmapLevel = lvlSelectionNavigationCtrl.selectedBeatmapLevel as CustomBeatmapLevel;
+            _selectedMapSearchString = selectedCustomBeatmapLevel != null ? PPCalculator.createSeachString(Hashing.GetCustomLevelHash(lvlSelectionNavigationCtrl.selectedBeatmapLevel as CustomBeatmapLevel), lvlSelectionNavigationCtrl.selectedDifficultyBeatmap.difficultyRank) : string.Empty;
             displayPP();
         }
 
-        private void OnDetailContentChanged(LevelSelectionNavigationController _, StandardLevelDetailViewController.ContentType contentType)
+        private void OnDetailContentChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, StandardLevelDetailViewController.ContentType contentType)
         {
             if(contentType == StandardLevelDetailViewController.ContentType.OwnedAndReady)
             {
-                _currentSelectionBasePP = PPCalculator.calculateBasePPForBeatmapAsync2(_, _.selectedDifficultyBeatmap);
-                _selectedMapSearchString = PPCalculator.createSeachString(Hashing.GetCustomLevelHash(_.selectedBeatmapLevel as CustomBeatmapLevel), _.selectedDifficultyBeatmap.difficultyRank);
+                _currentSelectionBasePP = PPCalculator.calculateBasePPForBeatmapAsync(lvlSelectionNavigationCtrl, lvlSelectionNavigationCtrl.selectedDifficultyBeatmap);
+                CustomBeatmapLevel selectedCustomBeatmapLevel = lvlSelectionNavigationCtrl.selectedBeatmapLevel as CustomBeatmapLevel;
+                _selectedMapSearchString = selectedCustomBeatmapLevel != null ? PPCalculator.createSeachString(Hashing.GetCustomLevelHash(lvlSelectionNavigationCtrl.selectedBeatmapLevel as CustomBeatmapLevel), lvlSelectionNavigationCtrl.selectedDifficultyBeatmap.difficultyRank) : string.Empty;
                 displayPP();
             }
         }

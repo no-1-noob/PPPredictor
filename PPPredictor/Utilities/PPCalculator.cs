@@ -47,19 +47,24 @@ namespace PPPredictor.Utilities
             {0.6, 0.25},
             {0.0, 0.0}, };
 
-        static public double calculateBasePPForBeatmapAsync2(LevelSelectionNavigationController _, IDifficultyBeatmap beatmap)
+        static public double calculateBasePPForBeatmapAsync(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
         {
-            Song song;
-            Plugin.songDetails.songs.FindByHash(Hashing.GetCustomLevelHash(_.selectedBeatmapLevel as CustomBeatmapLevel), out song);
-            if (song.mapId > 0)
+            CustomBeatmapLevel selectedCustomBeatmapLevel = lvlSelectionNavigationCtrl.selectedBeatmapLevel as CustomBeatmapLevel;
+            if(selectedCustomBeatmapLevel != null)
             {
-                SongDifficulty songDiff;
-                if (song.GetDifficulty(out songDiff, (MapDifficulty)beatmap.difficulty))
+                Song song;
+                Plugin.songDetails.songs.FindByHash(Hashing.GetCustomLevelHash(selectedCustomBeatmapLevel), out song);
+                if (song.mapId > 0)
                 {
-                    return songDiff.stars * basePPMultiplier;
+                    SongDifficulty songDiff;
+                    if (song.GetDifficulty(out songDiff, (MapDifficulty)beatmap.difficulty))
+                    {
+                        return songDiff.stars * basePPMultiplier;
+                    }
                 }
+                return -1;
             }
-            return -1;
+            return 0;
         }
 
         static public double calculatePPatPercentage(double basePP, double percentage)
@@ -204,7 +209,7 @@ namespace PPPredictor.Utilities
                     ppAfterPlay += weightedPP;
                     index++;
                 }
-                return new PPGainResult(ppAfterPlay, ppAfterPlay - Plugin.ProfileInfo.CurrentPlayer.Pp);
+                return new PPGainResult(Math.Round(ppAfterPlay, 2, MidpointRounding.AwayFromZero), Math.Round(ppAfterPlay - Plugin.ProfileInfo.CurrentPlayer.Pp, 2, MidpointRounding.AwayFromZero));
             }
             return new PPGainResult(Plugin.ProfileInfo.CurrentPlayer.Pp, pp);
         }
