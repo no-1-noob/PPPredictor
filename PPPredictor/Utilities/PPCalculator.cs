@@ -61,15 +61,14 @@ namespace PPPredictor.Utilities
         {
             if (lvlSelectionNavigationCtrl.selectedBeatmapLevel is CustomBeatmapLevel selectedCustomBeatmapLevel)
             {
-                SongDetails.songs.FindByHash(Hashing.GetCustomLevelHash(selectedCustomBeatmapLevel), out Song song);
-                if (song.mapId > 0)
+                if (SongDetails.songs.FindByHash(Hashing.GetCustomLevelHash(selectedCustomBeatmapLevel), out Song song))
                 {
                     if (song.GetDifficulty(out SongDifficulty songDiff, (MapDifficulty)beatmap.difficulty))
                     {
                         return songDiff.stars * basePPMultiplier;
                     }
                 }
-                return -1;
+                return 0;
             }
             return 0;
         }
