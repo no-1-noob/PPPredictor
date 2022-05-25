@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace PPPredictor.Utilities
+namespace PPPredictor.Data
 {
     //http://answers.unity.com/answers/1580674/view.html
     [Serializable]

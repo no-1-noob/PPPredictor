@@ -1,17 +1,18 @@
 ﻿using BeatSaberMarkupLanguage;
 using BeatSaberMarkupLanguage.Attributes;
+using BeatSaberMarkupLanguage.Components.Settings;
 using BeatSaberMarkupLanguage.FloatingScreen;
+using PPPredictor.Data;
 using PPPredictor.Utilities;
+using scoresaberapi;
 using SiraUtil.Web.SiraSync;
+using SongCore.Utilities;
 using System;
 using System.ComponentModel;
 using System.Reflection;
+using System.Threading.Tasks;
 using UnityEngine;
 using Zenject;
-using scoresaberapi;
-using BeatSaberMarkupLanguage.Components.Settings;
-using SongCore.Utilities;
-using System.Threading.Tasks;
 
 namespace PPPredictor.UI.ViewController
 {
@@ -19,9 +20,9 @@ namespace PPPredictor.UI.ViewController
     [HotReload(RelativePathToLayout = @"..\Views\PPPredictorView.bsml")]
     public class PPPredictorViewController : IInitializable, IDisposable, INotifyPropertyChanged
     {
-        LevelSelectionNavigationController levelSelectionNavController;
+        private readonly LevelSelectionNavigationController levelSelectionNavController;
         private FloatingScreen floatingScreen;
-        //private FloatingScreenMoverPointer
+        public event PropertyChangedEventHandler PropertyChanged;
 
         #region displayValues
         private float _percentage;
@@ -49,13 +50,13 @@ namespace PPPredictor.UI.ViewController
         private string _predictedCountryRankDiffColor = "white";
 
         private bool _rankGainRunning = false;
-        private double lastPPGainCall = 0;
+        private double _lastPPGainCall = 0;
 
         #endregion
 
         #region internal values
         private string _selectedMapSearchString;
-        public bool _isDataLoading = false;
+        private bool _isDataLoading = false;
         #endregion
 
         public PPPredictorViewController(LevelSelectionNavigationController levelSelectionNavController)
@@ -63,14 +64,9 @@ namespace PPPredictor.UI.ViewController
             this.levelSelectionNavController = levelSelectionNavController;
         }
 
-        private ISiraSyncService siraSyncService;
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
         [Inject]
-        public void Construct(ISiraSyncService siraSyncService)
+        public void Construct()
         {
-            this.siraSyncService = siraSyncService;
         }
         public void Initialize()
         {
@@ -99,28 +95,34 @@ namespace PPPredictor.UI.ViewController
         }
 
         [UIAction("#post-parse")]
-        protected async void PostParse()
+        protected void PostParse()
         {
-            resetDisplay(false);
+            ResetDisplay(false);
         }
 
+#pragma warning disable CS0649 // Field is never assigned to, and will always have its default value null
         #region UI Components
         [UIComponent("sliderFine")]
-        private SliderSetting sliderFine;
+        private readonly SliderSetting sliderFine;
         #endregion
+#pragma warning restore CS0649 // Field is never assigned to, and will always have its default value null
 
         #region buttons
+#pragma warning disable IDE0051 // Remove unused private members
         [UIAction("refresh-profile-clicked")]
         private void RefreshProfileClicked()
         {
-            refreshCurrentData(10);
+            RefreshCurrentData(10);
         }
+#pragma warning restore IDE0051 // Remove unused private members
 
+#pragma warning disable IDE0051 // Remove unused private members
         [UIAction("reset-session-clicked")]
         private async void ResetSessionClicked()
         {
-            await updateCurrentAndCheckResetSession(true);
+            await UpdateCurrentAndCheckResetSession(true);
         }
+#pragma warning restore IDE0051 // Remove unused private members
         #endregion
 
         [UIValue("sliderCoarseValue")]
@@ -132,7 +134,7 @@ namespace PPPredictor.UI.ViewController
                 sliderFine.slider.minValue = value;
                 sliderFine.slider.maxValue = value + 10;
                 SliderFineValue = (value) + (_percentage % 10);
-                displayPP();
+                DisplayPP();
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SliderCoarseValue)));
             }
         }
@@ -144,7 +146,7 @@ namespace PPPredictor.UI.ViewController
             {
                 _percentage = value;
                 Plugin.ProfileInfo.LastPercentageSelected = _percentage;
-                displayPP();
+                DisplayPP();
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SliderFineValue)));
             }
         }
@@ -360,33 +362,31 @@ namespace PPPredictor.UI.ViewController
 
         private void OnDifficultyChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
         {
-            _currentSelectionBasePP = PPCalculator.calculateBasePPForBeatmapAsync(lvlSelectionNavigationCtrl, beatmap);
-            CustomBeatmapLevel selectedCustomBeatmapLevel = lvlSelectionNavigationCtrl.selectedBeatmapLevel as CustomBeatmapLevel;
-            _selectedMapSearchString = selectedCustomBeatmapLevel != null ? PPCalculator.createSeachString(Hashing.GetCustomLevelHash(lvlSelectionNavigationCtrl.selectedBeatmapLevel as CustomBeatmapLevel), lvlSelectionNavigationCtrl.selectedDifficultyBeatmap.difficultyRank) : string.Empty;
-            displayPP();
+            _currentSelectionBasePP = Plugin.PPCalculator.CalculateBasePPForBeatmapAsync(lvlSelectionNavigationCtrl, beatmap);
+            _selectedMapSearchString = lvlSelectionNavigationCtrl.selectedBeatmapLevel is CustomBeatmapLevel selectedCustomBeatmapLevel ? Plugin.PPCalculator.CreateSeachString(Hashing.GetCustomLevelHash(selectedCustomBeatmapLevel), lvlSelectionNavigationCtrl.selectedDifficultyBeatmap.difficultyRank) : string.Empty;
+            DisplayPP();
         }
 
         private void OnDetailContentChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, StandardLevelDetailViewController.ContentType contentType)
         {
-            if(contentType == StandardLevelDetailViewController.ContentType.OwnedAndReady)
+            if (contentType == StandardLevelDetailViewController.ContentType.OwnedAndReady)
             {
-                _currentSelectionBasePP = PPCalculator.calculateBasePPForBeatmapAsync(lvlSelectionNavigationCtrl, lvlSelectionNavigationCtrl.selectedDifficultyBeatmap);
-                CustomBeatmapLevel selectedCustomBeatmapLevel = lvlSelectionNavigationCtrl.selectedBeatmapLevel as CustomBeatmapLevel;
-                _selectedMapSearchString = selectedCustomBeatmapLevel != null ? PPCalculator.createSeachString(Hashing.GetCustomLevelHash(lvlSelectionNavigationCtrl.selectedBeatmapLevel as CustomBeatmapLevel), lvlSelectionNavigationCtrl.selectedDifficultyBeatmap.difficultyRank) : string.Empty;
-                displayPP();
+                _currentSelectionBasePP = Plugin.PPCalculator.CalculateBasePPForBeatmapAsync(lvlSelectionNavigationCtrl, lvlSelectionNavigationCtrl.selectedDifficultyBeatmap);
+                _selectedMapSearchString = lvlSelectionNavigationCtrl.selectedBeatmapLevel is CustomBeatmapLevel selectedCustomBeatmapLevel ? Plugin.PPCalculator.CreateSeachString(Hashing.GetCustomLevelHash(selectedCustomBeatmapLevel), lvlSelectionNavigationCtrl.selectedDifficultyBeatmap.difficultyRank) : string.Empty;
+                DisplayPP();
             }
         }
 
         private void OnLevelSelectionActivated(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
         {
-            togglePPPView(true);
+            TogglePPPView(true);
         }
         private void OnLevelSelectionDeactivated(bool removedFromHierarchy, bool screenSystemDisabling)
         {
-            togglePPPView(false);
+            TogglePPPView(false);
         }
 
-        private void togglePPPView(bool active)
+        private void TogglePPPView(bool active)
         {
             this.floatingScreen.gameObject.SetActive(active);
         }
@@ -399,85 +399,87 @@ namespace PPPredictor.UI.ViewController
 
         #region helper functions
 
-        private async Task updateCurrentAndCheckResetSession(bool doResetSession){
+        private async Task UpdateCurrentAndCheckResetSession(bool doResetSession)
+        {
             IsDataLoading = true;
             UserInfo userInfo = await BS_Utils.Gameplay.GetUserInfo.GetUserAsync();
-            Player player = await PPCalculator.getProfile(userInfo.platformUserId);
+            Player player = await Plugin.PPCalculator.GetProfile(userInfo.platformUserId);
             Plugin.ProfileInfo.CurrentPlayer = player;
-            if (doResetSession || Plugin.ProfileInfo.SessionPlayer == null || needsResetSession())
+            if (doResetSession || Plugin.ProfileInfo.SessionPlayer == null || NeedsResetSession())
             {
                 Plugin.ProfileInfo.LastSessionReset = DateTime.Now;
                 Plugin.ProfileInfo.SessionPlayer = player;
             }
-            displaySession();
+            DisplaySession();
             IsDataLoading = false;
         }
 
-        private bool needsResetSession()
+        private bool NeedsResetSession()
         {
             return
                 Plugin.ProfileInfo.ResetSessionHours > 0
                 && (DateTime.Now - Plugin.ProfileInfo.LastSessionReset).TotalHours > Plugin.ProfileInfo.ResetSessionHours;
         }
-        public async void refreshCurrentData(int fetchLength)
+        public async void RefreshCurrentData(int fetchLength)
         {
-            await updateCurrentAndCheckResetSession(false);
+            await UpdateCurrentAndCheckResetSession(false);
             IsDataLoading = true;
             UserInfo userInfo = await BS_Utils.Gameplay.GetUserInfo.GetUserAsync();
-            await PPCalculator.getPlayerScores(userInfo.platformUserId, fetchLength);
-            displayPP();
+            await Plugin.PPCalculator.GetPlayerScores(userInfo.platformUserId, fetchLength);
+            DisplayPP();
             IsDataLoading = false;
         }
 
-        public async void resetDisplay(bool resetAll)
+        public async void ResetDisplay(bool resetAll)
         {
             floatingScreen.transform.eulerAngles = Plugin.ProfileInfo.EulerAngles;
             floatingScreen.transform.position = Plugin.ProfileInfo.Position;
-            await updateCurrentAndCheckResetSession(resetAll);
+            await UpdateCurrentAndCheckResetSession(resetAll);
             IsDataLoading = true;
             UserInfo userInfo = await BS_Utils.Gameplay.GetUserInfo.GetUserAsync();
-            await PPCalculator.getPlayerScores(userInfo.platformUserId, 100);
-            displayInitialPercentages();
-            displayPP();
+            await Plugin.PPCalculator.GetPlayerScores(userInfo.platformUserId, 100);
+            DisplayInitialPercentages();
+            DisplayPP();
             IsDataLoading = false;
         }
-        private async void displayPP()
+        private async void DisplayPP()
         {
-            double pp = PPCalculator.calculatePPatPercentage(_currentSelectionBasePP, _percentage);
-            PPGainResult ppGainResult = PPCalculator.getPlayerScorePPGain(_selectedMapSearchString, pp);
-            double ppGains = PPCalculator.zeroizer(ppGainResult.PpGain);
-            PPGainRaw = $"{pp.ToString("F2")}pp";
-            PPGainWeighted = $"{ppGains.ToString("+0.##;-0.##;0")}pp";
-            PPGainDiffColor = getDisplayColor(ppGains, false);
+            double pp = Plugin.PPCalculator.CalculatePPatPercentage(_currentSelectionBasePP, _percentage);
+            PPGainResult ppGainResult = Plugin.PPCalculator.GetPlayerScorePPGain(_selectedMapSearchString, pp);
+            double ppGains = Plugin.PPCalculator.Zeroizer(ppGainResult.PpGain);
+            PPGainRaw = $"{pp:F2}pp";
+            PPGainWeighted = $"{ppGains:+0.##;-0.##;0}pp";
+            PPGainDiffColor = DisplayHelper.GetDisplayColor(ppGains, false);
 
             RankGainResult rankGain = new RankGainResult(1, 2, 3, 4);
-            displayRankGain(null);
+            DisplayRankGain(null);
             if (_rankGainRunning)
             {
-                lastPPGainCall = ppGainResult.PpTotal;
+                _lastPPGainCall = ppGainResult.PpTotal;
                 return;
             }
-                
-            if (lastPPGainCall == 0)
+
+            if (_lastPPGainCall == 0)
             {
                 _rankGainRunning = true;
-                rankGain = await PPCalculator.getPlayerRankGain(ppGainResult.PpTotal);
+                rankGain = await Plugin.PPCalculator.GetPlayerRankGain(ppGainResult.PpTotal);
                 _rankGainRunning = false;
             }
-            if(lastPPGainCall > 0)
+            if (_lastPPGainCall > 0)
             {
                 _rankGainRunning = true;
-                rankGain = await PPCalculator.getPlayerRankGain(lastPPGainCall);
+                rankGain = await Plugin.PPCalculator.GetPlayerRankGain(_lastPPGainCall);
                 _rankGainRunning = false;
-                lastPPGainCall = 0;
+                _lastPPGainCall = 0;
             }
-            displayRankGain(rankGain);
+            DisplayRankGain(rankGain);
 
         }
 
-        private void displaySession()
+        private void DisplaySession()
         {
-            if(Plugin.ProfileInfo.SessionPlayer == null || Plugin.ProfileInfo.CurrentPlayer == null){
+            if (Plugin.ProfileInfo.SessionPlayer == null || Plugin.ProfileInfo.CurrentPlayer == null)
+            {
                 SessionRank = SessionCountryRank = SessionPP = SessionCountryRankDiff = SessionRankDiff = SessionPPDiff = "-";
                 SessionCountryRankDiffColor = SessionRankDiffColor = SessionPPDiffColor = "white";
             }
@@ -485,62 +487,48 @@ namespace PPPredictor.UI.ViewController
             {
                 if (Plugin.ProfileInfo.DisplaySessionValues)
                 {
-                    SessionRank = $"{Plugin.ProfileInfo.SessionPlayer.Rank.ToString()}";
-                    SessionCountryRank = $"{Plugin.ProfileInfo.SessionPlayer.CountryRank.ToString()}";
-                    SessionPP = $"{Plugin.ProfileInfo.SessionPlayer.Pp.ToString()}pp"; ;
+                    SessionRank = $"{Plugin.ProfileInfo.SessionPlayer.Rank}";
+                    SessionCountryRank = $"{Plugin.ProfileInfo.SessionPlayer.CountryRank}";
+                    SessionPP = $"{Plugin.ProfileInfo.SessionPlayer.Pp}pp"; ;
                 }
                 else
                 {
-                    SessionRank = $"{Plugin.ProfileInfo.CurrentPlayer.Rank.ToString()}";
-                    SessionCountryRank = $"{Plugin.ProfileInfo.CurrentPlayer.CountryRank.ToString()}";
-                    SessionPP = $"{Plugin.ProfileInfo.CurrentPlayer.Pp.ToString()}pp";
+                    SessionRank = $"{Plugin.ProfileInfo.CurrentPlayer.Rank}";
+                    SessionCountryRank = $"{Plugin.ProfileInfo.CurrentPlayer.CountryRank}";
+                    SessionPP = $"{Plugin.ProfileInfo.CurrentPlayer.Pp}pp";
                 }
                 SessionCountryRankDiff = (Plugin.ProfileInfo.CurrentPlayer.CountryRank - Plugin.ProfileInfo.SessionPlayer.CountryRank).ToString("+#;-#;0");
-                SessionCountryRankDiffColor = getDisplayColor((Plugin.ProfileInfo.CurrentPlayer.CountryRank - Plugin.ProfileInfo.SessionPlayer.CountryRank), true);
+                SessionCountryRankDiffColor = DisplayHelper.GetDisplayColor((Plugin.ProfileInfo.CurrentPlayer.CountryRank - Plugin.ProfileInfo.SessionPlayer.CountryRank), true);
                 SessionRankDiff = (Plugin.ProfileInfo.CurrentPlayer.Rank - Plugin.ProfileInfo.SessionPlayer.Rank).ToString("+#;-#;0");
-                SessionRankDiffColor = getDisplayColor((Plugin.ProfileInfo.CurrentPlayer.Rank - Plugin.ProfileInfo.SessionPlayer.Rank), true);
-                SessionPPDiff = $"{(PPCalculator.zeroizer(Plugin.ProfileInfo.CurrentPlayer.Pp - Plugin.ProfileInfo.SessionPlayer.Pp)).ToString("+0.##;-0.##;0")}pp";
-                SessionPPDiffColor = getDisplayColor((Plugin.ProfileInfo.CurrentPlayer.Pp - Plugin.ProfileInfo.SessionPlayer.Pp), false);
+                SessionRankDiffColor = DisplayHelper.GetDisplayColor((Plugin.ProfileInfo.CurrentPlayer.Rank - Plugin.ProfileInfo.SessionPlayer.Rank), true);
+                SessionPPDiff = $"{Plugin.PPCalculator.Zeroizer(Plugin.ProfileInfo.CurrentPlayer.Pp - Plugin.ProfileInfo.SessionPlayer.Pp):+0.##;-0.##;0}pp";
+                SessionPPDiffColor = DisplayHelper.GetDisplayColor((Plugin.ProfileInfo.CurrentPlayer.Pp - Plugin.ProfileInfo.SessionPlayer.Pp), false);
             }
         }
 
-        private void displayRankGain(RankGainResult rankGainResult)
+        private void DisplayRankGain(RankGainResult rankGainResult)
         {
             if (rankGainResult != null)
             {
-                PredictedRank = $"{rankGainResult.RankGlobal.ToString("N0")}";
+                PredictedRank = $"{rankGainResult.RankGlobal:N0}";
                 PredictedRankDiff = rankGainResult.RankGainGlobal.ToString("+#;-#;0");
-                PredictedRankDiffColor = getDisplayColor(rankGainResult.RankGainGlobal, false);
-                PredictedCountryRank = $"{rankGainResult.RankCountry.ToString("N0")}";
+                PredictedRankDiffColor = DisplayHelper.GetDisplayColor(rankGainResult.RankGainGlobal, false);
+                PredictedCountryRank = $"{rankGainResult.RankCountry:N0}";
                 PredictedCountryRankDiff = rankGainResult.RankGainCountry.ToString("+#;-#;0");
-                PredictedCountryRankDiffColor = getDisplayColor(rankGainResult.RankGainCountry, false);
+                PredictedCountryRankDiffColor = DisplayHelper.GetDisplayColor(rankGainResult.RankGainCountry, false);
             }
             else
             {
                 PredictedRank = "...";
                 PredictedRankDiff = "?";
-                PredictedRankDiffColor = getDisplayColor(0, false);
+                PredictedRankDiffColor = DisplayHelper.GetDisplayColor(0, false);
                 PredictedCountryRank = "...";
                 PredictedCountryRankDiff = "?";
-                PredictedCountryRankDiffColor = getDisplayColor(0, false);
+                PredictedCountryRankDiffColor = DisplayHelper.GetDisplayColor(0, false);
             }
         }
 
-        private string getDisplayColor(double value, bool invert)
-        {
-            if (invert) value = value * -1;
-            if(value > 0)
-            {
-                return $"green";
-            }
-            else if (value < 0)
-            {
-                return $"red";
-            }
-            return "white";
-        }
-
-        private void displayInitialPercentages()
+        private void DisplayInitialPercentages()
         {
             SliderFineValue = Plugin.ProfileInfo.LastPercentageSelected;
             SliderCoarseValue = Plugin.ProfileInfo.LastPercentageSelected - Plugin.ProfileInfo.LastPercentageSelected % 10;

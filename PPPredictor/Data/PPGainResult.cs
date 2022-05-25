@@ -1,9 +1,9 @@
-﻿namespace PPPredictor.Utilities
+﻿namespace PPPredictor.Data
 {
-    class PPGainResult
+    public class PPGainResult
     {
-        private double _ppTotal;
-        private double _ppGain;
+        private readonly double _ppTotal;
+        private readonly double _ppGain;
 
         public double PpTotal { get => _ppTotal; }
         public double PpGain { get => _ppGain; }

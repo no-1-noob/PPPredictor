@@ -1,5 +1,6 @@
 ﻿using BeatSaberMarkupLanguage.Attributes;
 using BeatSaberMarkupLanguage.Parser;
+using PPPredictor.Utilities;
 using System.ComponentModel;
 
 namespace PPPredictor.UI.ViewController
@@ -11,14 +12,18 @@ namespace PPPredictor.UI.ViewController
         public event PropertyChangedEventHandler PropertyChanged;
 
         #region settings
+#pragma warning disable CS0649 // Field is never assigned to, and will always have its default value null
         [UIParams]
         private readonly BSMLParserParams bsmlParserParams;
+#pragma warning restore CS0649 // Field is never assigned to, and will always have its default value null
 
+#pragma warning disable IDE0051 // Remove unused private members
         [UIAction("reset-data")]
         private void ResetData()
         {
             bsmlParserParams.EmitEvent("open-reset-modal");
         }
+#pragma warning restore IDE0051 // Remove unused private members
 
         [UIValue("window-handle-enabled")]
         public bool WindowHandleEnabled
@@ -53,22 +58,24 @@ namespace PPPredictor.UI.ViewController
         }
         #endregion
 
+#pragma warning disable IDE0051 // Remove unused private members
         #region modal actions
         [UIAction("confirm-reset-modal")]
         private void ConfirmResetModal()
         {
-            Plugin.ProfileInfo = new ProfileInfo();
-            refreshSettingsDisplay();
+            ProfileInfoMgr.ResetProfile();
+            RefreshSettingsDisplay();
             bsmlParserParams.EmitEvent("close-reset-modal");
         }
+#pragma warning restore IDE0051 // Remove unused private members
         #endregion
 
-        private void refreshSettingsDisplay()
+        private void RefreshSettingsDisplay()
         {
             WindowHandleEnabled = Plugin.ProfileInfo.WindowHandleEnabled;
             DisplaySessionValues = Plugin.ProfileInfo.DisplaySessionValues;
             ResetSessionHours = Plugin.ProfileInfo.ResetSessionHours;
-            Plugin.pppViewController?.resetDisplay(true); //Needed for canceling of settings
+            Plugin.pppViewController?.ResetDisplay(true); //Needed for canceling of settings
         }
     }
 }

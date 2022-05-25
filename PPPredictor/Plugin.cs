@@ -1,10 +1,9 @@
 ﻿using IPA;
-using SiraUtil.Zenject;
+using PPPredictor.Data;
 using PPPredictor.UI.ViewController;
+using PPPredictor.Utilities;
+using SiraUtil.Zenject;
 using IPALogger = IPA.Logging.Logger;
-using scoresaberapi;
-using System.Collections.Generic;
-using SongDetailsCache;
 
 namespace PPPredictor
 {
@@ -13,13 +12,12 @@ namespace PPPredictor
     {
         internal static Plugin Instance { get; private set; }
         internal static IPALogger Log { get; private set; }
-        internal static SongDetails songDetails { get; private set; }
 
-        public static ProfileInfo ProfileInfo;
+        internal static ProfileInfo ProfileInfo;
 
-        public static List<Player> lsPlayerRankings;
+        internal static PPCalculator PPCalculator;
 
-        public static PPPredictorViewController pppViewController;
+        internal static PPPredictorViewController pppViewController;
 
         [Init]
         /// <summary>
@@ -31,43 +29,21 @@ namespace PPPredictor
         {
             Instance = this;
             Log = logger;
-            ProfileInfo = ProfileInfoMgr.loadProfileInfo();
-            songDetails = SongDetails.Init().Result;
-            lsPlayerRankings = new List<Player>();
+            PPCalculator = new PPCalculator();
+            ProfileInfo = ProfileInfoMgr.LoadProfileInfo();
             zenjector.UseSiraSync();
             zenjector.Install<PPPPredictorDisplayInstaller>(Location.Menu);
             BeatSaberMarkupLanguage.Settings.BSMLSettings.instance.AddSettingsMenu("PPPredictor", "PPPredictor.UI.Views.PPPredictorSettingsView.bsml", new PPPredictorSettingsViewController());
-            Log.Info("PPPredictor initialized.");
         }
-
-        #region BSIPA Config
-        //Uncomment to use BSIPA's config
-        /*
-        [Init]
-        public void InitWithConfig(Config conf)
-        {
-            Configuration.PluginConfig.Instance = conf.Generated<Configuration.PluginConfig>();
-            Log.Debug("Config loaded");
-        }
-        */
-        #endregion
 
         [OnStart]
         public void OnApplicationStart()
         {
-            Log.Debug("OnApplicationStart");
-            BS_Utils.Utilities.BSEvents.lateMenuSceneLoadedFresh += (o) =>
-            {
-                //new GameObject("PPPredictorController").AddComponent<PPPredictorController>();
-            };
-            
-
         }
 
         [OnExit]
         public void OnApplicationQuit()
         {
-            Log.Debug("OnApplicationQuit");
             ProfileInfoMgr.SaveProfile(ProfileInfo);
         }
     }

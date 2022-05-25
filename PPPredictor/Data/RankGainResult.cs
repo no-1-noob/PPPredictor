@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-namespace PPPredictor.Utilities
+﻿namespace PPPredictor.Data
 {
-    class RankGainResult
+    public class RankGainResult
     {
         private double _rankGlobal;
         private double _rankCountry;

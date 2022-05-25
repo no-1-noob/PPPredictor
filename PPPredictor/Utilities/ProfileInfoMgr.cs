@@ -1,14 +1,15 @@
 ﻿using IPA.Utilities;
 using Newtonsoft.Json;
+using PPPredictor.Data;
 using System;
 using System.IO;
 
-namespace PPPredictor
+namespace PPPredictor.Utilities
 {
     class ProfileInfoMgr
     {
-        internal static readonly string profilePath = Path.Combine(UnityGame.UserDataPath, "PPPredictorProfileInfo.json");
-        internal static ProfileInfo loadProfileInfo()
+        private static readonly string profilePath = Path.Combine(UnityGame.UserDataPath, "PPPredictorProfileInfo.json");
+        internal static ProfileInfo LoadProfileInfo()
         {
             ProfileInfo info;
             if (File.Exists(profilePath))
@@ -46,6 +47,11 @@ namespace PPPredictor
                 saved = false;
             }
             return saved;
+        }
+
+        internal static void ResetProfile()
+        {
+            Plugin.ProfileInfo = new ProfileInfo();
         }
     }
 }

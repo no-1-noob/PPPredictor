@@ -1,5 +1,7 @@
-﻿using scoresaberapi;
+﻿using PPPredictor.Data;
+using scoresaberapi;
 using SongCore.Utilities;
+using SongDetailsCache;
 using SongDetailsCache.Structs;
 using System;
 using System.Collections.Generic;
@@ -9,11 +11,11 @@ using System.Threading.Tasks;
 
 namespace PPPredictor.Utilities
 {
-    class PPCalculator
+    public class PPCalculator
     {
         static readonly HttpClient httpClient = new HttpClient();
-        static double basePPMultiplier = 42.117208413;
-        private static double[,] arrPPCurve = new double[32, 2] {
+        private readonly double basePPMultiplier = 42.117208413;
+        private readonly double[,] arrPPCurve = new double[32, 2] {
             {1, 7},
             {0.999, 6.24},
             {0.9975, 5.31},
@@ -46,18 +48,23 @@ namespace PPPredictor.Utilities
             {0.65, 0.29},
             {0.6, 0.25},
             {0.0, 0.0}, };
+        private readonly List<Player> lsPlayerRankings;
+        private SongDetails SongDetails { get; }
 
-        static public double calculateBasePPForBeatmapAsync(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
+        public PPCalculator()
         {
-            CustomBeatmapLevel selectedCustomBeatmapLevel = lvlSelectionNavigationCtrl.selectedBeatmapLevel as CustomBeatmapLevel;
-            if(selectedCustomBeatmapLevel != null)
+            SongDetails = SongDetails.Init().Result;
+            lsPlayerRankings = new List<Player>();
+        }
+
+        public double CalculateBasePPForBeatmapAsync(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
+        {
+            if (lvlSelectionNavigationCtrl.selectedBeatmapLevel is CustomBeatmapLevel selectedCustomBeatmapLevel)
             {
-                Song song;
-                Plugin.songDetails.songs.FindByHash(Hashing.GetCustomLevelHash(selectedCustomBeatmapLevel), out song);
+                SongDetails.songs.FindByHash(Hashing.GetCustomLevelHash(selectedCustomBeatmapLevel), out Song song);
                 if (song.mapId > 0)
                 {
-                    SongDifficulty songDiff;
-                    if (song.GetDifficulty(out songDiff, (MapDifficulty)beatmap.difficulty))
+                    if (song.GetDifficulty(out SongDifficulty songDiff, (MapDifficulty)beatmap.difficulty))
                     {
                         return songDiff.stars * basePPMultiplier;
                     }
@@ -67,14 +74,14 @@ namespace PPPredictor.Utilities
             return 0;
         }
 
-        static public double calculatePPatPercentage(double basePP, double percentage)
+        public double CalculatePPatPercentage(double basePP, double percentage)
         {
-            percentage = percentage / 100.0;
-            double multiplier = calculateMultiplierAtPercentage(percentage);
+            percentage /= 100.0;
+            double multiplier = CalculateMultiplierAtPercentage(percentage);
             return multiplier * basePP;
         }
 
-        static private double calculateMultiplierAtPercentage(double percentage)
+        private double CalculateMultiplierAtPercentage(double percentage)
         {
             for (int i = 0; i < arrPPCurve.GetLength(0); i++)
             {
@@ -86,24 +93,23 @@ namespace PPPredictor.Utilities
                 {
                     if (arrPPCurve[i + 1, 0] < percentage)
                     {
-                        return calculateMultiplierAtPercentageWithLine((arrPPCurve[i + 1, 0], arrPPCurve[i + 1, 1]), (arrPPCurve[i, 0], arrPPCurve[i, 1]), percentage);
+                        return CalculateMultiplierAtPercentageWithLine((arrPPCurve[i + 1, 0], arrPPCurve[i + 1, 1]), (arrPPCurve[i, 0], arrPPCurve[i, 1]), percentage);
                     }
                 }
             }
             return 0;
         }
 
-        static private double calculateMultiplierAtPercentageWithLine((double x, double y) p1, (double x, double y) p2, double percentage)
+        private double CalculateMultiplierAtPercentageWithLine((double x, double y) p1, (double x, double y) p2, double percentage)
         {
             double m = (p2.y - p1.y) / (p2.x - p1.x);
             double b = p1.y - (m * p1.x);
             return m * percentage + b;
         }
 
-        static public async Task<Player> getProfile(string userId)
+        public async Task<Player> GetProfile(string userId)
         {
-            long longUserId = 0;
-            if(long.TryParse(userId, out longUserId))
+            if (long.TryParse(userId, out long longUserId))
             {
                 var scoreSaberClient = new scoresaberapi.scoresaberapi(httpClient);
                 Task<Player> playerInfo = scoreSaberClient.BasicAsync(longUserId);
@@ -113,7 +119,7 @@ namespace PPPredictor.Utilities
             return new Player();
         }
 
-        static public async Task getPlayerScores(string userId, int pageSize)
+        public async Task GetPlayerScores(string userId, int pageSize)
         {
             try
             {
@@ -131,7 +137,7 @@ namespace PPPredictor.Utilities
                     if (Plugin.ProfileInfo.LSScores == null) Plugin.ProfileInfo.LSScores = new List<ShortScore>();
                     foreach (PlayerScore scores in playerscores.PlayerScores)
                     {
-                        string searchString = createSeachString(scores.Leaderboard.SongHash, (int)scores.Leaderboard.Difficulty.Difficulty1);
+                        string searchString = CreateSeachString(scores.Leaderboard.SongHash, (int)scores.Leaderboard.Difficulty.Difficulty1);
                         ShortScore previousScore = Plugin.ProfileInfo.LSScores.Find(x => x.Searchstring == searchString);
                         ShortScore newScore = new ShortScore(searchString, scores.Score.TimeSet, scores.Score.Pp);
                         if (previousScore == null)
@@ -163,8 +169,8 @@ namespace PPPredictor.Utilities
                     }
                     else
                     {
-                            previousScore.TimeSet = newScore.TimeSet;
-                            previousScore.Pp = newScore.Pp;
+                        previousScore.TimeSet = newScore.TimeSet;
+                        previousScore.Pp = newScore.Pp;
                     }
                 };
                 Plugin.ProfileInfo.LSScores.Sort();
@@ -173,10 +179,10 @@ namespace PPPredictor.Utilities
             {
                 Plugin.Log?.Error($"Error in PPPredictor: getPlayerScores: {ex.Message}");
             }
-            
+
         }
 
-        static public PPGainResult getPlayerScorePPGain(string mapSearchString, double pp)
+        public PPGainResult GetPlayerScorePPGain(string mapSearchString, double pp)
         {
             if (Plugin.ProfileInfo.LSScores.Count > 0 && !string.IsNullOrEmpty(mapSearchString) && pp > 0)
             {
@@ -187,8 +193,8 @@ namespace PPPredictor.Utilities
                 Plugin.ProfileInfo.LSScores.Sort((score1, score2) => score2.Pp.CompareTo(score1.Pp));
                 foreach (ShortScore score in Plugin.ProfileInfo.LSScores)
                 {
-                    double weightedPP = weightPP(score.Pp, index);
-                    double weightedNewPP = weightPP(pp, index);
+                    double weightedPP = WeightPP(score.Pp, index);
+                    double weightedNewPP = WeightPP(pp, index);
                     if (score.Searchstring == mapSearchString) //skip older (lower) score
                     {
                         if (!newPPadded)
@@ -204,7 +210,7 @@ namespace PPPredictor.Utilities
                         ppAfterPlay += weightedNewPP;
                         newPPadded = true;
                         index++;
-                        weightedPP = weightPP(score.Pp, index);
+                        weightedPP = WeightPP(score.Pp, index);
                     }
                     ppAfterPlay += weightedPP;
                     index++;
@@ -214,17 +220,16 @@ namespace PPPredictor.Utilities
             return new PPGainResult(Plugin.ProfileInfo.CurrentPlayer.Pp, pp);
         }
 
-        static public async Task<RankGainResult> getPlayerRankGain(double pp)
+        public async Task<RankGainResult> GetPlayerRankGain(double pp)
         {
-            double bestRankFetched = Plugin.lsPlayerRankings.Select(x => x.Rank).DefaultIfEmpty(-1).Min();
-            double fetchIndexPage = bestRankFetched > 0 ? Math.Floor((bestRankFetched - 1) / 50)+ 1 : Math.Floor(Plugin.ProfileInfo.CurrentPlayer.Rank / 50)+1;
+            double bestRankFetched = lsPlayerRankings.Select(x => x.Rank).DefaultIfEmpty(-1).Min();
+            double fetchIndexPage = bestRankFetched > 0 ? Math.Floor((bestRankFetched - 1) / 50) + 1 : Math.Floor(Plugin.ProfileInfo.CurrentPlayer.Rank / 50) + 1;
             var scoreSaberClient = new scoresaberapi.scoresaberapi(httpClient);
             bool needMoreData = true;
             while (needMoreData)
             {
-                int indexOfBetterPlayer = Plugin.lsPlayerRankings.FindIndex(x => x.Pp > pp);
-                //Plugin.lsPlayerRankings.Select(x => x.Rank)?.Min() != 1 ||
-                if (indexOfBetterPlayer != -1 ||  fetchIndexPage == 1)
+                int indexOfBetterPlayer = lsPlayerRankings.FindIndex(x => x.Pp > pp);
+                if (indexOfBetterPlayer != -1 || fetchIndexPage == 1)
                 {
                     //Found a better player or already fetched until rank 1
                     needMoreData = false;
@@ -233,28 +238,28 @@ namespace PPPredictor.Utilities
                 else
                 {
                     PlayerCollection playerscores = await scoreSaberClient.PlayersAsync(null, fetchIndexPage, null, true);
-                    Plugin.lsPlayerRankings.AddRange(playerscores.Players);
+                    lsPlayerRankings.AddRange(playerscores.Players);
                 }
                 fetchIndexPage--;
                 await Task.Delay(250);
             }
-            double rankAfterPlay = Plugin.lsPlayerRankings.Where(x => x.Pp <= pp).Select(x => x.Rank).Min();
+            double rankAfterPlay = lsPlayerRankings.Where(x => x.Pp <= pp).Select(x => x.Rank).Min();
 
-            double rankCountryAfterPlay = Plugin.lsPlayerRankings.Where(x => x.Pp <= pp && x.Country == Plugin.ProfileInfo.CurrentPlayer.Country).Select(x => x.CountryRank).Min();
+            double rankCountryAfterPlay = lsPlayerRankings.Where(x => x.Pp <= pp && x.Country == Plugin.ProfileInfo.CurrentPlayer.Country).Select(x => x.CountryRank).Min();
             return new RankGainResult(rankAfterPlay, rankCountryAfterPlay);
         }
 
-        static public double weightPP(double rawPP, int index)
+        public double WeightPP(double rawPP, int index)
         {
             return rawPP * Math.Pow(0.965, (index - 1));
         }
 
-        public static string createSeachString(string hash, int difficulty)
+        public string CreateSeachString(string hash, int difficulty)
         {
             return $"{hash}_{difficulty}";
         }
 
-        public static double zeroizer(double pp)
+        public double Zeroizer(double pp)
         {
             if (pp < -0.01 || pp > 0.01) return pp;
             if ((pp > -0.01 && pp < 0) || (pp < 0.01 && pp > 0)) return 0;

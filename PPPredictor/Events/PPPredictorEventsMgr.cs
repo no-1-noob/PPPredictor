@@ -1,12 +1,12 @@
 ﻿using LeaderboardCore.Interfaces;
 
-namespace PPPredictor.Utilities
+namespace PPPredictor.Events
 {
     public class PPPredictorEventsMgr : INotifyScoreUpload
     {
         public void OnScoreUploaded()
         {
-            Plugin.pppViewController.refreshCurrentData(1);
+            Plugin.pppViewController.RefreshCurrentData(1);
         }
     }
 }
