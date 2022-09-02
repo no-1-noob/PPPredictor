@@ -14,7 +14,7 @@ namespace PPPredictor.Data
 
         public ShortScore(string searchstring, DateTimeOffset timeSet, double pp)
         {
-            this._searchstring = searchstring;
+            this._searchstring = searchstring.ToUpper();
             this._timeSet = timeSet;
             this._pp = pp;
         }

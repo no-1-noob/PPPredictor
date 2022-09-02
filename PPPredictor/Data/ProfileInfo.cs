@@ -6,8 +6,8 @@ namespace PPPredictor.Data
 {
     public class ProfileInfo
     {
-        private Player _sessionPlayer;
-        private Player _currentPlayer;
+        private PPPPlayer _sessionPlayer;
+        private PPPPlayer _currentPlayer;
         private List<ShortScore> _lsScores;
         private float _lastPercentageSelected;
         private SVector3 _position;
@@ -30,8 +30,8 @@ namespace PPPredictor.Data
             LastSessionReset = new DateTime();
         }
 
-        public Player SessionPlayer { get => _sessionPlayer; set => _sessionPlayer = value; }
-        public Player CurrentPlayer { get => _currentPlayer; set => _currentPlayer = value; }
+        public PPPPlayer SessionPlayer { get => _sessionPlayer; set => _sessionPlayer = value; }
+        public PPPPlayer CurrentPlayer { get => _currentPlayer; set => _currentPlayer = value; }
         public List<ShortScore> LSScores { get => _lsScores; set => _lsScores = value; }
         public float LastPercentageSelected { get => _lastPercentageSelected; set => _lastPercentageSelected = value; }
         public SVector3 Position { get => _position; set => _position = value; }

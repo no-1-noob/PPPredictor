@@ -29,7 +29,7 @@ namespace PPPredictor
         {
             Instance = this;
             Log = logger;
-            PPCalculator = new PPCalculator();
+            PPCalculator = new PPCalculatorScoreSaber();
             ProfileInfo = ProfileInfoMgr.LoadProfileInfo();
             zenjector.UseSiraSync();
             zenjector.Install<PPPPredictorDisplayInstaller>(Location.Menu);

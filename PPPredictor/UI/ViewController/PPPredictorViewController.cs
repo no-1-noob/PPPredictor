@@ -30,7 +30,7 @@ namespace PPPredictor.UI.ViewController
         private string _ppGainWeighted = "";
         private string _ppGainDiffColor = "white";
 
-        private double _currentSelectionBasePP;
+        private double _currentSelectionStars;
 
         private string _sessionRank = "";
         private string _sessionCountryRank = "";
@@ -360,18 +360,18 @@ namespace PPPredictor.UI.ViewController
             get => !_isDataLoading;
         }
 
-        private void OnDifficultyChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
+        private async void OnDifficultyChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
         {
-            _currentSelectionBasePP = Plugin.PPCalculator.CalculateBasePPForBeatmapAsync(lvlSelectionNavigationCtrl, beatmap);
+            _currentSelectionStars = await Plugin.PPCalculator.GetStarsForBeatmapAsync(lvlSelectionNavigationCtrl, beatmap);
             _selectedMapSearchString = lvlSelectionNavigationCtrl.selectedBeatmapLevel is CustomBeatmapLevel selectedCustomBeatmapLevel ? Plugin.PPCalculator.CreateSeachString(Hashing.GetCustomLevelHash(selectedCustomBeatmapLevel), lvlSelectionNavigationCtrl.selectedDifficultyBeatmap.difficultyRank) : string.Empty;
             DisplayPP();
         }
 
-        private void OnDetailContentChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, StandardLevelDetailViewController.ContentType contentType)
+        private async void OnDetailContentChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, StandardLevelDetailViewController.ContentType contentType)
         {
             if (contentType == StandardLevelDetailViewController.ContentType.OwnedAndReady)
             {
-                _currentSelectionBasePP = Plugin.PPCalculator.CalculateBasePPForBeatmapAsync(lvlSelectionNavigationCtrl, lvlSelectionNavigationCtrl.selectedDifficultyBeatmap);
+                _currentSelectionStars = await Plugin.PPCalculator.GetStarsForBeatmapAsync(lvlSelectionNavigationCtrl, lvlSelectionNavigationCtrl.selectedDifficultyBeatmap);
                 _selectedMapSearchString = lvlSelectionNavigationCtrl.selectedBeatmapLevel is CustomBeatmapLevel selectedCustomBeatmapLevel ? Plugin.PPCalculator.CreateSeachString(Hashing.GetCustomLevelHash(selectedCustomBeatmapLevel), lvlSelectionNavigationCtrl.selectedDifficultyBeatmap.difficultyRank) : string.Empty;
                 DisplayPP();
             }
@@ -403,7 +403,7 @@ namespace PPPredictor.UI.ViewController
         {
             IsDataLoading = true;
             UserInfo userInfo = await BS_Utils.Gameplay.GetUserInfo.GetUserAsync();
-            Player player = await Plugin.PPCalculator.GetProfile(userInfo.platformUserId);
+            PPPPlayer player = await Plugin.PPCalculator.GetProfile(userInfo.platformUserId);
             Plugin.ProfileInfo.CurrentPlayer = player;
             if (doResetSession || Plugin.ProfileInfo.SessionPlayer == null || NeedsResetSession())
             {
@@ -444,7 +444,7 @@ namespace PPPredictor.UI.ViewController
         }
         private async void DisplayPP()
         {
-            double pp = Plugin.PPCalculator.CalculatePPatPercentage(_currentSelectionBasePP, _percentage);
+            double pp = Plugin.PPCalculator.CalculatePPatPercentage(_currentSelectionStars, _percentage);
             PPGainResult ppGainResult = Plugin.PPCalculator.GetPlayerScorePPGain(_selectedMapSearchString, pp);
             double ppGains = Plugin.PPCalculator.Zeroizer(ppGainResult.PpGain);
             PPGainRaw = $"{pp:F2}pp";
@@ -489,13 +489,13 @@ namespace PPPredictor.UI.ViewController
                 {
                     SessionRank = $"{Plugin.ProfileInfo.SessionPlayer.Rank}";
                     SessionCountryRank = $"{Plugin.ProfileInfo.SessionPlayer.CountryRank}";
-                    SessionPP = $"{Plugin.ProfileInfo.SessionPlayer.Pp}pp"; ;
+                    SessionPP = $"{Plugin.ProfileInfo.SessionPlayer.Pp:F2}pp";
                 }
                 else
                 {
                     SessionRank = $"{Plugin.ProfileInfo.CurrentPlayer.Rank}";
                     SessionCountryRank = $"{Plugin.ProfileInfo.CurrentPlayer.CountryRank}";
-                    SessionPP = $"{Plugin.ProfileInfo.CurrentPlayer.Pp}pp";
+                    SessionPP = $"{Plugin.ProfileInfo.CurrentPlayer.Pp:F2}pp";
                 }
                 SessionCountryRankDiff = (Plugin.ProfileInfo.CurrentPlayer.CountryRank - Plugin.ProfileInfo.SessionPlayer.CountryRank).ToString("+#;-#;0");
                 SessionCountryRankDiffColor = DisplayHelper.GetDisplayColor((Plugin.ProfileInfo.CurrentPlayer.CountryRank - Plugin.ProfileInfo.SessionPlayer.CountryRank), true);

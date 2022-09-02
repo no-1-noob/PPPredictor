@@ -50,6 +50,9 @@
     <Reference Include="BS_Utils">
       <HintPath>$(GameDirectory)\Plugins\BS_Utils.dll</HintPath>
     </Reference>
+    <Reference Include="GameplayCore">
+      <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\GameplayCore.dll</HintPath>
+    </Reference>
     <Reference Include="LeaderboardCore">
       <HintPath>$(GameDirectory)\Plugins\LeaderboardCore.dll</HintPath>
     </Reference>
@@ -121,10 +124,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\PPPPlayer.cs" />
+    <Compile Include="Data\PPPScore.cs" />
+    <Compile Include="Data\PPPScoreCollection.cs" />
     <Compile Include="Installers\PPPPredictorDisplayInstaller.cs" />
     <Compile Include="Events\PPPredictorEventsMgr.cs" />
     <Compile Include="Data\ProfileInfo.cs" />
+    <Compile Include="OpenAPIs\beatleader-v1.cs" />
     <Compile Include="Utilities\DisplayHelper.cs" />
+    <Compile Include="Utilities\PPCalculatorBeatLeader.cs" />
+    <Compile Include="Utilities\PPCalculatorScoreSaber.cs" />
     <Compile Include="Utilities\ProfileInfoMgr.cs" />
     <Compile Include="Data\ShortScore.cs" />
     <Compile Include="UI\ViewController\PPPredictorSettingsViewController.cs" />
@@ -147,6 +156,12 @@
       <ClassName>scoresaberapi</ClassName>
       <CodeGenerator>NSwagCSharp</CodeGenerator>
       <SourceUri>https://docs.scoresaber.com/scoresaber-public-api-1.0.0.json</SourceUri>
+    </None>
+    <None Include="OpenAPIs\beatleader-v1.json">
+      <Namespace>beatleaderapi</Namespace>
+      <ClassName>beatleaderapi</ClassName>
+      <CodeGenerator>NSwagCSharp</CodeGenerator>
+      <SourceUri>https://api.beatleader.xyz/swagger/v1/swagger.json</SourceUri>
     </None>
     <None Include="PPPredictor.csproj.user" Condition="Exists('PPPredictor.csproj.user')" />
     <EmbeddedResource Include="UI\Views\PPPredictorView.bsml" />
