@@ -34,6 +34,7 @@ namespace PPPredictor.Utilities
                 bool hasMoreData = true;
                 int page = 1;
                 List<ShortScore> lsNewScores = new List<ShortScore>();
+                Plugin.ProfileInfo.LSScores.Sort();
                 while (hasMoreData)
                 {
                     PPPScoreCollection playerscores = await getRecentScores(userId, pageSize, page);
@@ -91,10 +92,8 @@ namespace PPPredictor.Utilities
 
         public PPGainResult GetPlayerScorePPGain(string mapSearchString, double pp)
         {
-            Plugin.Log?.Error($"{mapSearchString} - {pp}");
             if (Plugin.ProfileInfo.LSScores.Count > 0 && !string.IsNullOrEmpty(mapSearchString) && pp > 0)
             {
-                Plugin.Log?.Error($"lsscores found {Plugin.ProfileInfo.LSScores.Count}");
                 double ppAfterPlay = 0;
                 int index = 1;
                 bool newPPadded = false;
@@ -102,7 +101,6 @@ namespace PPPredictor.Utilities
                 Plugin.ProfileInfo.LSScores.Sort((score1, score2) => score2.Pp.CompareTo(score1.Pp));
                 foreach (ShortScore score in Plugin.ProfileInfo.LSScores)
                 {
-                    Plugin.Log?.Error($"searchstring {score.Searchstring} - {score.Pp}");
                     double weightedPP = WeightPP(score.Pp, index);
                     double weightedNewPP = WeightPP(pp, index);
                     if (score.Searchstring == mapSearchString) //skip older (lower) score
@@ -110,24 +108,20 @@ namespace PPPredictor.Utilities
                         if (!newPPadded)
                         {
                             ppAfterPlay += Math.Max(weightedPP, weightedNewPP); //Special case for improvement of your top play
-                            Plugin.Log?.Error($"skip ppAfterPlay {ppAfterPlay} - {weightedPP} - {weightedNewPP}");
                             newPPSkiped = true;
                             index++;
                         }
-                        Plugin.Log?.Error($"skip");
                         continue;
                         //Nominated rausschmissen ...................................................
                     }
                     if (!newPPadded && !newPPSkiped && weightedNewPP >= weightedPP) //add new (potential) pp
                     {
-                        Plugin.Log?.Error($"add new (potential) pp {weightedNewPP}");
                         ppAfterPlay += weightedNewPP;
                         newPPadded = true;
                         index++;
                         weightedPP = WeightPP(score.Pp, index);
                     }
                     ppAfterPlay += weightedPP;
-                    Plugin.Log?.Error($"ppAfter Play {ppAfterPlay} - {weightedPP}");
                     index++;
                 }
                 return new PPGainResult(Math.Round(ppAfterPlay, 2, MidpointRounding.AwayFromZero), Math.Round(ppAfterPlay - Plugin.ProfileInfo.CurrentPlayer.Pp, 2, MidpointRounding.AwayFromZero));
@@ -189,5 +183,8 @@ namespace PPPredictor.Utilities
         public abstract double CalculatePPatPercentage(double star, double percentage);
 
         public abstract Task<double> GetStarsForBeatmapAsync(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap);
+
+        public abstract double ApplyModifierMultiplierToStars(double baseStars, GameplayModifiers gameplayModifiers);
+
     }
 }

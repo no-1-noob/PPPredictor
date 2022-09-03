@@ -132,6 +132,7 @@
     <Compile Include="Data\ProfileInfo.cs" />
     <Compile Include="OpenAPIs\beatleader-v1.cs" />
     <Compile Include="Utilities\DisplayHelper.cs" />
+    <Compile Include="Utilities\Enums.cs" />
     <Compile Include="Utilities\PPCalculatorBeatLeader.cs" />
     <Compile Include="Utilities\PPCalculatorScoreSaber.cs" />
     <Compile Include="Utilities\ProfileInfoMgr.cs" />

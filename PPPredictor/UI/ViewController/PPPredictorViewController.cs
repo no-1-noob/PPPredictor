@@ -21,7 +21,9 @@ namespace PPPredictor.UI.ViewController
     public class PPPredictorViewController : IInitializable, IDisposable, INotifyPropertyChanged
     {
         private readonly LevelSelectionNavigationController levelSelectionNavController;
+        private readonly GameplaySetupViewController gameplaySetupViewController;
         private FloatingScreen floatingScreen;
+        private GameplayModifiers _gameplayModifiers;
         public event PropertyChangedEventHandler PropertyChanged;
 
         #region displayValues
@@ -30,6 +32,7 @@ namespace PPPredictor.UI.ViewController
         private string _ppGainWeighted = "";
         private string _ppGainDiffColor = "white";
 
+        private double _currentSelectionBaseStars;
         private double _currentSelectionStars;
 
         private string _sessionRank = "";
@@ -59,9 +62,10 @@ namespace PPPredictor.UI.ViewController
         private bool _isDataLoading = false;
         #endregion
 
-        public PPPredictorViewController(LevelSelectionNavigationController levelSelectionNavController)
+        public PPPredictorViewController(LevelSelectionNavigationController levelSelectionNavController, GameplaySetupViewController gameplaySetupViewController)
         {
             this.levelSelectionNavController = levelSelectionNavController;
+            this.gameplaySetupViewController = gameplaySetupViewController;
         }
 
         [Inject]
@@ -75,6 +79,7 @@ namespace PPPredictor.UI.ViewController
             levelSelectionNavController.didChangeLevelDetailContentEvent += OnDetailContentChanged;
             levelSelectionNavController.didActivateEvent += OnLevelSelectionActivated;
             levelSelectionNavController.didDeactivateEvent += OnLevelSelectionDeactivated;
+            gameplaySetupViewController.didChangeGameplayModifiersEvent += didChangeGameplayModifiersEvent;
             floatingScreen = FloatingScreen.CreateFloatingScreen(new Vector2(75, 100), true, Plugin.ProfileInfo.Position, new Quaternion(0, 0, 0, 0));
             floatingScreen.gameObject.name = "BSMLFloatingScreen_PPPredictor";
             floatingScreen.gameObject.SetActive(false);
@@ -86,11 +91,22 @@ namespace PPPredictor.UI.ViewController
             BSMLParser.instance.Parse(BeatSaberMarkupLanguage.Utilities.GetResourceContent(Assembly.GetExecutingAssembly(), "PPPredictor.UI.Views.PPPredictorView.bsml"), floatingScreen.gameObject, this);
         }
 
+        private void didChangeGameplayModifiersEvent()
+        {
+            if (gameplaySetupViewController != null && gameplaySetupViewController.gameplayModifiers != null)
+            {
+                _gameplayModifiers = gameplaySetupViewController.gameplayModifiers;
+                _currentSelectionStars = Plugin.PPCalculator.ApplyModifierMultiplierToStars(_currentSelectionBaseStars, _gameplayModifiers);
+                DisplayPP();
+            }
+        }
+
         public void Dispose()
         {
             floatingScreen.HandleReleased -= OnScreenHandleReleased;
             levelSelectionNavController.didActivateEvent -= OnLevelSelectionActivated;
             levelSelectionNavController.didDeactivateEvent -= OnLevelSelectionDeactivated;
+            gameplaySetupViewController.didChangeGameplayModifiersEvent -= didChangeGameplayModifiersEvent;
             Plugin.pppViewController = null;
         }
 
@@ -362,8 +378,9 @@ namespace PPPredictor.UI.ViewController
 
         private async void OnDifficultyChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
         {
-            _currentSelectionStars = await Plugin.PPCalculator.GetStarsForBeatmapAsync(lvlSelectionNavigationCtrl, beatmap);
+            _currentSelectionBaseStars = await Plugin.PPCalculator.GetStarsForBeatmapAsync(lvlSelectionNavigationCtrl, beatmap);
             _selectedMapSearchString = lvlSelectionNavigationCtrl.selectedBeatmapLevel is CustomBeatmapLevel selectedCustomBeatmapLevel ? Plugin.PPCalculator.CreateSeachString(Hashing.GetCustomLevelHash(selectedCustomBeatmapLevel), lvlSelectionNavigationCtrl.selectedDifficultyBeatmap.difficultyRank) : string.Empty;
+            _currentSelectionStars = Plugin.PPCalculator.ApplyModifierMultiplierToStars(_currentSelectionBaseStars, _gameplayModifiers);
             DisplayPP();
         }
 
@@ -371,8 +388,9 @@ namespace PPPredictor.UI.ViewController
         {
             if (contentType == StandardLevelDetailViewController.ContentType.OwnedAndReady)
             {
-                _currentSelectionStars = await Plugin.PPCalculator.GetStarsForBeatmapAsync(lvlSelectionNavigationCtrl, lvlSelectionNavigationCtrl.selectedDifficultyBeatmap);
+                _currentSelectionBaseStars = await Plugin.PPCalculator.GetStarsForBeatmapAsync(lvlSelectionNavigationCtrl, lvlSelectionNavigationCtrl.selectedDifficultyBeatmap);
                 _selectedMapSearchString = lvlSelectionNavigationCtrl.selectedBeatmapLevel is CustomBeatmapLevel selectedCustomBeatmapLevel ? Plugin.PPCalculator.CreateSeachString(Hashing.GetCustomLevelHash(selectedCustomBeatmapLevel), lvlSelectionNavigationCtrl.selectedDifficultyBeatmap.difficultyRank) : string.Empty;
+                _currentSelectionStars = Plugin.PPCalculator.ApplyModifierMultiplierToStars(_currentSelectionBaseStars, _gameplayModifiers);
                 DisplayPP();
             }
         }

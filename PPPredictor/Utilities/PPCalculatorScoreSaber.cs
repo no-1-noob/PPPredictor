@@ -128,5 +128,10 @@ namespace PPPredictor.Utilities
             }
             return 0;
         }
+
+        public override double ApplyModifierMultiplierToStars(double baseStars, GameplayModifiers gameplayModifiers)
+        {
+            return baseStars;
+        }
     }
 }

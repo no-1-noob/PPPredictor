@@ -1,4 +1,5 @@
 ﻿using beatleaderapi;
+using PPPredictor.Utilities;
 using scoresaberapi;
 using System;
 
@@ -27,10 +28,9 @@ namespace PPPredictor.Data
         public PPPScore(ScoreResponseWithMyScore playerScore)
         {
             if(long.TryParse(playerScore.Timeset, out long timeSetLong)){
-
-                this.timeSet = new DateTimeOffset(timeSetLong, new TimeSpan());
+                this.timeSet = new DateTime(1970, 1, 1).AddSeconds(timeSetLong);
             }
-            this.pp = playerScore.Leaderboard.Difficulty.Ranked ? playerScore.Pp : 0;
+            this.pp = (int)playerScore.Leaderboard.Difficulty.Status == (int)BeatLeaderDifficultyStatus.ranked ? playerScore.Pp : 0;
             this.songHash = playerScore.Leaderboard.Song.Hash;
             this.difficulty = playerScore.Leaderboard.Difficulty.Value;
         }
