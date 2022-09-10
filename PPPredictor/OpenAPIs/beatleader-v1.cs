@@ -10447,7 +10447,6 @@ namespace beatleaderapi
                 }
                 catch (Newtonsoft.Json.JsonException exception)
                 {
-                    Plugin.Log?.Error($"exception {exception.Message}");
                     var message = "Could not deserialize the response body stream as " + typeof(T).FullName + ".";
                     throw new ApiException(message, (int)response.StatusCode, string.Empty, headers, exception);
                 }

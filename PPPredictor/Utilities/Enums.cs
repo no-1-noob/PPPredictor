@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PPPredictor.Utilities
+﻿namespace PPPredictor.Utilities
 {
     public enum BeatLeaderDifficultyStatus
     {
@@ -15,5 +9,11 @@ namespace PPPredictor.Utilities
         unrankable = 4,
         outdated = 5,
         inevent = 6
+    }
+
+    public enum Leaderboard
+    {
+        ScoreSaber,
+        BeatLeader
     }
 }

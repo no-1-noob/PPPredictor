@@ -51,11 +51,12 @@ namespace PPPredictor.Utilities
         private SongDetails SongDetails { get; }
         public PPCalculatorScoreSaber() : base()
         {
+            Plugin.Log?.Error($"ctor: PPCalculatorScoreSaber");
             scoreSaberClient = new scoresaberapi.scoresaberapi(httpClient);
             SongDetails = SongDetails.Init().Result;
         }
 
-        protected override async Task<PPPPlayer> getPlayerInfo(long userId)
+        protected override async Task<PPPPlayer> GetPlayerInfo(long userId)
         {
             var playerInfo = scoreSaberClient.BasicAsync(userId);
             var scoreSaberPlayer = await playerInfo;
@@ -63,13 +64,13 @@ namespace PPPredictor.Utilities
             return player;
         }
 
-        protected override async Task<PPPScoreCollection> getRecentScores(string userId, int pageSize, int page)
+        protected override async Task<PPPScoreCollection> GetRecentScores(string userId, int pageSize, int page)
         {
             PlayerScoreCollection scoreSaberCollection = await scoreSaberClient.Scores3Async(userId, pageSize, Sort.Recent, page, true);
             return new PPPScoreCollection(scoreSaberCollection);
         }
 
-        protected override async Task<List<PPPPlayer>> getPlayers(double fetchIndexPage)
+        protected override async Task<List<PPPPlayer>> GetPlayers(double fetchIndexPage)
         {
             List<PPPPlayer> lsPlayer = new List<PPPPlayer>();
             PlayerCollection scoreSaberPlayerCollection = await scoreSaberClient.PlayersAsync(null, fetchIndexPage, null, true);

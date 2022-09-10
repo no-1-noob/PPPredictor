@@ -124,6 +124,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\PPPLeaderboardInfo.cs" />
     <Compile Include="Data\PPPPlayer.cs" />
     <Compile Include="Data\PPPScore.cs" />
     <Compile Include="Data\PPPScoreCollection.cs" />
@@ -133,8 +134,11 @@
     <Compile Include="OpenAPIs\beatleader-v1.cs" />
     <Compile Include="Utilities\DisplayHelper.cs" />
     <Compile Include="Utilities\Enums.cs" />
+    <Compile Include="Interfaces\IPPPredictor.cs" />
     <Compile Include="Utilities\PPCalculatorBeatLeader.cs" />
     <Compile Include="Utilities\PPCalculatorScoreSaber.cs" />
+    <Compile Include="Utilities\PPPredictor.cs" />
+    <Compile Include="Utilities\PPPredictorMgr.cs" />
     <Compile Include="Utilities\ProfileInfoMgr.cs" />
     <Compile Include="Data\ShortScore.cs" />
     <Compile Include="UI\ViewController\PPPredictorSettingsViewController.cs" />

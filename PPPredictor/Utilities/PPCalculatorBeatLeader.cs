@@ -13,29 +13,31 @@ namespace PPPredictor.Utilities
     public class PPCalculatorBeatLeader : PPCalculator
     {
         private readonly HttpClient httpClient = new HttpClient();
-        private beatleaderapi.beatleaderapi beatLeaderClient;
+        private readonly beatleaderapi.beatleaderapi beatLeaderClient;
         private Dictionary<string, float> dctModifiers;
-        private double ppCalcWeight = 42;
+        private readonly double ppCalcWeight = 42;
 
         public PPCalculatorBeatLeader() : base() 
         {
+            Plugin.Log?.Error($"ctor: PPCalculatorBeatLeader");
             beatLeaderClient = new beatleaderapi.beatleaderapi("https://api.beatleader.xyz/", httpClient);
-            getModifiers();
+            GetModifiers();
         }
 
-        private async void getModifiers()
+        private async void GetModifiers()
         {
+            //TODO: SaveModifiers? Or load by Song directy?
             dctModifiers = (Dictionary<string, float>)await beatLeaderClient.ModifiersAsync();
         }
 
-        protected override async Task<PPPPlayer> getPlayerInfo(long userId)
+        protected override async Task<PPPPlayer> GetPlayerInfo(long userId)
         {
             var playerInfo = beatLeaderClient.PlayerAsync(userId.ToString(), false);
             var beatLeaderPlayer = await playerInfo;
             return new PPPPlayer(beatLeaderPlayer);
         }
 
-        protected override async Task<List<PPPPlayer>> getPlayers(double fetchIndexPage)
+        protected override async Task<List<PPPPlayer>> GetPlayers(double fetchIndexPage)
         {
             List<PPPPlayer> lsPlayer = new List<PPPPlayer>();
             PlayerResponseWithStatsResponseWithMetadata scoreSaberPlayerCollection = await beatLeaderClient.PlayersAsync("pp", (int) fetchIndexPage, 50, null, "desc", null, null, null, null, null, null, null, null, null, null);
@@ -47,7 +49,7 @@ namespace PPPredictor.Utilities
             return lsPlayer;
         }
 
-        protected override async Task<PPPScoreCollection> getRecentScores(string userId, int pageSize, int page)
+        protected override async Task<PPPScoreCollection> GetRecentScores(string userId, int pageSize, int page)
         {
             ScoreResponseWithMyScoreResponseWithMetadata scoreSaberCollection = await beatLeaderClient.ScoresAsync(userId, "date", "desc", page, pageSize, null, null, null, null, null);
             return new PPPScoreCollection(scoreSaberCollection);
@@ -66,6 +68,7 @@ namespace PPPredictor.Utilities
 
         public override async Task<double> GetStarsForBeatmapAsync(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
         {
+            //TODO: Caching of data
             if (lvlSelectionNavigationCtrl.selectedBeatmapLevel is CustomBeatmapLevel selectedCustomBeatmapLevel)
             {
                 Song song = await beatLeaderClient.Hash2Async(Hashing.GetCustomLevelHash(selectedCustomBeatmapLevel));
@@ -74,7 +77,7 @@ namespace PPPredictor.Utilities
                     DifficultyDescription diff = song.Difficulties.FirstOrDefault(x => x.Value == beatmap.difficultyRank);
                     if(diff != null)
                     {
-                        if(diff.Stars != null && diff.Ranked)
+                        if (diff.Stars != null && (int)diff.Status == (int)BeatLeaderDifficultyStatus.ranked)
                         {
                             return (double) diff.Stars;
                         }
@@ -86,11 +89,11 @@ namespace PPPredictor.Utilities
 
         public override double ApplyModifierMultiplierToStars(double baseStars, GameplayModifiers gameplayModifiers)
         {
-            List<string> lsModifiers = parseModifiers(gameplayModifiers);
-            return baseStars *= generateModifierMultiplier(lsModifiers);
+            List<string> lsModifiers = ParseModifiers(gameplayModifiers);
+            return baseStars *= GenerateModifierMultiplier(lsModifiers);
         }
 
-        private List<string> parseModifiers(GameplayModifiers gameplayModifiers)
+        private List<string> ParseModifiers(GameplayModifiers gameplayModifiers)
         {
             List<string> lsModifiers = new List<string>();
             if (gameplayModifiers.disappearingArrows) lsModifiers.Add("DA");
@@ -111,13 +114,13 @@ namespace PPPredictor.Utilities
             return lsModifiers;
         }
 
-        private double generateModifierMultiplier(List<string> lsModifier)
+        private double GenerateModifierMultiplier(List<string> lsModifier)
         {
             double multiplier = 1;
             foreach (string modifier in lsModifier)
             {
                 multiplier += (dctModifiers[modifier] * 2);
-                //Why *2???
+                //TODO: Why *2???
             }
             return multiplier;
         }

@@ -20,12 +20,12 @@
             _rankGainCountry = -1;
         }
 
-        public RankGainResult(double rankGlobal, double rankCountry)
+        public RankGainResult(double rankGlobal, double rankCountry, PPPPlayer currentPlayer)
         {
             _rankCountry = rankCountry;
             _rankGlobal = rankGlobal;
-            _rankGainGlobal = Plugin.ProfileInfo.CurrentPlayer.Rank - rankGlobal;
-            _rankGainCountry = Plugin.ProfileInfo.CurrentPlayer.CountryRank - rankCountry;
+            _rankGainGlobal = currentPlayer.Rank - rankGlobal;
+            _rankGainCountry = currentPlayer.CountryRank - rankCountry;
         }
 
         public RankGainResult(double rankGlobal, double rankCountry, double rankGainGlobal, double rankGainCountry)
