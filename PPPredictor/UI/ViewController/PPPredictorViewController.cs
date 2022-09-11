@@ -129,7 +129,7 @@ namespace PPPredictor.UI.ViewController
             get => ppPredictorMgr.CurrentPPPredictor.Percentage;
             set
             {
-                ppPredictorMgr.CurrentPPPredictor.Percentage = value;
+                ppPredictorMgr.SetPercentage(value);
                 Plugin.ProfileInfo.LastPercentageSelected = ppPredictorMgr.CurrentPPPredictor.Percentage;
                 ppPredictorMgr.CurrentPPPredictor.DisplayPP();
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SliderFineValue)));
@@ -257,12 +257,12 @@ namespace PPPredictor.UI.ViewController
 
         private async void OnDifficultyChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
         {
-            this.ppPredictorMgr.CurrentPPPredictor.DifficultyChanged(lvlSelectionNavigationCtrl, beatmap);
+            this.ppPredictorMgr.DifficultyChanged(lvlSelectionNavigationCtrl, beatmap);
         }
 
         private async void OnDetailContentChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, StandardLevelDetailViewController.ContentType contentType)
         {
-            this.ppPredictorMgr.CurrentPPPredictor.DetailContentChanged(lvlSelectionNavigationCtrl, contentType);
+            this.ppPredictorMgr.DetailContentChanged(lvlSelectionNavigationCtrl, contentType);
         }
         internal void ResetDisplay(bool v)
         {

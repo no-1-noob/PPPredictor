@@ -86,5 +86,13 @@ namespace PPPredictor.Utilities
                 item.RefreshCurrentData(v);
             }
         }
+
+        internal void SetPercentage(float percentage)
+        {
+            foreach (var item in _lsPPPredictor)
+            {
+                item.Percentage = percentage;
+            }
+        }
     }
 }
