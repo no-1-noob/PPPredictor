@@ -23,7 +23,7 @@ namespace PPPredictor.Utilities
             _lsPPPredictor.Add(new PPPredictor<PPCalculatorBeatLeader>(Leaderboard.BeatLeader));
             if (_lsPPPredictor.Count > 0)
             {
-                CurrentPPPredictor = _lsPPPredictor[index];
+                CurrentPPPredictor = _lsPPPredictor.Where(x => x.LeaderBoardName == Plugin.ProfileInfo.LastLeaderBoardSelected).FirstOrDefault();
                 CurrentPPPredictor.SetActive(true);
             }
         }
@@ -34,8 +34,8 @@ namespace PPPredictor.Utilities
             index = (index + 1) % _lsPPPredictor.Count();
             CurrentPPPredictor = _lsPPPredictor[index];
             CurrentPPPredictor.SetActive(true);
+            Plugin.ProfileInfo.LastLeaderBoardSelected = CurrentPPPredictor.LeaderBoardName;
             //TODO: Display Name
-            //TODO: Save Leaderboard selection
             Plugin.Log?.Error($"CyclePredictors {CurrentPPPredictor}");
         }
 

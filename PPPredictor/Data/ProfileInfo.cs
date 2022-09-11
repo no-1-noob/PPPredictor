@@ -1,4 +1,4 @@
-﻿using scoresaberapi;
+﻿using PPPredictor.Utilities;
 using System;
 using System.Collections.Generic;
 
@@ -14,6 +14,7 @@ namespace PPPredictor.Data
         private bool _displaySessionValues;
         private int _resetSessionHours;
         private DateTime _lastSessionReset;
+        private string _lastLeaderBoardSelected;
 
         public ProfileInfo()
         {
@@ -25,6 +26,7 @@ namespace PPPredictor.Data
             DisplaySessionValues = false;
             ResetSessionHours = 12;
             LastSessionReset = new DateTime();
+            LastLeaderBoardSelected = Leaderboard.ScoreSaber.ToString();
         }
 
         public float LastPercentageSelected { get => _lastPercentageSelected; set => _lastPercentageSelected = value; }
@@ -35,5 +37,6 @@ namespace PPPredictor.Data
         public int ResetSessionHours { get => _resetSessionHours; set => _resetSessionHours = value; }
         public DateTime LastSessionReset { get => _lastSessionReset; set => _lastSessionReset = value; }
         public List<PPPLeaderboardInfo> LsLeaderboardInfo { get => _lsLeaderboardInfo; set => _lsLeaderboardInfo = value; }
+        public string LastLeaderBoardSelected { get => _lastLeaderBoardSelected; set => _lastLeaderBoardSelected = value; }
     }
 }
