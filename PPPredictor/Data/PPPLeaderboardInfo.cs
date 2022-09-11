@@ -8,6 +8,7 @@ namespace PPPredictor.Data
         private PPPPlayer _sessionPlayer;
         private PPPPlayer _currentPlayer;
         private List<ShortScore> _lsScores;
+        private List<ShortScore> _lsLeaderboardScores;
         private string _leaderboardName;
 
 
@@ -15,11 +16,13 @@ namespace PPPredictor.Data
         public PPPPlayer CurrentPlayer { get => _currentPlayer; set => _currentPlayer = value; }
         public List<ShortScore> LSScores { get => _lsScores; set => _lsScores = value; }
         public string LeaderboardName { get => _leaderboardName; set => _leaderboardName = value; }
+        public List<ShortScore> LsLeaderboardScores { get => _lsLeaderboardScores; set => _lsLeaderboardScores = value; }
 
         public PPPLeaderboardInfo(Leaderboard leaderboard)
         {
             this._leaderboardName = leaderboard.ToString();
             this._lsScores = new List<ShortScore>();
+            this._lsLeaderboardScores = new List<ShortScore>();
             this._currentPlayer = new PPPPlayer();
             this._sessionPlayer = new PPPPlayer();
         }

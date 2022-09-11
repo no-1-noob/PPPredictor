@@ -68,20 +68,32 @@ namespace PPPredictor.Utilities
 
         public override async Task<double> GetStarsForBeatmapAsync(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
         {
-            //TODO: Caching of data
             if (lvlSelectionNavigationCtrl.selectedBeatmapLevel is CustomBeatmapLevel selectedCustomBeatmapLevel)
             {
-                Song song = await beatLeaderClient.Hash2Async(Hashing.GetCustomLevelHash(selectedCustomBeatmapLevel));
-                if(song != null)
+                string songHash = Hashing.GetCustomLevelHash(selectedCustomBeatmapLevel);
+                string searchString = CreateSeachString(songHash, beatmap.difficultyRank);
+                ShortScore cachedInfo = _leaderboardInfo.LsLeaderboardScores?.Where(x => x.Searchstring == searchString).FirstOrDefault();
+                bool refetchInfo = cachedInfo != null && cachedInfo.FetchTime < DateTime.Now.AddDays(-7);
+                if (cachedInfo == null || refetchInfo)
                 {
-                    DifficultyDescription diff = song.Difficulties.FirstOrDefault(x => x.Value == beatmap.difficultyRank);
-                    if(diff != null)
+                    if (refetchInfo) _leaderboardInfo.LsLeaderboardScores.Remove(cachedInfo);
+                    Song song = await beatLeaderClient.Hash2Async(songHash);
+                    if(song != null)
                     {
-                        if (diff.Stars != null && (int)diff.Status == (int)BeatLeaderDifficultyStatus.ranked)
+                        DifficultyDescription diff = song.Difficulties.FirstOrDefault(x => x.Value == beatmap.difficultyRank);
+                        if(diff != null)
                         {
-                            return (double) diff.Stars;
+                            _leaderboardInfo.LsLeaderboardScores.Add(new ShortScore(searchString, (double)diff.Stars, DateTime.Now));
+                            if (diff.Stars != null && (int)diff.Status == (int)BeatLeaderDifficultyStatus.ranked)
+                            {                                
+                                return (double) diff.Stars;
+                            }
                         }
                     }
+                }
+                else
+                {
+                    return cachedInfo.Stars;
                 }
             }
             return 0;
