@@ -47,6 +47,7 @@ namespace PPPredictor.Utilities
         #region internal values
         private string _selectedMapSearchString;
         private bool _isDataLoading = false;
+        private bool _isActive = false;
 
         #endregion
 
@@ -72,7 +73,7 @@ namespace PPPredictor.Utilities
             set
             {
                 _percentage = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Percentage)));
+                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Percentage)));
             }
         }
 
@@ -81,7 +82,7 @@ namespace PPPredictor.Utilities
             set
             {
                 _ppGainRaw = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PPGainRaw)));
+                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PPGainRaw)));
             }
             get => _ppGainRaw;
         }
@@ -91,7 +92,7 @@ namespace PPPredictor.Utilities
             set
             {
                 _ppGainWeighted = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PPGainWeighted)));
+                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PPGainWeighted)));
             }
             get => _ppGainWeighted;
         }
@@ -101,7 +102,7 @@ namespace PPPredictor.Utilities
             set
             {
                 _ppGainDiffColor = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PPGainDiffColor)));
+                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PPGainDiffColor)));
             }
             get => _ppGainDiffColor;
         }
@@ -112,7 +113,7 @@ namespace PPPredictor.Utilities
             set
             {
                 _sessionRank = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionRank)));
+                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionRank)));
             }
             get => _sessionRank;
         }
@@ -121,7 +122,7 @@ namespace PPPredictor.Utilities
             set
             {
                 _sessionRankDiff = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionRankDiff)));
+                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionRankDiff)));
             }
             get => _sessionRankDiff;
         }
@@ -130,7 +131,7 @@ namespace PPPredictor.Utilities
             set
             {
                 _sessionRankDiffColor = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionRankDiffColor)));
+                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionRankDiffColor)));
             }
             get => _sessionRankDiffColor;
         }
@@ -140,7 +141,7 @@ namespace PPPredictor.Utilities
             set
             {
                 _sessionCountryRank = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionCountryRank)));
+                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionCountryRank)));
             }
             get => _sessionCountryRank;
         }
@@ -149,7 +150,7 @@ namespace PPPredictor.Utilities
             set
             {
                 _sessionCountryRankDiff = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionCountryRankDiff)));
+                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionCountryRankDiff)));
             }
             get => _sessionCountryRankDiff;
         }
@@ -158,7 +159,7 @@ namespace PPPredictor.Utilities
             set
             {
                 _sessionCountryRankDiffColor = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionCountryRankDiffColor)));
+                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionCountryRankDiffColor)));
             }
             get => _sessionCountryRankDiffColor;
         }
@@ -168,7 +169,7 @@ namespace PPPredictor.Utilities
             set
             {
                 _sessionPP = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionPP)));
+                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionPP)));
             }
             get => _sessionPP;
         }
@@ -177,7 +178,7 @@ namespace PPPredictor.Utilities
             set
             {
                 _sessionPPDiff = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionPPDiff)));
+                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionPPDiff)));
             }
             get => _sessionPPDiff;
         }
@@ -186,7 +187,7 @@ namespace PPPredictor.Utilities
             set
             {
                 _sessionPPDiffColor = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionPPDiffColor)));
+                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionPPDiffColor)));
             }
             get => _sessionPPDiffColor;
         }
@@ -198,7 +199,7 @@ namespace PPPredictor.Utilities
             set
             {
                 _predictedRank = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedRank)));
+                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedRank)));
             }
             get => _predictedRank;
         }
@@ -207,7 +208,7 @@ namespace PPPredictor.Utilities
             set
             {
                 _predictedRankDiff = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedRankDiff)));
+                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedRankDiff)));
             }
             get => _predictedRankDiff;
         }
@@ -216,7 +217,7 @@ namespace PPPredictor.Utilities
             set
             {
                 _predictedRankDiffColor = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedRankDiffColor)));
+                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedRankDiffColor)));
             }
             get => _predictedRankDiffColor;
         }
@@ -225,7 +226,7 @@ namespace PPPredictor.Utilities
             set
             {
                 _predictedCountryRank = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedCountryRank)));
+                if(_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedCountryRank)));
             }
             get => _predictedCountryRank;
         }
@@ -234,7 +235,7 @@ namespace PPPredictor.Utilities
             set
             {
                 _predictedCountryRankDiff = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedCountryRankDiff)));
+                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedCountryRankDiff)));
             }
             get => _predictedCountryRankDiff;
         }
@@ -243,7 +244,7 @@ namespace PPPredictor.Utilities
             set
             {
                 _predictedCountryRankDiffColor = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedCountryRankDiffColor)));
+                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedCountryRankDiffColor)));
             }
             get => _predictedCountryRankDiffColor;
         }
@@ -254,8 +255,8 @@ namespace PPPredictor.Utilities
             set
             {
                 _isDataLoading = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsDataLoading)));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsNoDataLoading)));
+                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsDataLoading)));
+                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsNoDataLoading)));
             }
             get => _isDataLoading;
         }
@@ -264,12 +265,16 @@ namespace PPPredictor.Utilities
         {
             get => !_isDataLoading;
         }
+
+        public string LeaderBoardName
+        {
+            get => _leaderboardInfo.LeaderboardName;
+        }
         #endregion
 
         #region loadInfos
         internal void LoadInfos()
         {
-            //TODO: Put in the constructor?? Dont need extra classes??
             _leaderboardInfo = Plugin.ProfileInfo.LsLeaderboardInfo.Find(x => x.LeaderboardName == leaderboardName.ToString());
             if(_leaderboardInfo == null)
             {
@@ -439,6 +444,40 @@ namespace PPPredictor.Utilities
             return
                 Plugin.ProfileInfo.ResetSessionHours > 0
                 && (DateTime.Now - Plugin.ProfileInfo.LastSessionReset).TotalHours > Plugin.ProfileInfo.ResetSessionHours;
+        }
+
+        public void SetActive(bool setActive)
+        {
+            _isActive = setActive;
+            DisplaySession();
+            DisplayPP();
+            if (_isActive) RefreshAllDisplayValues();
+        }
+
+        private void RefreshAllDisplayValues()
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LeaderBoardName)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Percentage)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PPGainRaw)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PPGainWeighted)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PPGainDiffColor)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionRank)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionRankDiff)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionRankDiffColor)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionCountryRank)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionCountryRankDiff)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionCountryRankDiffColor)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionPP)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionPPDiff)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionPPDiffColor)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedRank)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedRankDiff)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedRankDiffColor)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedCountryRank)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedCountryRankDiff)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedCountryRankDiffColor)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsDataLoading)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsNoDataLoading)));
         }
     }
 }

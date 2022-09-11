@@ -13,6 +13,7 @@ namespace PPPredictor.Interfaces
         void RefreshCurrentData(int fetchLength);
         void ResetDisplay(bool resetAll);
         void DisplayPP();
+        void SetActive(bool setActive);
         #region Properties
         float Percentage { get; set; }
         string PPGainRaw { get; set; }
@@ -35,6 +36,7 @@ namespace PPPredictor.Interfaces
         string PredictedCountryRankDiffColor { get; set; }
         bool IsDataLoading { get; }
         bool IsNoDataLoading { get; }
+        string LeaderBoardName { get; }
         #endregion
     }
 }

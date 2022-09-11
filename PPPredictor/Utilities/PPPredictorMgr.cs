@@ -20,19 +20,22 @@ namespace PPPredictor.Utilities
         {
             _lsPPPredictor = new List<IPPPredictor>();
             _lsPPPredictor.Add(new PPPredictor<PPCalculatorScoreSaber>(Leaderboard.ScoreSaber));
-            //_lsPPPredictor.Add(new PPPredictor<PPCalculatorBeatLeader>());
+            _lsPPPredictor.Add(new PPPredictor<PPCalculatorBeatLeader>(Leaderboard.BeatLeader));
             if (_lsPPPredictor.Count > 0)
             {
                 CurrentPPPredictor = _lsPPPredictor[index];
+                CurrentPPPredictor.SetActive(true);
             }
         }
 
         public void CyclePredictors()
         {
+            _lsPPPredictor.ForEach(item => item.SetActive(false));
             index = (index + 1) % _lsPPPredictor.Count();
             CurrentPPPredictor = _lsPPPredictor[index];
-            //TODO: set active
-            //TODO: 
+            CurrentPPPredictor.SetActive(true);
+            //TODO: Display Name
+            //TODO: Save Leaderboard selection
             Plugin.Log?.Error($"CyclePredictors {CurrentPPPredictor}");
         }
 

@@ -10,7 +10,7 @@ namespace PPPredictor.Utilities
 {
     public abstract class PPCalculator
     {
-        private readonly List<PPPPlayer> _lsPlayerRankings;
+        private List<PPPPlayer> _lsPlayerRankings;
         internal PPPLeaderboardInfo _leaderboardInfo;
 
         public PPCalculator()
@@ -131,6 +131,10 @@ namespace PPPredictor.Utilities
 
         public async Task<RankGainResult> GetPlayerRankGain(double pp)
         {
+            //Refetch if the current rank has decrease outside of fetched range (first GetPlayerRankGain call after loading saved Session data, then update from web)
+            double worstRankFetched = _lsPlayerRankings.Select(x => x.Rank).DefaultIfEmpty(Double.MaxValue).Max();
+            if (_leaderboardInfo.CurrentPlayer.Rank > worstRankFetched) _lsPlayerRankings = new List<PPPPlayer>();
+
             double bestRankFetched = _lsPlayerRankings.Select(x => x.Rank).DefaultIfEmpty(-1).Min();
             double fetchIndexPage = bestRankFetched > 0 ? Math.Floor((bestRankFetched - 1) / 50) + 1 : Math.Floor(_leaderboardInfo.CurrentPlayer.Rank / 50) + 1;
             bool needMoreData = true;

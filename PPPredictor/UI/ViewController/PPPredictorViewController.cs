@@ -248,6 +248,12 @@ namespace PPPredictor.UI.ViewController
         {
             get => !this.ppPredictorMgr.CurrentPPPredictor.IsDataLoading;
         }
+        
+        [UIValue("leaderBoardName")]
+        private string LeaderBoardName
+        {
+            get => this.ppPredictorMgr.CurrentPPPredictor.LeaderBoardName;
+        }
 
         private async void OnDifficultyChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
         {
