@@ -15,6 +15,12 @@ namespace PPPredictor.Utilities
         private List<IPPPredictor> _lsPPPredictor;
         private int index = 0;
         public IPPPredictor CurrentPPPredictor;
+        private PropertyChangedEventHandler propertyChanged;
+        private bool isLeftArrowActive = false;
+        private bool isRightArrowActive = false;
+
+        public bool IsLeftArrowActive { get => isLeftArrowActive; }
+        public bool IsRightArrowActive { get => isRightArrowActive; }
 
         public PPPredictorMgr()
         {
@@ -23,20 +29,34 @@ namespace PPPredictor.Utilities
             _lsPPPredictor.Add(new PPPredictor<PPCalculatorBeatLeader>(Leaderboard.BeatLeader));
             if (_lsPPPredictor.Count > 0)
             {
-                CurrentPPPredictor = _lsPPPredictor.Where(x => x.LeaderBoardName == Plugin.ProfileInfo.LastLeaderBoardSelected).FirstOrDefault();
-                CurrentPPPredictor.SetActive(true);
+                index = _lsPPPredictor.FindIndex(x => x.LeaderBoardName == Plugin.ProfileInfo.LastLeaderBoardSelected);
+                if(index >= 0)
+                {
+                    CurrentPPPredictor = _lsPPPredictor[index];
+                    CurrentPPPredictor.SetActive(true);
+                    SetNavigationArrowInteractivity();
+                }
             }
         }
 
-        public void CyclePredictors()
+        public void CyclePredictors(int offset)
         {
             _lsPPPredictor.ForEach(item => item.SetActive(false));
-            index = (index + 1) % _lsPPPredictor.Count();
+            index = Math.Min(Math.Max((index + offset), 0), _lsPPPredictor.Count() - 1);
             CurrentPPPredictor = _lsPPPredictor[index];
             CurrentPPPredictor.SetActive(true);
             Plugin.ProfileInfo.LastLeaderBoardSelected = CurrentPPPredictor.LeaderBoardName;
-            //TODO: Display Name
-            Plugin.Log?.Error($"CyclePredictors {CurrentPPPredictor}");
+            SetNavigationArrowInteractivity();
+            //TODO: Reload also when scoresaber doesnt upload...
+            //TODO: Beatleader played score reload is sometimes slow
+        }
+
+        private void SetNavigationArrowInteractivity()
+        {
+            isLeftArrowActive = index > 0;
+            isRightArrowActive = index < _lsPPPredictor.Count() - 1;
+            propertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsLeftArrowActive)));
+            propertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsRightArrowActive)));
         }
 
         public void ChangeGameplayModifiers(GameplaySetupViewController gameplaySetupViewController)
@@ -65,6 +85,7 @@ namespace PPPredictor.Utilities
 
         internal void SetPropertyChangedEventHandler(PropertyChangedEventHandler propertyChanged)
         {
+            this.propertyChanged = propertyChanged;
             foreach (var item in _lsPPPredictor)
             {
                 item.SetPropertyChangedEventHandler(propertyChanged);

@@ -103,10 +103,15 @@ namespace PPPredictor.UI.ViewController
             this.ppPredictorMgr.UpdateCurrentAndCheckResetSession(true);
         }
 #pragma warning restore IDE0051 // Remove unused private members
-        [UIAction("cycle-leaderboard-clicked")]
-        private void CycleLeaderboardClicked()
+        [UIAction("arrow-prev-leaderboard-clicked")]
+        private void ArrowPrevLeaderboardClicked()
         {
-            this.ppPredictorMgr.CyclePredictors();
+            this.ppPredictorMgr.CyclePredictors(-1);
+        }
+        [UIAction("arrow-next-leaderboard-clicked")]
+        private void ArrowNextLeaderboardClicked()
+        {
+            this.ppPredictorMgr.CyclePredictors(1);
         }
         #endregion
 
@@ -248,11 +253,22 @@ namespace PPPredictor.UI.ViewController
         {
             get => !this.ppPredictorMgr.CurrentPPPredictor.IsDataLoading;
         }
-        
+
         [UIValue("leaderBoardName")]
         private string LeaderBoardName
         {
             get => this.ppPredictorMgr.CurrentPPPredictor.LeaderBoardName;
+        }
+
+        [UIValue("isLeftArrowActive")]
+        private bool IsLeftArrowActive
+        {
+            get => this.ppPredictorMgr.IsLeftArrowActive;
+        }
+        [UIValue("isRightArrowActive")]
+        private bool IsRightArrowActive
+        {
+            get => this.ppPredictorMgr.IsRightArrowActive;
         }
 
         private async void OnDifficultyChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
