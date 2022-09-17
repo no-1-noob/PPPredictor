@@ -12,7 +12,7 @@ namespace PPPredictor.Utilities
 {
     class PPPredictorMgr
     {
-        private List<IPPPredictor> _lsPPPredictor;
+        private readonly List<IPPPredictor> _lsPPPredictor;
         private int index = 0;
         public IPPPredictor CurrentPPPredictor;
         private PropertyChangedEventHandler propertyChanged;
@@ -24,9 +24,11 @@ namespace PPPredictor.Utilities
 
         public PPPredictorMgr()
         {
-            _lsPPPredictor = new List<IPPPredictor>();
-            _lsPPPredictor.Add(new PPPredictor<PPCalculatorScoreSaber>(Leaderboard.ScoreSaber));
-            _lsPPPredictor.Add(new PPPredictor<PPCalculatorBeatLeader>(Leaderboard.BeatLeader));
+            _lsPPPredictor = new List<IPPPredictor>
+            {
+                new PPPredictor<PPCalculatorScoreSaber>(Leaderboard.ScoreSaber),
+                new PPPredictor<PPCalculatorBeatLeader>(Leaderboard.BeatLeader)
+            };
             if (_lsPPPredictor.Count > 0)
             {
                 index = _lsPPPredictor.FindIndex(x => x.LeaderBoardName == Plugin.ProfileInfo.LastLeaderBoardSelected);

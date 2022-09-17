@@ -48,7 +48,7 @@ namespace PPPredictor.Utilities
         private string _selectedMapSearchString;
         private bool _isDataLoading = false;
         private bool _isActive = false;
-
+        private bool _isUserFound = true;
         #endregion
 
         internal PPPLeaderboardInfo _leaderboardInfo;
@@ -270,6 +270,22 @@ namespace PPPredictor.Utilities
         {
             get => _leaderboardInfo.LeaderboardName;
         }
+
+        public bool IsUserFound
+        {
+            set
+            {
+                Plugin.Log?.Error($"IsUserFound {value}");
+                _isUserFound = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsUserFound)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsNoUserFound)));
+            }
+            get => _isUserFound;
+        }
+        public bool IsNoUserFound
+        {
+            get => !_isUserFound;
+        }
         #endregion
 
         #region loadInfos
@@ -408,7 +424,7 @@ namespace PPPredictor.Utilities
         {
             await UpdateCurrentAndCheckResetSession(false);
             IsDataLoading = true;
-            UserInfo userInfo = await BS_Utils.Gameplay.GetUserInfo.GetUserAsync();
+            UserInfo userInfo = await GetUserInfo();
             await _ppCalculator.GetPlayerScores(userInfo.platformUserId, fetchLength);
             DisplayPP();
             IsDataLoading = false;
@@ -417,8 +433,16 @@ namespace PPPredictor.Utilities
         public async Task UpdateCurrentAndCheckResetSession(bool doResetSession)
         {
             IsDataLoading = true;
-            UserInfo userInfo = await BS_Utils.Gameplay.GetUserInfo.GetUserAsync();
+            UserInfo userInfo = await GetUserInfo();
             PPPPlayer player = await _ppCalculator.GetProfile(userInfo.platformUserId);
+            if (player.IsErrorUser)
+            {
+                IsUserFound = false;
+            }
+            else
+            {
+                IsUserFound = true;
+            }
             _leaderboardInfo.CurrentPlayer = player;
             if (doResetSession || _leaderboardInfo.SessionPlayer == null || NeedsResetSession())
             {
@@ -433,7 +457,7 @@ namespace PPPredictor.Utilities
         {
             await UpdateCurrentAndCheckResetSession(resetAll);
             IsDataLoading = true;
-            UserInfo userInfo = await BS_Utils.Gameplay.GetUserInfo.GetUserAsync();
+            UserInfo userInfo = await GetUserInfo();
             await _ppCalculator.GetPlayerScores(userInfo.platformUserId, 100);
             DisplayPP();
             IsDataLoading = false;
@@ -478,6 +502,13 @@ namespace PPPredictor.Utilities
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedCountryRankDiffColor)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsDataLoading)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsNoDataLoading)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsUserFound)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsNoUserFound)));
+        }
+
+        private async Task<UserInfo> GetUserInfo()
+        {
+            return await BS_Utils.Gameplay.GetUserInfo.GetUserAsync();
         }
     }
 }

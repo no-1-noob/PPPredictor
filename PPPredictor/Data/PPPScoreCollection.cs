@@ -1,24 +1,28 @@
 ﻿using beatleaderapi;
 using scoresaberapi;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PPPredictor.Data
 {
     public class PPPScoreCollection
     {
-        private List<PPPScore> lsPPPScore = new List<PPPScore>();
-        private double page;
-        private double itemsPerPage;
-        private double total;
+        private readonly List<PPPScore> lsPPPScore = new List<PPPScore>();
+        private readonly double page;
+        private readonly double itemsPerPage;
+        private readonly double total;
 
         public List<PPPScore> LsPPPScore { get => lsPPPScore; }
         public double Page { get => page; }
         public double ItemsPerPage { get => itemsPerPage; }
         public double Total { get => total; }
+
+        public PPPScoreCollection()
+        {
+            lsPPPScore = new List<PPPScore>();
+            page = -1;
+            itemsPerPage = -1;
+            total = -1;
+        }
 
         public PPPScoreCollection(PlayerScoreCollection scoreSaberPlayerScoreCollection)
         {

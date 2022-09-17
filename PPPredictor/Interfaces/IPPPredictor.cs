@@ -37,6 +37,10 @@ namespace PPPredictor.Interfaces
         bool IsDataLoading { get; }
         bool IsNoDataLoading { get; }
         string LeaderBoardName { get; }
+        bool IsUserFound { get; }
+        bool IsNoUserFound { get; }
+
+
         #endregion
     }
 }

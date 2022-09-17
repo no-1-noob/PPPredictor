@@ -7,10 +7,10 @@ namespace PPPredictor.Data
 {
     public class PPPScore
     {
-        DateTimeOffset timeSet;
-        double pp;
-        string songHash;
-        double difficulty;
+        readonly DateTimeOffset timeSet;
+        readonly double pp;
+        readonly string songHash;
+        readonly double difficulty;
 
         public DateTimeOffset TimeSet { get => timeSet; }
         public double Pp { get => pp; }

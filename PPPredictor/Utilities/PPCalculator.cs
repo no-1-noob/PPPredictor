@@ -84,80 +84,96 @@ namespace PPPredictor.Utilities
                 };
                 _leaderboardInfo.LSScores.Sort();
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
-                Plugin.Log?.Error($"Error in PPPredictor: getPlayerScores: {ex.Message}");
+                Plugin.Log?.Error($"PPPredictor getPlayerScores Error: {ex.Message}");
             }
 
         }
 
         public PPGainResult GetPlayerScorePPGain(string mapSearchString, double pp)
         {
-            if (_leaderboardInfo.LSScores.Count > 0 && !string.IsNullOrEmpty(mapSearchString) && pp > 0)
+            try
             {
-                double ppAfterPlay = 0;
-                int index = 1;
-                bool newPPadded = false;
-                bool newPPSkiped = false;
-                _leaderboardInfo.LSScores.Sort((score1, score2) => score2.Pp.CompareTo(score1.Pp));
-                foreach (ShortScore score in _leaderboardInfo.LSScores)
+                if (_leaderboardInfo.LSScores.Count > 0 && !string.IsNullOrEmpty(mapSearchString) && pp > 0)
                 {
-                    double weightedPP = WeightPP(score.Pp, index);
-                    double weightedNewPP = WeightPP(pp, index);
-                    if (score.Searchstring == mapSearchString) //skip older (lower) score
+                    double ppAfterPlay = 0;
+                    int index = 1;
+                    bool newPPadded = false;
+                    bool newPPSkiped = false;
+                    _leaderboardInfo.LSScores.Sort((score1, score2) => score2.Pp.CompareTo(score1.Pp));
+                    foreach (ShortScore score in _leaderboardInfo.LSScores)
                     {
-                        if (!newPPadded)
+                        double weightedPP = WeightPP(score.Pp, index);
+                        double weightedNewPP = WeightPP(pp, index);
+                        if (score.Searchstring == mapSearchString) //skip older (lower) score
                         {
-                            ppAfterPlay += Math.Max(weightedPP, weightedNewPP); //Special case for improvement of your top play
-                            newPPSkiped = true;
-                            index++;
+                            if (!newPPadded)
+                            {
+                                ppAfterPlay += Math.Max(weightedPP, weightedNewPP); //Special case for improvement of your top play
+                                newPPSkiped = true;
+                                index++;
+                            }
+                            continue;
                         }
-                        continue;
-                    }
-                    if (!newPPadded && !newPPSkiped && weightedNewPP >= weightedPP) //add new (potential) pp
-                    {
-                        ppAfterPlay += weightedNewPP;
-                        newPPadded = true;
+                        if (!newPPadded && !newPPSkiped && weightedNewPP >= weightedPP) //add new (potential) pp
+                        {
+                            ppAfterPlay += weightedNewPP;
+                            newPPadded = true;
+                            index++;
+                            weightedPP = WeightPP(score.Pp, index);
+                        }
+                        ppAfterPlay += weightedPP;
                         index++;
-                        weightedPP = WeightPP(score.Pp, index);
                     }
-                    ppAfterPlay += weightedPP;
-                    index++;
+                    return new PPGainResult(Math.Round(ppAfterPlay, 2, MidpointRounding.AwayFromZero), Math.Round(ppAfterPlay - _leaderboardInfo.CurrentPlayer.Pp, 2, MidpointRounding.AwayFromZero));
                 }
-                return new PPGainResult(Math.Round(ppAfterPlay, 2, MidpointRounding.AwayFromZero), Math.Round(ppAfterPlay - _leaderboardInfo.CurrentPlayer.Pp, 2, MidpointRounding.AwayFromZero));
+                return new PPGainResult(_leaderboardInfo.CurrentPlayer.Pp, pp);
             }
-            return new PPGainResult(_leaderboardInfo.CurrentPlayer.Pp, pp);
+            catch (Exception ex)
+            {
+                Plugin.Log?.Error($"PPPredictor GetPlayerScorePPGain Error: {ex.Message}");
+                return new PPGainResult(_leaderboardInfo.CurrentPlayer.Pp, pp);
+            }
         }
 
         public async Task<RankGainResult> GetPlayerRankGain(double pp)
         {
-            //Refetch if the current rank has decrease outside of fetched range (first GetPlayerRankGain call after loading saved Session data, then update from web)
-            double worstRankFetched = _lsPlayerRankings.Select(x => x.Rank).DefaultIfEmpty(Double.MaxValue).Max();
-            if (_leaderboardInfo.CurrentPlayer.Rank > worstRankFetched) _lsPlayerRankings = new List<PPPPlayer>();
-
-            double bestRankFetched = _lsPlayerRankings.Select(x => x.Rank).DefaultIfEmpty(-1).Min();
-            double fetchIndexPage = bestRankFetched > 0 ? Math.Floor((bestRankFetched - 1) / 50) + 1 : Math.Floor(_leaderboardInfo.CurrentPlayer.Rank / 50) + 1;
-            bool needMoreData = true;
-            while (needMoreData)
+            try
             {
-                int indexOfBetterPlayer = _lsPlayerRankings.FindIndex(x => x.Pp > pp);
-                if (indexOfBetterPlayer != -1 || fetchIndexPage == 1)
+                //Refetch if the current rank has decrease outside of fetched range (first GetPlayerRankGain call after loading saved Session data, then update from web)
+                double worstRankFetched = _lsPlayerRankings.Select(x => x.Rank).DefaultIfEmpty(Double.MaxValue).Max();
+                if (_leaderboardInfo.CurrentPlayer.Rank > worstRankFetched) _lsPlayerRankings = new List<PPPPlayer>();
+
+                double bestRankFetched = _lsPlayerRankings.Select(x => x.Rank).DefaultIfEmpty(-1).Min();
+                double fetchIndexPage = bestRankFetched > 0 ? Math.Floor((bestRankFetched - 1) / 50) + 1 : Math.Floor(_leaderboardInfo.CurrentPlayer.Rank / 50) + 1;
+                bool needMoreData = true;
+                while (needMoreData)
                 {
-                    //Found a better player or already fetched until rank 1
-                    needMoreData = false;
-                    continue;
+                    int indexOfBetterPlayer = _lsPlayerRankings.FindIndex(x => x.Pp > pp);
+                    if (indexOfBetterPlayer != -1 || fetchIndexPage == 1)
+                    {
+                        //Found a better player or already fetched until rank 1
+                        needMoreData = false;
+                        continue;
+                    }
+                    else
+                    {
+                        List<PPPPlayer> playerscores = await GetPlayers(fetchIndexPage);
+                        _lsPlayerRankings.AddRange(playerscores);
+                    }
+                    fetchIndexPage--;
+                    await Task.Delay(250);
                 }
-                else
-                {
-                    List<PPPPlayer> playerscores = await GetPlayers(fetchIndexPage);
-                    _lsPlayerRankings.AddRange(playerscores);
-                }
-                fetchIndexPage--;
-                await Task.Delay(250);
+                double rankAfterPlay = _lsPlayerRankings.Where(x => x.Pp <= pp).Select(x => x.Rank).DefaultIfEmpty(-1).Min();
+                double rankCountryAfterPlay = _lsPlayerRankings.Where(x => x.Pp <= pp && x.Country == _leaderboardInfo.CurrentPlayer.Country).Select(x => x.CountryRank).DefaultIfEmpty(-1).Min();
+                return new RankGainResult(rankAfterPlay, rankCountryAfterPlay, _leaderboardInfo.CurrentPlayer);
             }
-            double rankAfterPlay = _lsPlayerRankings.Where(x => x.Pp <= pp).Select(x => x.Rank).DefaultIfEmpty(-1).Min();
-            double rankCountryAfterPlay = _lsPlayerRankings.Where(x => x.Pp <= pp && x.Country == _leaderboardInfo.CurrentPlayer.Country).Select(x => x.CountryRank).DefaultIfEmpty(-1).Min();
-            return new RankGainResult(rankAfterPlay, rankCountryAfterPlay, _leaderboardInfo.CurrentPlayer);
+            catch (Exception ex)
+            {
+                Plugin.Log?.Error($"PPPredictor GetPlayerRankGain Error: {ex.Message}");
+                return new RankGainResult();
+            }
         }
 
         public double WeightPP(double rawPP, int index)
