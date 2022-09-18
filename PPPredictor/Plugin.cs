@@ -15,8 +15,6 @@ namespace PPPredictor
 
         internal static ProfileInfo ProfileInfo;
 
-        internal static PPCalculator PPCalculator;
-
         internal static PPPredictorViewController pppViewController;
 
         [Init]
@@ -29,7 +27,6 @@ namespace PPPredictor
         {
             Instance = this;
             Log = logger;
-            PPCalculator = new PPCalculator();
             ProfileInfo = ProfileInfoMgr.LoadProfileInfo();
             zenjector.UseSiraSync();
             zenjector.Install<PPPPredictorDisplayInstaller>(Location.Menu);

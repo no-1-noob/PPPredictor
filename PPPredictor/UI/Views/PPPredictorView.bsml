@@ -1,11 +1,11 @@
 ﻿<vertical vertical-fit='PreferredSize' preferred-width='100' child-align='MiddleLeft' spacing='1.5' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='https://monkeymanboy.github.io/BSML-Docs/ https://raw.githubusercontent.com/monkeymanboy/BSML-Docs/gh-pages/BSMLSchema.xsd'>
-    <loading-indicator id='loadingIndicator' preserve-aspect='true' active='~isDataLoading' ignore-layout='true'></loading-indicator>
+  <loading-indicator id='loadingIndicator' preserve-aspect='true' active='~isDataLoading' ignore-layout='true'></loading-indicator>
     <vertical vertical-fit='PreferredSize' preferred-width='60' bg='panel-top' pad-top='1' pad-bottom='1'>
       <horizontal horizontal-fit='PreferredSize' pad-left='0' align='Left' child-align='MiddleLeft'>
-        <text text='!!Session!!' italics='true' align='Center' font-size='4' />
+          <text text='!!Session!!' italics='true' align='Center' font-size='4' />
         <horizontal horizontal-fit='PreferredSize' align='Left' ignore-layout='true' pad-left='40'>
           <button text='🔃' hover-hint='Refresh Profile' on-click='refresh-profile-clicked' min-width='8' pref-height='8' interactable='~isNoDataLoading' />
-          <button text='🗑️' hover-hint='Reset Session' on-click='reset-session-clicked' min-width='6' pref-height='8' interactable='~isNoDataLoading' />
+          <button text='🗑' hover-hint='Reset Session' on-click='reset-session-clicked' min-width='6' pref-height='8' interactable='~isNoDataLoading' />
         </horizontal>
       </horizontal>
       <horizontal horizontal-fit='PreferredSize' pad-left='0' align='Left' child-align='MiddleLeft'>
@@ -36,6 +36,17 @@
         </vertical>
       </horizontal>
     </vertical>
+  <vertical vertical-fit='PreferredSize' preferred-width='60' bg='panel-top' pad-top='1' pad-bottom='1'>
+    <horizontal horizontal-fit='PreferredSize' pad-left='0' align='Left' child-align='MiddleLeft'>
+      <text text='~leaderBoardName' italics='true' align='Left' font-size='4' />
+    </horizontal>
+    <horizontal horizontal-fit='PreferredSize' align='Left' ignore-layout='true' pad-right='40'>
+      <button text="←" hover-hint='Previous leaderboard' on-click='arrow-prev-leaderboard-clicked' min-width='6' pref-height='8' interactable='~isLeftArrowActive' />
+    </horizontal>
+    <horizontal horizontal-fit='PreferredSize' align='Left' ignore-layout='true' pad-left='40'>
+      <button text="→" hover-hint='Next leaderboard' on-click='arrow-next-leaderboard-clicked' min-width='6' pref-height='8' interactable='~isRightArrowActive' />
+    </horizontal>
+  </vertical>
   <vertical vertical-fit='PreferredSize' preferred-width='60' bg='panel-top' pad-top='1' pad-bottom='1'>
     <text text='!!PPPredictor!!' italics='true' align='Center' font-size='4' />
     <horizontal horizontal-fit='PreferredSize' pad-left='0' align='Center' child-align='MiddleLeft'>
