@@ -117,5 +117,13 @@ namespace PPPredictor.Utilities
                 item.Percentage = percentage;
             }
         }
+
+        internal void ResetDisplay(bool resetAll)
+        {
+            foreach (var item in _lsPPPredictor)
+            {
+                item.ResetDisplay(resetAll);
+            }
+        }
     }
 }

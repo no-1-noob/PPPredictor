@@ -18,7 +18,6 @@ namespace PPPredictor.Utilities
 
         public PPCalculatorBeatLeader() : base() 
         {
-            Plugin.Log?.Error($"ctor: PPCalculatorBeatLeader");
             beatLeaderClient = new beatleaderapi.beatleaderapi("https://api.beatleader.xyz/", httpClient);
             GetModifiers();
         }

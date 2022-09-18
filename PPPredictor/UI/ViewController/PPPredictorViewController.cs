@@ -76,7 +76,7 @@ namespace PPPredictor.UI.ViewController
         {
             ResetPosition();
             DisplayInitialPercentages();
-            this.ppPredictorMgr.CurrentPPPredictor.ResetDisplay(false);
+            this.ppPredictorMgr.ResetDisplay(false);
             this.ppPredictorMgr.SetPropertyChangedEventHandler(PropertyChanged);
         }
 
@@ -335,7 +335,7 @@ namespace PPPredictor.UI.ViewController
         {
             ResetPosition();
             DisplayInitialPercentages();
-            this.ppPredictorMgr.CurrentPPPredictor.ResetDisplay(v);
+            this.ppPredictorMgr.ResetDisplay(v);
         }
 
         private void OnLevelSelectionActivated(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)

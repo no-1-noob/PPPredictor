@@ -275,7 +275,6 @@ namespace PPPredictor.Utilities
         {
             set
             {
-                Plugin.Log?.Error($"IsUserFound {value}");
                 _isUserFound = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsUserFound)));
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsNoUserFound)));
@@ -467,7 +466,8 @@ namespace PPPredictor.Utilities
         {
             return
                 Plugin.ProfileInfo.ResetSessionHours > 0
-                && (DateTime.Now - Plugin.ProfileInfo.LastSessionReset).TotalHours > Plugin.ProfileInfo.ResetSessionHours;
+                && ((DateTime.Now - Plugin.ProfileInfo.LastSessionReset).TotalHours > Plugin.ProfileInfo.ResetSessionHours
+                || (DateTime.Now - Plugin.ProfileInfo.LastSessionReset).TotalMinutes < 1); //Parallel reset of multiple scoreboards
         }
 
         public void SetActive(bool setActive)
