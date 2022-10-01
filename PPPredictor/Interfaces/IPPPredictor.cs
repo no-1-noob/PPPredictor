@@ -12,6 +12,9 @@ namespace PPPredictor.Interfaces
         Task UpdateCurrentAndCheckResetSession(bool doResetSession);
         void RefreshCurrentData(int fetchLength);
         void ResetDisplay(bool resetAll);
+        double CalculatePPatPercentage(double percentage);
+        double CalculatePPGain(double pp);
+        bool IsRanked();
         void DisplayPP();
         void SetActive(bool setActive);
         #region Properties

@@ -14,6 +14,13 @@
     public enum Leaderboard
     {
         ScoreSaber,
-        BeatLeader
+        BeatLeader,
+        AccSaber
+    }
+
+    public enum CounterScoringType
+    {
+        Global,
+        Local
     }
 }
