@@ -12,7 +12,7 @@ namespace PPPredictor.UI.ViewController
     internal class PPPredictorSettingsViewController : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        private List<object> scoringTypeOptions;
+        private readonly List<object> scoringTypeOptions;
 
         public PPPredictorSettingsViewController()
         {
@@ -132,6 +132,10 @@ namespace PPPredictor.UI.ViewController
             WindowHandleEnabled = Plugin.ProfileInfo.WindowHandleEnabled;
             DisplaySessionValues = Plugin.ProfileInfo.DisplaySessionValues;
             ResetSessionHours = Plugin.ProfileInfo.ResetSessionHours;
+            CounterShowGain = Plugin.ProfileInfo.CounterShowGain;
+            CounterHighlightTargetPercentage = Plugin.ProfileInfo.CounterHighlightTargetPercentage;
+            CounterHideWhenUnranked = Plugin.ProfileInfo.CounterHideWhenUnranked;
+            CounterScoringType = Plugin.ProfileInfo.CounterScoringType.ToString();
             Plugin.pppViewController?.ResetDisplay(true); //Needed for canceling of settings
         }
     }

@@ -31,10 +31,10 @@ namespace PPPredictor.Data
             ResetSessionHours = 12;
             LastSessionReset = new DateTime();
             LastLeaderBoardSelected = Leaderboard.ScoreSaber.ToString();
-            CounterShowGain = false;
+            CounterShowGain = true;
             CounterScoringType = CounterScoringType.Global;
-            CounterHighlightTargetPercentage = false;
-            CounterHideWhenUnranked = false;
+            CounterHighlightTargetPercentage = true;
+            CounterHideWhenUnranked = true;
         }
 
         public float LastPercentageSelected { get => _lastPercentageSelected; set => _lastPercentageSelected = value; }

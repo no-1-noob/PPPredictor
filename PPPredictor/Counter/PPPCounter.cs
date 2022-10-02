@@ -12,6 +12,8 @@ namespace PPPredictor.Counter
         [Inject] private readonly GameplayCoreSceneSetupData setupData;
         private TMP_Text ppScoreSaber;
         private TMP_Text ppBeatLeader;
+        private TMP_Text ppGainScoreSaber;
+        private TMP_Text ppGainBeatLeader;
         private TMP_Text headerPpBeatLeader;
         private TMP_Text headerPpScoreSaber;
         private int maxPossibleScore = 0;
@@ -20,10 +22,9 @@ namespace PPPredictor.Counter
 #endif
         private bool _showScoreSaber = false;
         private bool _showBeatLeader = false;
+        private readonly int fontSize = 3;
+        private readonly float lineOffset = 0.15f;
         //TODO: logo
-        //TODO: Settings for score type (In counters+ und mod settings)
-        //TODO: Styling
-        //TODO: Define default option settings
 
         public override void CounterInit()
         {
@@ -47,11 +48,16 @@ namespace PPPredictor.Counter
             {
                 _showScoreSaber = Plugin.pppViewController.ppPredictorMgr.IsRanked(Leaderboard.ScoreSaber) || !Plugin.ProfileInfo.CounterHideWhenUnranked;
                 _showBeatLeader = Plugin.pppViewController.ppPredictorMgr.IsRanked(Leaderboard.BeatLeader) || !Plugin.ProfileInfo.CounterHideWhenUnranked;
+                headerPpScoreSaber = CanvasUtility.CreateTextFromSettings(Settings, new Vector3(-1f, +lineOffset, 0));
+                headerPpBeatLeader = CanvasUtility.CreateTextFromSettings(Settings, new Vector3(-1f, -lineOffset, 0));
+                ppScoreSaber = CanvasUtility.CreateTextFromSettings(Settings, new Vector3(0.9f, +lineOffset, 0));
+                ppBeatLeader = CanvasUtility.CreateTextFromSettings(Settings, new Vector3(0.9f, -lineOffset, 0));
+                ppGainScoreSaber = CanvasUtility.CreateTextFromSettings(Settings, new Vector3(1.2f, +lineOffset, 0));
+                ppGainBeatLeader = CanvasUtility.CreateTextFromSettings(Settings, new Vector3(1.2f, -lineOffset, 0));
 
-                headerPpScoreSaber = CanvasUtility.CreateTextFromSettings(Settings, new Vector3(-0.7f, 0, 0));
-                headerPpBeatLeader = CanvasUtility.CreateTextFromSettings(Settings, new Vector3(-0.7f, 0.5f, 0));
-                ppScoreSaber = CanvasUtility.CreateTextFromSettings(Settings, new Vector3(1, 0, 0));
-                ppBeatLeader = CanvasUtility.CreateTextFromSettings(Settings, new Vector3(1, 0.5f, 0));
+                headerPpScoreSaber.alignment = headerPpBeatLeader.alignment = ppGainScoreSaber.alignment = ppGainBeatLeader.alignment = TextAlignmentOptions.BottomLeft;
+                ppScoreSaber.alignment = ppBeatLeader.alignment = TextAlignmentOptions.BottomRight;
+                headerPpScoreSaber.fontSize = headerPpBeatLeader.fontSize = ppScoreSaber.fontSize = ppBeatLeader.fontSize = ppGainScoreSaber.fontSize = ppGainBeatLeader.fontSize = fontSize;
 #if DEBUG
                 debugPercentage = CanvasUtility.CreateTextFromSettings(Settings, new Vector3(-0.5f, 1, 0));
 #endif
@@ -81,10 +87,9 @@ namespace PPPredictor.Counter
                         percentage = maxPossibleScore > 0 ? ((double)scoreController.multipliedScore / maxPossibleScore) * 100.0 : 0;
                         break;
                     case CounterScoringType.Local:
-                        percentage = maxPossibleScore > 0 ? ((double)scoreController.multipliedScore / maxPossibleScore) * 100.0 : 0;
+                        percentage = scoreController.immediateMaxPossibleMultipliedScore > 0 ? ((double)scoreController.multipliedScore / scoreController.immediateMaxPossibleMultipliedScore) * 100.0 : 0;
                         break;
                 }
-                percentage = 91;
                 DisplayCounterText(percentage);
             }
             catch (Exception ex)
@@ -116,14 +121,14 @@ namespace PPPredictor.Counter
                 double scoreSaberPP = Plugin.pppViewController.ppPredictorMgr.GetPPAtPercentageForCalculator(Leaderboard.ScoreSaber, percentage);
                 double scoreSaberGain = Math.Round(Plugin.pppViewController.ppPredictorMgr.GetPPGainForCalculator(Leaderboard.ScoreSaber, scoreSaberPP), 2);
                 ppScoreSaber.text = $"{scoreSaberPP:F2}pp";
-                if (Plugin.ProfileInfo.CounterShowGain) ppScoreSaber.text += $" [<color=\"{DisplayHelper.GetDisplayColor(scoreSaberGain, false)}\">{scoreSaberGain:F2}</color>]";
+                if (Plugin.ProfileInfo.CounterShowGain) ppGainScoreSaber.text = $"[<color=\"{DisplayHelper.GetDisplayColor(scoreSaberGain, false)}\">{scoreSaberGain:F2}</color>]";
             }
             if (_showBeatLeader)
             {
                 double beatLeaderPP = Plugin.pppViewController.ppPredictorMgr.GetPPAtPercentageForCalculator(Leaderboard.BeatLeader, percentage);
                 double beatLeaderGain = Plugin.pppViewController.ppPredictorMgr.GetPPGainForCalculator(Leaderboard.BeatLeader, beatLeaderPP);
                 ppBeatLeader.text = $"{beatLeaderPP:F2}pp";
-                if (Plugin.ProfileInfo.CounterShowGain) ppBeatLeader.text += $" [<color=\"{DisplayHelper.GetDisplayColor(beatLeaderGain, false)}\">{beatLeaderGain:F2}</color>]";
+                if (Plugin.ProfileInfo.CounterShowGain) ppGainBeatLeader.text = $"[<color=\"{DisplayHelper.GetDisplayColor(beatLeaderGain, false)}\">{beatLeaderGain:F2}</color>]";
             }
         }
     }

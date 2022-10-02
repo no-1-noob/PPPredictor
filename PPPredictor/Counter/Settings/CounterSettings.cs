@@ -8,7 +8,7 @@ namespace PPPredictor.Counter.Settings
 {
     internal class CounterSettings : INotifyPropertyChanged
     {
-        private List<object> scoringTypeOptions;
+        private readonly List<object> scoringTypeOptions;
         public event PropertyChangedEventHandler PropertyChanged;
 
         public CounterSettings()
