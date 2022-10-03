@@ -114,8 +114,8 @@ namespace PPPredictor.Counter
                 percentageThresholdColor = DisplayHelper.GetDisplayColor(1, false);
             }
 
-            if (_showScoreSaber) headerPpScoreSaber.text = $"<color=\"{percentageThresholdColor}\">ScoreSaber: </color>";
-            if (_showBeatLeader) headerPpBeatLeader.text = $"<color=\"{percentageThresholdColor}\">BeatLeader: </color>";
+            if (_showScoreSaber) headerPpScoreSaber.text = $"<color=\"{percentageThresholdColor}\">ScoreSaber</color>";
+            if (_showBeatLeader) headerPpBeatLeader.text = $"<color=\"{percentageThresholdColor}\">BeatLeader</color>";
             if (_showScoreSaber)
             {
                 double scoreSaberPP = Plugin.pppViewController.ppPredictorMgr.GetPPAtPercentageForCalculator(Leaderboard.ScoreSaber, percentage);
