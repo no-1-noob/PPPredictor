@@ -334,10 +334,24 @@ namespace PPPredictor.Utilities
             }
         }
         #endregion
+        public double CalculatePPatPercentage(double percentage)
+        {
+            return _ppCalculator.CalculatePPatPercentage(_currentSelectionStars, percentage);
+        }
+
+        public double CalculatePPGain(double pp)
+        {
+            return _ppCalculator.GetPlayerScorePPGain(_selectedMapSearchString, pp).PpGain;
+        }
+
+        public bool IsRanked()
+        {
+            return _currentSelectionBaseStars > 0;
+        }
 
         public async void DisplayPP()
         {
-            double pp = _ppCalculator.CalculatePPatPercentage(_currentSelectionStars, _percentage);
+            double pp = CalculatePPatPercentage(_percentage);
             PPGainResult ppGainResult = _ppCalculator.GetPlayerScorePPGain(_selectedMapSearchString, pp);
             double ppGains = _ppCalculator.Zeroizer(ppGainResult.PpGain);
             PPGainRaw = $"{pp:F2}pp";

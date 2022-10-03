@@ -1,6 +1,8 @@
 ﻿using BeatSaberMarkupLanguage.Attributes;
 using BeatSaberMarkupLanguage.Parser;
 using PPPredictor.Utilities;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace PPPredictor.UI.ViewController
@@ -10,6 +12,16 @@ namespace PPPredictor.UI.ViewController
     internal class PPPredictorSettingsViewController : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
+        private readonly List<object> scoringTypeOptions;
+
+        public PPPredictorSettingsViewController()
+        {
+            scoringTypeOptions = new List<object>();
+            foreach (CounterScoringType enumValue in Enum.GetValues(typeof(CounterScoringType)))
+            {
+                scoringTypeOptions.Add(enumValue.ToString());
+            }
+        }
 
         #region settings
 #pragma warning disable CS0649 // Field is never assigned to, and will always have its default value null
@@ -56,6 +68,51 @@ namespace PPPredictor.UI.ViewController
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ResetSessionHours)));
             }
         }
+        [UIValue("counter-show-gain")]
+        public bool CounterShowGain
+        {
+            get => Plugin.ProfileInfo.CounterShowGain;
+            set
+            {
+                Plugin.ProfileInfo.CounterShowGain = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CounterShowGain)));
+            }
+        }
+        [UIValue("counter-highlight-target-percentage")]
+        public bool CounterHighlightTargetPercentage
+        {
+            get => Plugin.ProfileInfo.CounterHighlightTargetPercentage;
+            set
+            {
+                Plugin.ProfileInfo.CounterHighlightTargetPercentage = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CounterHighlightTargetPercentage)));
+            }
+        }
+        [UIValue("counter-hide-when-unranked")]
+        public bool CounterHideWhenUnranked
+        {
+            get => Plugin.ProfileInfo.CounterHideWhenUnranked;
+            set
+            {
+                Plugin.ProfileInfo.CounterHideWhenUnranked = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CounterHideWhenUnranked)));
+            }
+        }
+        [UIValue("counter-scoring-type-options")]
+        public List<object> CounterScoringTypeOptions
+        {
+            get => this.scoringTypeOptions;
+        }
+        [UIValue("counter-scoring-type")]
+        public string CounterScoringType
+        {
+            get => Plugin.ProfileInfo.CounterScoringType.ToString();
+            set
+            {
+                Plugin.ProfileInfo.CounterScoringType = (CounterScoringType)Enum.Parse(typeof(CounterScoringType), value);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CounterScoringType)));
+            }
+        }
         #endregion
 
 #pragma warning disable IDE0051 // Remove unused private members
@@ -75,6 +132,10 @@ namespace PPPredictor.UI.ViewController
             WindowHandleEnabled = Plugin.ProfileInfo.WindowHandleEnabled;
             DisplaySessionValues = Plugin.ProfileInfo.DisplaySessionValues;
             ResetSessionHours = Plugin.ProfileInfo.ResetSessionHours;
+            CounterShowGain = Plugin.ProfileInfo.CounterShowGain;
+            CounterHighlightTargetPercentage = Plugin.ProfileInfo.CounterHighlightTargetPercentage;
+            CounterHideWhenUnranked = Plugin.ProfileInfo.CounterHideWhenUnranked;
+            CounterScoringType = Plugin.ProfileInfo.CounterScoringType.ToString();
             Plugin.pppViewController?.ResetDisplay(true); //Needed for canceling of settings
         }
     }

@@ -1,0 +1,9 @@
+﻿<vertical xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='https://monkeymanboy.github.io/BSML-Docs/ https://raw.githubusercontent.com/monkeymanboy/BSML-Docs/gh-pages/BSMLSchema.xsd' spacing='1' horizontal-fit='PreferredSize' vertical-fit='PreferredSize'>
+  <vertical vertical-fit='PreferredSize' child-align='MiddleLeft'>
+    <text text='Counter Settings' horizontal-fit='PreferredSize'></text>
+    <dropdown-list-setting text='Scoring type' value='counter-scoring-type' choices='counter-scoring-type-options' apply-on-change='true'/>
+    <bool-setting text='Show PP gain' value='counter-show-gain' apply-on-change='true'></bool-setting>
+    <bool-setting text='Highlight if target % is reached' value='counter-highlight-target-percentage' apply-on-change='true'></bool-setting>
+    <bool-setting text='Hide when unranked' value='counter-hide-when-unranked' apply-on-change='true'></bool-setting>
+  </vertical>
+</vertical>

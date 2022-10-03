@@ -15,6 +15,10 @@ namespace PPPredictor.Data
         private int _resetSessionHours;
         private DateTime _lastSessionReset;
         private string _lastLeaderBoardSelected;
+        private bool _counterShowGain;
+        private bool _counterHighlightTargetPercentage;
+        private CounterScoringType _counterScoringType;
+        private bool _counterHideWhenUnranked;
 
         public ProfileInfo()
         {
@@ -27,6 +31,10 @@ namespace PPPredictor.Data
             ResetSessionHours = 12;
             LastSessionReset = new DateTime();
             LastLeaderBoardSelected = Leaderboard.ScoreSaber.ToString();
+            CounterShowGain = true;
+            CounterScoringType = CounterScoringType.Global;
+            CounterHighlightTargetPercentage = true;
+            CounterHideWhenUnranked = true;
         }
 
         public float LastPercentageSelected { get => _lastPercentageSelected; set => _lastPercentageSelected = value; }
@@ -38,5 +46,9 @@ namespace PPPredictor.Data
         public DateTime LastSessionReset { get => _lastSessionReset; set => _lastSessionReset = value; }
         public List<PPPLeaderboardInfo> LsLeaderboardInfo { get => _lsLeaderboardInfo; set => _lsLeaderboardInfo = value; }
         public string LastLeaderBoardSelected { get => _lastLeaderBoardSelected; set => _lastLeaderBoardSelected = value; }
+        public bool CounterShowGain { get => _counterShowGain; set => _counterShowGain = value; }
+        public CounterScoringType CounterScoringType { get => _counterScoringType; set => _counterScoringType = value; }
+        public bool CounterHighlightTargetPercentage { get => _counterHighlightTargetPercentage; set => _counterHighlightTargetPercentage = value; }
+        public bool CounterHideWhenUnranked { get => _counterHideWhenUnranked; set => _counterHideWhenUnranked = value; }
     }
 }

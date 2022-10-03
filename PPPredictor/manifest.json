@@ -3,7 +3,7 @@
   "id": "PPPredictor",
   "name": "PPPredictor",
   "author": "No.1 N[][]b",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "",
   "gameVersion": "1.22.1",
   "dependsOn": {
@@ -13,5 +13,23 @@
     "LeaderboardCore": "^1.2.2",
     "SongDetailsCache": "^1.1.11",
     "SongCore": "^3.9.4"
+  },
+  "features": {
+    "CountersPlus.CustomCounter": {
+      "Name": "PPPredictor",
+      "Description": "PPPredictor",
+      "CounterLocation": "PPPredictor.Counter.PPPCounter",
+      "MultiplayerReady": false,
+      "ConfigDefaults": {
+        "Enabled": true,
+        "Position": "AboveCombo",
+        "Distance": 0
+      },
+      "BSML": {
+        "Resource": "PPPredictor.Counter.Settings.CounterSettings.bsml",
+        "Host": "PPPredictor.Counter.Settings.CounterSettings",
+        "Icon": "PPPredictor.Resources.icon.png"
+      }
+    }
   }
 }

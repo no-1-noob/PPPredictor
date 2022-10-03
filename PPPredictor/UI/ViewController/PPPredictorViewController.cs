@@ -18,7 +18,7 @@ namespace PPPredictor.UI.ViewController
         private readonly LevelSelectionNavigationController levelSelectionNavController;
         private readonly GameplaySetupViewController gameplaySetupViewController;
         private FloatingScreen floatingScreen;
-        private PPPredictorMgr ppPredictorMgr;
+        internal PPPredictorMgr ppPredictorMgr;
         public event PropertyChangedEventHandler PropertyChanged;
 
         public PPPredictorViewController(LevelSelectionNavigationController levelSelectionNavController, GameplaySetupViewController gameplaySetupViewController)

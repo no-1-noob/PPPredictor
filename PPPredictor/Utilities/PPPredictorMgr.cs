@@ -118,12 +118,51 @@ namespace PPPredictor.Utilities
             }
         }
 
+        internal double GetPercentage()
+        {
+            foreach (var item in _lsPPPredictor)
+            {
+                return item.Percentage;
+            }
+            return 0;
+        }
+
         internal void ResetDisplay(bool resetAll)
         {
             foreach (var item in _lsPPPredictor)
             {
                 item.ResetDisplay(resetAll);
             }
+        }
+
+        internal double GetPPAtPercentageForCalculator(Leaderboard leaderBoardName, double percentage)
+        {
+            IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());
+            if (predictor != null)
+            {
+                return predictor.CalculatePPatPercentage(percentage);
+            }
+            return 0;
+        }
+
+        internal bool IsRanked(Leaderboard leaderBoardName)
+        {
+            IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());
+            if (predictor != null)
+            {
+                return predictor.IsRanked();
+            }
+            return false;
+        }
+
+        internal double GetPPGainForCalculator(Leaderboard leaderBoardName, double pp)
+        {
+            IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());
+            if (predictor != null)
+            {
+                return predictor.CalculatePPGain(pp);
+            }
+            return 0;
         }
     }
 }
