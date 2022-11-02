@@ -19,6 +19,7 @@ namespace PPPredictor.Data
         private bool _counterHighlightTargetPercentage;
         private CounterScoringType _counterScoringType;
         private bool _counterHideWhenUnranked;
+        private string acknowledgedVersion;
 
         public ProfileInfo()
         {
@@ -35,6 +36,7 @@ namespace PPPredictor.Data
             CounterScoringType = CounterScoringType.Global;
             CounterHighlightTargetPercentage = true;
             CounterHideWhenUnranked = true;
+            AcknowledgedVersion = string.Empty;
         }
 
         public float LastPercentageSelected { get => _lastPercentageSelected; set => _lastPercentageSelected = value; }
@@ -50,5 +52,6 @@ namespace PPPredictor.Data
         public CounterScoringType CounterScoringType { get => _counterScoringType; set => _counterScoringType = value; }
         public bool CounterHighlightTargetPercentage { get => _counterHighlightTargetPercentage; set => _counterHighlightTargetPercentage = value; }
         public bool CounterHideWhenUnranked { get => _counterHideWhenUnranked; set => _counterHideWhenUnranked = value; }
+        public string AcknowledgedVersion { get => acknowledgedVersion; set => acknowledgedVersion = value; }
     }
 }
