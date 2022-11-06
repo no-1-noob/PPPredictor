@@ -102,8 +102,8 @@
               preferred-width='55'>
       <horizontal preferred-width='40'>
         <vertical>
-          <text text='Your version' italics='true' align='Left' font-size='4' />
-          <text text='Newest version' italics='true' align='Left' font-size='4' />
+          <text text='Current Version' italics='true' align='Left' font-size='4' />
+          <text text='Newest Version' italics='true' align='Left' font-size='4' />
         </vertical>
         <vertical>
           <text text='~currentVersion' color='red' italics='true' align='Center' font-size='4' />

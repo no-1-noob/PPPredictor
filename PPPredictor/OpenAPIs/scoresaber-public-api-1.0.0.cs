@@ -464,197 +464,36 @@ namespace scoresaberapi
 
         [Newtonsoft.Json.JsonProperty("itemsPerPage", Required = Newtonsoft.Json.Required.Always)]
         public double ItemsPerPage { get; set; }
-
-
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.5.2.0 (Newtonsoft.Json v11.0.0.0)")]
     public partial class LeaderboardInfo
     {
-        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.Always)]
-        public double Id { get; set; }
-
         [Newtonsoft.Json.JsonProperty("songHash", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string SongHash { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("songName", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string SongName { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("songSubName", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string SongSubName { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("songAuthorName", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string SongAuthorName { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("levelAuthorName", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string LevelAuthorName { get; set; }
-
         [Newtonsoft.Json.JsonProperty("difficulty", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required]
         public Difficulty Difficulty { get; set; } = new Difficulty();
-
-        [Newtonsoft.Json.JsonProperty("maxScore", Required = Newtonsoft.Json.Required.Always)]
-        public double MaxScore { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("createdDate", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public System.DateTimeOffset CreatedDate { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("rankedDate", Required = Newtonsoft.Json.Required.AllowNull)]
-        public System.DateTimeOffset? RankedDate { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("qualifiedDate", Required = Newtonsoft.Json.Required.AllowNull)]
-        public System.DateTimeOffset? QualifiedDate { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("lovedDate", Required = Newtonsoft.Json.Required.AllowNull)]
-        public System.DateTimeOffset? LovedDate { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("ranked", Required = Newtonsoft.Json.Required.Always)]
-        public bool Ranked { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("qualified", Required = Newtonsoft.Json.Required.Always)]
-        public bool Qualified { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("loved", Required = Newtonsoft.Json.Required.Always)]
-        public bool Loved { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("maxPP", Required = Newtonsoft.Json.Required.Always)]
-        public double MaxPP { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("stars", Required = Newtonsoft.Json.Required.Always)]
-        public double Stars { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("positiveModifiers", Required = Newtonsoft.Json.Required.Always)]
-        public bool PositiveModifiers { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("plays", Required = Newtonsoft.Json.Required.Always)]
-        public double Plays { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("dailyPlays", Required = Newtonsoft.Json.Required.Always)]
-        public double DailyPlays { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("coverImage", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string CoverImage { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("playerScore", Required = Newtonsoft.Json.Required.AllowNull)]
-        public Score PlayerScore { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("difficulties", Required = Newtonsoft.Json.Required.AllowNull)]
-        [System.ComponentModel.DataAnnotations.Required]
-        public System.Collections.Generic.ICollection<Difficulty> Difficulties { get; set; } = new System.Collections.ObjectModel.Collection<Difficulty>();
-
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.5.2.0 (Newtonsoft.Json v11.0.0.0)")]
-    public partial class LeaderboardPlayer
-    {
-        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string Id { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string Name { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("profilePicture", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string ProfilePicture { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("country", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string Country { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("permissions", Required = Newtonsoft.Json.Required.Always)]
-        public double Permissions { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("role")]
-        //[System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string Role { get; set; }
-
-
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.5.2.0 (Newtonsoft.Json v11.0.0.0)")]
     public partial class Difficulty
     {
-        [Newtonsoft.Json.JsonProperty("leaderboardId", Required = Newtonsoft.Json.Required.Always)]
-        public double LeaderboardId { get; set; }
-
         [Newtonsoft.Json.JsonProperty("difficulty", Required = Newtonsoft.Json.Required.Always)]
         public double Difficulty1 { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("gameMode", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string GameMode { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("difficultyRaw", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string DifficultyRaw { get; set; }
-
-
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.5.2.0 (Newtonsoft.Json v11.0.0.0)")]
     public partial class Score
     {
-        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.Always)]
-        public double Id { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("leaderboardPlayerInfo", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public LeaderboardPlayer LeaderboardPlayerInfo { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("rank", Required = Newtonsoft.Json.Required.Always)]
-        public double Rank { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("baseScore", Required = Newtonsoft.Json.Required.Always)]
-        public double BaseScore { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("modifiedScore", Required = Newtonsoft.Json.Required.Always)]
-        public double ModifiedScore { get; set; }
-
         [Newtonsoft.Json.JsonProperty("pp", Required = Newtonsoft.Json.Required.Always)]
         public double Pp { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("weight", Required = Newtonsoft.Json.Required.Always)]
-        public double Weight { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("modifiers", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string Modifiers { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("multiplier", Required = Newtonsoft.Json.Required.Always)]
-        public double Multiplier { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("badCuts", Required = Newtonsoft.Json.Required.Always)]
-        public double BadCuts { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("missedNotes", Required = Newtonsoft.Json.Required.Always)]
-        public double MissedNotes { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("maxCombo", Required = Newtonsoft.Json.Required.Always)]
-        public double MaxCombo { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("fullCombo", Required = Newtonsoft.Json.Required.Always)]
-        public bool FullCombo { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("hmd", Required = Newtonsoft.Json.Required.Always)]
-        public double Hmd { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("hasReplay", Required = Newtonsoft.Json.Required.Always)]
-        public bool HasReplay { get; set; }
 
         [Newtonsoft.Json.JsonProperty("timeSet", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public System.DateTimeOffset TimeSet { get; set; }
-
-
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.5.2.0 (Newtonsoft.Json v11.0.0.0)")]
@@ -663,29 +502,11 @@ namespace scoresaberapi
         [Newtonsoft.Json.JsonProperty("players", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required]
         public System.Collections.Generic.ICollection<Player> Players { get; set; } = new System.Collections.ObjectModel.Collection<Player>();
-
-        [Newtonsoft.Json.JsonProperty("metadata", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required]
-        public Metadata Metadata { get; set; } = new Metadata();
-
-
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.5.2.0 (Newtonsoft.Json v11.0.0.0)")]
     public partial class Player
     {
-        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string Id { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string Name { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("profilePicture", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string ProfilePicture { get; set; }
-
         [Newtonsoft.Json.JsonProperty("country", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Country { get; set; }
@@ -698,69 +519,6 @@ namespace scoresaberapi
 
         [Newtonsoft.Json.JsonProperty("countryRank", Required = Newtonsoft.Json.Required.Always)]
         public double CountryRank { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("role", Required = Newtonsoft.Json.Required.AllowNull)]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string Role { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("badges", Required = Newtonsoft.Json.Required.AllowNull)]
-        public System.Collections.Generic.ICollection<Badge> Badges { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("histories", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string Histories { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("scoreStats", Required = Newtonsoft.Json.Required.AllowNull)]
-        public ScoreStats ScoreStats { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("permissions", Required = Newtonsoft.Json.Required.Always)]
-        public double Permissions { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("banned", Required = Newtonsoft.Json.Required.Always)]
-        public bool Banned { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("inactive", Required = Newtonsoft.Json.Required.Always)]
-        public bool Inactive { get; set; }
-
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.5.2.0 (Newtonsoft.Json v11.0.0.0)")]
-    public partial class ScoreStats
-    {
-        [Newtonsoft.Json.JsonProperty("totalScore", Required = Newtonsoft.Json.Required.Always)]
-        public double TotalScore { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("totalRankedScore", Required = Newtonsoft.Json.Required.Always)]
-        public double TotalRankedScore { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("averageRankedAccuracy", Required = Newtonsoft.Json.Required.Always)]
-        public double AverageRankedAccuracy { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("totalPlayCount", Required = Newtonsoft.Json.Required.Always)]
-        public double TotalPlayCount { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("rankedPlayCount", Required = Newtonsoft.Json.Required.Always)]
-        public double RankedPlayCount { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("replaysWatched", Required = Newtonsoft.Json.Required.Always)]
-        public double ReplaysWatched { get; set; }
-
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.5.2.0 (Newtonsoft.Json v11.0.0.0)")]
-    public partial class Badge
-    {
-        [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string Description { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("image", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string Image { get; set; }
-
-
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.5.2.0 (Newtonsoft.Json v11.0.0.0)")]

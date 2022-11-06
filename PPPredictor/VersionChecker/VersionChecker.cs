@@ -9,7 +9,7 @@ namespace PPPredictor.VersionChecker
     class VersionChecker
     {
         private static readonly string baseUrl = "https://mods.no1noob.net";
-        private static readonly string pageUrl = "api/PPPredictor";
+        private static readonly string pageUrl = "api/PPPredictorVersion";
         public static async Task<string> GetCurrentVersionAsync()
         {
 #if (!DEBUG)
