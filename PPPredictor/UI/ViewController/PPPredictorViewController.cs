@@ -2,9 +2,11 @@
 using BeatSaberMarkupLanguage.Attributes;
 using BeatSaberMarkupLanguage.Components.Settings;
 using BeatSaberMarkupLanguage.FloatingScreen;
+using BeatSaberMarkupLanguage.Parser;
 using PPPredictor.Utilities;
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Reflection;
 using UnityEngine;
 using Zenject;
@@ -15,6 +17,7 @@ namespace PPPredictor.UI.ViewController
     [HotReload(RelativePathToLayout = @"..\Views\PPPredictorView.bsml")]
     public class PPPredictorViewController : IInitializable, IDisposable, INotifyPropertyChanged
     {
+        private static readonly string githubUrl = "https://github.com/no-1-noob/PPPredictor/releases/latest";
         private readonly LevelSelectionNavigationController levelSelectionNavController;
         private readonly GameplaySetupViewController gameplaySetupViewController;
         private FloatingScreen floatingScreen;
@@ -71,6 +74,9 @@ namespace PPPredictor.UI.ViewController
             Plugin.pppViewController = null;
         }
 
+        [UIParams]
+        private readonly BSMLParserParams bsmlParserParams;
+
         [UIAction("#post-parse")]
         protected void PostParse()
         {
@@ -78,14 +84,16 @@ namespace PPPredictor.UI.ViewController
             DisplayInitialPercentages();
             this.ppPredictorMgr.ResetDisplay(false);
             this.ppPredictorMgr.SetPropertyChangedEventHandler(PropertyChanged);
+            CheckVersion();
         }
 
 #pragma warning disable CS0649 // Field is never assigned to, and will always have its default value null
         #region UI Components
         [UIComponent("sliderFine")]
         private readonly SliderSetting sliderFine;
-        #endregion
 #pragma warning restore CS0649 // Field is never assigned to, and will always have its default value null
+        #endregion
+
 
         #region buttons
 #pragma warning disable IDE0051 // Remove unused private members
@@ -101,6 +109,45 @@ namespace PPPredictor.UI.ViewController
         private void ResetSessionClicked()
         {
             this.ppPredictorMgr.UpdateCurrentAndCheckResetSession(true);
+        }
+#pragma warning restore IDE0051 // Remove unused private members
+#pragma warning disable IDE0051 // Remove unused private members
+        [UIAction("show-update-clicked")]
+        private void ShowUpdateClicked()
+        {
+            bsmlParserParams.EmitEvent("show-update-display-modal");
+        }
+#pragma warning restore IDE0051 // Remove unused private members
+#pragma warning disable IDE0051 // Remove unused private members
+        [UIAction("click-close-update-modal")]
+        private void CloseUpdateClicked()
+        {
+            bsmlParserParams.EmitEvent("close-update-display-modal");
+            if (HideUpdate)
+            {
+                Plugin.ProfileInfo.AcknowledgedVersion = NewVersion;
+                NewVersion = string.Empty;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsNewVersionAvailable)));
+            }
+            bsmlParserParams.EmitEvent("close-update-display-modal");
+            bsmlParserParams.EmitEvent("open-menu-settings-modal");
+        }
+#pragma warning restore IDE0051 // Remove unused private members
+#pragma warning disable IDE0051 // Remove unused private members
+        [UIAction("click-close-github")]
+        private void CloseGithubClicked()
+        {
+            bsmlParserParams.EmitEvent("close-github-notification");
+            bsmlParserParams.EmitEvent("show-update-display-modal");
+        }
+#pragma warning restore IDE0051 // Remove unused private members
+#pragma warning disable IDE0051 // Remove unused private members
+        [UIAction("click-open-github")]
+        private void OpenGithubClicked()
+        {
+            Process.Start(githubUrl);
+            bsmlParserParams.EmitEvent("close-update-display-modal");
+            bsmlParserParams.EmitEvent("show-github-notification");
         }
 #pragma warning restore IDE0051 // Remove unused private members
 #pragma warning disable IDE0051 // Remove unused private members
@@ -322,6 +369,16 @@ namespace PPPredictor.UI.ViewController
             get => this.ppPredictorMgr.IsRightArrowActive;
         }
 #pragma warning restore IDE0051 // Remove unused private members
+        #region update UI data
+        [UIValue("newVersion")]
+        private string NewVersion { get; set; }
+        [UIValue("currentVersion")]
+        private string CurrentVersion { get; set; }
+        [UIValue("hide-update")]
+        private bool HideUpdate { get; set; }
+        [UIValue("isNewVersionAvailable")]
+        private bool IsNewVersionAvailable { get => !string.IsNullOrEmpty(NewVersion); }
+        #endregion
         private void OnDifficultyChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
         {
             this.ppPredictorMgr.DifficultyChanged(lvlSelectionNavigationCtrl, beatmap);
@@ -366,6 +423,21 @@ namespace PPPredictor.UI.ViewController
         {
             floatingScreen.transform.eulerAngles = Plugin.ProfileInfo.EulerAngles;
             floatingScreen.transform.position = Plugin.ProfileInfo.Position;
+        }
+
+        private async void CheckVersion()
+        {
+            CurrentVersion = typeof(Plugin).Assembly.GetName().Version.ToString();
+            CurrentVersion = CurrentVersion.Substring(0, CurrentVersion.Length - 2);
+            string acknowledgedVersion = Plugin.ProfileInfo.AcknowledgedVersion;
+            NewVersion = await VersionChecker.VersionChecker.GetCurrentVersionAsync();
+            if (string.IsNullOrEmpty(NewVersion) || NewVersion == CurrentVersion || NewVersion == acknowledgedVersion)
+            {
+                NewVersion = string.Empty;
+            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsNewVersionAvailable)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentVersion)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NewVersion)));
         }
     }
 }

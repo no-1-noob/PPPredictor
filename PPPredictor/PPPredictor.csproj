@@ -32,6 +32,7 @@
     <OutputPath>bin\Release\</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="$(DefineConstants.Contains('CIBuild')) OR '$(NCrunch)' == '1'">
     <DisableCopyToPlugins>True</DisableCopyToPlugins>
@@ -155,6 +156,8 @@
     <Compile Include="Data\PPGainResult.cs" />
     <Compile Include="Data\RankGainResult.cs" />
     <Compile Include="Data\SVector3.cs" />
+    <Compile Include="VersionChecker\VersionChecker.cs" />
+    <Compile Include="VersionChecker\VersionInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="manifest.json" />
