@@ -35,6 +35,16 @@ namespace PPPredictor.Counter.Settings
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CounterShowGain)));
             }
         }
+        [UIValue("counter-use-icons")]
+        public bool CounterUseIcons
+        {
+            get => Plugin.ProfileInfo.CounterUseIcons;
+            set
+            {
+                Plugin.ProfileInfo.CounterUseIcons = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CounterUseIcons)));
+            }
+        }
         [UIValue("counter-highlight-target-percentage")]
         public bool CounterHighlightTargetPercentage
         {

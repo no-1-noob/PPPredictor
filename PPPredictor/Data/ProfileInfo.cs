@@ -17,6 +17,7 @@ namespace PPPredictor.Data
         private string _lastLeaderBoardSelected;
         private bool _counterShowGain;
         private bool _counterHighlightTargetPercentage;
+        private bool _counterUseIcons;
         private CounterScoringType _counterScoringType;
         private bool _counterHideWhenUnranked;
         private string acknowledgedVersion;
@@ -37,6 +38,7 @@ namespace PPPredictor.Data
             CounterHighlightTargetPercentage = true;
             CounterHideWhenUnranked = true;
             AcknowledgedVersion = string.Empty;
+            CounterUseIcons = true;
         }
 
         public float LastPercentageSelected { get => _lastPercentageSelected; set => _lastPercentageSelected = value; }
@@ -53,5 +55,6 @@ namespace PPPredictor.Data
         public bool CounterHighlightTargetPercentage { get => _counterHighlightTargetPercentage; set => _counterHighlightTargetPercentage = value; }
         public bool CounterHideWhenUnranked { get => _counterHideWhenUnranked; set => _counterHideWhenUnranked = value; }
         public string AcknowledgedVersion { get => acknowledgedVersion; set => acknowledgedVersion = value; }
+        public bool CounterUseIcons { get => _counterUseIcons; set => _counterUseIcons = value; }
     }
 }

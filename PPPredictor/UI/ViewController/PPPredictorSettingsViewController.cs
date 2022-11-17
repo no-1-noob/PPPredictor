@@ -78,6 +78,16 @@ namespace PPPredictor.UI.ViewController
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CounterShowGain)));
             }
         }
+        [UIValue("counter-use-icons")]
+        public bool CounterUseIcons
+        {
+            get => Plugin.ProfileInfo.CounterUseIcons;
+            set
+            {
+                Plugin.ProfileInfo.CounterUseIcons = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CounterUseIcons)));
+            }
+        }
         [UIValue("counter-highlight-target-percentage")]
         public bool CounterHighlightTargetPercentage
         {
@@ -133,6 +143,7 @@ namespace PPPredictor.UI.ViewController
             DisplaySessionValues = Plugin.ProfileInfo.DisplaySessionValues;
             ResetSessionHours = Plugin.ProfileInfo.ResetSessionHours;
             CounterShowGain = Plugin.ProfileInfo.CounterShowGain;
+            CounterUseIcons = Plugin.ProfileInfo.CounterUseIcons;
             CounterHighlightTargetPercentage = Plugin.ProfileInfo.CounterHighlightTargetPercentage;
             CounterHideWhenUnranked = Plugin.ProfileInfo.CounterHideWhenUnranked;
             CounterScoringType = Plugin.ProfileInfo.CounterScoringType.ToString();
