@@ -8,7 +8,8 @@
     <text text='Counter' italics='true' align='Center' font-size='4' />
     <dropdown-list-setting text='Scoring type' value='counter-scoring-type' choices='counter-scoring-type-options' bind-value='true'/>
     <bool-setting text='Show PP gain' value='counter-show-gain' bind-value='true'></bool-setting>
-    <bool-setting text='Highlight if target % is reached' value='counter-highlight-target-percentage' bind-value='true'></bool-setting>
+    <bool-setting text='Use leaderboard icons' value='counter-use-icons' bind-value='true'></bool-setting>
+    <bool-setting text='Highlight if target % is reached (when icons are not used)' value='counter-highlight-target-percentage' bind-value='true'></bool-setting>
     <bool-setting text='Hide when unranked' value='counter-hide-when-unranked' bind-value='true'></bool-setting>
     <text text='Reset' italics='true' align='Center' font-size='4' />
     <button text='Reset cached data and settings' on-click='reset-data' min-width='16' pref-height='8' interactable='true'/>
