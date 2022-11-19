@@ -369,6 +369,13 @@ namespace PPPredictor.UI.ViewController
             get => this.ppPredictorMgr.IsRightArrowActive;
         }
 #pragma warning restore IDE0051 // Remove unused private members
+#pragma warning disable IDE0051 // Remove unused private members
+        [UIValue("isLeaderboardNavigationActive")]
+        private bool IsLeaderboardNavigationActive
+        {
+            get => this.ppPredictorMgr.IsLeaderboardNavigationActive;
+        }
+#pragma warning restore IDE0051 // Remove unused private members
         #region update UI data
         [UIValue("newVersion")]
         private string NewVersion { get; set; }
@@ -427,17 +434,21 @@ namespace PPPredictor.UI.ViewController
 
         private async void CheckVersion()
         {
-            CurrentVersion = typeof(Plugin).Assembly.GetName().Version.ToString();
-            CurrentVersion = CurrentVersion.Substring(0, CurrentVersion.Length - 2);
-            string acknowledgedVersion = Plugin.ProfileInfo.AcknowledgedVersion;
-            NewVersion = await VersionChecker.VersionChecker.GetCurrentVersionAsync();
-            if (string.IsNullOrEmpty(NewVersion) || NewVersion == CurrentVersion || NewVersion == acknowledgedVersion)
+            if(Plugin.ProfileInfo.IsVersionCheckEnabled && (DateTime.Now - Plugin.ProfileInfo.DtLastVersionCheck).TotalHours >= 12)
             {
-                NewVersion = string.Empty;
+                CurrentVersion = typeof(Plugin).Assembly.GetName().Version.ToString();
+                CurrentVersion = CurrentVersion.Substring(0, CurrentVersion.Length - 2);
+                string acknowledgedVersion = Plugin.ProfileInfo.AcknowledgedVersion;
+                NewVersion = await VersionChecker.VersionChecker.GetCurrentVersionAsync();
+                if (string.IsNullOrEmpty(NewVersion) || NewVersion == CurrentVersion || NewVersion == acknowledgedVersion)
+                {
+                    NewVersion = string.Empty;
+                }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsNewVersionAvailable)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentVersion)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NewVersion)));
+                Plugin.ProfileInfo.DtLastVersionCheck = DateTime.Now;
             }
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsNewVersionAvailable)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentVersion)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NewVersion)));
         }
     }
 }

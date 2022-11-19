@@ -48,6 +48,38 @@ namespace PPPredictor.UI.ViewController
             }
         }
 
+        [UIValue("version-check-enabled")]
+        public bool VersionCheckEnabled
+        {
+            get => Plugin.ProfileInfo.IsVersionCheckEnabled;
+            set
+            {
+                Plugin.ProfileInfo.IsVersionCheckEnabled = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(VersionCheckEnabled)));
+            }
+        }
+
+        [UIValue("scoresaber-enabled")]
+        public bool ScoreSaberEnabled
+        {
+            get => Plugin.ProfileInfo.IsScoreSaberEnabled;
+            set
+            {
+                Plugin.ProfileInfo.IsScoreSaberEnabled = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ScoreSaberEnabled)));
+            }
+        }
+        [UIValue("beatleader-enabled")]
+        public bool BeatLeaderEnabled
+        {
+            get => Plugin.ProfileInfo.IsBeatLeaderEnabled;
+            set
+            {
+                Plugin.ProfileInfo.IsBeatLeaderEnabled = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(BeatLeaderEnabled)));
+            }
+        }
+
         [UIValue("display-session-values")]
         public bool DisplaySessionValues
         {
@@ -147,6 +179,9 @@ namespace PPPredictor.UI.ViewController
             CounterHighlightTargetPercentage = Plugin.ProfileInfo.CounterHighlightTargetPercentage;
             CounterHideWhenUnranked = Plugin.ProfileInfo.CounterHideWhenUnranked;
             CounterScoringType = Plugin.ProfileInfo.CounterScoringType.ToString();
+            VersionCheckEnabled = Plugin.ProfileInfo.IsVersionCheckEnabled;
+            ScoreSaberEnabled = Plugin.ProfileInfo.IsScoreSaberEnabled;
+            BeatLeaderEnabled = Plugin.ProfileInfo.IsBeatLeaderEnabled;
             Plugin.pppViewController?.ResetDisplay(true); //Needed for canceling of settings
         }
     }

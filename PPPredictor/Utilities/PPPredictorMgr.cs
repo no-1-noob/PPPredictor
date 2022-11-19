@@ -18,27 +18,32 @@ namespace PPPredictor.Utilities
         private PropertyChangedEventHandler propertyChanged;
         private bool isLeftArrowActive = false;
         private bool isRightArrowActive = false;
+        private bool isLeaderboardNavigationActive = false;
 
         public bool IsLeftArrowActive { get => isLeftArrowActive; }
         public bool IsRightArrowActive { get => isRightArrowActive; }
+        public bool IsLeaderboardNavigationActive { get => isLeaderboardNavigationActive; }
 
         public PPPredictorMgr()
         {
-            _lsPPPredictor = new List<IPPPredictor>
+            _lsPPPredictor = new List<IPPPredictor>();
+            if (Plugin.ProfileInfo.IsScoreSaberEnabled) _lsPPPredictor.Add(new PPPredictor<PPCalculatorScoreSaber>(Leaderboard.ScoreSaber));
+            if (Plugin.ProfileInfo.IsBeatLeaderEnabled) _lsPPPredictor.Add(new PPPredictor<PPCalculatorBeatLeader>(Leaderboard.BeatLeader));
+            if (_lsPPPredictor.Count == 0)
             {
-                new PPPredictor<PPCalculatorScoreSaber>(Leaderboard.ScoreSaber),
-                new PPPredictor<PPCalculatorBeatLeader>(Leaderboard.BeatLeader)
-            };
-            if (_lsPPPredictor.Count > 0)
-            {
-                index = _lsPPPredictor.FindIndex(x => x.LeaderBoardName == Plugin.ProfileInfo.LastLeaderBoardSelected);
-                if(index >= 0)
-                {
-                    CurrentPPPredictor = _lsPPPredictor[index];
-                    CurrentPPPredictor.SetActive(true);
-                    SetNavigationArrowInteractivity();
-                }
+                _lsPPPredictor.Add(new PPPredictor<PPCalculatorNoLeaderboard>(Leaderboard.NoLeaderboard));
             }
+            index = _lsPPPredictor.FindIndex(x => x.LeaderBoardName == Plugin.ProfileInfo.LastLeaderBoardSelected);
+            if(index >= 0)
+            {
+                CurrentPPPredictor = _lsPPPredictor[index];
+            }
+            else
+            {
+                CurrentPPPredictor = _lsPPPredictor[0];
+            }
+            CurrentPPPredictor.SetActive(true);
+            SetNavigationArrowInteractivity();
         }
 
         public void CyclePredictors(int offset)
@@ -55,10 +60,13 @@ namespace PPPredictor.Utilities
 
         private void SetNavigationArrowInteractivity()
         {
+            if (_lsPPPredictor.Count() == 1) isLeaderboardNavigationActive = false;
+            else isLeaderboardNavigationActive = true;
             isLeftArrowActive = index > 0;
             isRightArrowActive = index < _lsPPPredictor.Count() - 1;
             propertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsLeftArrowActive)));
             propertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsRightArrowActive)));
+            propertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsLeaderboardNavigationActive)));
         }
 
         public void ChangeGameplayModifiers(GameplaySetupViewController gameplaySetupViewController)

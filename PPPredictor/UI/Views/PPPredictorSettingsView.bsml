@@ -5,6 +5,10 @@
     <slider-setting text='Reset session after X hours' value='reset-session-hours' hover-hint='Rest the session automatically after X hours. 0 = do not reset automatically' min='0' max='100' increment='1' bind-value='true' integer-only='true'/>
     <text text='General' italics='true' align='Center' font-size='4' />
     <bool-setting text='Show window handle' value='window-handle-enabled' bind-value='true'></bool-setting>
+    <bool-setting text='Enable version checker' value='version-check-enabled' bind-value='true'></bool-setting>
+    <text text='Leaderboards' italics='true' align='Center' font-size='4' />
+    <bool-setting text='ScoreSaber enabled' value='scoresaber-enabled' bind-value='true'></bool-setting>
+    <bool-setting text='BeatLeader enabled' value='beatleader-enabled' bind-value='true'></bool-setting>
     <text text='Counter' italics='true' align='Center' font-size='4' />
     <dropdown-list-setting text='Scoring type' value='counter-scoring-type' choices='counter-scoring-type-options' bind-value='true'/>
     <bool-setting text='Show PP gain' value='counter-show-gain' bind-value='true'></bool-setting>

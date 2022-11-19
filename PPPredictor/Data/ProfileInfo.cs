@@ -21,6 +21,11 @@ namespace PPPredictor.Data
         private CounterScoringType _counterScoringType;
         private bool _counterHideWhenUnranked;
         private string acknowledgedVersion;
+        private DateTime _dtLastVersionCheck;
+        private bool _isVersionCheckEnabled;
+
+        private bool _isScoreSaberEnabled;
+        private bool _isBeatLeaderEnabled;
 
         public ProfileInfo()
         {
@@ -33,12 +38,16 @@ namespace PPPredictor.Data
             ResetSessionHours = 12;
             LastSessionReset = new DateTime();
             LastLeaderBoardSelected = Leaderboard.ScoreSaber.ToString();
-            CounterShowGain = true;
+            CounterShowGain = false;
             CounterScoringType = CounterScoringType.Global;
             CounterHighlightTargetPercentage = true;
             CounterHideWhenUnranked = true;
             AcknowledgedVersion = string.Empty;
             CounterUseIcons = true;
+            DtLastVersionCheck = new DateTime(2000, 1, 1);
+            IsVersionCheckEnabled = true;
+            IsScoreSaberEnabled = true;
+            IsBeatLeaderEnabled = true;
         }
 
         public float LastPercentageSelected { get => _lastPercentageSelected; set => _lastPercentageSelected = value; }
@@ -56,5 +65,9 @@ namespace PPPredictor.Data
         public bool CounterHideWhenUnranked { get => _counterHideWhenUnranked; set => _counterHideWhenUnranked = value; }
         public string AcknowledgedVersion { get => acknowledgedVersion; set => acknowledgedVersion = value; }
         public bool CounterUseIcons { get => _counterUseIcons; set => _counterUseIcons = value; }
+        public DateTime DtLastVersionCheck { get => _dtLastVersionCheck; set => _dtLastVersionCheck = value; }
+        public bool IsVersionCheckEnabled { get => _isVersionCheckEnabled; set => _isVersionCheckEnabled = value; }
+        public bool IsScoreSaberEnabled { get => _isScoreSaberEnabled; set => _isScoreSaberEnabled = value; }
+        public bool IsBeatLeaderEnabled { get => _isBeatLeaderEnabled; set => _isBeatLeaderEnabled = value; }
     }
 }

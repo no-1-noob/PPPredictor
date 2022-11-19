@@ -131,6 +131,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Counter\CounterInfoHolder.cs" />
     <Compile Include="Counter\PPPCounter.cs" />
     <Compile Include="Counter\Settings\CounterSettings.cs" />
     <Compile Include="Data\PPPLeaderboardInfo.cs" />
@@ -145,6 +146,7 @@
     <Compile Include="Utilities\Enums.cs" />
     <Compile Include="Interfaces\IPPPredictor.cs" />
     <Compile Include="Utilities\PPCalculatorBeatLeader.cs" />
+    <Compile Include="Utilities\PPCalculatorNoLeaderboard.cs" />
     <Compile Include="Utilities\PPCalculatorScoreSaber.cs" />
     <Compile Include="Utilities\PPPredictor.cs" />
     <Compile Include="Utilities\PPPredictorMgr.cs" />
