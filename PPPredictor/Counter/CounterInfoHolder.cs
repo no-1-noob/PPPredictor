@@ -22,24 +22,28 @@ namespace PPPredictor.Counter
         private readonly Leaderboard leaderboard;
         private readonly CustomConfigModel settings;
         private readonly CanvasUtility canvasUtility;
+        private float positionScale;
 
-        public CounterInfoHolder(Leaderboard leaderboard, CustomConfigModel settings, string iconPath, Canvas canvas, CanvasUtility canvasUtility, float lineOffset) //CHECK WHEN NO C+ is installed??
+        public CounterInfoHolder(Leaderboard leaderboard, CustomConfigModel settings, string iconPath, Canvas canvas, CanvasUtility canvasUtility, float lineOffset, float positionScale) //CHECK WHEN NO C+ is installed??
         {
             this.leaderboard = leaderboard;
             this.settings = settings;
             this.canvasUtility = canvasUtility;
-            float iconTextOffset = Plugin.ProfileInfo.CounterUseIcons ? -.9f : 0f;
+            this.positionScale = positionScale;
+            float positionScaleFactor = 10 / positionScale;
+            lineOffset = lineOffset * positionScaleFactor;
+            float iconTextOffset = (Plugin.ProfileInfo.CounterUseIcons ? -.9f : 0f);
             useIcon = (canvas != null && Plugin.ProfileInfo.CounterUseIcons);
             showInfo = Plugin.pppViewController.ppPredictorMgr.IsRanked(leaderboard) || !Plugin.ProfileInfo.CounterHideWhenUnranked;
-            headerText = canvasUtility.CreateTextFromSettings(settings, new Vector3(-1f, lineOffset, 0));
-            ppText = canvasUtility.CreateTextFromSettings(settings, new Vector3(0.9f + iconTextOffset, lineOffset, 0));
-            ppGainText = canvasUtility.CreateTextFromSettings(settings, new Vector3(1.2f + iconTextOffset, lineOffset, 0));
+            headerText = canvasUtility.CreateTextFromSettings(settings, new Vector3((-1f * positionScaleFactor), lineOffset, 0));
+            ppText = canvasUtility.CreateTextFromSettings(settings, new Vector3((0.9f + iconTextOffset) * positionScaleFactor, lineOffset, 0));
+            ppGainText = canvasUtility.CreateTextFromSettings(settings, new Vector3((1.2f + iconTextOffset) * positionScaleFactor, lineOffset, 0));
             headerText.alignment = ppGainText.alignment = TextAlignmentOptions.BottomLeft;
             ppText.alignment = TextAlignmentOptions.BottomRight;
             headerText.fontSize = ppText.fontSize = ppGainText.fontSize = fontSize;
             if (useIcon)
             {
-                icon = CreateIcon(canvas, iconPath, new Vector3(-1f, lineOffset, 0), Math.Abs(lineOffset));
+                icon = CreateIcon(canvas, iconPath, new Vector3(-1f * positionScaleFactor, lineOffset, 0), Math.Abs(lineOffset));
             }
         }
 
@@ -66,9 +70,8 @@ namespace PPPredictor.Counter
         {
             GameObject imageGameObject = new GameObject(imageIdent, typeof(RectTransform));
             ImageView newImage = imageGameObject.AddComponent<ImageView>();
-            float posScaleFactor = 10;
             newImage.rectTransform.SetParent(canvas.transform, false);
-            newImage.rectTransform.anchoredPosition = posScaleFactor * (canvasUtility.GetAnchoredPositionFromConfig(settings) + offset + new Vector3(0, lineOffset / 1.25f, 0));
+            newImage.rectTransform.anchoredPosition = positionScale * (canvasUtility.GetAnchoredPositionFromConfig(settings) + offset + new Vector3(0, lineOffset / 1.25f, 0));
             newImage.rectTransform.sizeDelta = new Vector2(2.5f, 2.5f);
             newImage.enabled = false;
             var noGlowMat = new Material(Resources.FindObjectsOfTypeAll<Material>().Where(m => m.name == "UINoGlow").First())
