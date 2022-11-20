@@ -54,6 +54,12 @@ namespace PPPredictor.UI.ViewController
             BSMLParser.instance.Parse(BeatSaberMarkupLanguage.Utilities.GetResourceContent(Assembly.GetExecutingAssembly(), "PPPredictor.UI.Views.PPPredictorView.bsml"), floatingScreen.gameObject, this);
         }
 
+        internal void ApplySettings()
+        {
+            this.ppPredictorMgr.ResetPredictors();
+            ResetDisplay(true);
+        }
+
         public void OnScreenHandleReleased(object sender, FloatingScreenHandleEventArgs args)
         {
             Plugin.ProfileInfo.Position = floatingScreen.transform.position;
@@ -428,6 +434,7 @@ namespace PPPredictor.UI.ViewController
 
         public void ResetPosition()
         {
+            floatingScreen.ShowHandle = Plugin.ProfileInfo.WindowHandleEnabled;
             floatingScreen.transform.eulerAngles = Plugin.ProfileInfo.EulerAngles;
             floatingScreen.transform.position = Plugin.ProfileInfo.Position;
         }

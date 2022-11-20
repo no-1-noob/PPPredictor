@@ -12,21 +12,27 @@ namespace PPPredictor.Utilities
 {
     class PPPredictorMgr
     {
-        private readonly List<IPPPredictor> _lsPPPredictor;
+        private List<IPPPredictor> _lsPPPredictor;
         private int index = 0;
-        public IPPPredictor CurrentPPPredictor;
+        internal IPPPredictor CurrentPPPredictor;
         private PropertyChangedEventHandler propertyChanged;
         private bool isLeftArrowActive = false;
         private bool isRightArrowActive = false;
         private bool isLeaderboardNavigationActive = false;
 
-        public bool IsLeftArrowActive { get => isLeftArrowActive; }
-        public bool IsRightArrowActive { get => isRightArrowActive; }
-        public bool IsLeaderboardNavigationActive { get => isLeaderboardNavigationActive; }
+        internal bool IsLeftArrowActive { get => isLeftArrowActive; }
+        internal bool IsRightArrowActive { get => isRightArrowActive; }
+        internal bool IsLeaderboardNavigationActive { get => isLeaderboardNavigationActive; }
 
-        public PPPredictorMgr()
+        internal PPPredictorMgr()
+        {
+            ResetPredictors();
+        }
+
+        internal void ResetPredictors()
         {
             _lsPPPredictor = new List<IPPPredictor>();
+            CurrentPPPredictor = null;
             if (Plugin.ProfileInfo.IsScoreSaberEnabled) _lsPPPredictor.Add(new PPPredictor<PPCalculatorScoreSaber>(Leaderboard.ScoreSaber));
             if (Plugin.ProfileInfo.IsBeatLeaderEnabled) _lsPPPredictor.Add(new PPPredictor<PPCalculatorBeatLeader>(Leaderboard.BeatLeader));
             if (_lsPPPredictor.Count == 0)
@@ -34,13 +40,18 @@ namespace PPPredictor.Utilities
                 _lsPPPredictor.Add(new PPPredictor<PPCalculatorNoLeaderboard>(Leaderboard.NoLeaderboard));
             }
             index = _lsPPPredictor.FindIndex(x => x.LeaderBoardName == Plugin.ProfileInfo.LastLeaderBoardSelected);
-            if(index >= 0)
+            if (index >= 0)
             {
                 CurrentPPPredictor = _lsPPPredictor[index];
             }
             else
             {
                 CurrentPPPredictor = _lsPPPredictor[0];
+            }
+            if (propertyChanged != null)
+            {
+                //Set the eventhandler (otherwise the changes go into oblivion)
+                _lsPPPredictor.ForEach(item => item.SetPropertyChangedEventHandler(propertyChanged));
             }
             CurrentPPPredictor.SetActive(true);
             SetNavigationArrowInteractivity();
