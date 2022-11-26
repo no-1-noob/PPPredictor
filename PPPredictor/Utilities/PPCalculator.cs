@@ -167,6 +167,10 @@ namespace PPPredictor.Utilities
                 }
                 double rankAfterPlay = _lsPlayerRankings.Where(x => x.Pp <= pp).Select(x => x.Rank).DefaultIfEmpty(-1).Min();
                 double rankCountryAfterPlay = _lsPlayerRankings.Where(x => x.Pp <= pp && x.Country == _leaderboardInfo.CurrentPlayer.Country).Select(x => x.CountryRank).DefaultIfEmpty(-1).Min();
+                if(_leaderboardInfo.LeaderboardName == Leaderboard.NoLeaderboard.ToString())
+                {
+                    rankAfterPlay = rankCountryAfterPlay = 0; //Special case for when no leaderboard is active;
+                }
                 return new RankGainResult(rankAfterPlay, rankCountryAfterPlay, _leaderboardInfo.CurrentPlayer);
             }
             catch (Exception ex)

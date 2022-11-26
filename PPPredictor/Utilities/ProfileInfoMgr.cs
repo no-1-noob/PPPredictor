@@ -1,6 +1,10 @@
-﻿using IPA.Utilities;
+﻿using BeatSaberMarkupLanguage;
+using BeatSaberMarkupLanguage.MenuButtons;
+using HMUI;
+using IPA.Utilities;
 using Newtonsoft.Json;
 using PPPredictor.Data;
+using PPPredictor.UI;
 using System;
 using System.IO;
 
@@ -8,9 +12,12 @@ namespace PPPredictor.Utilities
 {
     class ProfileInfoMgr
     {
+        internal static FlowCoordinator _parentFlow { get; private set; }
+        internal static PPPredictorFlowCoordinator _flow { get; private set; }
         private static readonly string profilePath = Path.Combine(UnityGame.UserDataPath, "PPPredictorProfileInfo.json");
         internal static ProfileInfo LoadProfileInfo()
         {
+            MenuButtons.instance.RegisterButton(new MenuButton("PPPredictor", "Predict PP gains", ShowSettingsFlow, true));
             ProfileInfo info;
             if (File.Exists(profilePath))
             {
@@ -52,6 +59,16 @@ namespace PPPredictor.Utilities
         internal static void ResetProfile()
         {
             Plugin.ProfileInfo = new ProfileInfo();
+        }
+
+        public static void ShowSettingsFlow()
+        {
+            if (_flow == null)
+                _flow = BeatSaberUI.CreateFlowCoordinator<PPPredictorFlowCoordinator>();
+
+            _parentFlow = BeatSaberUI.MainFlowCoordinator.YoungestChildFlowCoordinatorOrSelf();
+
+            BeatSaberUI.PresentFlowCoordinator(_parentFlow, _flow, immediately: true);
         }
     }
 }

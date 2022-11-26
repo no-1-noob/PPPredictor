@@ -44,10 +44,10 @@
       <text text='~leaderBoardName' italics='true' align='Left' font-size='4' />
     </horizontal>
     <horizontal horizontal-fit='PreferredSize' align='Left' ignore-layout='true' pad-right='40'>
-      <button text="←" hover-hint='Previous leaderboard' on-click='arrow-prev-leaderboard-clicked' min-width='6' pref-height='8' interactable='~isLeftArrowActive' />
+      <button text="←" hover-hint='Previous leaderboard' on-click='arrow-prev-leaderboard-clicked' min-width='6' pref-height='8' interactable='~isLeftArrowActive' active='~isLeaderboardNavigationActive'/>
     </horizontal>
     <horizontal horizontal-fit='PreferredSize' align='Left' ignore-layout='true' pad-left='40'>
-      <button text="→" hover-hint='Next leaderboard' on-click='arrow-next-leaderboard-clicked' min-width='6' pref-height='8' interactable='~isRightArrowActive' />
+      <button text="→" hover-hint='Next leaderboard' on-click='arrow-next-leaderboard-clicked' min-width='6' pref-height='8' interactable='~isRightArrowActive' active='~isLeaderboardNavigationActive'/>
     </horizontal>
   </vertical>
   <vertical vertical-fit='PreferredSize' preferred-width='60' bg='panel-top' pad-top='1' pad-bottom='1'>

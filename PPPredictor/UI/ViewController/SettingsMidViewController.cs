@@ -1,5 +1,6 @@
 ﻿using BeatSaberMarkupLanguage.Attributes;
 using BeatSaberMarkupLanguage.Parser;
+using BeatSaberMarkupLanguage.ViewControllers;
 using PPPredictor.Utilities;
 using System;
 using System.Collections.Generic;
@@ -7,14 +8,14 @@ using System.ComponentModel;
 
 namespace PPPredictor.UI.ViewController
 {
-    [HotReload(RelativePathToLayout = @"..\Views\PPPredictorSettingsView.bsml")]
-    [ViewDefinition("PPPredictor.UI.Views.PPPredictorSettingsView.bsml")]
-    internal class PPPredictorSettingsViewController : INotifyPropertyChanged
+    [HotReload(RelativePathToLayout = @"SettingsMidViewController.bsml")]
+    [ViewDefinition("PPPredictor.UI.Views.SettingsMidView.bsml")]
+    class SettingsMidViewController : BSMLAutomaticViewController, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
         private readonly List<object> scoringTypeOptions;
 
-        public PPPredictorSettingsViewController()
+        public SettingsMidViewController()
         {
             scoringTypeOptions = new List<object>();
             foreach (CounterScoringType enumValue in Enum.GetValues(typeof(CounterScoringType)))
@@ -45,6 +46,38 @@ namespace PPPredictor.UI.ViewController
             {
                 Plugin.ProfileInfo.WindowHandleEnabled = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(WindowHandleEnabled)));
+            }
+        }
+
+        [UIValue("version-check-enabled")]
+        public bool VersionCheckEnabled
+        {
+            get => Plugin.ProfileInfo.IsVersionCheckEnabled;
+            set
+            {
+                Plugin.ProfileInfo.IsVersionCheckEnabled = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(VersionCheckEnabled)));
+            }
+        }
+
+        [UIValue("scoresaber-enabled")]
+        public bool ScoreSaberEnabled
+        {
+            get => Plugin.ProfileInfo.IsScoreSaberEnabled;
+            set
+            {
+                Plugin.ProfileInfo.IsScoreSaberEnabled = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ScoreSaberEnabled)));
+            }
+        }
+        [UIValue("beatleader-enabled")]
+        public bool BeatLeaderEnabled
+        {
+            get => Plugin.ProfileInfo.IsBeatLeaderEnabled;
+            set
+            {
+                Plugin.ProfileInfo.IsBeatLeaderEnabled = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(BeatLeaderEnabled)));
             }
         }
 
@@ -147,7 +180,9 @@ namespace PPPredictor.UI.ViewController
             CounterHighlightTargetPercentage = Plugin.ProfileInfo.CounterHighlightTargetPercentage;
             CounterHideWhenUnranked = Plugin.ProfileInfo.CounterHideWhenUnranked;
             CounterScoringType = Plugin.ProfileInfo.CounterScoringType.ToString();
-            Plugin.pppViewController?.ResetDisplay(true); //Needed for canceling of settings
+            VersionCheckEnabled = Plugin.ProfileInfo.IsVersionCheckEnabled;
+            ScoreSaberEnabled = Plugin.ProfileInfo.IsScoreSaberEnabled;
+            BeatLeaderEnabled = Plugin.ProfileInfo.IsBeatLeaderEnabled;
         }
     }
 }

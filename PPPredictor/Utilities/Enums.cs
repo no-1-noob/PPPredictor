@@ -15,7 +15,8 @@
     {
         ScoreSaber,
         BeatLeader,
-        AccSaber
+        AccSaber,
+        NoLeaderboard
     }
 
     public enum CounterScoringType

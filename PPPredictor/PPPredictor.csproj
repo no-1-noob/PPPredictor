@@ -131,6 +131,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Counter\CounterInfoHolder.cs" />
     <Compile Include="Counter\PPPCounter.cs" />
     <Compile Include="Counter\Settings\CounterSettings.cs" />
     <Compile Include="Data\PPPLeaderboardInfo.cs" />
@@ -141,16 +142,18 @@
     <Compile Include="Events\PPPredictorEventsMgr.cs" />
     <Compile Include="Data\ProfileInfo.cs" />
     <Compile Include="OpenAPIs\beatleader-v1.cs" />
+    <Compile Include="UI\PPPredictorFlowCoordinator.cs" />
+    <Compile Include="UI\ViewController\SettingsMidViewController.cs" />
     <Compile Include="Utilities\DisplayHelper.cs" />
     <Compile Include="Utilities\Enums.cs" />
     <Compile Include="Interfaces\IPPPredictor.cs" />
     <Compile Include="Utilities\PPCalculatorBeatLeader.cs" />
+    <Compile Include="Utilities\PPCalculatorNoLeaderboard.cs" />
     <Compile Include="Utilities\PPCalculatorScoreSaber.cs" />
     <Compile Include="Utilities\PPPredictor.cs" />
     <Compile Include="Utilities\PPPredictorMgr.cs" />
     <Compile Include="Utilities\ProfileInfoMgr.cs" />
     <Compile Include="Data\ShortScore.cs" />
-    <Compile Include="UI\ViewController\PPPredictorSettingsViewController.cs" />
     <Compile Include="UI\ViewController\PPPredictorViewController.cs" />
     <Compile Include="OpenAPIs\scoresaber-public-api-1.0.0.cs" />
     <Compile Include="Plugin.cs" />
@@ -182,7 +185,7 @@
     </None>
     <None Include="PPPredictor.csproj.user" Condition="Exists('PPPredictor.csproj.user')" />
     <EmbeddedResource Include="UI\Views\PPPredictorView.bsml" />
-    <EmbeddedResource Include="UI\Views\PPPredictorSettingsView.bsml" />
+    <EmbeddedResource Include="UI\Views\SettingsMidView.bsml" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="BeatSaberModdingTools.Tasks">
