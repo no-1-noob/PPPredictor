@@ -1,30 +1,60 @@
-﻿using PPPredictor.Utilities;
+﻿using PPPredictor.Data.Curve;
+using PPPredictor.Utilities;
+using System;
 using System.Collections.Generic;
 
 namespace PPPredictor.Data
 {
     public class PPPLeaderboardInfo
     {
-        private PPPPlayer _sessionPlayer;
-        private PPPPlayer _currentPlayer;
-        private List<ShortScore> _lsScores;
-        private List<ShortScore> _lsLeaderboardScores;
+        private List<PPPMapPool> _lsMapPools;
         private string _leaderboardName;
+        private PPPMapPool _currentMapPool;
+        private long _lastSelectedMapPoolId;
 
-
-        public PPPPlayer SessionPlayer { get => _sessionPlayer; set => _sessionPlayer = value; }
-        public PPPPlayer CurrentPlayer { get => _currentPlayer; set => _currentPlayer = value; }
-        public List<ShortScore> LSScores { get => _lsScores; set => _lsScores = value; }
         public string LeaderboardName { get => _leaderboardName; set => _leaderboardName = value; }
-        public List<ShortScore> LsLeaderboardScores { get => _lsLeaderboardScores; set => _lsLeaderboardScores = value; }
+        public List<PPPMapPool> LsMapPools { get => _lsMapPools; set => _lsMapPools = value; }
+        public long LastSelectedMapPoolId { get => _lastSelectedMapPoolId; set => _lastSelectedMapPoolId = value; }
+        internal PPPMapPool CurrentMapPool { get => _currentMapPool; set
+            {
+                _currentMapPool = value;
+                LastSelectedMapPoolId = value.Id;
+            }
+        }
+        internal PPPMapPool DefaultMapPool { get => _lsMapPools.Find(x => x.MapPoolType == MapPoolType.Default); }
 
         public PPPLeaderboardInfo(Leaderboard leaderboard)
         {
+            Plugin.Log?.Error($"PPPLeaderboardInfo {leaderboard}");
             this._leaderboardName = leaderboard.ToString();
-            this._lsScores = new List<ShortScore>();
-            this._lsLeaderboardScores = new List<ShortScore>();
-            this._currentPlayer = new PPPPlayer();
-            this._sessionPlayer = new PPPPlayer();
+            this._lsMapPools = new List<PPPMapPool>();
+
+            switch (leaderboard)
+            {
+                case Leaderboard.ScoreSaber:
+                    _lsMapPools.Add(new PPPMapPool(MapPoolType.Default, $"Default_{leaderboard}", PPCalculatorScoreSaber.accumulationConstant, 0, CurveParser.ParseToCurve(new CurveInfo(CurveType.ScoreSaber))));
+                    break;
+                case Leaderboard.BeatLeader:
+                    _lsMapPools.Add(new PPPMapPool(MapPoolType.Default, $"Default_{leaderboard}", PPCalculatorBeatLeader.accumulationConstant, 0, new BeatLeaderPPPCurve()));
+                    break;
+                case Leaderboard.NoLeaderboard:
+                    _lsMapPools.Add(new PPPMapPool(MapPoolType.Default, $"Default_{leaderboard}", 0, 0, new CustomPPPCurve(new double[0, 2] { }, CurveType.Linear, 0)));
+                    break;
+                default:
+                    break;
+            }
+
+            //THIS IS DEBUG STUFF FOR NOW
+            SetCurrentMapPool();
+        }
+
+        internal void SetCurrentMapPool()
+        {
+            if (_lsMapPools != null && _lsMapPools.Count > 0)
+            {
+                int index = Math.Max(_lsMapPools.FindIndex(x => x.Id == LastSelectedMapPoolId), 0); //Set the last used map pool
+                this._currentMapPool = _lsMapPools[index];
+            }
         }
     }
 }

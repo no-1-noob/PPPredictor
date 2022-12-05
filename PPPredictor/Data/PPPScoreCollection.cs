@@ -1,6 +1,6 @@
-﻿using beatleaderapi;
-using scoresaberapi;
+﻿using scoresaberapi;
 using System.Collections.Generic;
+using static PPPredictor.OpenAPIs.beatleaderapi;
 
 namespace PPPredictor.Data
 {
@@ -35,12 +35,12 @@ namespace PPPredictor.Data
             }
         }
 
-        public PPPScoreCollection(ScoreResponseWithMyScoreResponseWithMetadata scoreSaberPlayerScoreCollection)
+        public PPPScoreCollection(BeatLeaderPlayerScoreList beatLeaderPlayerScoreList)
         {
-            this.page = scoreSaberPlayerScoreCollection.Metadata.Page;
-            this.itemsPerPage = scoreSaberPlayerScoreCollection.Metadata.ItemsPerPage;
-            this.total = scoreSaberPlayerScoreCollection.Metadata.Total;
-            foreach (var playerScore in scoreSaberPlayerScoreCollection.Data)
+            this.page = beatLeaderPlayerScoreList.metadata.page;
+            this.itemsPerPage = beatLeaderPlayerScoreList.metadata.itemsPerPage;
+            this.total = beatLeaderPlayerScoreList.metadata.total;
+            foreach (var playerScore in beatLeaderPlayerScoreList.data)
             {
                 lsPPPScore.Add(new PPPScore(playerScore));
             }

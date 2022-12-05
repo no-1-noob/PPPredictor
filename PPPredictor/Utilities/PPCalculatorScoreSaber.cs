@@ -12,42 +12,9 @@ namespace PPPredictor.Utilities
 {
     public class PPCalculatorScoreSaber : PPCalculator
     {
-        private readonly double basePPMultiplier = 42.117208413;
+        internal static readonly float accumulationConstant = 0.965f;
         private readonly HttpClient httpClient = new HttpClient();
         private readonly scoresaberapi.scoresaberapi scoreSaberClient;
-        private readonly double[,] arrPPCurve = new double[32, 2] {
-            {1, 7},
-            {0.999, 6.24},
-            {0.9975, 5.31},
-            {0.995, 4.14},
-            {0.9925, 3.31},
-            {0.99, 2.73},
-            {0.9875, 2.31},
-            {0.985, 2.0},
-            {0.9825, 1.775},
-            {0.98, 1.625},
-            {0.9775, 1.515},
-            {0.975, 1.43},
-            {0.9725, 1.36},
-            {0.97, 1.3},
-            {0.965, 1.195},
-            {0.96, 1.115},
-            {0.955, 1.05},
-            {0.95, 1},
-            {0.94, 0.94},
-            {0.93, 0.885},
-            {0.92, 0.835},
-            {0.91, 0.79},
-            {0.9, 0.75},
-            {0.875, 0.655},
-            {0.85, 0.57},
-            {0.825, 0.51},
-            {0.8, 0.47},
-            {0.75, 0.40},
-            {0.7, 0.34},
-            {0.65, 0.29},
-            {0.6, 0.25},
-            {0.0, 0.0}, };
         private SongDetails SongDetails { get; }
         public PPCalculatorScoreSaber() : base()
         {
@@ -101,64 +68,6 @@ namespace PPPredictor.Utilities
             {
                 Plugin.Log?.Error($"PPCalculatorScoreSaber GetPlayers Error: {ex.Message}");
                 return new List<PPPPlayer>();
-            }
-        }
-
-        private double CalculateMultiplierAtPercentage(double percentage)
-        {
-            try
-            {
-                for (int i = 0; i < arrPPCurve.GetLength(0); i++)
-                {
-                    if (arrPPCurve[i, 0] == percentage)
-                    {
-                        return arrPPCurve[i, 1];
-                    }
-                    else
-                    {
-                        if (arrPPCurve[i + 1, 0] < percentage)
-                        {
-                            return CalculateMultiplierAtPercentageWithLine((arrPPCurve[i + 1, 0], arrPPCurve[i + 1, 1]), (arrPPCurve[i, 0], arrPPCurve[i, 1]), percentage);
-                        }
-                    }
-                }
-                return 0;
-            }
-            catch (Exception ex)
-            {
-                Plugin.Log?.Error($"PPCalculatorScoreSaber CalculateMultiplierAtPercentage Error: {ex.Message}");
-                return -1;
-            }
-        }
-
-        private double CalculateMultiplierAtPercentageWithLine((double x, double y) p1, (double x, double y) p2, double percentage)
-        {
-            try
-            {
-                double m = (p2.y - p1.y) / (p2.x - p1.x);
-                double b = p1.y - (m * p1.x);
-                return m * percentage + b;
-            }
-            catch (Exception ex)
-            {
-                Plugin.Log?.Error($"PPCalculatorScoreSaber CalculateMultiplierAtPercentageWithLine Error: {ex.Message}");
-                return -1;
-            }
-        }
-
-        public override double CalculatePPatPercentage(double star, double percentage, bool levelFailed)
-        {
-            try
-            {
-                percentage /= 100.0;
-                if (levelFailed) percentage /= 2.0; //Halve score if nofail triggered
-                double multiplier = CalculateMultiplierAtPercentage(percentage);
-                return multiplier * star * basePPMultiplier;
-            }
-            catch (Exception ex)
-            {
-                Plugin.Log?.Error($"PPCalculatorScoreSaber CalculatePPatPercentage Error: {ex.Message}");
-                return -1;
             }
         }
 

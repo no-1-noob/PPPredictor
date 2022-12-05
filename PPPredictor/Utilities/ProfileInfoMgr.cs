@@ -45,7 +45,10 @@ namespace PPPredictor.Utilities
             bool saved = true;
             try
             {
-                File.WriteAllText(profilePath, JsonConvert.SerializeObject(profile, Formatting.Indented));
+                File.WriteAllText(profilePath, JsonConvert.SerializeObject(profile, Formatting.Indented, new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore
+                }));
             }
             catch (Exception ex)
             {

@@ -12,11 +12,6 @@ namespace PPPredictor.Utilities
             return 0;
         }
 
-        public override double CalculatePPatPercentage(double star, double percentage, bool levelFailed)
-        {
-            return 0;
-        }
-
         public override Task<double> GetStarsForBeatmapAsync(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
         {
             return Task.FromResult(0d);

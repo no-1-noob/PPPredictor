@@ -43,6 +43,10 @@
     <horizontal horizontal-fit='PreferredSize' pad-left='0' align='Left' child-align='MiddleLeft'>
       <text text='~leaderBoardName' italics='true' align='Left' font-size='4' />
     </horizontal>
+    <horizontal horizontal-fit='PreferredSize' pad-left='0' align='Left' child-align='MiddleLeft'>
+      <dropdown-list-setting id='dropdown-map-pools' text='_MapPool_' value='current-map-pool' choices='map-pool-options' apply-on-change='true'/>
+      <!--bind-value='true'-->
+    </horizontal>
     <horizontal horizontal-fit='PreferredSize' align='Left' ignore-layout='true' pad-right='40'>
       <button text="←" hover-hint='Previous leaderboard' on-click='arrow-prev-leaderboard-clicked' min-width='6' pref-height='8' interactable='~isLeftArrowActive' active='~isLeaderboardNavigationActive'/>
     </horizontal>

@@ -1,25 +1,28 @@
-﻿using beatleaderapi;
-using PPPredictor.Data;
+﻿using PPPredictor.Data;
+using PPPredictor.Data.Curve;
+using PPPredictor.OpenAPIs;
 using SongCore.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using static PPPredictor.OpenAPIs.beatleaderapi;
 
 namespace PPPredictor.Utilities
 {
     public class PPCalculatorBeatLeader : PPCalculator
     {
         private readonly HttpClient httpClient = new HttpClient();
-        private readonly beatleaderapi.beatleaderapi beatLeaderClient;
+        private readonly OpenAPIs.beatleaderapi beatleaderapi;
         private Dictionary<string, float> dctModifiers;
-        private readonly double ppCalcWeight = 42;
+        internal static float accumulationConstant = 0.965f;
 
         public PPCalculatorBeatLeader() : base() 
         {
-            beatLeaderClient = new beatleaderapi.beatleaderapi("https://api.beatleader.xyz/", httpClient);
+            beatleaderapi = new OpenAPIs.beatleaderapi();
             GetModifiers();
+            UpdateAvailableMapPools();
         }
 
         private async void GetModifiers()
@@ -27,7 +30,7 @@ namespace PPPredictor.Utilities
             try
             {
                 //TODO: SaveModifiers? Or load by Song directy?
-                dctModifiers = (Dictionary<string, float>)await beatLeaderClient.ModifiersAsync();
+                dctModifiers = (Dictionary<string, float>)await beatleaderapi.GetModifiers();
             }
             catch (Exception ex)
             {
@@ -40,9 +43,20 @@ namespace PPPredictor.Utilities
         {
             try
             {
-                var playerInfo = beatLeaderClient.PlayerAsync(userId.ToString(), false);
-                var beatLeaderPlayer = await playerInfo;
-                return new PPPPlayer(beatLeaderPlayer);
+                BeatLeaderPlayer player = await beatleaderapi.GetPlayer(userId);
+                if(_leaderboardInfo.CurrentMapPool != null && _leaderboardInfo.CurrentMapPool.MapPoolType == MapPoolType.Default)
+                {
+                    return new PPPPlayer(player);
+                }
+                else if (_leaderboardInfo.CurrentMapPool != null && _leaderboardInfo.CurrentMapPool.MapPoolType == MapPoolType.Custom)
+                {
+                    BeatLeaderPlayerEvents eventPlayer = player.eventsParticipating.Where(x => x.eventId == _leaderboardInfo.CurrentMapPool.Id).FirstOrDefault();
+                    if(eventPlayer != null)
+                    {
+                        return new PPPPlayer(eventPlayer);
+                    }
+                }
+                return new PPPPlayer(true);
             }
             catch (Exception ex)
             {
@@ -55,9 +69,18 @@ namespace PPPredictor.Utilities
         {
             try
             {
+                BeatLeaderPlayerList scoreSaberPlayerCollection = null;
                 List<PPPPlayer> lsPlayer = new List<PPPPlayer>();
-                PlayerResponseWithStatsResponseWithMetadata scoreSaberPlayerCollection = await beatLeaderClient.PlayersAsync("pp", (int)fetchIndexPage, 50, null, "desc", null, null, null, null, null, null, null, null, null, null);
-                foreach (var scoreSaberPlayer in scoreSaberPlayerCollection.Data)
+                if(_leaderboardInfo.CurrentMapPool != null && _leaderboardInfo.CurrentMapPool.MapPoolType == MapPoolType.Default)
+                {
+                    scoreSaberPlayerCollection = await beatleaderapi.GetPlayersInLeaderboard("pp", (int)fetchIndexPage, 50, "desc");
+                }
+                else if(_leaderboardInfo.CurrentMapPool != null)
+                {
+                    scoreSaberPlayerCollection = await beatleaderapi.GetPlayersInEventLeaderboard(_leaderboardInfo.CurrentMapPool.Id, "pp", (int)fetchIndexPage, 50, "desc");
+                }
+                Plugin.Log.Error($"GetPlayers index: {fetchIndexPage}");
+                foreach (var scoreSaberPlayer in scoreSaberPlayerCollection.data)
                 {
                     lsPlayer.Add(new PPPPlayer(scoreSaberPlayer));
                 }
@@ -74,32 +97,13 @@ namespace PPPredictor.Utilities
         {
             try
             {
-                ScoreResponseWithMyScoreResponseWithMetadata scoreSaberCollection = await beatLeaderClient.ScoresAsync(userId, "date", "desc", page, pageSize, null, null, null, null, null);
-                return new PPPScoreCollection(scoreSaberCollection);
+                BeatLeaderPlayerScoreList beatLeaderPlayerScoreList = await beatleaderapi.GetPlayerScores(userId, "date", "desc", page, pageSize, _leaderboardInfo.CurrentMapPool.Id);
+                return new PPPScoreCollection(beatLeaderPlayerScoreList);
             }
             catch (Exception ex)
             {
                 Plugin.Log?.Error($"PPCalculatorBeatLeader GetRecentScores Error: {ex.Message}");
                 return new PPPScoreCollection();
-            }
-        }
-
-        public override double CalculatePPatPercentage(double star, double percentage, bool levelFailed)
-        {
-            try
-            {
-                if (star <= 0) return 0;
-                var l = 1.0 - (0.03 * ((star - 0.5) - 3) / 11);
-                var n = percentage / 100.0;
-                n = Math.Min(n, l - 0.001);
-                var a = 0.96 * l;
-                var f = 1.2 - (0.6 * ((star - 0.5) / 14));
-                return (star + 0.5) * ppCalcWeight * Math.Pow((Math.Log(l / (l - n)) / (Math.Log(l / (l - a)))), f);
-            }
-            catch (Exception ex)
-            {
-                Plugin.Log?.Error($"PPCalculatorBeatLeader CalculatePPatPercentage Error: {ex.Message}");
-                return -1;
             }
         }
 
@@ -111,21 +115,25 @@ namespace PPPredictor.Utilities
                 {
                     string songHash = Hashing.GetCustomLevelHash(selectedCustomBeatmapLevel);
                     string searchString = CreateSeachString(songHash, beatmap.difficultyRank);
-                    ShortScore cachedInfo = _leaderboardInfo.LsLeaderboardScores?.FirstOrDefault(x => x.Searchstring == searchString);
+                    if(_leaderboardInfo.CurrentMapPool.MapPoolType == MapPoolType.Custom && !_leaderboardInfo.CurrentMapPool.LsMapPoolEntries.Where(x => x.Searchstring == searchString).Any())
+                    {
+                        return 0; //Currently selected map is not contained in selected MapPool
+                    }
+                    ShortScore cachedInfo = _leaderboardInfo.DefaultMapPool.LsLeaderboardScores?.FirstOrDefault(x => x.Searchstring == searchString);
                     bool refetchInfo = cachedInfo != null && cachedInfo.FetchTime < DateTime.Now.AddDays(-7);
                     if (cachedInfo == null || refetchInfo)
                     {
-                        if (refetchInfo) _leaderboardInfo.LsLeaderboardScores?.Remove(cachedInfo);
-                        Song song = await beatLeaderClient.Hash2Async(songHash);
+                        if (refetchInfo) _leaderboardInfo.DefaultMapPool.LsLeaderboardScores?.Remove(cachedInfo);
+                        BeatLeaderSong song = await beatleaderapi.GetSongByHash(songHash);
                         if (song != null)
                         {
-                            DifficultyDescription diff = song.Difficulties.FirstOrDefault(x => x.Value == beatmap.difficultyRank);
+                            BeatLeaderDifficulty diff = song.difficulties.FirstOrDefault(x => x.value == beatmap.difficultyRank);
                             if (diff != null)
                             {
-                                _leaderboardInfo.LsLeaderboardScores.Add(new ShortScore(searchString, diff.Stars.GetValueOrDefault(), DateTime.Now));
-                                if (diff.Stars.HasValue && (int)diff.Status == (int)BeatLeaderDifficultyStatus.ranked)
+                                _leaderboardInfo.CurrentMapPool.LsLeaderboardScores.Add(new ShortScore(searchString, diff.stars.GetValueOrDefault(), DateTime.Now));
+                                if (diff.stars.HasValue && diff.status == (int)BeatLeaderDifficultyStatus.ranked)
                                 {
-                                    return diff.Stars.Value;
+                                    return diff.stars.Value;
                                 }
                             }
                         }
@@ -197,6 +205,67 @@ namespace PPPredictor.Utilities
             {
                 Plugin.Log?.Error($"PPCalculatorBeatLeader GenerateModifierMultiplier Error: {ex.Message}");
                 return -1;
+            }
+        }
+
+        public async void UpdateAvailableMapPools()
+        {
+            try
+            {
+                var events = await beatleaderapi.GetEvents();
+
+                int sortIndex = 0;
+                foreach (BeatLeaderEvent eventItem in events.data)
+                {
+                    PPPMapPool oldPool = _leaderboardInfo.LsMapPools.Find(x => x.Id == eventItem.id);
+                    /*if (oldPool == null && eventItem.dtEndDate < DateTime.UtcNow)
+                    {
+                        Plugin.Log.Error($"Do not add expired events {eventItem.name}");
+                        continue; //Do not add expired events
+                    }
+                    else if (oldPool != null && eventItem.dtEndDate < DateTime.UtcNow)
+                    {
+                        Plugin.Log.Error($"Remove expired events {eventItem.name}");
+                        //Remove expired events
+                        _leaderboardInfo.LsMapPools.Remove(oldPool);
+                        continue;
+                    }*/
+                    if (oldPool != null && DateTime.UtcNow.AddDays(-1) < oldPool.DtUtcLastRefresh)
+                    {
+                        Plugin.Log.Error($"Skip Pool update {oldPool.MapPoolName}");
+                        continue; //Do not get Playlist if it has been updated less than a day ago.
+                    }
+                    Plugin.Log.Error($"eventItem.dtEndDate {eventItem.dtEndDate}");
+                    if (oldPool == null)
+                    {
+                        var mapPool = new PPPMapPool(eventItem.id, eventItem.playListId, MapPoolType.Custom, eventItem.name, accumulationConstant, sortIndex, new BeatLeaderPPPCurve());
+                        sortIndex++;
+                        await UpdateMapPoolPlaylist(mapPool);
+                        this._leaderboardInfo.LsMapPools.Add(mapPool);
+                    }
+                    else
+                    {
+                        await UpdateMapPoolPlaylist(oldPool);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Plugin.Log?.Error($"PPCalculatorBeatLeader UpdateAvailableMapPools Error: {ex.Message}");
+                throw;
+            }
+        }
+
+        private async Task UpdateMapPoolPlaylist(PPPMapPool mapPool)
+        {
+            mapPool.LsMapPoolEntries.Clear();
+            BeatLeaderPlayList lsPlayList = await this.beatleaderapi.GetPlayList(mapPool.PlayListId);
+            foreach (BeatLeaderPlayListSong song in lsPlayList.songs)
+            {
+                foreach (BeatLeaderPlayListDifficulties diff in song.difficulties)
+                {
+                    mapPool.LsMapPoolEntries.Add(new PPPMapPoolEntry(song, diff));
+                }
             }
         }
     }

@@ -3,8 +3,11 @@ using BeatSaberMarkupLanguage.Attributes;
 using BeatSaberMarkupLanguage.Components.Settings;
 using BeatSaberMarkupLanguage.FloatingScreen;
 using BeatSaberMarkupLanguage.Parser;
+using PPPredictor.Data;
+using PPPredictor.Data.Curve;
 using PPPredictor.Utilities;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Reflection;
@@ -98,6 +101,8 @@ namespace PPPredictor.UI.ViewController
         [UIComponent("sliderFine")]
         private readonly SliderSetting sliderFine;
 #pragma warning restore CS0649 // Field is never assigned to, and will always have its default value null
+        [UIComponent("dropdown-map-pools")]
+        private readonly DropDownListSetting dropDownMapPools;
         #endregion
 
 
@@ -161,6 +166,7 @@ namespace PPPredictor.UI.ViewController
         private void ArrowPrevLeaderboardClicked()
         {
             this.ppPredictorMgr.CyclePredictors(-1);
+            UpdateMapPoolChoices();
         }
 #pragma warning restore IDE0051 // Remove unused private members
 #pragma warning disable IDE0051 // Remove unused private members
@@ -168,6 +174,7 @@ namespace PPPredictor.UI.ViewController
         private void ArrowNextLeaderboardClicked()
         {
             this.ppPredictorMgr.CyclePredictors(1);
+            UpdateMapPoolChoices();
         }
 #pragma warning restore IDE0051 // Remove unused private members
         #endregion
@@ -342,9 +349,14 @@ namespace PPPredictor.UI.ViewController
 #pragma warning restore IDE0051 // Remove unused private members
 #pragma warning disable IDE0051 // Remove unused private members
         [UIValue("leaderBoardName")]
-        private string LeaderBoardName
+        internal string LeaderBoardName
         {
-            get => this.ppPredictorMgr.CurrentPPPredictor.LeaderBoardName;
+            get
+            {
+                Plugin.Log?.Error($"Get LeaderBoardName View Controller DropDownSettings? '{dropDownMapPools}'");
+                dropDownMapPools?.UpdateChoices(); //Refresh map pools here...
+                return this.ppPredictorMgr.CurrentPPPredictor.LeaderBoardName;
+            }
         }
 #pragma warning restore IDE0051 // Remove unused private members
 #pragma warning disable IDE0051 // Remove unused private members
@@ -392,6 +404,39 @@ namespace PPPredictor.UI.ViewController
         [UIValue("isNewVersionAvailable")]
         private bool IsNewVersionAvailable { get => !string.IsNullOrEmpty(NewVersion); }
         #endregion
+
+        #region MapPoolUI Stuff
+        [UIValue("map-pool-options")]
+        public List<object> MapPoolOptions
+        {
+            get 
+            {
+                Plugin.Log?.Error($"Get map-pool-options");
+                return this.ppPredictorMgr.CurrentPPPredictor.MapPoolOptions;
+            }
+            set {
+                Plugin.Log?.Error($"Set map-pool-options");
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MapPoolOptions)));
+            }
+        }
+        [UIValue("current-map-pool")]
+        public object CurrentMapPool
+        {
+            get => this.ppPredictorMgr.CurrentPPPredictor.CurrentMapPool;
+            set
+            {
+                Plugin.Log?.Error($"Set MapPool {value}");
+                bool isCurrentMapPoolChanging = IsCurrentMapPoolChanging(value);
+                this.ppPredictorMgr.CurrentPPPredictor.CurrentMapPool = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentMapPool)));
+                if(isCurrentMapPoolChanging)
+                {
+                    Plugin.Log?.Error($"Set MapPool Refresh {value}");
+                    this.RefreshCurrentData(10);
+                }
+            }
+        }
+        #endregion
         private void OnDifficultyChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
         {
             this.ppPredictorMgr.DifficultyChanged(lvlSelectionNavigationCtrl, beatmap);
@@ -426,6 +471,13 @@ namespace PPPredictor.UI.ViewController
             this.ppPredictorMgr.RefreshCurrentData(count);
         }
 
+        internal bool IsCurrentMapPoolChanging(object value)
+        {
+            var currentPool = this.ppPredictorMgr.CurrentPPPredictor.CurrentMapPool as PPPMapPool;
+            var newMapPool = value as PPPMapPool;
+            return (currentPool != null && newMapPool != null && currentPool.Id != newMapPool.Id);
+        }
+
         private void DisplayInitialPercentages()
         {
             SliderFineValue = Plugin.ProfileInfo.LastPercentageSelected;
@@ -456,6 +508,15 @@ namespace PPPredictor.UI.ViewController
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NewVersion)));
                 Plugin.ProfileInfo.DtLastVersionCheck = DateTime.Now;
             }
+        }
+
+        private void UpdateMapPoolChoices()
+        {
+            Plugin.Log?.Error($"UpdateMapPoolChoices? '{dropDownMapPools}'");
+            dropDownMapPools.values = this.ppPredictorMgr.CurrentPPPredictor.MapPoolOptions;
+            dropDownMapPools.Value = this.ppPredictorMgr.CurrentPPPredictor.CurrentMapPool;
+            dropDownMapPools.ApplyValue();
+            dropDownMapPools?.UpdateChoices(); //Refresh map pools here...
         }
     }
 }

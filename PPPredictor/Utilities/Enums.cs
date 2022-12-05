@@ -11,6 +11,15 @@
         inevent = 6
     }
 
+    public enum PPPBeatMapDifficulty
+    {
+        Easy = 1,
+        Normal = 3,
+        Hard = 5,
+        Expert = 7,
+        ExpertPlus = 9
+    }
+
     public enum Leaderboard
     {
         ScoreSaber,
@@ -23,6 +32,19 @@
     {
         Global,
         Local
+    }
+
+    public enum MapPoolType
+    {
+        Default,
+        Custom
+    }
+
+    public enum CurveType
+    {
+        ScoreSaber,
+        BeatLeader,
+        Linear
     }
     public enum PPGainCalculationType
     {

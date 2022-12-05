@@ -1,4 +1,6 @@
-﻿namespace PPPredictor.Data
+﻿using static PPPredictor.OpenAPIs.beatleaderapi;
+
+namespace PPPredictor.Data
 {
     public class PPPPlayer
     {
@@ -25,26 +27,31 @@
         }
         public PPPPlayer(scoresaberapi.Player scoreSaberPlayer)
         {
-            this.rank = scoreSaberPlayer.Rank;
-            this.countryRank = scoreSaberPlayer.CountryRank;
-            this.pp = scoreSaberPlayer.Pp;
-            this.country = scoreSaberPlayer.Country;
+            rank = scoreSaberPlayer.Rank;
+            countryRank = scoreSaberPlayer.CountryRank;
+            pp = scoreSaberPlayer.Pp;
+            country = scoreSaberPlayer.Country;
         }
 
-        public PPPPlayer(beatleaderapi.Player scoreSaberPlayer)
+        public PPPPlayer(BeatLeaderPlayer beatLeaderPlayerEvent)
         {
-            this.rank = scoreSaberPlayer.Rank;
-            this.countryRank = scoreSaberPlayer.CountryRank;
-            this.pp = scoreSaberPlayer.Pp;
-            this.country = scoreSaberPlayer.Country;
+            rank = beatLeaderPlayerEvent.rank;
+            countryRank = beatLeaderPlayerEvent.countryRank;
+            pp = beatLeaderPlayerEvent.pp;
+            country = beatLeaderPlayerEvent.country;
         }
 
-        public PPPPlayer(beatleaderapi.PlayerResponseWithStats scoreSaberPlayer)
+        public PPPPlayer(BeatLeaderPlayerEvents beatLeaderPlayerEvent)
         {
-            this.rank = scoreSaberPlayer.Rank;
-            this.countryRank = scoreSaberPlayer.CountryRank;
-            this.pp = scoreSaberPlayer.Pp;
-            this.country = scoreSaberPlayer.Country;
+            rank = beatLeaderPlayerEvent.rank;
+            countryRank = beatLeaderPlayerEvent.countryRank;
+            pp = beatLeaderPlayerEvent.pp;
+            country = beatLeaderPlayerEvent.country;
+        }
+
+        public override string ToString()
+        {
+            return $"PPPPlayer: (Rank): {rank} (CountryRank): {countryRank} (PP): {pp} (Country): {country}";
         }
     }
 }

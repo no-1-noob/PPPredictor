@@ -268,7 +268,11 @@ namespace PPPredictor.Utilities
 
         public string LeaderBoardName
         {
-            get => _leaderboardInfo.LeaderboardName;
+            get
+            {
+                Plugin.Log?.Error($"Get LeaderBoardName PPPredictor New");
+                return _leaderboardInfo.LeaderboardName;
+            }
         }
 
         public bool IsUserFound
@@ -287,11 +291,37 @@ namespace PPPredictor.Utilities
         }
         #endregion
 
+        #region MapPools
+        public List<object> MapPoolOptions
+        {
+            get {
+                Plugin.Log?.Error($"Get map-pool-options");
+                return _leaderboardInfo.LsMapPools.Select(f => (object)f).ToList();
+            }
+        }
+        public object CurrentMapPool
+        {
+            get => (object) _leaderboardInfo.CurrentMapPool;
+            set
+            {
+                
+                _leaderboardInfo.CurrentMapPool = (PPPMapPool) value;
+                Plugin.Log?.Error($"Set MapPool {value} Player: {_leaderboardInfo.CurrentMapPool.CurrentPlayer}");
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentMapPool)));
+                SetActive(true);
+            }
+        }
+        #endregion
+
         #region loadInfos
         internal void LoadInfos()
         {
             _leaderboardInfo = Plugin.ProfileInfo.LsLeaderboardInfo.Find(x => x.LeaderboardName == leaderboardName.ToString());
-            if(_leaderboardInfo == null)
+            if(_leaderboardInfo != null)
+            {
+                _leaderboardInfo.SetCurrentMapPool();
+            }
+            if (_leaderboardInfo == null)
             {
                 _leaderboardInfo = new PPPLeaderboardInfo(leaderboardName);
                 Plugin.ProfileInfo.LsLeaderboardInfo.Add(_leaderboardInfo);
@@ -408,7 +438,7 @@ namespace PPPredictor.Utilities
 
         private void DisplaySession()
         {
-            if (_leaderboardInfo.SessionPlayer == null || _leaderboardInfo.CurrentPlayer == null)
+            if (_leaderboardInfo.CurrentMapPool.SessionPlayer == null || _leaderboardInfo.CurrentMapPool.CurrentPlayer == null)
             {
                 SessionRank = SessionCountryRank = SessionPP = SessionCountryRankDiff = SessionRankDiff = SessionPPDiff = "-";
                 SessionCountryRankDiffColor = SessionRankDiffColor = SessionPPDiffColor = "white";
@@ -417,22 +447,22 @@ namespace PPPredictor.Utilities
             {
                 if (Plugin.ProfileInfo.DisplaySessionValues)
                 {
-                    SessionRank = $"{_leaderboardInfo.SessionPlayer.Rank}";
-                    SessionCountryRank = $"{_leaderboardInfo.SessionPlayer.CountryRank}";
-                    SessionPP = $"{_leaderboardInfo.SessionPlayer.Pp:F2}pp";
+                    SessionRank = $"{_leaderboardInfo.CurrentMapPool.SessionPlayer.Rank}";
+                    SessionCountryRank = $"{_leaderboardInfo.CurrentMapPool.SessionPlayer.CountryRank}";
+                    SessionPP = $"{_leaderboardInfo.CurrentMapPool.SessionPlayer.Pp:F2}pp";
                 }
                 else
                 {
-                    SessionRank = $"{_leaderboardInfo.CurrentPlayer.Rank}";
-                    SessionCountryRank = $"{_leaderboardInfo.CurrentPlayer.CountryRank}";
-                    SessionPP = $"{_leaderboardInfo.CurrentPlayer.Pp:F2}pp";
+                    SessionRank = $"{_leaderboardInfo.CurrentMapPool.CurrentPlayer.Rank}";
+                    SessionCountryRank = $"{_leaderboardInfo.CurrentMapPool.CurrentPlayer.CountryRank}";
+                    SessionPP = $"{_leaderboardInfo.CurrentMapPool.CurrentPlayer.Pp:F2}pp";
                 }
-                SessionCountryRankDiff = (_leaderboardInfo.CurrentPlayer.CountryRank - _leaderboardInfo.SessionPlayer.CountryRank).ToString("+#;-#;0");
-                SessionCountryRankDiffColor = DisplayHelper.GetDisplayColor((_leaderboardInfo.CurrentPlayer.CountryRank - _leaderboardInfo.SessionPlayer.CountryRank), true);
-                SessionRankDiff = (_leaderboardInfo.CurrentPlayer.Rank - _leaderboardInfo.SessionPlayer.Rank).ToString("+#;-#;0");
-                SessionRankDiffColor = DisplayHelper.GetDisplayColor((_leaderboardInfo.CurrentPlayer.Rank - _leaderboardInfo.SessionPlayer.Rank), true);
-                SessionPPDiff = $"{_ppCalculator.Zeroizer(_leaderboardInfo.CurrentPlayer.Pp - _leaderboardInfo.SessionPlayer.Pp):+0.##;-0.##;0}pp";
-                SessionPPDiffColor = DisplayHelper.GetDisplayColor((_leaderboardInfo.CurrentPlayer.Pp - _leaderboardInfo.SessionPlayer.Pp), false);
+                SessionCountryRankDiff = (_leaderboardInfo.CurrentMapPool.CurrentPlayer.CountryRank - _leaderboardInfo.CurrentMapPool.SessionPlayer.CountryRank).ToString("+#;-#;0");
+                SessionCountryRankDiffColor = DisplayHelper.GetDisplayColor((_leaderboardInfo.CurrentMapPool.CurrentPlayer.CountryRank - _leaderboardInfo.CurrentMapPool.SessionPlayer.CountryRank), true);
+                SessionRankDiff = (_leaderboardInfo.CurrentMapPool.CurrentPlayer.Rank - _leaderboardInfo.CurrentMapPool.SessionPlayer.Rank).ToString("+#;-#;0");
+                SessionRankDiffColor = DisplayHelper.GetDisplayColor((_leaderboardInfo.CurrentMapPool.CurrentPlayer.Rank - _leaderboardInfo.CurrentMapPool.SessionPlayer.Rank), true);
+                SessionPPDiff = $"{_ppCalculator.Zeroizer(_leaderboardInfo.CurrentMapPool.CurrentPlayer.Pp - _leaderboardInfo.CurrentMapPool.SessionPlayer.Pp):+0.##;-0.##;0}pp";
+                SessionPPDiffColor = DisplayHelper.GetDisplayColor((_leaderboardInfo.CurrentMapPool.CurrentPlayer.Pp - _leaderboardInfo.CurrentMapPool.SessionPlayer.Pp), false);
             }
         }
         public async void RefreshCurrentData(int fetchLength)
@@ -458,11 +488,11 @@ namespace PPPredictor.Utilities
             {
                 IsUserFound = true;
             }
-            _leaderboardInfo.CurrentPlayer = player;
-            if (doResetSession || _leaderboardInfo.SessionPlayer == null || NeedsResetSession())
+            _leaderboardInfo.CurrentMapPool.CurrentPlayer = player;
+            if (doResetSession || _leaderboardInfo.CurrentMapPool.SessionPlayer == null || NeedsResetSession())
             {
                 Plugin.ProfileInfo.LastSessionReset = DateTime.Now;
-                _leaderboardInfo.SessionPlayer = player;
+                _leaderboardInfo.CurrentMapPool.SessionPlayer = player;
             }
             DisplaySession();
             IsDataLoading = false;
@@ -520,6 +550,8 @@ namespace PPPredictor.Utilities
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsNoDataLoading)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsUserFound)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsNoUserFound)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MapPoolOptions)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentMapPool)));
         }
 
         private async Task<UserInfo> GetUserInfo()

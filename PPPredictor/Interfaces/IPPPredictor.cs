@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading.Tasks;
 
 namespace PPPredictor.Interfaces
@@ -42,8 +43,8 @@ namespace PPPredictor.Interfaces
         string LeaderBoardName { get; }
         bool IsUserFound { get; }
         bool IsNoUserFound { get; }
-
-
+        List<object> MapPoolOptions { get; }
+        object CurrentMapPool { get; set; }
         #endregion
     }
 }

@@ -10,12 +10,10 @@ namespace PPPredictor.Utilities
 {
     public abstract class PPCalculator
     {
-        private List<PPPPlayer> _lsPlayerRankings;
         internal PPPLeaderboardInfo _leaderboardInfo;
 
         public PPCalculator()
         {
-            _lsPlayerRankings = new List<PPPPlayer>();
         }
 
         public async Task<PPPPlayer> GetProfile(string userId)
@@ -35,7 +33,7 @@ namespace PPPredictor.Utilities
                 bool hasMoreData = true;
                 int page = 1;
                 List<ShortScore> lsNewScores = new List<ShortScore>();
-                _leaderboardInfo.LSScores.Sort();
+                _leaderboardInfo.CurrentMapPool.LsScores.Sort();
                 while (hasMoreData)
                 {
                     PPPScoreCollection playerscores = await GetRecentScores(userId, pageSize, page);
@@ -43,11 +41,11 @@ namespace PPPredictor.Utilities
                     {
                         hasMoreData = false;
                     }
-                    if (_leaderboardInfo.LSScores == null) _leaderboardInfo.LSScores = new List<ShortScore>();
+                    if (_leaderboardInfo.CurrentMapPool.LsScores == null) _leaderboardInfo.CurrentMapPool.LsScores = new List<ShortScore>();
                     foreach (PPPScore scores in playerscores.LsPPPScore)
                     {
                         string searchString = CreateSeachString(scores.SongHash, (int)scores.Difficulty1);
-                        ShortScore previousScore = _leaderboardInfo.LSScores.Find(x => x.Searchstring == searchString);
+                        ShortScore previousScore = _leaderboardInfo.CurrentMapPool.LsScores.Find(x => x.Searchstring == searchString);
                         ShortScore newScore = new ShortScore(searchString, scores.TimeSet, scores.Pp);
                         if (previousScore == null)
                         {
@@ -71,10 +69,10 @@ namespace PPPredictor.Utilities
                 //Update after fetching all data. So when closing while fetching the incomplete data is not saved.
                 foreach (ShortScore newScore in lsNewScores)
                 {
-                    ShortScore previousScore = _leaderboardInfo.LSScores.Find(x => x.Searchstring == newScore.Searchstring);
+                    ShortScore previousScore = _leaderboardInfo.CurrentMapPool.LsScores.Find(x => x.Searchstring == newScore.Searchstring);
                     if (previousScore == null)
                     {
-                        _leaderboardInfo.LSScores.Add(newScore);
+                        _leaderboardInfo.CurrentMapPool.LsScores.Add(newScore);
                     }
                     else
                     {
@@ -82,13 +80,12 @@ namespace PPPredictor.Utilities
                         previousScore.Pp = newScore.Pp;
                     }
                 };
-                _leaderboardInfo.LSScores.Sort();
+                _leaderboardInfo.CurrentMapPool.LsScores.Sort();
             }
             catch (Exception ex)
             {
                 Plugin.Log?.Error($"PPPredictor getPlayerScores Error: {ex.Message}");
             }
-
         }
 
         public PPGainResult GetPlayerScorePPGain(string mapSearchString, double pp)
@@ -104,11 +101,11 @@ namespace PPPredictor.Utilities
                         bool newPPadded = false;
                         bool newPPSkiped = false;
                         double previousPP = 0;
-                        _leaderboardInfo.LSScores.Sort((score1, score2) => score2.Pp.CompareTo(score1.Pp));
-                        foreach (ShortScore score in _leaderboardInfo.LSScores)
+                        _leaderboardInfo.CurrentMapPool.LSScores.Sort((score1, score2) => score2.Pp.CompareTo(score1.Pp));
+                        foreach (ShortScore score in _leaderboardInfo.CurrentMapPool.LSScores)
                         {
-                            double weightedPP = WeightPP(score.Pp, index);
-                            double weightedNewPP = WeightPP(pp, index);
+                            double weightedPP = WeightPP(score.Pp, index, _leaderboardInfo.CurrentMapPool.AccumulationConstant);
+                            double weightedNewPP = WeightPP(pp, index, _leaderboardInfo.CurrentMapPool.AccumulationConstant);
                             if (score.Searchstring == mapSearchString) //skip older (lower) score
                             {
                                 previousPP = score.Pp;
@@ -125,24 +122,24 @@ namespace PPPredictor.Utilities
                                 ppAfterPlay += weightedNewPP;
                                 newPPadded = true;
                                 index++;
-                                weightedPP = WeightPP(score.Pp, index);
+                                weightedPP = WeightPP(score.Pp, index, _leaderboardInfo.CurrentMapPool.AccumulationConstant);
                             }
                             ppAfterPlay += weightedPP;
                             index++;
                         }
-                        return new PPGainResult(Math.Round(ppAfterPlay, 2, MidpointRounding.AwayFromZero), Math.Round(ppAfterPlay - _leaderboardInfo.CurrentPlayer.Pp, 2, MidpointRounding.AwayFromZero), pp - previousPP);
+                        return new PPGainResult(Math.Round(ppAfterPlay, 2, MidpointRounding.AwayFromZero), Math.Round(ppAfterPlay - _leaderboardInfo.CurrentMapPool.CurrentPlayer.Pp, 2, MidpointRounding.AwayFromZero), pp - previousPP);
                     }
                     //Try to find old pp value if the map has been failed
                     ShortScore oldScore = _leaderboardInfo.LSScores.Find(x => x.Searchstring == mapSearchString);
-                    return new PPGainResult(_leaderboardInfo.CurrentPlayer.Pp, pp, oldScore != null ? -oldScore.Pp : 0);
+                    return new PPGainResult(_leaderboardInfo.CurrentMapPool.CurrentPlayer.Pp, pp, oldScore != null ? -oldScore.Pp : 0);
                 }
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"PPPredictor GetPlayerScorePPGain Error: {ex.Message}");
-                return new PPGainResult(_leaderboardInfo.CurrentPlayer.Pp, pp, pp);
+                Plugin.Log?.Error($"PPPredictor {_leaderboardInfo?.LeaderboardName} GetPlayerScorePPGain Error: {ex.Message}");
+                return new PPGainResult(_leaderboardInfo.CurrentMapPool.CurrentPlayer.Pp, pp);
             }
-            return new PPGainResult(_leaderboardInfo.CurrentPlayer.Pp, pp, pp);
+            return new PPGainResult(_leaderboardInfo.CurrentMapPool.CurrentPlayer.Pp, pp, pp);
         }
 
         public async Task<RankGainResult> GetPlayerRankGain(double pp)
@@ -150,15 +147,15 @@ namespace PPPredictor.Utilities
             try
             {
                 //Refetch if the current rank has decrease outside of fetched range (first GetPlayerRankGain call after loading saved Session data, then update from web)
-                double worstRankFetched = _lsPlayerRankings.Select(x => x.Rank).DefaultIfEmpty(Double.MaxValue).Max();
-                if (_leaderboardInfo.CurrentPlayer.Rank > worstRankFetched) _lsPlayerRankings = new List<PPPPlayer>();
+                double worstRankFetched = _leaderboardInfo.CurrentMapPool.LsPlayerRankings.Select(x => x.Rank).DefaultIfEmpty(Double.MaxValue).Max();
+                if (_leaderboardInfo.CurrentMapPool.CurrentPlayer.Rank > worstRankFetched) _leaderboardInfo.CurrentMapPool.LsPlayerRankings = new List<PPPPlayer>();
 
-                double bestRankFetched = _lsPlayerRankings.Select(x => x.Rank).DefaultIfEmpty(-1).Min();
-                double fetchIndexPage = bestRankFetched > 0 ? Math.Floor((bestRankFetched - 1) / 50) + 1 : Math.Floor(_leaderboardInfo.CurrentPlayer.Rank / 50) + 1;
+                double bestRankFetched = _leaderboardInfo.CurrentMapPool.LsPlayerRankings.Select(x => x.Rank).DefaultIfEmpty(-1).Min();
+                double fetchIndexPage = bestRankFetched > 0 ? Math.Floor((bestRankFetched - 1) / 50) + 1 : Math.Floor(_leaderboardInfo.CurrentMapPool.CurrentPlayer.Rank / 50) + 1;
                 bool needMoreData = true;
                 while (needMoreData)
                 {
-                    int indexOfBetterPlayer = _lsPlayerRankings.FindIndex(x => x.Pp > pp);
+                    int indexOfBetterPlayer = _leaderboardInfo.CurrentMapPool.LsPlayerRankings.FindIndex(x => x.Pp > pp);
                     if (indexOfBetterPlayer != -1 || fetchIndexPage == 1)
                     {
                         //Found a better player or already fetched until rank 1
@@ -168,18 +165,18 @@ namespace PPPredictor.Utilities
                     else
                     {
                         List<PPPPlayer> playerscores = await GetPlayers(fetchIndexPage);
-                        _lsPlayerRankings.AddRange(playerscores);
+                        _leaderboardInfo.CurrentMapPool.LsPlayerRankings.AddRange(playerscores);
                     }
                     fetchIndexPage--;
                     await Task.Delay(250);
                 }
-                double rankAfterPlay = _lsPlayerRankings.Where(x => x.Pp <= pp).Select(x => x.Rank).DefaultIfEmpty(-1).Min();
-                double rankCountryAfterPlay = _lsPlayerRankings.Where(x => x.Pp <= pp && x.Country == _leaderboardInfo.CurrentPlayer.Country).Select(x => x.CountryRank).DefaultIfEmpty(-1).Min();
+                double rankAfterPlay = _leaderboardInfo.CurrentMapPool.LsPlayerRankings.Where(x => x.Pp <= pp).Select(x => x.Rank).DefaultIfEmpty(-1).Min();
+                double rankCountryAfterPlay = _leaderboardInfo.CurrentMapPool.LsPlayerRankings.Where(x => x.Pp <= pp && x.Country == _leaderboardInfo.CurrentMapPool.CurrentPlayer.Country).Select(x => x.CountryRank).DefaultIfEmpty(-1).Min();
                 if(_leaderboardInfo.LeaderboardName == Leaderboard.NoLeaderboard.ToString())
                 {
                     rankAfterPlay = rankCountryAfterPlay = 0; //Special case for when no leaderboard is active;
                 }
-                return new RankGainResult(rankAfterPlay, rankCountryAfterPlay, _leaderboardInfo.CurrentPlayer);
+                return new RankGainResult(rankAfterPlay, rankCountryAfterPlay, _leaderboardInfo.CurrentMapPool.CurrentPlayer);
             }
             catch (Exception ex)
             {
@@ -188,9 +185,14 @@ namespace PPPredictor.Utilities
             }
         }
 
-        public double WeightPP(double rawPP, int index)
+        internal double CalculatePPatPercentage(double star, double percentage)
         {
-            return rawPP * Math.Pow(0.965, (index - 1));
+            return _leaderboardInfo.CurrentMapPool.Curve.CalculatePPatPercentage(star, percentage);
+        }
+
+        public double WeightPP(double rawPP, int index, float accumulationConstant)
+        {
+            return rawPP * Math.Pow(accumulationConstant, (index - 1));
         }
 
         public string CreateSeachString(string hash, int difficulty)
@@ -212,7 +214,6 @@ namespace PPPredictor.Utilities
 
         protected abstract Task<List<PPPPlayer>> GetPlayers(double fetchIndexPage);
 
-        public abstract double CalculatePPatPercentage(double star, double percentage, bool levelFailed);
 
         public abstract Task<double> GetStarsForBeatmapAsync(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap);
 

@@ -1,7 +1,8 @@
-﻿using beatleaderapi;
-using PPPredictor.Utilities;
+﻿using PPPredictor.Utilities;
 using scoresaberapi;
 using System;
+using System.Linq;
+using static PPPredictor.OpenAPIs.beatleaderapi;
 
 namespace PPPredictor.Data
 {
@@ -25,14 +26,14 @@ namespace PPPredictor.Data
             this.difficulty = playerScore.Leaderboard.Difficulty.Difficulty1;
         }
 
-        public PPPScore(ScoreResponseWithMyScore playerScore)
+        public PPPScore(BeatLeaderPlayerScore playerScore)
         {
-            if(long.TryParse(playerScore.Timeset, out long timeSetLong)){
+            if(long.TryParse(playerScore.timeset, out long timeSetLong)){
                 this.timeSet = new DateTime(1970, 1, 1).AddSeconds(timeSetLong);
             }
-            this.pp = (int)playerScore.Leaderboard.Difficulty.Status == (int)BeatLeaderDifficultyStatus.ranked ? playerScore.Pp : 0;
-            this.songHash = playerScore.Leaderboard.Song.Hash;
-            this.difficulty = playerScore.Leaderboard.Difficulty.Value;
+            this.pp = (int)playerScore.leaderboard.difficulty.status == (int)BeatLeaderDifficultyStatus.ranked ? playerScore.pp : 0;
+            this.songHash = playerScore.leaderboard.song.hash;
+            this.difficulty = playerScore.leaderboard.difficulty.value;
         }
     }
 }
