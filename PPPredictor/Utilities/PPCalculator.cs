@@ -95,46 +95,54 @@ namespace PPPredictor.Utilities
         {
             try
             {
-                if (_leaderboardInfo.LSScores.Count > 0 && !string.IsNullOrEmpty(mapSearchString) && pp > 0)
+                if (_leaderboardInfo.LSScores.Count > 0 && !string.IsNullOrEmpty(mapSearchString))
                 {
-                    double ppAfterPlay = 0;
-                    int index = 1;
-                    bool newPPadded = false;
-                    bool newPPSkiped = false;
-                    _leaderboardInfo.LSScores.Sort((score1, score2) => score2.Pp.CompareTo(score1.Pp));
-                    foreach (ShortScore score in _leaderboardInfo.LSScores)
+                    if (pp > 0)
                     {
-                        double weightedPP = WeightPP(score.Pp, index);
-                        double weightedNewPP = WeightPP(pp, index);
-                        if (score.Searchstring == mapSearchString) //skip older (lower) score
+                        double ppAfterPlay = 0;
+                        int index = 1;
+                        bool newPPadded = false;
+                        bool newPPSkiped = false;
+                        double previousPP = 0;
+                        _leaderboardInfo.LSScores.Sort((score1, score2) => score2.Pp.CompareTo(score1.Pp));
+                        foreach (ShortScore score in _leaderboardInfo.LSScores)
                         {
-                            if (!newPPadded)
+                            double weightedPP = WeightPP(score.Pp, index);
+                            double weightedNewPP = WeightPP(pp, index);
+                            if (score.Searchstring == mapSearchString) //skip older (lower) score
                             {
-                                ppAfterPlay += Math.Max(weightedPP, weightedNewPP); //Special case for improvement of your top play
-                                newPPSkiped = true;
-                                index++;
+                                previousPP = score.Pp;
+                                if (!newPPadded)
+                                {
+                                    ppAfterPlay += Math.Max(weightedPP, weightedNewPP); //Special case for improvement of your top play
+                                    newPPSkiped = true;
+                                    index++;
+                                }
+                                continue;
                             }
-                            continue;
-                        }
-                        if (!newPPadded && !newPPSkiped && weightedNewPP >= weightedPP) //add new (potential) pp
-                        {
-                            ppAfterPlay += weightedNewPP;
-                            newPPadded = true;
+                            if (!newPPadded && !newPPSkiped && weightedNewPP >= weightedPP) //add new (potential) pp
+                            {
+                                ppAfterPlay += weightedNewPP;
+                                newPPadded = true;
+                                index++;
+                                weightedPP = WeightPP(score.Pp, index);
+                            }
+                            ppAfterPlay += weightedPP;
                             index++;
-                            weightedPP = WeightPP(score.Pp, index);
                         }
-                        ppAfterPlay += weightedPP;
-                        index++;
+                        return new PPGainResult(Math.Round(ppAfterPlay, 2, MidpointRounding.AwayFromZero), Math.Round(ppAfterPlay - _leaderboardInfo.CurrentPlayer.Pp, 2, MidpointRounding.AwayFromZero), pp - previousPP);
                     }
-                    return new PPGainResult(Math.Round(ppAfterPlay, 2, MidpointRounding.AwayFromZero), Math.Round(ppAfterPlay - _leaderboardInfo.CurrentPlayer.Pp, 2, MidpointRounding.AwayFromZero));
+                    //Try to find old pp value if the map has been failed
+                    ShortScore oldScore = _leaderboardInfo.LSScores.Find(x => x.Searchstring == mapSearchString);
+                    return new PPGainResult(_leaderboardInfo.CurrentPlayer.Pp, pp, oldScore != null ? -oldScore.Pp : 0);
                 }
-                return new PPGainResult(_leaderboardInfo.CurrentPlayer.Pp, pp);
             }
             catch (Exception ex)
             {
                 Plugin.Log?.Error($"PPPredictor GetPlayerScorePPGain Error: {ex.Message}");
-                return new PPGainResult(_leaderboardInfo.CurrentPlayer.Pp, pp);
+                return new PPGainResult(_leaderboardInfo.CurrentPlayer.Pp, pp, pp);
             }
+            return new PPGainResult(_leaderboardInfo.CurrentPlayer.Pp, pp, pp);
         }
 
         public async Task<RankGainResult> GetPlayerRankGain(double pp)
@@ -204,11 +212,11 @@ namespace PPPredictor.Utilities
 
         protected abstract Task<List<PPPPlayer>> GetPlayers(double fetchIndexPage);
 
-        public abstract double CalculatePPatPercentage(double star, double percentage);
+        public abstract double CalculatePPatPercentage(double star, double percentage, bool levelFailed);
 
         public abstract Task<double> GetStarsForBeatmapAsync(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap);
 
-        public abstract double ApplyModifierMultiplierToStars(double baseStars, GameplayModifiers gameplayModifiers);
+        public abstract double ApplyModifierMultiplierToStars(double baseStars, GameplayModifiers gameplayModifiers, bool levelFailed = false);
 
     }
 }

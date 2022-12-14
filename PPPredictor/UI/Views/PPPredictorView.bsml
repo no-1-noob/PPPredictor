@@ -72,9 +72,9 @@
           <text text=']' italics='true' align='Left' font-size='4' />
         </horizontal>
         <horizontal horizontal-fit='PreferredSize' align='Center' child-align='MiddleLeft'>
-          <text text='~ppGainRaw' italics='true' align='Center' font-size='4' />
+          <text text='~ppRaw' italics='true' align='Center' font-size='4' />
           <text text='[' italics='true' align='Center' font-size='4' />
-          <text text='~ppGainWeighted' font-color='~ppGainDiffColor' italics='true' align='Center' font-size='4' />
+          <text text='~ppGain' font-color='~ppGainDiffColor' italics='true' align='Center' font-size='4' />
           <text text=']' italics='true' align='Center' font-size='4' />
         </horizontal>
       </vertical>

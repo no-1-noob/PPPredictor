@@ -7,12 +7,12 @@ namespace PPPredictor.Utilities
     class PPCalculatorNoLeaderboard : PPCalculator
     {
         //Dummy class, for when no Leaderboards are selected in the options. mhh... why even use this mod then
-        public override double ApplyModifierMultiplierToStars(double baseStars, GameplayModifiers gameplayModifiers)
+        public override double ApplyModifierMultiplierToStars(double baseStars, GameplayModifiers gameplayModifiers, bool levelFailed)
         {
             return 0;
         }
 
-        public override double CalculatePPatPercentage(double star, double percentage)
+        public override double CalculatePPatPercentage(double star, double percentage, bool levelFailed)
         {
             return 0;
         }

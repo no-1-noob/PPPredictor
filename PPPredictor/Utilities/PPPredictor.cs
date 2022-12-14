@@ -15,8 +15,8 @@ namespace PPPredictor.Utilities
         internal Leaderboard leaderboardName;
         #region displayValues
         private float _percentage;
-        private string _ppGainRaw = "";
-        private string _ppGainWeighted = "";
+        private string _ppRaw = "";
+        private string _ppGain = "";
         private string _ppGainDiffColor = "white";
 
         private double _currentSelectionBaseStars;
@@ -77,24 +77,24 @@ namespace PPPredictor.Utilities
             }
         }
 
-        public string PPGainRaw
+        public string PPRaw
         {
             set
             {
-                _ppGainRaw = value;
-                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PPGainRaw)));
+                _ppRaw = value;
+                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PPRaw)));
             }
-            get => _ppGainRaw;
+            get => _ppRaw;
         }
 
-        public string PPGainWeighted
+        public string PPGain
         {
             set
             {
-                _ppGainWeighted = value;
-                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PPGainWeighted)));
+                _ppGain = value;
+                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PPGain)));
             }
-            get => _ppGainWeighted;
+            get => _ppGain;
         }
 
         public string PPGainDiffColor
@@ -334,14 +334,16 @@ namespace PPPredictor.Utilities
             }
         }
         #endregion
-        public double CalculatePPatPercentage(double percentage)
+        public double CalculatePPatPercentage(double percentage, bool levelFailed = false)
         {
-            return _ppCalculator.CalculatePPatPercentage(_currentSelectionStars, percentage);
+            double stars = _currentSelectionStars;
+            if (levelFailed) stars = _ppCalculator.ApplyModifierMultiplierToStars(_currentSelectionBaseStars, _gameplayModifiers, levelFailed); //Recalculate stars for beatleader
+            return _ppCalculator.CalculatePPatPercentage(stars, percentage, levelFailed);
         }
 
         public double CalculatePPGain(double pp)
         {
-            return _ppCalculator.GetPlayerScorePPGain(_selectedMapSearchString, pp).PpGain;
+            return _ppCalculator.GetPlayerScorePPGain(_selectedMapSearchString, pp).GetDisplayPPValue();
         }
 
         public bool IsRanked()
@@ -353,10 +355,10 @@ namespace PPPredictor.Utilities
         {
             double pp = CalculatePPatPercentage(_percentage);
             PPGainResult ppGainResult = _ppCalculator.GetPlayerScorePPGain(_selectedMapSearchString, pp);
-            double ppGains = _ppCalculator.Zeroizer(ppGainResult.PpGain);
-            PPGainRaw = $"{pp:F2}pp";
-            PPGainWeighted = $"{ppGains:+0.##;-0.##;0}pp";
-            PPGainDiffColor = DisplayHelper.GetDisplayColor(ppGains, false);
+            double ppGains = _ppCalculator.Zeroizer(ppGainResult.GetDisplayPPValue());
+            PPRaw = $"{pp:F2}pp";
+            PPGain = $"{ppGains:+0.##;-0.##;0}pp";
+            PPGainDiffColor = DisplayHelper.GetDisplayColor(ppGains, false, true);
 
             RankGainResult rankGain = new RankGainResult(1, 2, 3, 4);
             DisplayRankGain(null);
@@ -496,8 +498,8 @@ namespace PPPredictor.Utilities
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LeaderBoardName)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Percentage)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PPGainRaw)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PPGainWeighted)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PPRaw)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PPGain)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PPGainDiffColor)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionRank)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionRankDiff)));

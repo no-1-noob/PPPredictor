@@ -12,15 +12,15 @@ namespace PPPredictor.Interfaces
         Task UpdateCurrentAndCheckResetSession(bool doResetSession);
         void RefreshCurrentData(int fetchLength);
         void ResetDisplay(bool resetAll);
-        double CalculatePPatPercentage(double percentage);
+        double CalculatePPatPercentage(double percentage, bool levelFailed = false);
         double CalculatePPGain(double pp);
         bool IsRanked();
         void DisplayPP();
         void SetActive(bool setActive);
         #region Properties
         float Percentage { get; set; }
-        string PPGainRaw { get; set; }
-        string PPGainWeighted { get; set; }
+        string PPRaw { get; set; }
+        string PPGain { get; set; }
         string PPGainDiffColor { get; set; }
         string SessionRank { get; set; }
         string SessionRankDiff { get; set; }

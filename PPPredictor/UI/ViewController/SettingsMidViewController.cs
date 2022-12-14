@@ -14,6 +14,8 @@ namespace PPPredictor.UI.ViewController
     {
         public event PropertyChangedEventHandler PropertyChanged;
         private readonly List<object> scoringTypeOptions;
+        private readonly List<object> generalPPGainCalculationOptions;
+        private readonly List<object> counterDisplayTypeOptions;
 
         public SettingsMidViewController()
         {
@@ -21,6 +23,16 @@ namespace PPPredictor.UI.ViewController
             foreach (CounterScoringType enumValue in Enum.GetValues(typeof(CounterScoringType)))
             {
                 scoringTypeOptions.Add(enumValue.ToString());
+            }
+            generalPPGainCalculationOptions = new List<object>();
+            foreach (PPGainCalculationType enumValue in Enum.GetValues(typeof(PPGainCalculationType)))
+            {
+                generalPPGainCalculationOptions.Add(enumValue.ToString());
+            }
+            counterDisplayTypeOptions = new List<object>();
+            foreach (CounterDisplayType enumValue in Enum.GetValues(typeof(CounterDisplayType)))
+            {
+                counterDisplayTypeOptions.Add(EnumHelper.CounterDisplayTypeGetDisplayValue(enumValue));
             }
         }
 
@@ -57,6 +69,33 @@ namespace PPPredictor.UI.ViewController
             {
                 Plugin.ProfileInfo.IsVersionCheckEnabled = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(VersionCheckEnabled)));
+            }
+        }
+
+        [UIValue("general-pp-gain-calculation-options")]
+        public List<object> GeneralPPGainCalculationOptions
+        {
+            get => this.generalPPGainCalculationOptions;
+        }
+        [UIValue("general-pp-gain-calculation")]
+        public string GeneralPPGainCalculation
+        {
+            get => Plugin.ProfileInfo.PpGainCalculationType.ToString();
+            set
+            {
+                Plugin.ProfileInfo.PpGainCalculationType = (PPGainCalculationType)Enum.Parse(typeof(PPGainCalculationType), value);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(GeneralPPGainCalculation)));
+            }
+        }
+
+        [UIValue("general-raw-pp-loss-highlight-threshold")]
+        public int GeneralRawPPLossHighlightThreshold
+        {
+            get => Plugin.ProfileInfo.RawPPLossHighlightThreshold;
+            set
+            {
+                Plugin.ProfileInfo.RawPPLossHighlightThreshold = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(GeneralRawPPLossHighlightThreshold)));
             }
         }
 
@@ -101,16 +140,23 @@ namespace PPPredictor.UI.ViewController
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ResetSessionHours)));
             }
         }
-        [UIValue("counter-show-gain")]
-        public bool CounterShowGain
+
+        [UIValue("counter-display-type-options")]
+        public List<object> CounterDisplayTypeOptions
         {
-            get => Plugin.ProfileInfo.CounterShowGain;
+            get => this.counterDisplayTypeOptions;
+        }
+        [UIValue("counter-display-type")]
+        public string CounterDisplayType
+        {
+            get => EnumHelper.CounterDisplayTypeGetDisplayValue(Plugin.ProfileInfo.CounterDisplayType);
             set
             {
-                Plugin.ProfileInfo.CounterShowGain = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CounterShowGain)));
+                Plugin.ProfileInfo.CounterDisplayType = EnumHelper.DisplayValueToCounterDisplayType(value);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CounterDisplayType)));
             }
         }
+
         [UIValue("counter-use-icons")]
         public bool CounterUseIcons
         {
@@ -175,7 +221,7 @@ namespace PPPredictor.UI.ViewController
             WindowHandleEnabled = Plugin.ProfileInfo.WindowHandleEnabled;
             DisplaySessionValues = Plugin.ProfileInfo.DisplaySessionValues;
             ResetSessionHours = Plugin.ProfileInfo.ResetSessionHours;
-            CounterShowGain = Plugin.ProfileInfo.CounterShowGain;
+            CounterDisplayType = EnumHelper.CounterDisplayTypeGetDisplayValue(Plugin.ProfileInfo.CounterDisplayType);
             CounterUseIcons = Plugin.ProfileInfo.CounterUseIcons;
             CounterHighlightTargetPercentage = Plugin.ProfileInfo.CounterHighlightTargetPercentage;
             CounterHideWhenUnranked = Plugin.ProfileInfo.CounterHideWhenUnranked;
@@ -183,6 +229,8 @@ namespace PPPredictor.UI.ViewController
             VersionCheckEnabled = Plugin.ProfileInfo.IsVersionCheckEnabled;
             ScoreSaberEnabled = Plugin.ProfileInfo.IsScoreSaberEnabled;
             BeatLeaderEnabled = Plugin.ProfileInfo.IsBeatLeaderEnabled;
+            GeneralPPGainCalculation = Plugin.ProfileInfo.PpGainCalculationType.ToString();
+            GeneralRawPPLossHighlightThreshold = Plugin.ProfileInfo.RawPPLossHighlightThreshold;
         }
     }
 }

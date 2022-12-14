@@ -84,7 +84,7 @@ namespace PPPredictor.Utilities
             }
         }
 
-        public override double CalculatePPatPercentage(double star, double percentage)
+        public override double CalculatePPatPercentage(double star, double percentage, bool levelFailed)
         {
             try
             {
@@ -144,10 +144,10 @@ namespace PPPredictor.Utilities
             }
         }
 
-        public override double ApplyModifierMultiplierToStars(double baseStars, GameplayModifiers gameplayModifiers)
+        public override double ApplyModifierMultiplierToStars(double baseStars, GameplayModifiers gameplayModifiers, bool levelFailed)
         {
             List<string> lsModifiers = ParseModifiers(gameplayModifiers);
-            return baseStars *= GenerateModifierMultiplier(lsModifiers);
+            return baseStars *= GenerateModifierMultiplier(lsModifiers, levelFailed);
         }
 
         private List<string> ParseModifiers(GameplayModifiers gameplayModifiers)
@@ -180,13 +180,14 @@ namespace PPPredictor.Utilities
             
         }
 
-        private double GenerateModifierMultiplier(List<string> lsModifier)
+        private double GenerateModifierMultiplier(List<string> lsModifier, bool levelFailed)
         {
             try
             {
                 double multiplier = 1;
                 foreach (string modifier in lsModifier)
                 {
+                    if (!levelFailed && modifier == "NF") continue; //Ignore nofail until the map is failed in gameplay
                     multiplier += (dctModifiers[modifier] * 2);
                     //TODO: Why *2???
                 }

@@ -146,11 +146,12 @@ namespace PPPredictor.Utilities
             }
         }
 
-        public override double CalculatePPatPercentage(double star, double percentage)
+        public override double CalculatePPatPercentage(double star, double percentage, bool levelFailed)
         {
             try
             {
                 percentage /= 100.0;
+                if (levelFailed) percentage /= 2.0; //Halve score if nofail triggered
                 double multiplier = CalculateMultiplierAtPercentage(percentage);
                 return multiplier * star * basePPMultiplier;
             }
@@ -185,7 +186,7 @@ namespace PPPredictor.Utilities
             }
         }
 
-        public override double ApplyModifierMultiplierToStars(double baseStars, GameplayModifiers gameplayModifiers)
+        public override double ApplyModifierMultiplierToStars(double baseStars, GameplayModifiers gameplayModifiers, bool levelFailed)
         {
             return baseStars;
         }

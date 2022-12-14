@@ -32,22 +32,63 @@ namespace PPPredictor.Counter
             this.positionScale = positionScale;
             float positionScaleFactor = 10 / positionScale;
             lineOffset = lineOffset * positionScaleFactor;
+            TextAlignmentOptions gainAlignment = TextAlignmentOptions.BottomLeft;
+            float centerOffset = getCenterOffset();
             float iconTextOffset = (Plugin.ProfileInfo.CounterUseIcons ? -.9f : 0f);
+            float displayTypeOffset = 0;
+            if (Plugin.ProfileInfo.CounterDisplayType == CounterDisplayType.PPNoSuffix || Plugin.ProfileInfo.CounterDisplayType == CounterDisplayType.PPAndGainNoSuffix || Plugin.ProfileInfo.CounterDisplayType == CounterDisplayType.PPAndGainNoBracketsNoSuffix || Plugin.ProfileInfo.CounterDisplayType == CounterDisplayType.GainNoBracketsNoSuffix)
+                displayTypeOffset = -.2f;
+            if (Plugin.ProfileInfo.CounterDisplayType == CounterDisplayType.GainNoBrackets)
+            {
+                displayTypeOffset = -0.2f;
+                gainAlignment = TextAlignmentOptions.BottomRight;
+            }
+            if(Plugin.ProfileInfo.CounterDisplayType == CounterDisplayType.GainNoBracketsNoSuffix)
+            {
+                displayTypeOffset = -0.4f;
+                gainAlignment = TextAlignmentOptions.BottomRight;
+            }
             useIcon = (canvas != null && Plugin.ProfileInfo.CounterUseIcons);
             showInfo = Plugin.pppViewController.ppPredictorMgr.IsRanked(leaderboard) || !Plugin.ProfileInfo.CounterHideWhenUnranked;
-            headerText = canvasUtility.CreateTextFromSettings(settings, new Vector3((-1f * positionScaleFactor), lineOffset, 0));
-            ppText = canvasUtility.CreateTextFromSettings(settings, new Vector3((0.9f + iconTextOffset) * positionScaleFactor, lineOffset, 0));
-            ppGainText = canvasUtility.CreateTextFromSettings(settings, new Vector3((1.2f + iconTextOffset) * positionScaleFactor, lineOffset, 0));
-            headerText.alignment = ppGainText.alignment = TextAlignmentOptions.BottomLeft;
+            headerText = canvasUtility.CreateTextFromSettings(settings, new Vector3(((-1f + centerOffset) * positionScaleFactor), lineOffset, 0));
+            ppText = canvasUtility.CreateTextFromSettings(settings, new Vector3((0.9f + iconTextOffset + displayTypeOffset + centerOffset) * positionScaleFactor, lineOffset, 0));
+            ppGainText = canvasUtility.CreateTextFromSettings(settings, new Vector3((1.2f + iconTextOffset + displayTypeOffset + centerOffset) * positionScaleFactor, lineOffset, 0));
+            headerText.alignment = TextAlignmentOptions.BottomLeft;
+            ppGainText.alignment = gainAlignment;
             ppText.alignment = TextAlignmentOptions.BottomRight;
             headerText.fontSize = ppText.fontSize = ppGainText.fontSize = fontSize;
             if (useIcon)
             {
-                icon = CreateIcon(canvas, iconPath, new Vector3(-1f * positionScaleFactor, lineOffset, 0), Math.Abs(lineOffset));
+                icon = CreateIcon(canvas, iconPath, new Vector3((-1f + centerOffset) * positionScaleFactor, lineOffset, 0), Math.Abs(lineOffset));
             }
         }
 
-        public void UpdateCounterText(double percentage)
+        private float getCenterOffset()
+        {
+            switch (Plugin.ProfileInfo.CounterDisplayType)
+            {
+                case CounterDisplayType.PP:
+                    return 0.5f;
+                case CounterDisplayType.PPNoSuffix:
+                    return 0.6f;
+                case CounterDisplayType.PPAndGain:
+                    return 0f;
+                case CounterDisplayType.PPAndGainNoSuffix:
+                    return 0.3f;
+                case CounterDisplayType.PPAndGainNoBrackets:
+                    return 0f;
+                case CounterDisplayType.PPAndGainNoBracketsNoSuffix:
+                    return 0.3f;
+                case CounterDisplayType.GainNoBrackets:
+                    return 0.4f;
+                case CounterDisplayType.GainNoBracketsNoSuffix:
+                    return 0.6f;
+                default:
+                    return 0;
+            }
+        }
+
+        public void UpdateCounterText(double percentage, bool levelFailed)
         {
             string percentageThresholdColor = DisplayHelper.GetDisplayColor(0, false);
             if (percentage > Plugin.pppViewController.ppPredictorMgr.GetPercentage() && Plugin.ProfileInfo.CounterHighlightTargetPercentage)
@@ -59,10 +100,41 @@ namespace PPPredictor.Counter
             if (showInfo)
             {
                 if (Plugin.ProfileInfo.CounterUseIcons) icon.enabled = true;
-                double pp = Plugin.pppViewController.ppPredictorMgr.GetPPAtPercentageForCalculator(leaderboard, percentage);
+                double pp = Plugin.pppViewController.ppPredictorMgr.GetPPAtPercentageForCalculator(leaderboard, percentage, levelFailed);
                 double ppGain = Math.Round(Plugin.pppViewController.ppPredictorMgr.GetPPGainForCalculator(leaderboard, pp), 2);
-                ppText.text = $"{pp:F2}pp";
-                if (Plugin.ProfileInfo.CounterShowGain) ppGainText.text = $"[<color=\"{DisplayHelper.GetDisplayColor(ppGain, false)}\">{ppGain:F2}</color>]";
+                switch (Plugin.ProfileInfo.CounterDisplayType)
+                {
+                    case CounterDisplayType.PP:
+                        ppText.text = $"{pp:F2}pp";
+                        break;
+                    case CounterDisplayType.PPAndGain:
+                        ppText.text = $"{pp:F2}pp";
+                        ppGainText.text = $"[<color=\"{DisplayHelper.GetDisplayColor(ppGain, false, true)}\">{ppGain:F2}pp</color>]";
+                        break;
+                    case CounterDisplayType.PPAndGainNoBrackets:
+                        ppText.text = $"{pp:F2}pp";
+                        ppGainText.text = $"<color=\"{DisplayHelper.GetDisplayColor(ppGain, false, true)}\">{ppGain:F2}pp</color>";
+                        break;
+                    case CounterDisplayType.GainNoBrackets:
+                        ppGainText.text = $"<color=\"{DisplayHelper.GetDisplayColor(ppGain, false, true)}\">{ppGain:F2}pp</color>";
+                        break;
+                    case CounterDisplayType.PPNoSuffix:
+                        ppText.text = $"{pp:F2}";
+                        break;
+                    case CounterDisplayType.PPAndGainNoSuffix:
+                        ppText.text = $"{pp:F2}";
+                        ppGainText.text = $"[<color=\"{DisplayHelper.GetDisplayColor(ppGain, false, true)}\">{ppGain:F2}</color>]";
+                        break;
+                    case CounterDisplayType.PPAndGainNoBracketsNoSuffix:
+                        ppText.text = $"{pp:F2}";
+                        ppGainText.text = $"<color=\"{DisplayHelper.GetDisplayColor(ppGain, false, true)}\">{ppGain:F2}</color>";
+                        break;
+                    case CounterDisplayType.GainNoBracketsNoSuffix:
+                        ppGainText.text = $"<color=\"{DisplayHelper.GetDisplayColor(ppGain, false, true)}\">{ppGain:F2}</color>";
+                        break;
+                    default:
+                        break;
+                }
             }
         }
 

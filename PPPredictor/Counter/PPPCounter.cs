@@ -13,6 +13,7 @@ namespace PPPredictor.Counter
         [Inject] private readonly GameplayCoreSceneSetupData setupData;
         private List<CounterInfoHolder> lsCounterInfoHolder;
         private int maxPossibleScore = 0;
+        private bool _levelFailed = false;
 #if DEBUG
         private TMP_Text debugPercentage;
 #endif
@@ -38,8 +39,22 @@ namespace PPPredictor.Counter
         {
             try
             {
-                
+
 #if DEBUG
+                //Center Helper for development
+                /*float offsetPlus = 0.1f;
+                for (int i = 0; i < 5; i++)
+                {
+                    TMP_Text testPlus = CanvasUtility.CreateTextFromSettings(Settings, new Vector3(offsetPlus * -(i + 1), ((i % 2) + 1) * offsetPlus, 0));
+                    testPlus.alignment = TextAlignmentOptions.Center;
+                    testPlus.text = "+";
+                }
+                for (int i = 0; i < 5; i++)
+                {
+                    TMP_Text testPlus = CanvasUtility.CreateTextFromSettings(Settings, new Vector3(offsetPlus * (i + 1), ((i % 2) + 1) * offsetPlus, 0));
+                    testPlus.alignment = TextAlignmentOptions.Center;
+                    testPlus.text = "+";
+                }*/
                 debugPercentage = CanvasUtility.CreateTextFromSettings(Settings, new Vector3(0, 0, 0));
                 debugPercentage.alignment = TextAlignmentOptions.Center;
 #endif
@@ -61,6 +76,7 @@ namespace PPPredictor.Counter
 
                 maxPossibleScore = ScoreModel.ComputeMaxMultipliedScoreForBeatmap(setupData.transformedBeatmapData);
                 scoreController.scoreDidChangeEvent += ScoreController_scoreDidChangeEvent;
+                BS_Utils.Utilities.BSEvents.energyReachedZero += BSEvents_energyReachedZero;
                 CalculatePercentages();
             }
             catch (Exception ex)
@@ -69,6 +85,10 @@ namespace PPPredictor.Counter
             }
         }
 
+        private void BSEvents_energyReachedZero()
+        {
+            _levelFailed = true;
+        }
         private void ScoreController_scoreDidChangeEvent(int arg1, int arg2)
         {
             CalculatePercentages();
@@ -99,14 +119,15 @@ namespace PPPredictor.Counter
         public override void CounterDestroy()
         {
             scoreController.scoreDidChangeEvent -= ScoreController_scoreDidChangeEvent;
+            BS_Utils.Utilities.BSEvents.energyReachedZero -= BSEvents_energyReachedZero;
         }
 
         private void DisplayCounterText(double percentage)
         {
 #if DEBUG
-            debugPercentage.text = $"{Plugin.ProfileInfo.CounterScoringType} {percentage:F2}%";
+            debugPercentage.text = "+";//$"{Plugin.ProfileInfo.CounterScoringType} {percentage:F2}%";
 #endif
-            lsCounterInfoHolder.ForEach(item => item.UpdateCounterText(percentage));
+            lsCounterInfoHolder.ForEach(item => item.UpdateCounterText(percentage, _levelFailed));
         }
 
         //Stupid way to do it but works

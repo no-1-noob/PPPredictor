@@ -2,7 +2,7 @@
   <vertical vertical-fit='PreferredSize' child-align='MiddleLeft'>
     <text text='Counter Settings' horizontal-fit='PreferredSize'></text>
     <dropdown-list-setting text='Scoring type' value='counter-scoring-type' choices='counter-scoring-type-options' apply-on-change='true'/>
-    <bool-setting text='Show PP gain' value='counter-show-gain' apply-on-change='true'></bool-setting>
+    <list-setting text='Display type' value='counter-display-type' choices='counter-display-type-options' bind-value='true' apply-on-change='true' rich-text='true' font-align='Left' word-wrapping='false'/>
     <bool-setting text='Use leaderboard icons' value='counter-use-icons' apply-on-change='true'></bool-setting>
     <bool-setting text='Highlight if target % is reached (when icons are not used)' value='counter-highlight-target-percentage' apply-on-change='true'></bool-setting>
     <bool-setting text='Hide when unranked' value='counter-hide-when-unranked' apply-on-change='true'></bool-setting>

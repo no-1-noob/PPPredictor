@@ -9,6 +9,7 @@ namespace PPPredictor.Counter.Settings
     internal class CounterSettings : INotifyPropertyChanged
     {
         private readonly List<object> scoringTypeOptions;
+        private readonly List<object> counterDisplayTypeOptions;
         public event PropertyChangedEventHandler PropertyChanged;
 
         public CounterSettings()
@@ -16,6 +17,11 @@ namespace PPPredictor.Counter.Settings
             scoringTypeOptions = new List<object>();
             foreach (CounterScoringType enumValue in Enum.GetValues(typeof(CounterScoringType))) {
                 scoringTypeOptions.Add(enumValue.ToString());
+            }
+            counterDisplayTypeOptions = new List<object>();
+            foreach (CounterDisplayType enumValue in Enum.GetValues(typeof(CounterDisplayType)))
+            {
+                counterDisplayTypeOptions.Add(EnumHelper.CounterDisplayTypeGetDisplayValue(enumValue));
             }
         }
 
@@ -25,16 +31,22 @@ namespace PPPredictor.Counter.Settings
             // Code to run after BSML finishes
         }
 
-        [UIValue("counter-show-gain")]
-        public bool CounterShowGain
+        [UIValue("counter-display-type-options")]
+        public List<object> CounterDisplayTypeOptions
         {
-            get => Plugin.ProfileInfo.CounterShowGain;
+            get => this.counterDisplayTypeOptions;
+        }
+        [UIValue("counter-display-type")]
+        public string CounterDisplayType
+        {
+            get => EnumHelper.CounterDisplayTypeGetDisplayValue(Plugin.ProfileInfo.CounterDisplayType);
             set
             {
-                Plugin.ProfileInfo.CounterShowGain = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CounterShowGain)));
+                Plugin.ProfileInfo.CounterDisplayType = EnumHelper.DisplayValueToCounterDisplayType(value);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CounterDisplayType)));
             }
         }
+
         [UIValue("counter-use-icons")]
         public bool CounterUseIcons
         {

@@ -6,12 +6,14 @@
     <text text='General' italics='true' align='Center' font-size='4' />
     <bool-setting text='Show window handle' value='window-handle-enabled' bind-value='true' apply-on-change='true'></bool-setting>
     <bool-setting text='Enable version checker' value='version-check-enabled' bind-value='true' apply-on-change='true'></bool-setting>
+    <dropdown-list-setting text='PP gain calculation' value='general-pp-gain-calculation' choices='general-pp-gain-calculation-options' bind-value='true' apply-on-change='true'/>
+    <slider-setting text='Highlight loss threshold' value='general-raw-pp-loss-highlight-threshold' hover-hint='Highlight PP loss yellow if the loss is between the selected value an 0. Only works with raw pp gain calculation.' min='-100' max='0' increment='1' bind-value='true' apply-on-change='true' integer-only='true'/>
     <text text='Leaderboards' italics='true' align='Center' font-size='4' />
     <bool-setting text='ScoreSaber enabled' value='scoresaber-enabled' bind-value='true' apply-on-change='true'></bool-setting>
     <bool-setting text='BeatLeader enabled' value='beatleader-enabled' bind-value='true' apply-on-change='true'></bool-setting>
     <text text='Counter' italics='true' align='Center' font-size='4' />
     <dropdown-list-setting text='Scoring type' value='counter-scoring-type' choices='counter-scoring-type-options' bind-value='true' apply-on-change='true'/>
-    <bool-setting text='Show PP gain' value='counter-show-gain' bind-value='true' apply-on-change='true'></bool-setting>
+    <list-setting text='Display type' value='counter-display-type' choices='counter-display-type-options' bind-value='true' apply-on-change='true' rich-text='true' font-align='Left' word-wrapping='false'/>
     <bool-setting text='Use leaderboard icons' value='counter-use-icons' bind-value='true' apply-on-change='true'></bool-setting>
     <bool-setting text='Highlight if target % is reached (when icons are not used)' value='counter-highlight-target-percentage' bind-value='true' apply-on-change='true'></bool-setting>
     <bool-setting text='Hide when unranked' value='counter-hide-when-unranked' bind-value='true' apply-on-change='true'></bool-setting>

@@ -197,17 +197,17 @@ namespace PPPredictor.UI.ViewController
             }
         }
 #pragma warning disable IDE0051 // Remove unused private members
-        [UIValue("ppGainRaw")]
-        private string PPGainRaw
+        [UIValue("ppRaw")]
+        private string PPRaw
         {
-            get => this.ppPredictorMgr.CurrentPPPredictor.PPGainRaw;
+            get => this.ppPredictorMgr.CurrentPPPredictor.PPRaw;
         }
 #pragma warning restore IDE0051 // Remove unused private members
 #pragma warning disable IDE0051 // Remove unused private members
-        [UIValue("ppGainWeighted")]
-        private string PPGainWeighted
+        [UIValue("ppGain")]
+        private string PPGain
         {
-            get => this.ppPredictorMgr.CurrentPPPredictor.PPGainWeighted;
+            get => this.ppPredictorMgr.CurrentPPPredictor.PPGain;
         }
 #pragma warning restore IDE0051 // Remove unused private members
 #pragma warning disable IDE0051 // Remove unused private members
