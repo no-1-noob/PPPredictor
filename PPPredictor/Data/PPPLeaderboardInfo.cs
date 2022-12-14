@@ -32,13 +32,13 @@ namespace PPPredictor.Data
             switch (leaderboard)
             {
                 case Leaderboard.ScoreSaber:
-                    _lsMapPools.Add(new PPPMapPool(MapPoolType.Default, $"Default_{leaderboard}", PPCalculatorScoreSaber.accumulationConstant, 0, CurveParser.ParseToCurve(new CurveInfo(CurveType.ScoreSaber))));
+                    _lsMapPools.Add(new PPPMapPool(MapPoolType.Default, $"Default", PPCalculatorScoreSaber.accumulationConstant, 0, CurveParser.ParseToCurve(new CurveInfo(CurveType.ScoreSaber))));
                     break;
                 case Leaderboard.BeatLeader:
-                    _lsMapPools.Add(new PPPMapPool(MapPoolType.Default, $"Default_{leaderboard}", PPCalculatorBeatLeader.accumulationConstant, 0, new BeatLeaderPPPCurve()));
+                    _lsMapPools.Add(new PPPMapPool(MapPoolType.Default, $"Default", PPCalculatorBeatLeader.accumulationConstant, 0, new BeatLeaderPPPCurve()));
                     break;
                 case Leaderboard.NoLeaderboard:
-                    _lsMapPools.Add(new PPPMapPool(MapPoolType.Default, $"Default_{leaderboard}", 0, 0, new CustomPPPCurve(new double[0, 2] { }, CurveType.Linear, 0)));
+                    _lsMapPools.Add(new PPPMapPool(MapPoolType.Default, $"Default", 0, 0, new CustomPPPCurve(new double[0, 2] { }, CurveType.Linear, 0)));
                     break;
                 default:
                     break;

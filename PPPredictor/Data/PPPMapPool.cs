@@ -25,12 +25,7 @@ namespace PPPredictor.Data
         private DateTime _dtUtcLastRefresh;
         private DateTime _dtUtcLastSessionReset;
 
-        public string MapPoolName { get => _mapPoolName; set
-            {
-                Plugin.Log?.Error($"Set MapPoolName: {value}");
-                _mapPoolName = value;
-            }
-        }
+        public string MapPoolName { get => _mapPoolName; set => _mapPoolName = value; }
         public float AccumulationConstant { get => _accumulationConstant; set => _accumulationConstant = value; }
         public int SortIndex { get => _sortIndex; set => _sortIndex = value; }
         public List<ShortScore> LsScores { get => _lsScores; set => _lsScores = value; }
@@ -86,7 +81,7 @@ namespace PPPredictor.Data
 
         public override string ToString()
         {
-            return $"MapPool: {_mapPoolName}";
+            return $"{_mapPoolName}";
         }
     }
 }

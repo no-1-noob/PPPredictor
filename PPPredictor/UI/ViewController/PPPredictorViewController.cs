@@ -388,6 +388,13 @@ namespace PPPredictor.UI.ViewController
         }
 #pragma warning restore IDE0051 // Remove unused private members
 #pragma warning disable IDE0051 // Remove unused private members
+        [UIValue("isMapPoolDropDownActive")]
+        private bool IsMapPoolDropDownActive
+        {
+            get => this.ppPredictorMgr.IsMapPoolDropDownActive;
+        }
+#pragma warning restore IDE0051 // Remove unused private members
+#pragma warning disable IDE0051 // Remove unused private members
         [UIValue("isLeaderboardNavigationActive")]
         private bool IsLeaderboardNavigationActive
         {

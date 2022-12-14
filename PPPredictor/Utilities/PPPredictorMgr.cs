@@ -18,10 +18,12 @@ namespace PPPredictor.Utilities
         private PropertyChangedEventHandler propertyChanged;
         private bool isLeftArrowActive = false;
         private bool isRightArrowActive = false;
+        private bool isMapPoolDropDownActive = true;
         private bool isLeaderboardNavigationActive = false;
 
         internal bool IsLeftArrowActive { get => isLeftArrowActive; }
         internal bool IsRightArrowActive { get => isRightArrowActive; }
+        internal bool IsMapPoolDropDownActive { get => isMapPoolDropDownActive; }
         internal bool IsLeaderboardNavigationActive { get => isLeaderboardNavigationActive; }
 
         internal PPPredictorMgr()
@@ -75,9 +77,11 @@ namespace PPPredictor.Utilities
             else isLeaderboardNavigationActive = true;
             isLeftArrowActive = index > 0;
             isRightArrowActive = index < _lsPPPredictor.Count() - 1;
+            isMapPoolDropDownActive = CurrentPPPredictor.MapPoolOptions.Count() > 1;
             propertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsLeftArrowActive)));
             propertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsRightArrowActive)));
             propertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsLeaderboardNavigationActive)));
+            propertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsMapPoolDropDownActive)));
         }
 
         public void ChangeGameplayModifiers(GameplaySetupViewController gameplaySetupViewController)
