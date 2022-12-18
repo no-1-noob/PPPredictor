@@ -9,8 +9,8 @@ namespace PPPredictor.Data
 {
     public class PPPMapPool
     {
-        private int _id;
-        private long _playListId;
+        private string _id;
+        private string _playListId;
         private MapPoolType _mapPoolType;
         private string _mapPoolName;
         private float _accumulationConstant;
@@ -36,8 +36,8 @@ namespace PPPredictor.Data
         public CurveInfo CurveInfo { get => _curve.isDummy ? null : _curve.ToCurveInfo(); set => _curve = CurveParser.ParseToCurve(value); }
         public PPPPlayer SessionPlayer { get => _sessionPlayer; set => _sessionPlayer = value; }
         public PPPPlayer CurrentPlayer { get => _currentPlayer; set => _currentPlayer = value; }
-        public int Id { get => _id; set => _id = value; }
-        public long PlayListId { get => _playListId; set => _playListId = value; }
+        public string Id { get => _id; set => _id = value; }
+        public string PlayListId { get => _playListId; set => _playListId = value; }
         [JsonIgnore]
         public List<PPPPlayer> LsPlayerRankings { get => _lsPlayerRankings; set => _lsPlayerRankings = value; }
         public DateTime DtUtcLastRefresh { get => _dtUtcLastRefresh; set => _dtUtcLastRefresh = value; }
@@ -56,15 +56,15 @@ namespace PPPredictor.Data
             _dtUtcLastRefresh = new DateTime(2000, 1, 1);
             DtUtcLastSessionReset = new DateTime(2000, 1, 1);
             _curve = CustomPPPCurve.DummyPPPCurve();
-            _id = 0;
-            _playListId = 0;
+            _id = string.Empty;
+            _playListId = string.Empty;
             _mapPoolType = MapPoolType.Custom;
             _mapPoolName = string.Empty;
             _accumulationConstant = 0;
             _sortIndex = -1;
         }
 
-        public PPPMapPool(int id, long playListId, MapPoolType mapPoolType, string mapPoolName, float accumulationConstant, int sortIndex, IPPPCurve curve) : this()
+        public PPPMapPool(string id, string playListId, MapPoolType mapPoolType, string mapPoolName, float accumulationConstant, int sortIndex, IPPPCurve curve) : this()
         {
             _id = id;
             _playListId = playListId;
@@ -75,7 +75,7 @@ namespace PPPredictor.Data
             _curve = curve;
         }
 
-        public PPPMapPool(MapPoolType mapPoolType, string mapPoolName, float accumulationConstant, int sortIndex, IPPPCurve curve) : this(0, 0, mapPoolType, mapPoolName, accumulationConstant, sortIndex, curve)
+        public PPPMapPool(MapPoolType mapPoolType, string mapPoolName, float accumulationConstant, int sortIndex, IPPPCurve curve) : this(string.Empty, string.Empty, mapPoolType, mapPoolName, accumulationConstant, sortIndex, curve)
         {
         }
 

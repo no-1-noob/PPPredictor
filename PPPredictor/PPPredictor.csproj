@@ -156,6 +156,7 @@
     <Compile Include="Utilities\Enums.cs" />
     <Compile Include="Interfaces\IPPPredictor.cs" />
     <Compile Include="Utilities\PPCalculatorBeatLeader.cs" />
+    <Compile Include="Utilities\PPCalculatorHitBloq.cs" />
     <Compile Include="Utilities\PPCalculatorNoLeaderboard.cs" />
     <Compile Include="Utilities\PPCalculatorScoreSaber.cs" />
     <Compile Include="Utilities\PPPredictor.cs" />
@@ -210,6 +211,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\LeaderBoardLogos\BeatLeader.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\LeaderBoardLogos\HitBloq.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

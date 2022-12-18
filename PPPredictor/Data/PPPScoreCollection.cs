@@ -1,4 +1,5 @@
-﻿using scoresaberapi;
+﻿using PPPredictor.OpenAPIs;
+using scoresaberapi;
 using System.Collections.Generic;
 using static PPPredictor.OpenAPIs.beatleaderapi;
 
@@ -45,5 +46,18 @@ namespace PPPredictor.Data
                 lsPPPScore.Add(new PPPScore(playerScore));
             }
         }
+
+        public PPPScoreCollection(List<HitBloqScores> lsHitBloqScores, int page)
+        {
+            this.page = page;
+            this.itemsPerPage = 10;
+            this.total = (lsHitBloqScores.Count > 0) ? page * itemsPerPage + 1 : 0;
+            foreach (var playerScore in lsHitBloqScores)
+            {
+                lsPPPScore.Add(new PPPScore(playerScore));
+            }
+        }
+
+        
     }
 }

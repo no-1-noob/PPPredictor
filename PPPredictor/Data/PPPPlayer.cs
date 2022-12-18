@@ -1,4 +1,5 @@
-﻿using static PPPredictor.OpenAPIs.beatleaderapi;
+﻿using PPPredictor.OpenAPIs;
+using static PPPredictor.OpenAPIs.beatleaderapi;
 
 namespace PPPredictor.Data
 {
@@ -47,6 +48,14 @@ namespace PPPredictor.Data
             countryRank = beatLeaderPlayerEvent.countryRank;
             pp = beatLeaderPlayerEvent.pp;
             country = beatLeaderPlayerEvent.country;
+        }
+
+        public PPPPlayer(HitBloqUser hitBloqUser)
+        {
+            rank = hitBloqUser.rank;
+            countryRank = 0;
+            pp = hitBloqUser.cr;
+            country = string.Empty;
         }
 
         public override string ToString()

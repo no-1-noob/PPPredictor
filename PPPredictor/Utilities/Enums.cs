@@ -25,7 +25,8 @@
         ScoreSaber,
         BeatLeader,
         AccSaber,
-        NoLeaderboard
+        NoLeaderboard,
+        HitBloq
     }
 
     public enum CounterScoringType

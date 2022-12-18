@@ -73,6 +73,11 @@ namespace PPPredictor.Counter
                     lsCounterInfoHolder.Add(new CounterInfoHolder(Leaderboard.BeatLeader, Settings, "PPPredictor.Resources.LeaderBoardLogos.BeatLeader.png", canvas, CanvasUtility, lineOffset, positionScale));
                     lineOffset -= originalLineOffset * 2;
                 }
+                if (Plugin.ProfileInfo.IsHitBloqEnabled && ShowCounter(Leaderboard.HitBloq))
+                {
+                    lsCounterInfoHolder.Add(new CounterInfoHolder(Leaderboard.HitBloq, Settings, "PPPredictor.Resources.LeaderBoardLogos.HitBloq.png", canvas, CanvasUtility, lineOffset, positionScale));
+                    lineOffset -= originalLineOffset * 2;
+                }
 
                 maxPossibleScore = ScoreModel.ComputeMaxMultipliedScoreForBeatmap(setupData.transformedBeatmapData);
                 scoreController.scoreDidChangeEvent += ScoreController_scoreDidChangeEvent;
@@ -136,6 +141,7 @@ namespace PPPredictor.Counter
             int reVal = 0;
             if (ShowScoreSaber()) reVal++;
             if (ShowBeatLeader()) reVal++;
+            if (ShowHitBloq()) reVal++;
             return reVal;
         }
 
@@ -152,6 +158,11 @@ namespace PPPredictor.Counter
         private bool ShowBeatLeader()
         {
             return Plugin.ProfileInfo.IsBeatLeaderEnabled && ShowCounter(Leaderboard.BeatLeader);
+        }
+
+        private bool ShowHitBloq()
+        {
+            return Plugin.ProfileInfo.IsHitBloqEnabled && ShowCounter(Leaderboard.HitBloq);
         }
     }
 }

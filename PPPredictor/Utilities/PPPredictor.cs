@@ -270,7 +270,6 @@ namespace PPPredictor.Utilities
         {
             get
             {
-                Plugin.Log?.Error($"Get LeaderBoardName PPPredictor New");
                 return _leaderboardInfo.LeaderboardName;
             }
         }
@@ -348,7 +347,7 @@ namespace PPPredictor.Utilities
         public async void DifficultyChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
         {
             _currentSelectionBaseStars = await _ppCalculator.GetStarsForBeatmapAsync(lvlSelectionNavigationCtrl, beatmap);
-            _selectedMapSearchString = lvlSelectionNavigationCtrl.selectedBeatmapLevel is CustomBeatmapLevel selectedCustomBeatmapLevel ? _ppCalculator.CreateSeachString(Hashing.GetCustomLevelHash(selectedCustomBeatmapLevel), lvlSelectionNavigationCtrl.selectedDifficultyBeatmap.difficultyRank) : string.Empty;
+            _selectedMapSearchString = lvlSelectionNavigationCtrl.selectedBeatmapLevel is CustomBeatmapLevel selectedCustomBeatmapLevel ? _ppCalculator.CreateSeachString(Hashing.GetCustomLevelHash(selectedCustomBeatmapLevel), lvlSelectionNavigationCtrl.selectedDifficultyBeatmap) : string.Empty;
             _currentSelectionStars = _ppCalculator.ApplyModifierMultiplierToStars(_currentSelectionBaseStars, _gameplayModifiers);
             DisplayPP();
         }
@@ -358,7 +357,7 @@ namespace PPPredictor.Utilities
             if (contentType == StandardLevelDetailViewController.ContentType.OwnedAndReady)
             {
                 _currentSelectionBaseStars = await _ppCalculator.GetStarsForBeatmapAsync(lvlSelectionNavigationCtrl, lvlSelectionNavigationCtrl.selectedDifficultyBeatmap);
-                _selectedMapSearchString = lvlSelectionNavigationCtrl.selectedBeatmapLevel is CustomBeatmapLevel selectedCustomBeatmapLevel ? _ppCalculator.CreateSeachString(Hashing.GetCustomLevelHash(selectedCustomBeatmapLevel), lvlSelectionNavigationCtrl.selectedDifficultyBeatmap.difficultyRank) : string.Empty;
+                _selectedMapSearchString = lvlSelectionNavigationCtrl.selectedBeatmapLevel is CustomBeatmapLevel selectedCustomBeatmapLevel ? _ppCalculator.CreateSeachString(Hashing.GetCustomLevelHash(selectedCustomBeatmapLevel), lvlSelectionNavigationCtrl.selectedDifficultyBeatmap) : string.Empty;
                 _currentSelectionStars = _ppCalculator.ApplyModifierMultiplierToStars(_currentSelectionBaseStars, _gameplayModifiers);
                 DisplayPP();
             }
@@ -469,8 +468,8 @@ namespace PPPredictor.Utilities
         {
             await UpdateCurrentAndCheckResetSession(false);
             IsDataLoading = true;
-            UserInfo userInfo = await GetUserInfo();
-            await _ppCalculator.GetPlayerScores(userInfo.platformUserId, fetchLength);
+            string userId = await GetUserInfo();
+            await _ppCalculator.GetPlayerScores(userId, fetchLength);
             DisplayPP();
             IsDataLoading = false;
         }
@@ -478,8 +477,8 @@ namespace PPPredictor.Utilities
         public async Task UpdateCurrentAndCheckResetSession(bool doResetSession)
         {
             IsDataLoading = true;
-            UserInfo userInfo = await GetUserInfo();
-            PPPPlayer player = await _ppCalculator.GetProfile(userInfo.platformUserId);
+            string userId = await GetUserInfo();
+            PPPPlayer player = await _ppCalculator.GetProfile(userId);
             if (player.IsErrorUser)
             {
                 IsUserFound = false;
@@ -502,8 +501,8 @@ namespace PPPredictor.Utilities
         {
             await UpdateCurrentAndCheckResetSession(resetAll);
             IsDataLoading = true;
-            UserInfo userInfo = await GetUserInfo();
-            await _ppCalculator.GetPlayerScores(userInfo.platformUserId, 100);
+            string userId = await GetUserInfo();
+            await _ppCalculator.GetPlayerScores(userId, 100);
             DisplayPP();
             IsDataLoading = false;
         }
@@ -554,9 +553,16 @@ namespace PPPredictor.Utilities
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentMapPool)));
         }
 
-        private async Task<UserInfo> GetUserInfo()
+        private async Task<string> GetUserInfo()
         {
-            return await BS_Utils.Gameplay.GetUserInfo.GetUserAsync();
+            if (string.IsNullOrEmpty(_leaderboardInfo.CustomLeaderboardUserId))
+            {
+                return (await BS_Utils.Gameplay.GetUserInfo.GetUserAsync()).platformUserId;
+            }
+            else
+            {
+                return _leaderboardInfo.CustomLeaderboardUserId;
+            }
         }
     }
 }

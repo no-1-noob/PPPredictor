@@ -13,13 +13,13 @@ namespace PPPredictor.Utilities
 {
     public class PPCalculatorBeatLeader : PPCalculator
     {
-        private readonly HttpClient httpClient = new HttpClient();
         private readonly OpenAPIs.beatleaderapi beatleaderapi;
         private Dictionary<string, float> dctModifiers;
         internal static float accumulationConstant = 0.965f;
 
         public PPCalculatorBeatLeader() : base() 
         {
+            playerPerPages = 50;
             beatleaderapi = new OpenAPIs.beatleaderapi();
             GetModifiers();
             UpdateAvailableMapPools();
@@ -50,7 +50,7 @@ namespace PPPredictor.Utilities
                 }
                 else if (_leaderboardInfo.CurrentMapPool != null && _leaderboardInfo.CurrentMapPool.MapPoolType == MapPoolType.Custom)
                 {
-                    BeatLeaderPlayerEvents eventPlayer = player.eventsParticipating.Where(x => x.eventId == _leaderboardInfo.CurrentMapPool.Id).FirstOrDefault();
+                    BeatLeaderPlayerEvents eventPlayer = player.eventsParticipating.Where(x => x.eventId == long.Parse(_leaderboardInfo.CurrentMapPool.Id)).FirstOrDefault();
                     if(eventPlayer != null)
                     {
                         return new PPPPlayer(eventPlayer);
@@ -73,11 +73,11 @@ namespace PPPredictor.Utilities
                 List<PPPPlayer> lsPlayer = new List<PPPPlayer>();
                 if(_leaderboardInfo.CurrentMapPool != null && _leaderboardInfo.CurrentMapPool.MapPoolType == MapPoolType.Default)
                 {
-                    scoreSaberPlayerCollection = await beatleaderapi.GetPlayersInLeaderboard("pp", (int)fetchIndexPage, 50, "desc");
+                    scoreSaberPlayerCollection = await beatleaderapi.GetPlayersInLeaderboard("pp", (int)fetchIndexPage, playerPerPages, "desc");
                 }
                 else if(_leaderboardInfo.CurrentMapPool != null)
                 {
-                    scoreSaberPlayerCollection = await beatleaderapi.GetPlayersInEventLeaderboard(_leaderboardInfo.CurrentMapPool.Id, "pp", (int)fetchIndexPage, 50, "desc");
+                    scoreSaberPlayerCollection = await beatleaderapi.GetPlayersInEventLeaderboard(long.Parse(_leaderboardInfo.CurrentMapPool.Id), "pp", (int)fetchIndexPage, playerPerPages, "desc");
                 }
                 Plugin.Log.Error($"GetPlayers index: {fetchIndexPage}");
                 foreach (var scoreSaberPlayer in scoreSaberPlayerCollection.data)
@@ -97,7 +97,12 @@ namespace PPPredictor.Utilities
         {
             try
             {
-                BeatLeaderPlayerScoreList beatLeaderPlayerScoreList = await beatleaderapi.GetPlayerScores(userId, "date", "desc", page, pageSize, _leaderboardInfo.CurrentMapPool.Id);
+                long? id = null;
+                if (!string.IsNullOrEmpty(_leaderboardInfo.CurrentMapPool.Id))
+                {
+                    id = long.Parse(_leaderboardInfo.CurrentMapPool.Id);
+                }
+                BeatLeaderPlayerScoreList beatLeaderPlayerScoreList = await beatleaderapi.GetPlayerScores(userId, "date", "desc", page, pageSize, id);
                 return new PPPScoreCollection(beatLeaderPlayerScoreList);
             }
             catch (Exception ex)
@@ -114,7 +119,7 @@ namespace PPPredictor.Utilities
                 if (lvlSelectionNavigationCtrl.selectedBeatmapLevel is CustomBeatmapLevel selectedCustomBeatmapLevel)
                 {
                     string songHash = Hashing.GetCustomLevelHash(selectedCustomBeatmapLevel);
-                    string searchString = CreateSeachString(songHash, beatmap.difficultyRank);
+                    string searchString = CreateSeachString(songHash, beatmap);
                     if(_leaderboardInfo.CurrentMapPool.MapPoolType == MapPoolType.Custom && !_leaderboardInfo.CurrentMapPool.LsMapPoolEntries.Where(x => x.Searchstring == searchString).Any())
                     {
                         return 0; //Currently selected map is not contained in selected MapPool
@@ -217,8 +222,8 @@ namespace PPPredictor.Utilities
                 int sortIndex = 0;
                 foreach (BeatLeaderEvent eventItem in events.data)
                 {
-                    PPPMapPool oldPool = _leaderboardInfo.LsMapPools.Find(x => x.Id == eventItem.id);
-                    /*if (oldPool == null && eventItem.dtEndDate < DateTime.UtcNow)
+                    PPPMapPool oldPool = _leaderboardInfo.LsMapPools.Find(x => x.Id == eventItem.id.ToString());
+                    if (oldPool == null && eventItem.dtEndDate < DateTime.UtcNow)
                     {
                         Plugin.Log.Error($"Do not add expired events {eventItem.name}");
                         continue; //Do not add expired events
@@ -229,7 +234,7 @@ namespace PPPredictor.Utilities
                         //Remove expired events
                         _leaderboardInfo.LsMapPools.Remove(oldPool);
                         continue;
-                    }*/
+                    }
                     if (oldPool != null && DateTime.UtcNow.AddDays(-1) < oldPool.DtUtcLastRefresh)
                     {
                         Plugin.Log.Error($"Skip Pool update {oldPool.MapPoolName}");
@@ -238,7 +243,7 @@ namespace PPPredictor.Utilities
                     Plugin.Log.Error($"eventItem.dtEndDate {eventItem.dtEndDate}");
                     if (oldPool == null)
                     {
-                        var mapPool = new PPPMapPool(eventItem.id, eventItem.playListId, MapPoolType.Custom, eventItem.name, accumulationConstant, sortIndex, new BeatLeaderPPPCurve());
+                        var mapPool = new PPPMapPool(eventItem.id.ToString(), eventItem.playListId.ToString(), MapPoolType.Custom, eventItem.name, accumulationConstant, sortIndex, new BeatLeaderPPPCurve());
                         sortIndex++;
                         await UpdateMapPoolPlaylist(mapPool);
                         this._leaderboardInfo.LsMapPools.Add(mapPool);
@@ -259,7 +264,7 @@ namespace PPPredictor.Utilities
         private async Task UpdateMapPoolPlaylist(PPPMapPool mapPool)
         {
             mapPool.LsMapPoolEntries.Clear();
-            BeatLeaderPlayList lsPlayList = await this.beatleaderapi.GetPlayList(mapPool.PlayListId);
+            BeatLeaderPlayList lsPlayList = await this.beatleaderapi.GetPlayList(long.Parse(mapPool.PlayListId));
             foreach (BeatLeaderPlayListSong song in lsPlayList.songs)
             {
                 foreach (BeatLeaderPlayListDifficulties diff in song.difficulties)
@@ -267,6 +272,11 @@ namespace PPPredictor.Utilities
                     mapPool.LsMapPoolEntries.Add(new PPPMapPoolEntry(song, diff));
                 }
             }
+        }
+
+        public override string CreateSeachString(string hash, IDifficultyBeatmap beatmap)
+        {
+            return $"{hash}_{beatmap.difficultyRank}";
         }
     }
 }

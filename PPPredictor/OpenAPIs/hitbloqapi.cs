@@ -58,11 +58,11 @@ namespace PPPredictor.OpenAPIs
             return new List<HitBloqMapPool>();
         }
 
-        public async Task<HitBloqMapPoolDetails> GetHitBloqMapPoolDetails(string poolIdent)
+        public async Task<HitBloqMapPoolDetails> GetHitBloqMapPoolDetails(string poolIdent, int page)
         {
             try
             {
-                HttpResponseMessage response = await client.GetAsync($"api/ranked_list/{poolIdent}");
+                HttpResponseMessage response = await client.GetAsync($"api/ranked_list/{poolIdent}/{page}");
                 if (response.IsSuccessStatusCode)
                 {
                     string result = await response.Content.ReadAsStringAsync();
@@ -71,7 +71,7 @@ namespace PPPredictor.OpenAPIs
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"Error in GetHitBloqUserIdByUserId: {ex.Message}");
+                Plugin.Log?.Error($"Error in GetHitBloqMapPoolDetails: {ex.Message}");
             }
             return new HitBloqMapPoolDetails();
         }
@@ -94,7 +94,59 @@ namespace PPPredictor.OpenAPIs
             return new HitBloqUser();
         }
 
+        public async Task<List<HitBloqScores>> GetRecentScores(string userId, string poolId, int page)
+        {
+            try
+            {
+                HttpResponseMessage response = await client.GetAsync($"api/user/{userId}/scores?page={page}&pool={poolId}&sort=newest");
+                if (response.IsSuccessStatusCode)
+                {
+                    string result = await response.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<List<HitBloqScores>>(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                Plugin.Log?.Error($"Error in GetRecentScores: {ex.Message}");
+            }
+            return new List<HitBloqScores>();
+        }
 
+        public async Task<HitBloqLadder> GetPlayerListForMapPool(double page, string mapPoolId)
+        {
+            try
+            {
+                HttpResponseMessage response = await client.GetAsync($"api/ladder/{mapPoolId}/players/{page}");
+                if (response.IsSuccessStatusCode)
+                {
+                    string result = await response.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<HitBloqLadder>(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                Plugin.Log?.Error($"Error in GetPlayerListForMapPool: {ex.Message}");
+            }
+            return new HitBloqLadder();
+        }
+
+        public async Task<HitBloqLeaderboardInfo> GetLeaderBoardInfo(string searchString)
+        {
+            try
+            {
+                HttpResponseMessage response = await client.GetAsync($"api/leaderboard/{searchString}/info");
+                if (response.IsSuccessStatusCode)
+                {
+                    string result = await response.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<HitBloqLeaderboardInfo>(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                Plugin.Log?.Error($"Error in GetLeaderBoardInfo: {ex.Message}");
+            }
+            return new HitBloqLeaderboardInfo();
+        }
     }
 
     public class HitBloqUserId
@@ -128,5 +180,23 @@ namespace PPPredictor.OpenAPIs
     {
         public float cr { get; set; }
         public int rank { get; set; }
+        public string username { get; set; }
+    }
+
+    public class HitBloqScores
+    {
+        public float cr_received { get; set; }
+        public string song_id { get; set; }
+        public long time { get; set; }
+    }
+
+    public class HitBloqLadder
+    {
+        public List<HitBloqUser> ladder { get; set; }
+    }
+
+    public class HitBloqLeaderboardInfo
+    {
+        public Dictionary<string, double> star_rating { get; set; }
     }
 }

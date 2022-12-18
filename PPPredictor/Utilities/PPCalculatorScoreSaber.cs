@@ -18,6 +18,7 @@ namespace PPPredictor.Utilities
         private SongDetails SongDetails { get; }
         public PPCalculatorScoreSaber() : base()
         {
+            playerPerPages = 50;
             scoreSaberClient = new scoresaberapi.scoresaberapi(httpClient);
             SongDetails = SongDetails.Init().Result;
         }
@@ -98,6 +99,11 @@ namespace PPPredictor.Utilities
         public override double ApplyModifierMultiplierToStars(double baseStars, GameplayModifiers gameplayModifiers, bool levelFailed)
         {
             return baseStars;
+        }
+
+        public override string CreateSeachString(string hash, IDifficultyBeatmap beatmap)
+        {
+            return $"{hash}_{beatmap.difficultyRank}";
         }
     }
 }

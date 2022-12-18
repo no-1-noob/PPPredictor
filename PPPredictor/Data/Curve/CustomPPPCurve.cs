@@ -1,11 +1,14 @@
 ﻿using PPPredictor.Interfaces;
+using PPPredictor.OpenAPIs;
 using PPPredictor.Utilities;
 using System;
+using System.Collections.Generic;
 
 namespace PPPredictor.Data.Curve
 {
     class CustomPPPCurve : IPPPCurve
     {
+        //TODO: Make arrPPCurve a list?
         private readonly double[,] arrPPCurve;
         private readonly CurveType curveType;
         private readonly double basePPMultiplier;
@@ -20,14 +23,35 @@ namespace PPPredictor.Data.Curve
             _isDummy = isDummy;
         }
 
-        public double CalculatePPatPercentage(double star, double percentage)
+        public CustomPPPCurve(CrCurve crCurve)
+        {
+            //TODO:  Hitbloq base_curve
+            arrPPCurve = new double[crCurve.points.Count, 2];
+            switch (crCurve.type)
+            {
+                case "linear":
+                    this.curveType = CurveType.Linear;
+                    break;
+                default:
+                    break;
+            }
+            for (int i = 0; i < crCurve.points.Count; i++)
+            {
+                //Reversed insert. Should be 100% first
+                arrPPCurve[crCurve.points.Count - 1 - i, 0] = crCurve.points[i][0];
+                arrPPCurve[crCurve.points.Count - 1 - i, 1] = crCurve.points[i][1];
+            }
+            basePPMultiplier = 50;
+        }
+
+        public double CalculatePPatPercentage(double star, double percentage, bool failed)
         {
             switch (curveType)
             {
                 case CurveType.Linear:
                     return LinearCalculatePPatPercentage(star, percentage);
                 case CurveType.ScoreSaber:
-                    return LinearCalculatePPatPercentage(star, percentage);
+                    return LinearCalculatePPatPercentage(star, failed ? percentage / 2.0f : percentage);
                 default:
                     return 0;
             }

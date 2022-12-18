@@ -418,11 +418,10 @@ namespace PPPredictor.UI.ViewController
         {
             get 
             {
-                Plugin.Log?.Error($"Get map-pool-options");
                 return this.ppPredictorMgr.CurrentPPPredictor.MapPoolOptions;
             }
-            set {
-                Plugin.Log?.Error($"Set map-pool-options");
+            set 
+            {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MapPoolOptions)));
             }
         }
@@ -432,13 +431,11 @@ namespace PPPredictor.UI.ViewController
             get => this.ppPredictorMgr.CurrentPPPredictor.CurrentMapPool;
             set
             {
-                Plugin.Log?.Error($"Set MapPool {value}");
                 bool isCurrentMapPoolChanging = IsCurrentMapPoolChanging(value);
                 this.ppPredictorMgr.CurrentPPPredictor.CurrentMapPool = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentMapPool)));
                 if(isCurrentMapPoolChanging)
                 {
-                    Plugin.Log?.Error($"Set MapPool Refresh {value}");
                     this.RefreshCurrentData(10);
                 }
             }

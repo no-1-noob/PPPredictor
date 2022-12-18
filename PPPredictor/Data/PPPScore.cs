@@ -1,4 +1,5 @@
-﻿using PPPredictor.Utilities;
+﻿using PPPredictor.OpenAPIs;
+using PPPredictor.Utilities;
 using scoresaberapi;
 using System;
 using System.Linq;
@@ -34,6 +35,23 @@ namespace PPPredictor.Data
             this.pp = (int)playerScore.leaderboard.difficulty.status == (int)BeatLeaderDifficultyStatus.ranked ? playerScore.pp : 0;
             this.songHash = playerScore.leaderboard.song.hash;
             this.difficulty = playerScore.leaderboard.difficulty.value;
+        }
+
+        public PPPScore(HitBloqScores playerScore)
+        {
+            this.timeSet = new DateTime(1970, 1, 1).AddSeconds(playerScore.time);
+            this.pp = playerScore.cr_received;
+            this.songHash = playerScore.song_id;
+            this.difficulty = -1;
+        }
+
+        public string GetSearchString()
+        {
+            if(difficulty >= 0)
+            {
+                return $"{SongHash}_{Difficulty1}";
+            }
+            return SongHash;
         }
     }
 }

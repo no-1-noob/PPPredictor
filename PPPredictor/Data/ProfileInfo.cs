@@ -28,6 +28,7 @@ namespace PPPredictor.Data
 
         private bool _isScoreSaberEnabled;
         private bool _isBeatLeaderEnabled;
+        private bool _isHitBloqEnabled;
 
         public ProfileInfo()
         {
@@ -50,6 +51,7 @@ namespace PPPredictor.Data
             IsVersionCheckEnabled = true;
             IsScoreSaberEnabled = true;
             IsBeatLeaderEnabled = true;
+            IsHitBloqEnabled = true;
             PpGainCalculationType = PPGainCalculationType.Weighted;
             RawPPLossHighlightThreshold = -10;
         }
@@ -75,5 +77,6 @@ namespace PPPredictor.Data
         public PPGainCalculationType PpGainCalculationType { get => _ppGainCalculationType; set => _ppGainCalculationType = value; }
         public int RawPPLossHighlightThreshold { get => _rawPPLossHighlightThreshold; set => _rawPPLossHighlightThreshold = value; }
         public CounterDisplayType CounterDisplayType { get => _counterDisplayType; set => _counterDisplayType = value; }
+        public bool IsHitBloqEnabled { get => _isHitBloqEnabled; set => _isHitBloqEnabled = value; }
     }
 }

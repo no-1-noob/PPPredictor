@@ -11,6 +11,7 @@ namespace PPPredictor.Utilities
     public abstract class PPCalculator
     {
         internal PPPLeaderboardInfo _leaderboardInfo;
+        protected int playerPerPages = 0; //Cause a null reference if not set ;)
 
         public PPCalculator()
         {
@@ -44,7 +45,7 @@ namespace PPPredictor.Utilities
                     if (_leaderboardInfo.CurrentMapPool.LsScores == null) _leaderboardInfo.CurrentMapPool.LsScores = new List<ShortScore>();
                     foreach (PPPScore scores in playerscores.LsPPPScore)
                     {
-                        string searchString = CreateSeachString(scores.SongHash, (int)scores.Difficulty1);
+                        string searchString = scores.GetSearchString();
                         ShortScore previousScore = _leaderboardInfo.CurrentMapPool.LsScores.Find(x => x.Searchstring == searchString);
                         ShortScore newScore = new ShortScore(searchString, scores.TimeSet, scores.Pp);
                         if (previousScore == null)
@@ -92,7 +93,8 @@ namespace PPPredictor.Utilities
         {
             try
             {
-                if (_leaderboardInfo.LSScores.Count > 0 && !string.IsNullOrEmpty(mapSearchString))
+                mapSearchString = ParseMapSearchStringForGetPlayerScorePPGain(mapSearchString);
+                if (_leaderboardInfo.CurrentMapPool.LsScores.Count > 0 && !string.IsNullOrEmpty(mapSearchString))
                 {
                     if (pp > 0)
                     {
@@ -101,8 +103,8 @@ namespace PPPredictor.Utilities
                         bool newPPadded = false;
                         bool newPPSkiped = false;
                         double previousPP = 0;
-                        _leaderboardInfo.CurrentMapPool.LSScores.Sort((score1, score2) => score2.Pp.CompareTo(score1.Pp));
-                        foreach (ShortScore score in _leaderboardInfo.CurrentMapPool.LSScores)
+                        _leaderboardInfo.CurrentMapPool.LsScores.Sort((score1, score2) => score2.Pp.CompareTo(score1.Pp));
+                        foreach (ShortScore score in _leaderboardInfo.CurrentMapPool.LsScores)
                         {
                             double weightedPP = WeightPP(score.Pp, index, _leaderboardInfo.CurrentMapPool.AccumulationConstant);
                             double weightedNewPP = WeightPP(pp, index, _leaderboardInfo.CurrentMapPool.AccumulationConstant);
@@ -130,14 +132,18 @@ namespace PPPredictor.Utilities
                         return new PPGainResult(Math.Round(ppAfterPlay, 2, MidpointRounding.AwayFromZero), Math.Round(ppAfterPlay - _leaderboardInfo.CurrentMapPool.CurrentPlayer.Pp, 2, MidpointRounding.AwayFromZero), pp - previousPP);
                     }
                     //Try to find old pp value if the map has been failed
-                    ShortScore oldScore = _leaderboardInfo.LSScores.Find(x => x.Searchstring == mapSearchString);
+                    ShortScore oldScore = _leaderboardInfo.CurrentMapPool.LsScores.Find(x => x.Searchstring == mapSearchString);
                     return new PPGainResult(_leaderboardInfo.CurrentMapPool.CurrentPlayer.Pp, pp, oldScore != null ? -oldScore.Pp : 0);
+                }
+                else if(_leaderboardInfo.CurrentMapPool.CurrentPlayer.Pp == 0) //If you have not set a score yet, total is = the new pp play
+                {
+                    return new PPGainResult(pp, pp, pp);
                 }
             }
             catch (Exception ex)
             {
                 Plugin.Log?.Error($"PPPredictor {_leaderboardInfo?.LeaderboardName} GetPlayerScorePPGain Error: {ex.Message}");
-                return new PPGainResult(_leaderboardInfo.CurrentMapPool.CurrentPlayer.Pp, pp);
+                return new PPGainResult(_leaderboardInfo.CurrentMapPool.CurrentPlayer.Pp, pp, pp);
             }
             return new PPGainResult(_leaderboardInfo.CurrentMapPool.CurrentPlayer.Pp, pp, pp);
         }
@@ -151,7 +157,7 @@ namespace PPPredictor.Utilities
                 if (_leaderboardInfo.CurrentMapPool.CurrentPlayer.Rank > worstRankFetched) _leaderboardInfo.CurrentMapPool.LsPlayerRankings = new List<PPPPlayer>();
 
                 double bestRankFetched = _leaderboardInfo.CurrentMapPool.LsPlayerRankings.Select(x => x.Rank).DefaultIfEmpty(-1).Min();
-                double fetchIndexPage = bestRankFetched > 0 ? Math.Floor((bestRankFetched - 1) / 50) + 1 : Math.Floor(_leaderboardInfo.CurrentMapPool.CurrentPlayer.Rank / 50) + 1;
+                double fetchIndexPage = bestRankFetched > 0 ? Math.Floor((bestRankFetched - 1) / playerPerPages) + 1 : Math.Floor(_leaderboardInfo.CurrentMapPool.CurrentPlayer.Rank / playerPerPages) + 1;
                 bool needMoreData = true;
                 while (needMoreData)
                 {
@@ -185,19 +191,14 @@ namespace PPPredictor.Utilities
             }
         }
 
-        internal double CalculatePPatPercentage(double star, double percentage)
+        internal double CalculatePPatPercentage(double star, double percentage, bool failed)
         {
-            return _leaderboardInfo.CurrentMapPool.Curve.CalculatePPatPercentage(star, percentage);
+            return _leaderboardInfo.CurrentMapPool.Curve.CalculatePPatPercentage(star, percentage, failed);
         }
 
         public double WeightPP(double rawPP, int index, float accumulationConstant)
         {
             return rawPP * Math.Pow(accumulationConstant, (index - 1));
-        }
-
-        public string CreateSeachString(string hash, int difficulty)
-        {
-            return $"{hash}_{difficulty}";
         }
 
         public double Zeroizer(double pp)
@@ -219,5 +220,12 @@ namespace PPPredictor.Utilities
 
         public abstract double ApplyModifierMultiplierToStars(double baseStars, GameplayModifiers gameplayModifiers, bool levelFailed = false);
 
+        public abstract string CreateSeachString(string hash, IDifficultyBeatmap beatmap);
+
+        //Needed for Hitbloq as they use 2 different types of searchStrings
+        public virtual string ParseMapSearchStringForGetPlayerScorePPGain(string mapSearchString)
+        {
+            return mapSearchString;
+        }
     }
 }

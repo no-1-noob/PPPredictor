@@ -7,7 +7,7 @@ namespace PPPredictor.Data.Curve
     {
         private readonly double ppCalcWeight = 42;
         public bool isDummy { get => false; }
-        public double CalculatePPatPercentage(double star, double percentage)
+        public double CalculatePPatPercentage(double star, double percentage, bool failed)
         {
             try
             {
