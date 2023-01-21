@@ -35,7 +35,7 @@ namespace PPPredictor.Utilities
                 bool hasMoreData = true;
                 int page = 1;
                 List<ShortScore> lsNewScores = new List<ShortScore>();
-                _leaderboardInfo.LSScores.Sort();
+                DateTimeOffset dtNewLastScoreSet = new DateTime(2000, 1, 1);
                 while (hasMoreData)
                 {
                     PPPScoreCollection playerscores = await GetRecentScores(userId, pageSize, page);
@@ -46,24 +46,28 @@ namespace PPPredictor.Utilities
                     if (_leaderboardInfo.LSScores == null) _leaderboardInfo.LSScores = new List<ShortScore>();
                     foreach (PPPScore scores in playerscores.LsPPPScore)
                     {
-                        string searchString = CreateSeachString(scores.SongHash, (int)scores.Difficulty1);
+                        string searchString = CreateSeachString(scores.SongHash, scores.GameMode, (int)scores.Difficulty1);
                         ShortScore previousScore = _leaderboardInfo.LSScores.Find(x => x.Searchstring == searchString);
-                        ShortScore newScore = new ShortScore(searchString, scores.TimeSet, scores.Pp);
-                        if (previousScore == null)
+                        ShortScore newScore = new ShortScore(searchString, scores.Pp);
+                        if(newScore.Pp > 0) // Do not cache unranked scores
                         {
-                            lsNewScores.Add(newScore);
-                        }
-                        else
-                        {
-                            if (previousScore.TimeSet >= newScore.TimeSet)
-                            {
-                                hasMoreData = false;
-                            }
-                            else
+                            if (previousScore == null)
                             {
                                 lsNewScores.Add(newScore);
                             }
+                            else
+                            {
+                                if (_leaderboardInfo.DtLastScoreSet >= scores.TimeSet)
+                                {
+                                    hasMoreData = false;
+                                }
+                                else
+                                {
+                                    lsNewScores.Add(newScore);
+                                }
+                            }
                         }
+                        dtNewLastScoreSet = scores.TimeSet > dtNewLastScoreSet ? scores.TimeSet : dtNewLastScoreSet;
                     }
                     page++;
                     await Task.Delay(250);
@@ -78,11 +82,10 @@ namespace PPPredictor.Utilities
                     }
                     else
                     {
-                        previousScore.TimeSet = newScore.TimeSet;
                         previousScore.Pp = newScore.Pp;
                     }
                 };
-                _leaderboardInfo.LSScores.Sort();
+                _leaderboardInfo.DtLastScoreSet = dtNewLastScoreSet > _leaderboardInfo.DtLastScoreSet ? dtNewLastScoreSet : _leaderboardInfo.DtLastScoreSet;
             }
             catch (Exception ex)
             {
@@ -112,6 +115,11 @@ namespace PPPredictor.Utilities
                             if (score.Searchstring == mapSearchString) //skip older (lower) score
                             {
                                 previousPP = score.Pp;
+                                if(pp <= previousPP)
+                                {
+                                    ppAfterPlay = _leaderboardInfo.CurrentPlayer.Pp; //If old score is better return currentPlayer pp => Otherwise innacuraccies while adding could result in gain
+                                    break;
+                                }
                                 if (!newPPadded)
                                 {
                                     ppAfterPlay += Math.Max(weightedPP, weightedNewPP); //Special case for improvement of your top play
@@ -130,7 +138,7 @@ namespace PPPredictor.Utilities
                             ppAfterPlay += weightedPP;
                             index++;
                         }
-                        return new PPGainResult(Math.Round(ppAfterPlay, 2, MidpointRounding.AwayFromZero), Math.Round(ppAfterPlay - _leaderboardInfo.CurrentPlayer.Pp, 2, MidpointRounding.AwayFromZero), pp - previousPP);
+                        return new PPGainResult(Math.Round(ppAfterPlay, 2, MidpointRounding.AwayFromZero), Zeroizer(Math.Round(ppAfterPlay - _leaderboardInfo.CurrentPlayer.Pp, 2, MidpointRounding.AwayFromZero)), pp - previousPP);
                     }
                     //Try to find old pp value if the map has been failed
                     ShortScore oldScore = _leaderboardInfo.LSScores.Find(x => x.Searchstring == mapSearchString);
@@ -159,7 +167,7 @@ namespace PPPredictor.Utilities
                 while (needMoreData)
                 {
                     int indexOfBetterPlayer = _lsPlayerRankings.FindIndex(x => x.Pp > pp);
-                    if (indexOfBetterPlayer != -1 || fetchIndexPage == 1)
+                    if (indexOfBetterPlayer != -1 || fetchIndexPage == 0)
                     {
                         //Found a better player or already fetched until rank 1
                         needMoreData = false;
@@ -193,9 +201,9 @@ namespace PPPredictor.Utilities
             return rawPP * Math.Pow(0.965, (index - 1));
         }
 
-        public string CreateSeachString(string hash, int difficulty)
+        public string CreateSeachString(string hash, string gameMode, int difficulty)
         {
-            return $"{hash}_{difficulty}";
+            return $"{hash}_{gameMode}_{difficulty}".ToUpper();
         }
 
         public double Zeroizer(double pp)
@@ -214,9 +222,9 @@ namespace PPPredictor.Utilities
 
         public abstract double CalculatePPatPercentage(double star, double percentage, bool levelFailed);
 
-        public abstract Task<double> GetStarsForBeatmapAsync(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap);
+        public abstract Task<PPPBeatMapInfo> GetBeatMapInfoAsync(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap);
 
-        public abstract double ApplyModifierMultiplierToStars(double baseStars, GameplayModifiers gameplayModifiers, bool levelFailed = false);
+        public abstract double ApplyModifierMultiplierToStars(PPPBeatMapInfo beatMapInfo, GameplayModifiers gameplayModifiers, bool levelFailed = false);
 
     }
 }

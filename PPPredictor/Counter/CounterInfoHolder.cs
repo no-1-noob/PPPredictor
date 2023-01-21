@@ -23,6 +23,7 @@ namespace PPPredictor.Counter
         private readonly CustomConfigModel settings;
         private readonly CanvasUtility canvasUtility;
         private float positionScale;
+        private double maxPP = -1;
 
         public CounterInfoHolder(Leaderboard leaderboard, CustomConfigModel settings, string iconPath, Canvas canvas, CanvasUtility canvasUtility, float lineOffset, float positionScale) //CHECK WHEN NO C+ is installed??
         {
@@ -102,31 +103,43 @@ namespace PPPredictor.Counter
                 if (Plugin.ProfileInfo.CounterUseIcons) icon.enabled = true;
                 double pp = Plugin.pppViewController.ppPredictorMgr.GetPPAtPercentageForCalculator(leaderboard, percentage, levelFailed);
                 double ppGain = Math.Round(Plugin.pppViewController.ppPredictorMgr.GetPPGainForCalculator(leaderboard, pp), 2);
+
+                if (maxPP == -1) maxPP = Plugin.pppViewController.ppPredictorMgr.GetMaxPPForCalculator(leaderboard);
+
+                string maxPPReachedPrefix = string.Empty;
+                string maxPPReachedSuffix = string.Empty;
+
+                if(maxPP > 0 && pp >= maxPP)
+                {
+                    maxPPReachedPrefix = "<color=\"yellow\">";
+                    maxPPReachedSuffix = "</color>";
+                }
+
                 switch (Plugin.ProfileInfo.CounterDisplayType)
                 {
                     case CounterDisplayType.PP:
-                        ppText.text = $"{pp:F2}pp";
+                        ppText.text = $"{maxPPReachedPrefix}{pp:F2}pp{maxPPReachedSuffix}";
                         break;
                     case CounterDisplayType.PPAndGain:
-                        ppText.text = $"{pp:F2}pp";
+                        ppText.text = $"{maxPPReachedPrefix}{pp:F2}pp{maxPPReachedSuffix}";
                         ppGainText.text = $"[<color=\"{DisplayHelper.GetDisplayColor(ppGain, false, true)}\">{ppGain:F2}pp</color>]";
                         break;
                     case CounterDisplayType.PPAndGainNoBrackets:
-                        ppText.text = $"{pp:F2}pp";
+                        ppText.text = $"{maxPPReachedPrefix}{pp:F2}pp{maxPPReachedSuffix}";
                         ppGainText.text = $"<color=\"{DisplayHelper.GetDisplayColor(ppGain, false, true)}\">{ppGain:F2}pp</color>";
                         break;
                     case CounterDisplayType.GainNoBrackets:
                         ppGainText.text = $"<color=\"{DisplayHelper.GetDisplayColor(ppGain, false, true)}\">{ppGain:F2}pp</color>";
                         break;
                     case CounterDisplayType.PPNoSuffix:
-                        ppText.text = $"{pp:F2}";
+                        ppText.text = $"{maxPPReachedPrefix}{pp:F2}{maxPPReachedSuffix}";
                         break;
                     case CounterDisplayType.PPAndGainNoSuffix:
-                        ppText.text = $"{pp:F2}";
+                        ppText.text = $"{maxPPReachedPrefix}{pp:F2}{maxPPReachedSuffix}";
                         ppGainText.text = $"[<color=\"{DisplayHelper.GetDisplayColor(ppGain, false, true)}\">{ppGain:F2}</color>]";
                         break;
                     case CounterDisplayType.PPAndGainNoBracketsNoSuffix:
-                        ppText.text = $"{pp:F2}";
+                        ppText.text = $"{maxPPReachedPrefix}{pp:F2}{maxPPReachedSuffix}";
                         ppGainText.text = $"<color=\"{DisplayHelper.GetDisplayColor(ppGain, false, true)}\">{ppGain:F2}</color>";
                         break;
                     case CounterDisplayType.GainNoBracketsNoSuffix:

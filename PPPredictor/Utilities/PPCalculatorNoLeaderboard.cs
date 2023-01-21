@@ -7,7 +7,7 @@ namespace PPPredictor.Utilities
     class PPCalculatorNoLeaderboard : PPCalculator
     {
         //Dummy class, for when no Leaderboards are selected in the options. mhh... why even use this mod then
-        public override double ApplyModifierMultiplierToStars(double baseStars, GameplayModifiers gameplayModifiers, bool levelFailed)
+        public override double ApplyModifierMultiplierToStars(PPPBeatMapInfo beatMapInfo, GameplayModifiers gameplayModifiers, bool levelFailed)
         {
             return 0;
         }
@@ -17,9 +17,9 @@ namespace PPPredictor.Utilities
             return 0;
         }
 
-        public override Task<double> GetStarsForBeatmapAsync(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
+        public override Task<PPPBeatMapInfo> GetBeatMapInfoAsync(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
         {
-            return Task.FromResult(0d);
+            return Task.FromResult(new PPPBeatMapInfo());
         }
 
         protected override Task<PPPPlayer> GetPlayerInfo(long userId)

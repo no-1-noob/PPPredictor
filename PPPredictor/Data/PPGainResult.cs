@@ -30,5 +30,10 @@ namespace PPPredictor.Data
                     return 0;
             }
         }
+
+        public override string ToString()
+        {
+            return $"PPGainResult PpTotal: {PpTotal} PpGainWeighted: {PpGainWeighted} PpGainRaw: {PpGainRaw}";
+        }
     }
 }

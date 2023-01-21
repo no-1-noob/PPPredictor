@@ -134,7 +134,9 @@
     <Compile Include="Counter\CounterInfoHolder.cs" />
     <Compile Include="Counter\PPPCounter.cs" />
     <Compile Include="Counter\Settings\CounterSettings.cs" />
+    <Compile Include="Data\PPPBeatMapInfo.cs" />
     <Compile Include="Data\PPPLeaderboardInfo.cs" />
+    <Compile Include="Data\PPPModifierValues.cs" />
     <Compile Include="Data\PPPPlayer.cs" />
     <Compile Include="Data\PPPScore.cs" />
     <Compile Include="Data\PPPScoreCollection.cs" />

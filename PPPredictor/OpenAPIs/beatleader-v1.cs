@@ -13,6 +13,7 @@
 namespace beatleaderapi
 {
     using PPPredictor;
+    using System.Collections.Generic;
     using System = global::System;
     
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.8.2.0 (NJsonSchema v10.2.1.0 (Newtonsoft.Json v11.0.0.0))")]
@@ -688,8 +689,11 @@ namespace beatleaderapi
     
         [Newtonsoft.Json.JsonProperty("maxScore", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int MaxScore { get; set; }
-    
-    
+
+        [Newtonsoft.Json.JsonProperty("modifierValues", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public Dictionary<string, float> ModifierValues { get; set; }
+
+
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.2.1.0 (Newtonsoft.Json v11.0.0.0)")]

@@ -162,7 +162,7 @@ namespace PPPredictor.Utilities
             }
         }
 
-        public override Task<double> GetStarsForBeatmapAsync(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
+        public override Task<PPPBeatMapInfo> GetBeatMapInfoAsync(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
         {
             try
             {
@@ -172,23 +172,23 @@ namespace PPPredictor.Utilities
                     {
                         if (song.GetDifficulty(out SongDifficulty songDiff, (MapDifficulty)beatmap.difficulty))
                         {
-                            return Task.FromResult((double)songDiff.stars);
+                            return Task.FromResult(new PPPBeatMapInfo(songDiff.stars, 0));
                         }
                     }
-                    return Task.FromResult(0d);
+                    return Task.FromResult(new PPPBeatMapInfo());
                 }
-                return Task.FromResult(0d);
+                return Task.FromResult(new PPPBeatMapInfo());
             }
             catch (Exception ex)
             {
                 Plugin.Log?.Error($"PPCalculatorScoreSaber GetStarsForBeatmapAsync Error: {ex.Message}");
-                return Task.FromResult(-1d);
+                return Task.FromResult(new PPPBeatMapInfo(-1, -1));
             }
         }
 
-        public override double ApplyModifierMultiplierToStars(double baseStars, GameplayModifiers gameplayModifiers, bool levelFailed)
+        public override double ApplyModifierMultiplierToStars(PPPBeatMapInfo beatMapInfo, GameplayModifiers gameplayModifiers, bool levelFailed)
         {
-            return baseStars;
+            return beatMapInfo.BaseStars;
         }
     }
 }

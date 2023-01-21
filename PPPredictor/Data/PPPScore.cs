@@ -11,11 +11,13 @@ namespace PPPredictor.Data
         readonly double pp;
         readonly string songHash;
         readonly double difficulty;
+        readonly string gameMode;
 
         public DateTimeOffset TimeSet { get => timeSet; }
         public double Pp { get => pp; }
         public string SongHash { get => songHash; }
         public double Difficulty1 { get => difficulty; }
+        public string GameMode { get => gameMode; }
 
         public PPPScore(PlayerScore playerScore)
         {
@@ -23,6 +25,7 @@ namespace PPPredictor.Data
             this.pp = playerScore.Score.Pp;
             this.songHash = playerScore.Leaderboard.SongHash;
             this.difficulty = playerScore.Leaderboard.Difficulty.Difficulty1;
+            this.gameMode = playerScore.Leaderboard.Difficulty.GameMode;
         }
 
         public PPPScore(ScoreResponseWithMyScore playerScore)
@@ -33,6 +36,7 @@ namespace PPPredictor.Data
             this.pp = (int)playerScore.Leaderboard.Difficulty.Status == (int)BeatLeaderDifficultyStatus.ranked ? playerScore.Pp : 0;
             this.songHash = playerScore.Leaderboard.Song.Hash;
             this.difficulty = playerScore.Leaderboard.Difficulty.Value;
+            this.gameMode = "Solo"+playerScore.Leaderboard.Difficulty.ModeName;
         }
     }
 }

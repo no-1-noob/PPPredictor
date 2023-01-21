@@ -57,7 +57,7 @@ namespace PPPredictor.UI.ViewController
         internal void ApplySettings()
         {
             this.ppPredictorMgr.ResetPredictors();
-            ResetDisplay(true);
+            ResetDisplay(false);
         }
 
         public void OnScreenHandleReleased(object sender, FloatingScreenHandleEventArgs args)

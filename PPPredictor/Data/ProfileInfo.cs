@@ -25,6 +25,7 @@ namespace PPPredictor.Data
         private string acknowledgedVersion;
         private DateTime _dtLastVersionCheck;
         private bool _isVersionCheckEnabled;
+        private int _profileInfoVersion;
 
         private bool _isScoreSaberEnabled;
         private bool _isBeatLeaderEnabled;
@@ -52,6 +53,18 @@ namespace PPPredictor.Data
             IsBeatLeaderEnabled = true;
             PpGainCalculationType = PPGainCalculationType.Weighted;
             RawPPLossHighlightThreshold = -10;
+            ProfileInfoVersion = 0;
+        }
+
+        internal void ResetCachedData()
+        {
+            foreach (PPPLeaderboardInfo leaderBoardInfo in _lsLeaderboardInfo)
+            {
+                leaderBoardInfo.LSScores = new List<ShortScore>();
+                leaderBoardInfo.LsLeaderboardScores = new List<ShortScore>();
+                leaderBoardInfo.DtLastScoreSet = new DateTime(2000, 1, 1);
+                leaderBoardInfo.LsModifierValues = new List<PPPModifierValues>();
+            }
         }
 
         public float LastPercentageSelected { get => _lastPercentageSelected; set => _lastPercentageSelected = value; }
@@ -75,5 +88,6 @@ namespace PPPredictor.Data
         public PPGainCalculationType PpGainCalculationType { get => _ppGainCalculationType; set => _ppGainCalculationType = value; }
         public int RawPPLossHighlightThreshold { get => _rawPPLossHighlightThreshold; set => _rawPPLossHighlightThreshold = value; }
         public CounterDisplayType CounterDisplayType { get => _counterDisplayType; set => _counterDisplayType = value; }
+        public int ProfileInfoVersion { get => _profileInfoVersion; set => _profileInfoVersion = value; }
     }
 }
