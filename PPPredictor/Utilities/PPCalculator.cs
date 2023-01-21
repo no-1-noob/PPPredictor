@@ -167,7 +167,8 @@ namespace PPPredictor.Utilities
                 while (needMoreData)
                 {
                     int indexOfBetterPlayer = _lsPlayerRankings.FindIndex(x => x.Pp > pp);
-                    if (indexOfBetterPlayer != -1 || fetchIndexPage == 0)
+                    var ppBetterPlayer = indexOfBetterPlayer > -1 ? _lsPlayerRankings[indexOfBetterPlayer].Pp : -1d;
+                    if (indexOfBetterPlayer != -1 || fetchIndexPage == 0 || (bestRankFetched == 1 && indexOfBetterPlayer == -1)) //bestRankFetched == 1: Special case for first place; congratz ;)
                     {
                         //Found a better player or already fetched until rank 1
                         needMoreData = false;
@@ -181,8 +182,8 @@ namespace PPPredictor.Utilities
                     fetchIndexPage--;
                     await Task.Delay(250);
                 }
-                double rankAfterPlay = _lsPlayerRankings.Where(x => x.Pp <= pp).Select(x => x.Rank).DefaultIfEmpty(-1).Min();
-                double rankCountryAfterPlay = _lsPlayerRankings.Where(x => x.Pp <= pp && x.Country == _leaderboardInfo.CurrentPlayer.Country).Select(x => x.CountryRank).DefaultIfEmpty(-1).Min();
+                double rankAfterPlay = _lsPlayerRankings.Where(x => Math.Round(x.Pp, 2, MidpointRounding.AwayFromZero) <= pp).Select(x => x.Rank).DefaultIfEmpty(-1).Min();
+                double rankCountryAfterPlay = _lsPlayerRankings.Where(x => Math.Round(x.Pp, 2, MidpointRounding.AwayFromZero) <= pp && x.Country == _leaderboardInfo.CurrentPlayer.Country).Select(x => x.CountryRank).DefaultIfEmpty(-1).Min();
                 if(_leaderboardInfo.LeaderboardName == Leaderboard.NoLeaderboard.ToString())
                 {
                     rankAfterPlay = rankCountryAfterPlay = 0; //Special case for when no leaderboard is active;

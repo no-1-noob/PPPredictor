@@ -9,13 +9,13 @@ namespace PPPredictor.Data
         private double _pp;
         private double _stars;
         private DateTime _fetchTime;
-        private int modifierValuesId;
+        private int _modifierValuesId;
 
         public string Searchstring { get => _searchstring; }
         public double Pp { get => _pp; set => _pp = value; }
         public double Stars { get => _stars; set => _stars = value; }
         public DateTime FetchTime { get => _fetchTime; set => _fetchTime = value; }
-        public int ModifierValuesId { get => modifierValuesId; set => modifierValuesId = value; }
+        public int ModifierValuesId { get => _modifierValuesId; set => _modifierValuesId = value; }
 
         public ShortScore(string searchstring, double pp)
         {
@@ -28,6 +28,7 @@ namespace PPPredictor.Data
             this._searchstring = searchstring.ToUpper();
             this._fetchTime = fetchTime;
             this._stars = stars;
+            this._modifierValuesId = modifierValuesId;
         }
         [JsonConstructor]
         public ShortScore(string searchstring, double pp, double stars, DateTime fetchTime, int modifierValuesId)
@@ -36,7 +37,7 @@ namespace PPPredictor.Data
             this._pp = pp;
             this._fetchTime = fetchTime;
             this._stars = stars;
-            this.modifierValuesId = modifierValuesId;
+            this._modifierValuesId = modifierValuesId;
         }
     }
 }
