@@ -157,6 +157,7 @@ namespace PPPredictor.Utilities
         {
             try
             {
+                if (pp == _leaderboardInfo.CurrentPlayer.Pp) return new RankGainResult(_leaderboardInfo.CurrentPlayer.Rank, _leaderboardInfo.CurrentPlayer.CountryRank, _leaderboardInfo.CurrentPlayer); //Fucking bullshit
                 //Refetch if the current rank has decrease outside of fetched range (first GetPlayerRankGain call after loading saved Session data, then update from web)
                 double worstRankFetched = _lsPlayerRankings.Select(x => x.Rank).DefaultIfEmpty(Double.MaxValue).Max();
                 if (_leaderboardInfo.CurrentPlayer.Rank > worstRankFetched) _lsPlayerRankings = new List<PPPPlayer>();
