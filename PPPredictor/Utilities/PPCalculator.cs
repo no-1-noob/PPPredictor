@@ -227,5 +227,7 @@ namespace PPPredictor.Utilities
         {
             return mapSearchString;
         }
+
+        public abstract Task UpdateMapPoolDetails(PPPMapPool mapPool);
     }
 }

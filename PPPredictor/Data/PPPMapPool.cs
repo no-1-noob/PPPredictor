@@ -56,8 +56,8 @@ namespace PPPredictor.Data
             _dtUtcLastRefresh = new DateTime(2000, 1, 1);
             DtUtcLastSessionReset = new DateTime(2000, 1, 1);
             _curve = CustomPPPCurve.DummyPPPCurve();
-            _id = string.Empty;
-            _playListId = string.Empty;
+            _id = "-1";
+            _playListId = "-1";
             _mapPoolType = MapPoolType.Custom;
             _mapPoolName = string.Empty;
             _accumulationConstant = 0;
@@ -75,7 +75,7 @@ namespace PPPredictor.Data
             _curve = curve;
         }
 
-        public PPPMapPool(MapPoolType mapPoolType, string mapPoolName, float accumulationConstant, int sortIndex, IPPPCurve curve) : this(string.Empty, string.Empty, mapPoolType, mapPoolName, accumulationConstant, sortIndex, curve)
+        public PPPMapPool(MapPoolType mapPoolType, string mapPoolName, float accumulationConstant, int sortIndex, IPPPCurve curve) : this("-1", "-1", mapPoolType, mapPoolName, accumulationConstant, sortIndex, curve)
         {
         }
 

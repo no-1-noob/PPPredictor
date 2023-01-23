@@ -12,6 +12,7 @@ namespace PPPredictor.Data
         private PPPMapPool _currentMapPool;
         private string _lastSelectedMapPoolId;
         private string _customLeaderboardUserId;
+        private string _ppSuffix;
 
         public string LeaderboardName { get => _leaderboardName; set => _leaderboardName = value; }
         public List<PPPMapPool> LsMapPools { get => _lsMapPools; set => _lsMapPools = value; }
@@ -24,12 +25,14 @@ namespace PPPredictor.Data
         }
         internal PPPMapPool DefaultMapPool { get => _lsMapPools.Find(x => x.MapPoolType == MapPoolType.Default); }
         public string CustomLeaderboardUserId { get => _customLeaderboardUserId; set => _customLeaderboardUserId = value; }
+        public string PpSuffix { get => _ppSuffix; set => _ppSuffix = value; }
 
         public PPPLeaderboardInfo(Leaderboard leaderboard)
         {
             this._leaderboardName = leaderboard.ToString();
             this._lsMapPools = new List<PPPMapPool>();
             this._customLeaderboardUserId = string.Empty;
+            this._ppSuffix = "pp";
 
             switch (leaderboard)
             {
@@ -43,6 +46,7 @@ namespace PPPredictor.Data
                     _lsMapPools.Add(new PPPMapPool(MapPoolType.Default, $"Default", 0, 0, new CustomPPPCurve(new double[0, 2] { }, CurveType.Linear, 0)));
                     break;
                 case Leaderboard.HitBloq:
+                    _ppSuffix = "cr";
                     _lsMapPools.Add(new PPPMapPool(MapPoolType.Default, $"Default", 0, 0, new CustomPPPCurve(new double[0, 2] { }, CurveType.Linear, 0)));
                     break;
                 default:

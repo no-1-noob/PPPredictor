@@ -11,6 +11,7 @@ namespace PPPredictor.Counter
     {
         [Inject] private readonly ScoreController scoreController;
         [Inject] private readonly GameplayCoreSceneSetupData setupData;
+        [Inject] private readonly PPPredictorMgr ppPredictorMgr;
         private List<CounterInfoHolder> lsCounterInfoHolder;
         private int maxPossibleScore = 0;
         private bool _levelFailed = false;
@@ -65,17 +66,17 @@ namespace PPPredictor.Counter
                 float lineOffset = (originalLineOffset * (scoreboardCount / 2)) + (originalLineOffset * (scoreboardCount % 2));
                 if (Plugin.ProfileInfo.IsScoreSaberEnabled && ShowCounter(Leaderboard.ScoreSaber))
                 {
-                    lsCounterInfoHolder.Add(new CounterInfoHolder(Leaderboard.ScoreSaber, Settings, "PPPredictor.Resources.LeaderBoardLogos.ScoreSaber.png", canvas, CanvasUtility, lineOffset, positionScale));
+                    lsCounterInfoHolder.Add(new CounterInfoHolder(Leaderboard.ScoreSaber, Settings, ppPredictorMgr, "PPPredictor.Resources.LeaderBoardLogos.ScoreSaber.png", canvas, CanvasUtility, lineOffset, positionScale));
                     lineOffset -= originalLineOffset * 2;
                 }
                 if (Plugin.ProfileInfo.IsBeatLeaderEnabled && ShowCounter(Leaderboard.BeatLeader))
                 {
-                    lsCounterInfoHolder.Add(new CounterInfoHolder(Leaderboard.BeatLeader, Settings, "PPPredictor.Resources.LeaderBoardLogos.BeatLeader.png", canvas, CanvasUtility, lineOffset, positionScale));
+                    lsCounterInfoHolder.Add(new CounterInfoHolder(Leaderboard.BeatLeader, Settings, ppPredictorMgr, "PPPredictor.Resources.LeaderBoardLogos.BeatLeader.png", canvas, CanvasUtility, lineOffset, positionScale));
                     lineOffset -= originalLineOffset * 2;
                 }
                 if (Plugin.ProfileInfo.IsHitBloqEnabled && ShowCounter(Leaderboard.HitBloq))
                 {
-                    lsCounterInfoHolder.Add(new CounterInfoHolder(Leaderboard.HitBloq, Settings, "PPPredictor.Resources.LeaderBoardLogos.HitBloq.png", canvas, CanvasUtility, lineOffset, positionScale));
+                    lsCounterInfoHolder.Add(new CounterInfoHolder(Leaderboard.HitBloq, Settings, ppPredictorMgr, "PPPredictor.Resources.LeaderBoardLogos.HitBloq.png", canvas, CanvasUtility, lineOffset, positionScale));
                     lineOffset -= originalLineOffset * 2;
                 }
 
@@ -130,7 +131,7 @@ namespace PPPredictor.Counter
         private void DisplayCounterText(double percentage)
         {
 #if DEBUG
-            debugPercentage.text = "+";//$"{Plugin.ProfileInfo.CounterScoringType} {percentage:F2}%";
+            debugPercentage.text = $"{Plugin.ProfileInfo.CounterScoringType} {percentage:F2}%";
 #endif
             lsCounterInfoHolder.ForEach(item => item.UpdateCounterText(percentage, _levelFailed));
         }
@@ -147,7 +148,7 @@ namespace PPPredictor.Counter
 
         private bool ShowCounter(Leaderboard leaderboard)
         {
-            return Plugin.pppViewController.ppPredictorMgr.IsRanked(leaderboard) || !Plugin.ProfileInfo.CounterHideWhenUnranked;
+            return ppPredictorMgr.IsRanked(leaderboard) || !Plugin.ProfileInfo.CounterHideWhenUnranked;
         }
 
         private bool ShowScoreSaber()

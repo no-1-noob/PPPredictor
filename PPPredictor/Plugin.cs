@@ -1,5 +1,6 @@
 ﻿using IPA;
 using PPPredictor.Data;
+using PPPredictor.Installers;
 using PPPredictor.UI.ViewController;
 using PPPredictor.Utilities;
 using SiraUtil.Zenject;
@@ -30,6 +31,8 @@ namespace PPPredictor
             ProfileInfo = ProfileInfoMgr.LoadProfileInfo();
             zenjector.UseSiraSync();
             zenjector.Install<PPPPredictorDisplayInstaller>(Location.Menu);
+            zenjector.Install<MainMenuInstaller>(Location.Menu);
+            zenjector.Install<CoreInstaller>(Location.App);
         }
 
         [OnStart]

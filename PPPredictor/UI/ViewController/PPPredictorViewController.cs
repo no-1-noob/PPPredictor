@@ -5,6 +5,7 @@ using BeatSaberMarkupLanguage.FloatingScreen;
 using BeatSaberMarkupLanguage.Parser;
 using PPPredictor.Data;
 using PPPredictor.Data.Curve;
+using PPPredictor.Data.DisplayInfos;
 using PPPredictor.Utilities;
 using System;
 using System.Collections.Generic;
@@ -21,17 +22,14 @@ namespace PPPredictor.UI.ViewController
     public class PPPredictorViewController : IInitializable, IDisposable, INotifyPropertyChanged
     {
         private static readonly string githubUrl = "https://github.com/no-1-noob/PPPredictor/releases/latest";
-        private readonly LevelSelectionNavigationController levelSelectionNavController;
-        private readonly GameplaySetupViewController gameplaySetupViewController;
         private FloatingScreen floatingScreen;
-        internal PPPredictorMgr ppPredictorMgr;
+        [Inject] private readonly PPPredictorMgr ppPredictorMgr;
         public event PropertyChangedEventHandler PropertyChanged;
+        private DisplaySessionInfo displaySessionInfo;
+        private DisplayPPInfo displayPPInfo;
+        private bool _isDataLoading;
 
-        public PPPredictorViewController(LevelSelectionNavigationController levelSelectionNavController, GameplaySetupViewController gameplaySetupViewController)
-        {
-            this.levelSelectionNavController = levelSelectionNavController;
-            this.gameplaySetupViewController = gameplaySetupViewController;
-        }
+        public PPPredictorViewController() {}
 
         [Inject]
         public void Construct()
@@ -39,13 +37,9 @@ namespace PPPredictor.UI.ViewController
         }
         public void Initialize()
         {
-            ppPredictorMgr = new PPPredictorMgr();
             Plugin.pppViewController = this;
-            levelSelectionNavController.didChangeDifficultyBeatmapEvent += OnDifficultyChanged;
-            levelSelectionNavController.didChangeLevelDetailContentEvent += OnDetailContentChanged;
-            levelSelectionNavController.didActivateEvent += OnLevelSelectionActivated;
-            levelSelectionNavController.didDeactivateEvent += OnLevelSelectionDeactivated;
-            gameplaySetupViewController.didChangeGameplayModifiersEvent += DidChangeGameplayModifiersEvent;
+            displaySessionInfo = new DisplaySessionInfo();
+            displayPPInfo= new DisplayPPInfo();
             floatingScreen = FloatingScreen.CreateFloatingScreen(new Vector2(75, 100), true, Plugin.ProfileInfo.Position, new Quaternion(0, 0, 0, 0));
             floatingScreen.gameObject.name = "BSMLFloatingScreen_PPPredictor";
             floatingScreen.gameObject.SetActive(false);
@@ -55,6 +49,34 @@ namespace PPPredictor.UI.ViewController
             floatingScreen.HandleSide = FloatingScreen.Side.Left;
             floatingScreen.HandleReleased += OnScreenHandleReleased;
             BSMLParser.instance.Parse(BeatSaberMarkupLanguage.Utilities.GetResourceContent(Assembly.GetExecutingAssembly(), "PPPredictor.UI.Views.PPPredictorView.bsml"), floatingScreen.gameObject, this);
+            ppPredictorMgr.ViewActivated += PpPredictorMgr_ViewActivated;
+            ppPredictorMgr.OnDataLoading += PpPredictorMgr_OnDataLoading;
+            ppPredictorMgr.OnDisplayPPInfo += PpPredictorMgr_OnDisplayPPInfo;
+            ppPredictorMgr.OnDisplaySessionInfo += PpPredictorMgr_OnDisplaySessionInfo;
+            ppPredictorMgr.OnMapPoolRefreshed += PpPredictorMgr_OnMapPoolRefreshed; ;
+        }
+
+        private void PpPredictorMgr_OnMapPoolRefreshed(object sender, EventArgs e)
+        {
+            UpdateAllDisplay();
+        }
+
+        private void PpPredictorMgr_OnDisplaySessionInfo(object sender, DisplaySessionInfo displaySessionInfo)
+        {
+            this.displaySessionInfo = displaySessionInfo;
+            UpdateSessionDisplay();
+        }
+
+        private void PpPredictorMgr_OnDisplayPPInfo(object sender, DisplayPPInfo displayPPInfo)
+        {
+            this.displayPPInfo = displayPPInfo;
+            UpdatePPDisplay();
+        }
+
+        private void PpPredictorMgr_OnDataLoading(object sender, bool isDataLoading)
+        {
+            this._isDataLoading = isDataLoading;
+            UpdateLoadingDisplay();
         }
 
         internal void ApplySettings()
@@ -69,17 +91,10 @@ namespace PPPredictor.UI.ViewController
             Plugin.ProfileInfo.EulerAngles = floatingScreen.transform.eulerAngles;
         }
 
-        private void DidChangeGameplayModifiersEvent()
-        {
-            this.ppPredictorMgr.ChangeGameplayModifiers(this.gameplaySetupViewController);
-        }
-
         public void Dispose()
         {
             floatingScreen.HandleReleased -= OnScreenHandleReleased;
-            levelSelectionNavController.didActivateEvent -= OnLevelSelectionActivated;
-            levelSelectionNavController.didDeactivateEvent -= OnLevelSelectionDeactivated;
-            gameplaySetupViewController.didChangeGameplayModifiersEvent -= DidChangeGameplayModifiersEvent;
+            ppPredictorMgr.ViewActivated -= PpPredictorMgr_ViewActivated;
             Plugin.pppViewController = null;
         }
 
@@ -92,7 +107,6 @@ namespace PPPredictor.UI.ViewController
             ResetPosition();
             DisplayInitialPercentages();
             this.ppPredictorMgr.ResetDisplay(false);
-            this.ppPredictorMgr.SetPropertyChangedEventHandler(PropertyChanged);
             CheckVersion();
         }
 
@@ -166,7 +180,6 @@ namespace PPPredictor.UI.ViewController
         private void ArrowPrevLeaderboardClicked()
         {
             this.ppPredictorMgr.CyclePredictors(-1);
-            UpdateMapPoolChoices();
         }
 #pragma warning restore IDE0051 // Remove unused private members
 #pragma warning disable IDE0051 // Remove unused private members
@@ -174,7 +187,6 @@ namespace PPPredictor.UI.ViewController
         private void ArrowNextLeaderboardClicked()
         {
             this.ppPredictorMgr.CyclePredictors(1);
-            UpdateMapPoolChoices();
         }
 #pragma warning restore IDE0051 // Remove unused private members
         #endregion
@@ -187,7 +199,7 @@ namespace PPPredictor.UI.ViewController
                 sliderFine.slider.minValue = value;
                 sliderFine.slider.maxValue = value + 10;
                 SliderFineValue = (value) + (ppPredictorMgr.CurrentPPPredictor.Percentage % 10);
-                ppPredictorMgr.CurrentPPPredictor.DisplayPP();
+                ppPredictorMgr.CurrentPPPredictor.CalculatePP();
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SliderCoarseValue)));
             }
         }
@@ -199,7 +211,7 @@ namespace PPPredictor.UI.ViewController
             {
                 ppPredictorMgr.SetPercentage(value);
                 Plugin.ProfileInfo.LastPercentageSelected = ppPredictorMgr.CurrentPPPredictor.Percentage;
-                ppPredictorMgr.CurrentPPPredictor.DisplayPP();
+                ppPredictorMgr.CurrentPPPredictor.CalculatePP();
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SliderFineValue)));
             }
         }
@@ -207,21 +219,21 @@ namespace PPPredictor.UI.ViewController
         [UIValue("ppRaw")]
         private string PPRaw
         {
-            get => this.ppPredictorMgr.CurrentPPPredictor.PPRaw;
+            get => displayPPInfo.PPRaw;
         }
 #pragma warning restore IDE0051 // Remove unused private members
 #pragma warning disable IDE0051 // Remove unused private members
         [UIValue("ppGain")]
         private string PPGain
         {
-            get => this.ppPredictorMgr.CurrentPPPredictor.PPGain;
+            get => displayPPInfo.PPGain;
         }
 #pragma warning restore IDE0051 // Remove unused private members
 #pragma warning disable IDE0051 // Remove unused private members
         [UIValue("ppGainDiffColor")]
         private string PPGainDiffColor
         {
-            get => this.ppPredictorMgr.CurrentPPPredictor.PPGainDiffColor;
+            get => displayPPInfo.PPGainDiffColor;
         }
 #pragma warning restore IDE0051 // Remove unused private members
 #pragma warning disable IDE0051 // Remove unused private members
@@ -229,63 +241,63 @@ namespace PPPredictor.UI.ViewController
         [UIValue("sessionRank")]
         private string SessionRank
         {
-            get => this.ppPredictorMgr.CurrentPPPredictor.SessionRank;
+            get => displaySessionInfo.SessionRank;
         }
 #pragma warning restore IDE0051 // Remove unused private members
 #pragma warning disable IDE0051 // Remove unused private members
         [UIValue("sessionRankDiff")]
         private string SessionRankDiff
         {
-            get => this.ppPredictorMgr.CurrentPPPredictor.SessionRankDiff;
+            get => displaySessionInfo.SessionRankDiff;
         }
 #pragma warning restore IDE0051 // Remove unused private members
 #pragma warning disable IDE0051 // Remove unused private members
         [UIValue("sessionRankDiffColor")]
         private string SessionRankDiffColor
         {
-            get => this.ppPredictorMgr.CurrentPPPredictor.SessionRankDiffColor;
+            get => displaySessionInfo.SessionRankDiffColor;
         }
 #pragma warning restore IDE0051 // Remove unused private members
 #pragma warning disable IDE0051 // Remove unused private members
         [UIValue("sessionCountryRank")]
         private string SessionCountryRank
         {
-            get => this.ppPredictorMgr.CurrentPPPredictor.SessionCountryRank;
+            get => displaySessionInfo.SessionCountryRank;
         }
 #pragma warning restore IDE0051 // Remove unused private members
 #pragma warning disable IDE0051 // Remove unused private members
         [UIValue("sessionCountryRankDiff")]
         private string SessionCountryRankDiff
         {
-            get => this.ppPredictorMgr.CurrentPPPredictor.SessionCountryRankDiff;
+            get => displaySessionInfo.SessionCountryRankDiff;
         }
 #pragma warning restore IDE0051 // Remove unused private members
 #pragma warning disable IDE0051 // Remove unused private members
         [UIValue("sessionCountryRankDiffColor")]
         private string SessionCountryRankDiffColor
         {
-            get => this.ppPredictorMgr.CurrentPPPredictor.SessionCountryRankDiffColor;
+            get => displaySessionInfo.SessionCountryRankDiffColor;
         }
 #pragma warning restore IDE0051 // Remove unused private members
 #pragma warning disable IDE0051 // Remove unused private members
         [UIValue("sessionPP")]
         private string SessionPP
         {
-            get => this.ppPredictorMgr.CurrentPPPredictor.SessionPP;
+            get => displaySessionInfo.SessionPP;
         }
 #pragma warning restore IDE0051 // Remove unused private members
 #pragma warning disable IDE0051 // Remove unused private members
         [UIValue("sessionPPDiff")]
         private string SessionPPDiff
         {
-            get => this.ppPredictorMgr.CurrentPPPredictor.SessionPPDiff;
+            get => displaySessionInfo.SessionPPDiff;
         }
 #pragma warning restore IDE0051 // Remove unused private members
 #pragma warning disable IDE0051 // Remove unused private members
         [UIValue("sessionPPDiffColor")]
         private string SessionPPDiffColor
         {
-            get => this.ppPredictorMgr.CurrentPPPredictor.SessionPPDiffColor;
+            get => displaySessionInfo.SessionPPDiffColor;
         }
 #pragma warning restore IDE0051 // Remove unused private members
         #endregion
@@ -294,42 +306,42 @@ namespace PPPredictor.UI.ViewController
         [UIValue("predictedRank")]
         private string PredictedRank
         {
-            get => this.ppPredictorMgr.CurrentPPPredictor.PredictedRank;
+            get => displayPPInfo.PredictedRank;
         }
 #pragma warning restore IDE0051 // Remove unused private members
 #pragma warning disable IDE0051 // Remove unused private members
         [UIValue("predictedRankDiff")]
         private string PredictedRankDiff
         {
-            get => this.ppPredictorMgr.CurrentPPPredictor.PredictedRankDiff;
+            get => displayPPInfo.PredictedRankDiff;
         }
 #pragma warning restore IDE0051 // Remove unused private members
 #pragma warning disable IDE0051 // Remove unused private members
         [UIValue("predictedRankDiffColor")]
         private string PredictedRankDiffColor
         {
-            get => this.ppPredictorMgr.CurrentPPPredictor.PredictedRankDiffColor;
+            get => displayPPInfo.PredictedRankDiffColor;
         }
 #pragma warning restore IDE0051 // Remove unused private members
 #pragma warning disable IDE0051 // Remove unused private members
         [UIValue("predictedCountryRank")]
         private string PredictedCountryRank
         {
-            get => this.ppPredictorMgr.CurrentPPPredictor.PredictedCountryRank;
+            get => displayPPInfo.PredictedCountryRank;
         }
 #pragma warning restore IDE0051 // Remove unused private members
 #pragma warning disable IDE0051 // Remove unused private members
         [UIValue("predictedCountryRankDiff")]
         private string PredictedCountryRankDiff
         {
-            get => this.ppPredictorMgr.CurrentPPPredictor.PredictedCountryRankDiff;
+            get => displayPPInfo.PredictedCountryRankDiff;
         }
 #pragma warning restore IDE0051 // Remove unused private members
 #pragma warning disable IDE0051 // Remove unused private members
         [UIValue("predictedCountryRankDiffColor")]
         private string PredictedCountryRankDiffColor
         {
-            get => this.ppPredictorMgr.CurrentPPPredictor.PredictedCountryRankDiffColor;
+            get => displayPPInfo.PredictedCountryRankDiffColor;
         }
 #pragma warning restore IDE0051 // Remove unused private members
 #pragma warning disable IDE0051 // Remove unused private members
@@ -337,14 +349,14 @@ namespace PPPredictor.UI.ViewController
         [UIValue("isDataLoading")]
         private bool IsDataLoading
         {
-            get => this.ppPredictorMgr.CurrentPPPredictor.IsDataLoading;
+            get => _isDataLoading;
         }
 #pragma warning restore IDE0051 // Remove unused private members
 #pragma warning disable IDE0051 // Remove unused private members
         [UIValue("isNoDataLoading")]
         private bool IsNoDataLoading
         {
-            get => !this.ppPredictorMgr.CurrentPPPredictor.IsDataLoading;
+            get => !_isDataLoading;
         }
 #pragma warning restore IDE0051 // Remove unused private members
 #pragma warning disable IDE0051 // Remove unused private members
@@ -357,20 +369,6 @@ namespace PPPredictor.UI.ViewController
                 dropDownMapPools?.UpdateChoices(); //Refresh map pools here...
                 return this.ppPredictorMgr.CurrentPPPredictor.LeaderBoardName;
             }
-        }
-#pragma warning restore IDE0051 // Remove unused private members
-#pragma warning disable IDE0051 // Remove unused private members
-        [UIValue("isNoUserFound")]
-        private bool IsNoUserFound
-        {
-            get => this.ppPredictorMgr.CurrentPPPredictor.IsNoUserFound;
-        }
-#pragma warning restore IDE0051 // Remove unused private members
-#pragma warning disable IDE0051 // Remove unused private members
-        [UIValue("isUserFound")]
-        private bool IsUserFound
-        {
-            get => this.ppPredictorMgr.CurrentPPPredictor.IsUserFound;
         }
 #pragma warning restore IDE0051 // Remove unused private members
 #pragma warning disable IDE0051 // Remove unused private members
@@ -441,34 +439,11 @@ namespace PPPredictor.UI.ViewController
             }
         }
         #endregion
-        private void OnDifficultyChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
-        {
-            this.ppPredictorMgr.DifficultyChanged(lvlSelectionNavigationCtrl, beatmap);
-        }
-
-        private void OnDetailContentChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, StandardLevelDetailViewController.ContentType contentType)
-        {
-            this.ppPredictorMgr.DetailContentChanged(lvlSelectionNavigationCtrl, contentType);
-        }
         internal void ResetDisplay(bool v)
         {
             ResetPosition();
             DisplayInitialPercentages();
             this.ppPredictorMgr.ResetDisplay(v);
-        }
-
-        private void OnLevelSelectionActivated(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
-        {
-            TogglePPPView(true);
-        }
-        private void OnLevelSelectionDeactivated(bool removedFromHierarchy, bool screenSystemDisabling)
-        {
-            TogglePPPView(false);
-        }
-
-        private void TogglePPPView(bool active)
-        {
-            floatingScreen.gameObject.SetActive(active);
         }
         internal void RefreshCurrentData(int count)
         {
@@ -480,6 +455,12 @@ namespace PPPredictor.UI.ViewController
             var currentPool = this.ppPredictorMgr.CurrentPPPredictor.CurrentMapPool as PPPMapPool;
             var newMapPool = value as PPPMapPool;
             return (currentPool != null && newMapPool != null && currentPool.Id != newMapPool.Id);
+        }
+
+        private void PpPredictorMgr_ViewActivated(object sender, bool active)
+        {
+            Plugin.Log?.Error($"PpPredictorMgr_ViewActivated {active}");
+            floatingScreen.gameObject.SetActive(active);
         }
 
         private void DisplayInitialPercentages()
@@ -521,6 +502,58 @@ namespace PPPredictor.UI.ViewController
             dropDownMapPools.Value = this.ppPredictorMgr.CurrentPPPredictor.CurrentMapPool;
             dropDownMapPools.ApplyValue();
             dropDownMapPools?.UpdateChoices(); //Refresh map pools here...
+        }
+
+        private void UpdateSessionDisplay()
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionRank)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionRankDiff)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionRankDiffColor)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionCountryRank)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionCountryRankDiff)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionCountryRankDiffColor)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionPP)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionPPDiff)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionPPDiffColor)));
+        }
+
+        private void UpdatePPDisplay()
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PPRaw)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PPGain)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PPGainDiffColor)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedRank)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedRankDiff)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedRankDiffColor)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedCountryRank)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedCountryRankDiff)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedCountryRankDiffColor)));
+        }
+
+        private void UpdateLeaderBoardDisplay()
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LeaderBoardName)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MapPoolOptions)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentMapPool)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsLeftArrowActive)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsRightArrowActive)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsLeaderboardNavigationActive)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsMapPoolDropDownActive)));
+        }
+
+        private void UpdateLoadingDisplay()
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsDataLoading)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsNoDataLoading)));
+        }
+
+        private void UpdateAllDisplay()
+        {
+            UpdateMapPoolChoices();
+            UpdateLeaderBoardDisplay();
+            UpdateSessionDisplay();
+            UpdatePPDisplay();
+            
         }
     }
 }

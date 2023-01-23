@@ -225,32 +225,19 @@ namespace PPPredictor.Utilities
                     PPPMapPool oldPool = _leaderboardInfo.LsMapPools.Find(x => x.Id == eventItem.id.ToString());
                     if (oldPool == null && eventItem.dtEndDate < DateTime.UtcNow)
                     {
-                        Plugin.Log.Error($"Do not add expired events {eventItem.name}");
                         continue; //Do not add expired events
                     }
                     else if (oldPool != null && eventItem.dtEndDate < DateTime.UtcNow)
                     {
-                        Plugin.Log.Error($"Remove expired events {eventItem.name}");
                         //Remove expired events
                         _leaderboardInfo.LsMapPools.Remove(oldPool);
                         continue;
                     }
-                    if (oldPool != null && DateTime.UtcNow.AddDays(-1) < oldPool.DtUtcLastRefresh)
-                    {
-                        Plugin.Log.Error($"Skip Pool update {oldPool.MapPoolName}");
-                        continue; //Do not get Playlist if it has been updated less than a day ago.
-                    }
-                    Plugin.Log.Error($"eventItem.dtEndDate {eventItem.dtEndDate}");
                     if (oldPool == null)
                     {
                         var mapPool = new PPPMapPool(eventItem.id.ToString(), eventItem.playListId.ToString(), MapPoolType.Custom, eventItem.name, accumulationConstant, sortIndex, new BeatLeaderPPPCurve());
                         sortIndex++;
-                        await UpdateMapPoolPlaylist(mapPool);
                         this._leaderboardInfo.LsMapPools.Add(mapPool);
-                    }
-                    else
-                    {
-                        await UpdateMapPoolPlaylist(oldPool);
                     }
                 }
             }
@@ -261,15 +248,18 @@ namespace PPPredictor.Utilities
             }
         }
 
-        private async Task UpdateMapPoolPlaylist(PPPMapPool mapPool)
+        override public async Task UpdateMapPoolDetails(PPPMapPool mapPool)
         {
-            mapPool.LsMapPoolEntries.Clear();
-            BeatLeaderPlayList lsPlayList = await this.beatleaderapi.GetPlayList(long.Parse(mapPool.PlayListId));
-            foreach (BeatLeaderPlayListSong song in lsPlayList.songs)
+            if (mapPool.MapPoolType != MapPoolType.Default)
             {
-                foreach (BeatLeaderPlayListDifficulties diff in song.difficulties)
+                mapPool.LsMapPoolEntries.Clear();
+                BeatLeaderPlayList lsPlayList = await this.beatleaderapi.GetPlayList(long.Parse(mapPool.PlayListId));
+                foreach (BeatLeaderPlayListSong song in lsPlayList.songs)
                 {
-                    mapPool.LsMapPoolEntries.Add(new PPPMapPoolEntry(song, diff));
+                    foreach (BeatLeaderPlayListDifficulties diff in song.difficulties)
+                    {
+                        mapPool.LsMapPoolEntries.Add(new PPPMapPoolEntry(song, diff));
+                    }
                 }
             }
         }

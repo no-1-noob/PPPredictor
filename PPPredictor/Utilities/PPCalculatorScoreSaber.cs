@@ -105,5 +105,8 @@ namespace PPPredictor.Utilities
         {
             return $"{hash}_{beatmap.difficultyRank}";
         }
+        override public async Task UpdateMapPoolDetails(PPPMapPool mapPool)
+        {
+        }
     }
 }

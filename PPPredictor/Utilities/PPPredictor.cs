@@ -1,4 +1,5 @@
 ﻿using PPPredictor.Data;
+using PPPredictor.Data.DisplayInfos;
 using PPPredictor.Interfaces;
 using SongCore.Utilities;
 using System;
@@ -13,48 +14,32 @@ namespace PPPredictor.Utilities
     internal class PPPredictor<T> : IPPPredictor where T : PPCalculator, new()
     {
         internal Leaderboard leaderboardName;
-        #region displayValues
+        #region internal values
         private float _percentage;
-        private string _ppRaw = "";
-        private string _ppGain = "";
-        private string _ppGainDiffColor = "white";
-
         private double _currentSelectionBaseStars;
         private double _currentSelectionStars;
-
-        private string _sessionRank = "";
-        private string _sessionCountryRank = "";
-        private string _sessionPP = "";
-        private string _sessionCountryRankDiff = "";
-        private string _sessionCountryRankDiffColor = "white";
-        private string _sessionRankDiff = "";
-        private string _sessionRankDiffColor = "white";
-        private string _sessionPPDiff = "";
-        private string _sessionPPDiffColor = "white";
-
-        private string _predictedRank = "";
-        private string _predictedRankDiff = "";
-        private string _predictedRankDiffColor = "white";
-        private string _predictedCountryRank = "";
-        private string _predictedCountryRankDiff = "";
-        private string _predictedCountryRankDiffColor = "white";
-
         private bool _rankGainRunning = false;
         private double _lastPPGainCall = 0;
-
-        #endregion
-
-        #region internal values
         private string _selectedMapSearchString;
-        private bool _isDataLoading = false;
         private bool _isActive = false;
-        private bool _isUserFound = true;
         #endregion
+
+        public string LeaderBoardName
+        {
+            get
+            {
+                return _leaderboardInfo.LeaderboardName;
+            }
+        }
 
         internal PPPLeaderboardInfo _leaderboardInfo;
         internal PPCalculator _ppCalculator;
         private GameplayModifiers _gameplayModifiers;
-        internal PropertyChangedEventHandler PropertyChanged;
+
+        public event EventHandler<bool> OnDataLoading;
+        public event EventHandler<DisplaySessionInfo> OnDisplaySessionInfo;
+        public event EventHandler<DisplayPPInfo> OnDisplayPPInfo;
+        public event EventHandler OnMapPoolRefreshed;
 
         #region
         public PPPredictor(Leaderboard leaderBoard)
@@ -73,245 +58,35 @@ namespace PPPredictor.Utilities
             set
             {
                 _percentage = value;
-                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Percentage)));
             }
         }
-
-        public string PPRaw
-        {
-            set
-            {
-                _ppRaw = value;
-                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PPRaw)));
-            }
-            get => _ppRaw;
-        }
-
-        public string PPGain
-        {
-            set
-            {
-                _ppGain = value;
-                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PPGain)));
-            }
-            get => _ppGain;
-        }
-
-        public string PPGainDiffColor
-        {
-            set
-            {
-                _ppGainDiffColor = value;
-                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PPGainDiffColor)));
-            }
-            get => _ppGainDiffColor;
-        }
-
-        #region UI Values session
-        public string SessionRank
-        {
-            set
-            {
-                _sessionRank = value;
-                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionRank)));
-            }
-            get => _sessionRank;
-        }
-        public string SessionRankDiff
-        {
-            set
-            {
-                _sessionRankDiff = value;
-                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionRankDiff)));
-            }
-            get => _sessionRankDiff;
-        }
-        public string SessionRankDiffColor
-        {
-            set
-            {
-                _sessionRankDiffColor = value;
-                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionRankDiffColor)));
-            }
-            get => _sessionRankDiffColor;
-        }
-
-        public string SessionCountryRank
-        {
-            set
-            {
-                _sessionCountryRank = value;
-                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionCountryRank)));
-            }
-            get => _sessionCountryRank;
-        }
-        public string SessionCountryRankDiff
-        {
-            set
-            {
-                _sessionCountryRankDiff = value;
-                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionCountryRankDiff)));
-            }
-            get => _sessionCountryRankDiff;
-        }
-        public string SessionCountryRankDiffColor
-        {
-            set
-            {
-                _sessionCountryRankDiffColor = value;
-                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionCountryRankDiffColor)));
-            }
-            get => _sessionCountryRankDiffColor;
-        }
-
-        public string SessionPP
-        {
-            set
-            {
-                _sessionPP = value;
-                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionPP)));
-            }
-            get => _sessionPP;
-        }
-        public string SessionPPDiff
-        {
-            set
-            {
-                _sessionPPDiff = value;
-                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionPPDiff)));
-            }
-            get => _sessionPPDiff;
-        }
-        public string SessionPPDiffColor
-        {
-            set
-            {
-                _sessionPPDiffColor = value;
-                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionPPDiffColor)));
-            }
-            get => _sessionPPDiffColor;
-        }
-        #endregion
-        #region UI Values Predicted Rank
-
-        public string PredictedRank
-        {
-            set
-            {
-                _predictedRank = value;
-                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedRank)));
-            }
-            get => _predictedRank;
-        }
-        public string PredictedRankDiff
-        {
-            set
-            {
-                _predictedRankDiff = value;
-                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedRankDiff)));
-            }
-            get => _predictedRankDiff;
-        }
-        public string PredictedRankDiffColor
-        {
-            set
-            {
-                _predictedRankDiffColor = value;
-                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedRankDiffColor)));
-            }
-            get => _predictedRankDiffColor;
-        }
-        public string PredictedCountryRank
-        {
-            set
-            {
-                _predictedCountryRank = value;
-                if(_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedCountryRank)));
-            }
-            get => _predictedCountryRank;
-        }
-        public string PredictedCountryRankDiff
-        {
-            set
-            {
-                _predictedCountryRankDiff = value;
-                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedCountryRankDiff)));
-            }
-            get => _predictedCountryRankDiff;
-        }
-        public string PredictedCountryRankDiffColor
-        {
-            set
-            {
-                _predictedCountryRankDiffColor = value;
-                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedCountryRankDiffColor)));
-            }
-            get => _predictedCountryRankDiffColor;
-        }
-        #endregion
-
-        public bool IsDataLoading
-        {
-            set
-            {
-                _isDataLoading = value;
-                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsDataLoading)));
-                if (_isActive) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsNoDataLoading)));
-            }
-            get => _isDataLoading;
-        }
-
-        public bool IsNoDataLoading
-        {
-            get => !_isDataLoading;
-        }
-
-        public string LeaderBoardName
-        {
-            get
-            {
-                return _leaderboardInfo.LeaderboardName;
-            }
-        }
-
-        public bool IsUserFound
-        {
-            set
-            {
-                _isUserFound = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsUserFound)));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsNoUserFound)));
-            }
-            get => _isUserFound;
-        }
-        public bool IsNoUserFound
-        {
-            get => !_isUserFound;
-        }
-        #endregion
-
         #region MapPools
         public List<object> MapPoolOptions
         {
-            get {
+            get
+            {
                 Plugin.Log?.Error($"Get map-pool-options");
                 return _leaderboardInfo.LsMapPools.Select(f => (object)f).ToList();
             }
         }
         public object CurrentMapPool
         {
-            get => (object) _leaderboardInfo.CurrentMapPool;
+            get => (object)_leaderboardInfo.CurrentMapPool;
             set
             {
-                
-                _leaderboardInfo.CurrentMapPool = (PPPMapPool) value;
+
+                _leaderboardInfo.CurrentMapPool = (PPPMapPool)value;
+                UpdateMapPoolDetails();
                 Plugin.Log?.Error($"Set MapPool {value} Player: {_leaderboardInfo.CurrentMapPool.CurrentPlayer}");
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentMapPool)));
                 SetActive(true);
             }
         }
         #endregion
-
+        public string PPSuffix
+        {
+            get => _leaderboardInfo.PpSuffix;
+        }
+        #endregion
         #region loadInfos
         internal void LoadInfos()
         {
@@ -329,10 +104,6 @@ namespace PPPredictor.Utilities
         #endregion
 
         #region eventHandling
-        public void SetPropertyChangedEventHandler(PropertyChangedEventHandler propertyChanged)
-        {
-            PropertyChanged = propertyChanged;
-        }
 
         public void ChangeGameplayModifiers(GameplaySetupViewController gameplaySetupViewController)
         {
@@ -340,7 +111,7 @@ namespace PPPredictor.Utilities
             {
                 _gameplayModifiers = gameplaySetupViewController.gameplayModifiers;
                 _currentSelectionStars = _ppCalculator.ApplyModifierMultiplierToStars(_currentSelectionBaseStars, _gameplayModifiers);
-                DisplayPP();
+                CalculatePP();
             }
         }
 
@@ -349,7 +120,7 @@ namespace PPPredictor.Utilities
             _currentSelectionBaseStars = await _ppCalculator.GetStarsForBeatmapAsync(lvlSelectionNavigationCtrl, beatmap);
             _selectedMapSearchString = lvlSelectionNavigationCtrl.selectedBeatmapLevel is CustomBeatmapLevel selectedCustomBeatmapLevel ? _ppCalculator.CreateSeachString(Hashing.GetCustomLevelHash(selectedCustomBeatmapLevel), lvlSelectionNavigationCtrl.selectedDifficultyBeatmap) : string.Empty;
             _currentSelectionStars = _ppCalculator.ApplyModifierMultiplierToStars(_currentSelectionBaseStars, _gameplayModifiers);
-            DisplayPP();
+            CalculatePP();
         }
 
         public async void DetailContentChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, StandardLevelDetailViewController.ContentType contentType)
@@ -359,8 +130,27 @@ namespace PPPredictor.Utilities
                 _currentSelectionBaseStars = await _ppCalculator.GetStarsForBeatmapAsync(lvlSelectionNavigationCtrl, lvlSelectionNavigationCtrl.selectedDifficultyBeatmap);
                 _selectedMapSearchString = lvlSelectionNavigationCtrl.selectedBeatmapLevel is CustomBeatmapLevel selectedCustomBeatmapLevel ? _ppCalculator.CreateSeachString(Hashing.GetCustomLevelHash(selectedCustomBeatmapLevel), lvlSelectionNavigationCtrl.selectedDifficultyBeatmap) : string.Empty;
                 _currentSelectionStars = _ppCalculator.ApplyModifierMultiplierToStars(_currentSelectionBaseStars, _gameplayModifiers);
-                DisplayPP();
+                CalculatePP();
             }
+        }
+        #endregion
+
+        #region event sending
+        private void IsDataLoading(bool isDataLoading)
+        {
+            if (_isActive) OnDataLoading?.Invoke(this, isDataLoading);
+        }
+        private void SendDisplayPPInfo(DisplayPPInfo displayPPInfo)
+        {
+            if(_isActive) OnDisplayPPInfo?.Invoke(this, displayPPInfo);
+        }
+        private void SendDisplaySessionInfo(DisplaySessionInfo displaySessionInfo)
+        {
+            if (_isActive) OnDisplaySessionInfo?.Invoke(this, displaySessionInfo);
+        }
+        private void SendMapPoolRefresh()
+        {
+            OnMapPoolRefreshed?.Invoke(this, null);
         }
         #endregion
         public double CalculatePPatPercentage(double percentage, bool levelFailed = false)
@@ -380,17 +170,18 @@ namespace PPPredictor.Utilities
             return _currentSelectionBaseStars > 0;
         }
 
-        public async void DisplayPP()
+        public async void CalculatePP()
         {
             double pp = CalculatePPatPercentage(_percentage);
             PPGainResult ppGainResult = _ppCalculator.GetPlayerScorePPGain(_selectedMapSearchString, pp);
             double ppGains = _ppCalculator.Zeroizer(ppGainResult.GetDisplayPPValue());
-            PPRaw = $"{pp:F2}pp";
-            PPGain = $"{ppGains:+0.##;-0.##;0}pp";
-            PPGainDiffColor = DisplayHelper.GetDisplayColor(ppGains, false, true);
+            DisplayPPInfo ppDisplay = new DisplayPPInfo();
+            ppDisplay.PPRaw = $"{pp:F2}{PPSuffix}";
+            ppDisplay.PPGain = $"{ppGains:+0.##;-0.##;0}{PPSuffix}";
+            ppDisplay.PPGainDiffColor = DisplayHelper.GetDisplayColor(ppGains, false, true);
 
             RankGainResult rankGain = new RankGainResult(1, 2, 3, 4);
-            DisplayRankGain(null);
+            DisplayRankGain(null, ppDisplay);
             if (_rankGainRunning)
             {
                 _lastPPGainCall = ppGainResult.PpTotal;
@@ -410,83 +201,73 @@ namespace PPPredictor.Utilities
                 _rankGainRunning = false;
                 _lastPPGainCall = 0;
             }
-            DisplayRankGain(rankGain);
+            DisplayRankGain(rankGain, ppDisplay);
         }
 
-        private void DisplayRankGain(RankGainResult rankGainResult)
+        private void DisplayRankGain(RankGainResult rankGainResult, DisplayPPInfo ppDisplay)
         {
             if (rankGainResult != null)
             {
-                PredictedRank = $"{rankGainResult.RankGlobal:N0}";
-                PredictedRankDiff = rankGainResult.RankGainGlobal.ToString("+#;-#;0");
-                PredictedRankDiffColor = DisplayHelper.GetDisplayColor(rankGainResult.RankGainGlobal, false);
-                PredictedCountryRank = $"{rankGainResult.RankCountry:N0}";
-                PredictedCountryRankDiff = rankGainResult.RankGainCountry.ToString("+#;-#;0");
-                PredictedCountryRankDiffColor = DisplayHelper.GetDisplayColor(rankGainResult.RankGainCountry, false);
+                ppDisplay.PredictedRank = $"{rankGainResult.RankGlobal:N0}";
+                ppDisplay.PredictedRankDiff = rankGainResult.RankGainGlobal.ToString("+#;-#;0");
+                ppDisplay.PredictedRankDiffColor = DisplayHelper.GetDisplayColor(rankGainResult.RankGainGlobal, false);
+                ppDisplay.PredictedCountryRank = $"{rankGainResult.RankCountry:N0}";
+                ppDisplay.PredictedCountryRankDiff = rankGainResult.RankGainCountry.ToString("+#;-#;0");
+                ppDisplay.PredictedCountryRankDiffColor = DisplayHelper.GetDisplayColor(rankGainResult.RankGainCountry, false);
             }
             else
             {
-                PredictedRank = "...";
-                PredictedRankDiff = "?";
-                PredictedRankDiffColor = DisplayHelper.GetDisplayColor(0, false);
-                PredictedCountryRank = "...";
-                PredictedCountryRankDiff = "?";
-                PredictedCountryRankDiffColor = DisplayHelper.GetDisplayColor(0, false);
+                ppDisplay.PredictedRank = "...";
+                ppDisplay.PredictedRankDiff = "?";
+                ppDisplay.PredictedRankDiffColor = DisplayHelper.GetDisplayColor(0, false);
+                ppDisplay.PredictedCountryRank = "...";
+                ppDisplay.PredictedCountryRankDiff = "?";
+                ppDisplay.PredictedCountryRankDiffColor = DisplayHelper.GetDisplayColor(0, false);
             }
+            SendDisplayPPInfo(ppDisplay);
         }
 
         private void DisplaySession()
         {
-            if (_leaderboardInfo.CurrentMapPool.SessionPlayer == null || _leaderboardInfo.CurrentMapPool.CurrentPlayer == null)
-            {
-                SessionRank = SessionCountryRank = SessionPP = SessionCountryRankDiff = SessionRankDiff = SessionPPDiff = "-";
-                SessionCountryRankDiffColor = SessionRankDiffColor = SessionPPDiffColor = "white";
-            }
-            else
+            DisplaySessionInfo sessionDisplay = new DisplaySessionInfo();
+            if (_leaderboardInfo.CurrentMapPool.SessionPlayer != null && _leaderboardInfo.CurrentMapPool.CurrentPlayer != null)
             {
                 if (Plugin.ProfileInfo.DisplaySessionValues)
                 {
-                    SessionRank = $"{_leaderboardInfo.CurrentMapPool.SessionPlayer.Rank}";
-                    SessionCountryRank = $"{_leaderboardInfo.CurrentMapPool.SessionPlayer.CountryRank}";
-                    SessionPP = $"{_leaderboardInfo.CurrentMapPool.SessionPlayer.Pp:F2}pp";
+                    sessionDisplay.SessionRank = $"{_leaderboardInfo.CurrentMapPool.SessionPlayer.Rank}";
+                    sessionDisplay.SessionCountryRank = $"{_leaderboardInfo.CurrentMapPool.SessionPlayer.CountryRank}";
+                    sessionDisplay.SessionPP = $"{_leaderboardInfo.CurrentMapPool.SessionPlayer.Pp:F2}{PPSuffix}";
                 }
                 else
                 {
-                    SessionRank = $"{_leaderboardInfo.CurrentMapPool.CurrentPlayer.Rank}";
-                    SessionCountryRank = $"{_leaderboardInfo.CurrentMapPool.CurrentPlayer.CountryRank}";
-                    SessionPP = $"{_leaderboardInfo.CurrentMapPool.CurrentPlayer.Pp:F2}pp";
+                    sessionDisplay.SessionRank = $"{_leaderboardInfo.CurrentMapPool.CurrentPlayer.Rank}";
+                    sessionDisplay.SessionCountryRank = $"{_leaderboardInfo.CurrentMapPool.CurrentPlayer.CountryRank}";
+                    sessionDisplay.SessionPP = $"{_leaderboardInfo.CurrentMapPool.CurrentPlayer.Pp:F2}{PPSuffix}";
                 }
-                SessionCountryRankDiff = (_leaderboardInfo.CurrentMapPool.CurrentPlayer.CountryRank - _leaderboardInfo.CurrentMapPool.SessionPlayer.CountryRank).ToString("+#;-#;0");
-                SessionCountryRankDiffColor = DisplayHelper.GetDisplayColor((_leaderboardInfo.CurrentMapPool.CurrentPlayer.CountryRank - _leaderboardInfo.CurrentMapPool.SessionPlayer.CountryRank), true);
-                SessionRankDiff = (_leaderboardInfo.CurrentMapPool.CurrentPlayer.Rank - _leaderboardInfo.CurrentMapPool.SessionPlayer.Rank).ToString("+#;-#;0");
-                SessionRankDiffColor = DisplayHelper.GetDisplayColor((_leaderboardInfo.CurrentMapPool.CurrentPlayer.Rank - _leaderboardInfo.CurrentMapPool.SessionPlayer.Rank), true);
-                SessionPPDiff = $"{_ppCalculator.Zeroizer(_leaderboardInfo.CurrentMapPool.CurrentPlayer.Pp - _leaderboardInfo.CurrentMapPool.SessionPlayer.Pp):+0.##;-0.##;0}pp";
-                SessionPPDiffColor = DisplayHelper.GetDisplayColor((_leaderboardInfo.CurrentMapPool.CurrentPlayer.Pp - _leaderboardInfo.CurrentMapPool.SessionPlayer.Pp), false);
+                sessionDisplay.SessionCountryRankDiff = (_leaderboardInfo.CurrentMapPool.CurrentPlayer.CountryRank - _leaderboardInfo.CurrentMapPool.SessionPlayer.CountryRank).ToString("+#;-#;0");
+                sessionDisplay.SessionCountryRankDiffColor = DisplayHelper.GetDisplayColor((_leaderboardInfo.CurrentMapPool.CurrentPlayer.CountryRank - _leaderboardInfo.CurrentMapPool.SessionPlayer.CountryRank), true);
+                sessionDisplay.SessionRankDiff = (_leaderboardInfo.CurrentMapPool.CurrentPlayer.Rank - _leaderboardInfo.CurrentMapPool.SessionPlayer.Rank).ToString("+#;-#;0");
+                sessionDisplay.SessionRankDiffColor = DisplayHelper.GetDisplayColor((_leaderboardInfo.CurrentMapPool.CurrentPlayer.Rank - _leaderboardInfo.CurrentMapPool.SessionPlayer.Rank), true);
+                sessionDisplay.SessionPPDiff = $"{_ppCalculator.Zeroizer(_leaderboardInfo.CurrentMapPool.CurrentPlayer.Pp - _leaderboardInfo.CurrentMapPool.SessionPlayer.Pp):+0.##;-0.##;0}{PPSuffix}";
+                sessionDisplay.SessionPPDiffColor = DisplayHelper.GetDisplayColor((_leaderboardInfo.CurrentMapPool.CurrentPlayer.Pp - _leaderboardInfo.CurrentMapPool.SessionPlayer.Pp), false);
             }
+            SendDisplaySessionInfo(sessionDisplay);
         }
         public async void RefreshCurrentData(int fetchLength)
         {
             await UpdateCurrentAndCheckResetSession(false);
-            IsDataLoading = true;
+            IsDataLoading(true);
             string userId = await GetUserInfo();
             await _ppCalculator.GetPlayerScores(userId, fetchLength);
-            DisplayPP();
-            IsDataLoading = false;
+            CalculatePP();
+            IsDataLoading(false);
         }
 
         public async Task UpdateCurrentAndCheckResetSession(bool doResetSession)
         {
-            IsDataLoading = true;
+            IsDataLoading(true);
             string userId = await GetUserInfo();
             PPPPlayer player = await _ppCalculator.GetProfile(userId);
-            if (player.IsErrorUser)
-            {
-                IsUserFound = false;
-            }
-            else
-            {
-                IsUserFound = true;
-            }
             _leaderboardInfo.CurrentMapPool.CurrentPlayer = player;
             if (doResetSession || _leaderboardInfo.CurrentMapPool.SessionPlayer == null || NeedsResetSession())
             {
@@ -494,17 +275,17 @@ namespace PPPredictor.Utilities
                 _leaderboardInfo.CurrentMapPool.SessionPlayer = player;
             }
             DisplaySession();
-            IsDataLoading = false;
+            IsDataLoading(false);
         }
 
         public async void ResetDisplay(bool resetAll)
         {
             await UpdateCurrentAndCheckResetSession(resetAll);
-            IsDataLoading = true;
+            IsDataLoading(true);
             string userId = await GetUserInfo();
             await _ppCalculator.GetPlayerScores(userId, 100);
-            DisplayPP();
-            IsDataLoading = false;
+            CalculatePP();
+            IsDataLoading(false);
         }
 
         private bool NeedsResetSession()
@@ -519,38 +300,7 @@ namespace PPPredictor.Utilities
         {
             _isActive = setActive;
             DisplaySession();
-            DisplayPP();
-            if (_isActive) RefreshAllDisplayValues();
-        }
-
-        private void RefreshAllDisplayValues()
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LeaderBoardName)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Percentage)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PPRaw)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PPGain)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PPGainDiffColor)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionRank)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionRankDiff)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionRankDiffColor)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionCountryRank)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionCountryRankDiff)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionCountryRankDiffColor)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionPP)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionPPDiff)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionPPDiffColor)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedRank)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedRankDiff)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedRankDiffColor)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedCountryRank)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedCountryRankDiff)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictedCountryRankDiffColor)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsDataLoading)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsNoDataLoading)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsUserFound)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsNoUserFound)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MapPoolOptions)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentMapPool)));
+            CalculatePP();
         }
 
         private async Task<string> GetUserInfo()
@@ -562,6 +312,17 @@ namespace PPPredictor.Utilities
             else
             {
                 return _leaderboardInfo.CustomLeaderboardUserId;
+            }
+        }
+
+        private async void UpdateMapPoolDetails()
+        {
+            if (_leaderboardInfo.CurrentMapPool != null && _leaderboardInfo.CurrentMapPool.DtUtcLastRefresh < DateTime.UtcNow.AddDays(-1))
+            {
+                IsDataLoading(true);
+                await _ppCalculator.UpdateMapPoolDetails(_leaderboardInfo.CurrentMapPool);
+                _leaderboardInfo.CurrentMapPool.DtUtcLastRefresh = DateTime.UtcNow;
+                IsDataLoading(false);
             }
         }
     }

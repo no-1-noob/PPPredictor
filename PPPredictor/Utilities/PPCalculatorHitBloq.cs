@@ -169,33 +169,40 @@ namespace PPPredictor.Utilities
                 {
                     continue; //Do not get Playlist if it has been updated less than a day ago.
                 }
-                await UpdateMapPoolPlaylist(newMapPool, oldPool);
+                if(oldPool == null)
+                {
+                    oldPool = new PPPMapPool(newMapPool.id, newMapPool.id, MapPoolType.Custom, newMapPool.title, 0, 0, CustomPPPCurve.DummyPPPCurve());
+                    _leaderboardInfo.LsMapPools.Add(oldPool);
+                }
             }
         }
 
-        private async Task UpdateMapPoolPlaylist(HitBloqMapPool newMapPool, PPPMapPool oldPool)
+        override public async Task UpdateMapPoolDetails(PPPMapPool mapPool)
         {
-            if(oldPool != null) oldPool.LsMapPoolEntries.Clear();
+            mapPool.LsMapPoolEntries.Clear();
             bool needMoreData = true;
             int page = 0;
             while (needMoreData)
             {
-                Plugin.Log?.Error($"PPCalculatorHitBloq UpdateMapPoolPlaylist {newMapPool.title} - {page}");
-                HitBloqMapPoolDetails mapPoolDetails = await this.hitbloqapi.GetHitBloqMapPoolDetails(newMapPool.id, page);
-                if (oldPool == null)
+                if(mapPool.MapPoolType != MapPoolType.Default) //Filter out default 
                 {
-                    oldPool = new PPPMapPool(newMapPool.id, newMapPool.id, MapPoolType.Custom, newMapPool.title, mapPoolDetails.accumulation_constant, 0, new CustomPPPCurve(mapPoolDetails.cr_curve));
-                    _leaderboardInfo.LsMapPools.Add(oldPool);
+                    HitBloqMapPoolDetails mapPoolDetails = await this.hitbloqapi.GetHitBloqMapPoolDetails(mapPool.Id, page);
+                    mapPool.AccumulationConstant = mapPoolDetails.accumulation_constant;
+                    mapPool.Curve = new CustomPPPCurve(mapPoolDetails.cr_curve);
+                    if (mapPoolDetails.leaderboard_id_list.Count == 0)
+                    {
+                        needMoreData = false;
+                    }
+                    foreach (string songSearchString in mapPoolDetails.leaderboard_id_list)
+                    {
+                        mapPool.LsMapPoolEntries.Add(new PPPMapPoolEntry(songSearchString));
+                    }
+                    page++;
                 }
-                if(mapPoolDetails.leaderboard_id_list.Count == 0)
+                else
                 {
                     needMoreData = false;
                 }
-                foreach (string songSearchString in mapPoolDetails.leaderboard_id_list)
-                {
-                    oldPool.LsMapPoolEntries.Add(new PPPMapPoolEntry(songSearchString));
-                }
-                page++;
             }
         }
 

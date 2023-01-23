@@ -1,4 +1,5 @@
 ﻿using BeatSaberMarkupLanguage.FloatingScreen;
+using PPPredictor.Data.DisplayInfos;
 using PPPredictor.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -7,11 +8,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using Zenject;
 
 namespace PPPredictor.Utilities
 {
-    class PPPredictorMgr
+    class PPPredictorMgr : IInitializable, IDisposable
     {
+
         private List<IPPPredictor> _lsPPPredictor;
         private int index = 0;
         internal IPPPredictor CurrentPPPredictor;
@@ -20,6 +23,12 @@ namespace PPPredictor.Utilities
         private bool isRightArrowActive = false;
         private bool isMapPoolDropDownActive = true;
         private bool isLeaderboardNavigationActive = false;
+
+        public event EventHandler<bool> ViewActivated;
+        public event EventHandler<bool> OnDataLoading;
+        public event EventHandler<DisplaySessionInfo> OnDisplaySessionInfo;
+        public event EventHandler<DisplayPPInfo> OnDisplayPPInfo;
+        public event EventHandler OnMapPoolRefreshed;
 
         internal bool IsLeftArrowActive { get => isLeftArrowActive; }
         internal bool IsRightArrowActive { get => isRightArrowActive; }
@@ -51,14 +60,38 @@ namespace PPPredictor.Utilities
             {
                 CurrentPPPredictor = _lsPPPredictor[0];
             }
-            if (propertyChanged != null)
+            foreach (IPPPredictor pPPredictor in _lsPPPredictor)
             {
-                //Set the eventhandler (otherwise the changes go into oblivion)
-                _lsPPPredictor.ForEach(item => item.SetPropertyChangedEventHandler(propertyChanged));
+                pPPredictor.OnDataLoading += PPPredictor_OnDataLoading;
+                pPPredictor.OnDisplayPPInfo += PPPredictor_OnDisplayPPInfo;
+                pPPredictor.OnDisplaySessionInfo += PPPredictor_OnDisplaySessionInfo;
+                pPPredictor.OnMapPoolRefreshed += PPPredictor_OnMapPoolRefreshed;
             }
             CurrentPPPredictor.SetActive(true);
             SetNavigationArrowInteractivity();
         }
+
+        private void PPPredictor_OnMapPoolRefreshed(object sender, EventArgs e)
+        {
+            OnMapPoolRefreshed?.Invoke(this, null);
+        }
+
+        #region event handler
+        private void PPPredictor_OnDisplaySessionInfo(object sender, DisplaySessionInfo displaySessionInfo)
+        {
+            OnDisplaySessionInfo?.Invoke(this, displaySessionInfo);
+        }
+
+        private void PPPredictor_OnDisplayPPInfo(object sender, DisplayPPInfo displayPPInfo)
+        {
+            OnDisplayPPInfo?.Invoke(this, displayPPInfo);
+        }
+
+        private void PPPredictor_OnDataLoading(object sender, bool isDataLoading)
+        {
+            OnDataLoading?.Invoke(this, isDataLoading);
+        }
+        #endregion
 
         public void CyclePredictors(int offset)
         {
@@ -79,10 +112,8 @@ namespace PPPredictor.Utilities
             isLeftArrowActive = index > 0;
             isRightArrowActive = index < _lsPPPredictor.Count() - 1;
             isMapPoolDropDownActive = CurrentPPPredictor.MapPoolOptions.Count() > 1;
-            propertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsLeftArrowActive)));
-            propertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsRightArrowActive)));
-            propertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsLeaderboardNavigationActive)));
-            propertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsMapPoolDropDownActive)));
+            CurrentPPPredictor.CalculatePP();
+            OnMapPoolRefreshed?.Invoke(this, null);
         }
 
         public void ChangeGameplayModifiers(GameplaySetupViewController gameplaySetupViewController)
@@ -106,15 +137,6 @@ namespace PPPredictor.Utilities
             foreach (var item in _lsPPPredictor)
             {
                 item.DifficultyChanged(lvlSelectionNavigationCtrl, beatmap);
-            }
-        }
-
-        internal void SetPropertyChangedEventHandler(PropertyChangedEventHandler propertyChanged)
-        {
-            this.propertyChanged = propertyChanged;
-            foreach (var item in _lsPPPredictor)
-            {
-                item.SetPropertyChangedEventHandler(propertyChanged);
             }
         }
 
@@ -168,6 +190,15 @@ namespace PPPredictor.Utilities
             }
             return 0;
         }
+        internal string GetPPSuffixForLeaderboard(Leaderboard leaderBoardName)
+        {
+            IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());
+            if (predictor != null)
+            {
+                return predictor.PPSuffix;
+            }
+            return string.Empty;
+        }
 
         internal bool IsRanked(Leaderboard leaderBoardName)
         {
@@ -187,6 +218,28 @@ namespace PPPredictor.Utilities
                 return predictor.CalculatePPGain(pp);
             }
             return 0;
+        }
+
+        internal void ActivateView(bool activate)
+        {
+            Plugin.Log?.Error($"ActivateView '{activate}'");
+            ViewActivated?.Invoke(this, activate);
+        }
+
+        public void Initialize()
+        {
+            //throw new NotImplementedException();
+        }
+
+        public void Dispose()
+        {
+            foreach (IPPPredictor pPPredictor in _lsPPPredictor)
+            {
+                pPPredictor.OnDataLoading -= PPPredictor_OnDataLoading;
+                pPPredictor.OnDisplayPPInfo -= PPPredictor_OnDisplayPPInfo;
+                pPPredictor.OnDisplaySessionInfo -= PPPredictor_OnDisplaySessionInfo;
+                pPPredictor.OnMapPoolRefreshed -= PPPredictor_OnMapPoolRefreshed;
+            }
         }
     }
 }
