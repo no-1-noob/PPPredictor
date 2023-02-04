@@ -65,12 +65,12 @@ namespace PPPredictor.Counter
                 float lineOffset = (originalLineOffset * (scoreboardCount / 2)) + (originalLineOffset * (scoreboardCount % 2));
                 if (Plugin.ProfileInfo.IsScoreSaberEnabled && ShowCounter(Leaderboard.ScoreSaber))
                 {
-                    lsCounterInfoHolder.Add(new CounterInfoHolder(Leaderboard.ScoreSaber, Settings, "PPPredictor.Resources.LeaderBoardLogos.ScoreSaber.png", canvas, CanvasUtility, lineOffset, positionScale));
+                    lsCounterInfoHolder.Add(new CounterInfoHolder(Leaderboard.ScoreSaber, Settings, "PPPredictor.Resources.LeaderBoardLogos.ScoreSaber.png", canvas, CanvasUtility, lineOffset, positionScale, setupData.gameplayModifiers));
                     lineOffset -= originalLineOffset * 2;
                 }
                 if (Plugin.ProfileInfo.IsBeatLeaderEnabled && ShowCounter(Leaderboard.BeatLeader))
                 {
-                    lsCounterInfoHolder.Add(new CounterInfoHolder(Leaderboard.BeatLeader, Settings, "PPPredictor.Resources.LeaderBoardLogos.BeatLeader.png", canvas, CanvasUtility, lineOffset, positionScale));
+                    lsCounterInfoHolder.Add(new CounterInfoHolder(Leaderboard.BeatLeader, Settings, "PPPredictor.Resources.LeaderBoardLogos.BeatLeader.png", canvas, CanvasUtility, lineOffset, positionScale, setupData.gameplayModifiers));
                     lineOffset -= originalLineOffset * 2;
                 }
 

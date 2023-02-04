@@ -321,7 +321,7 @@ namespace PPPredictor.Utilities
         {
             _currentBeatMapInfo = await _ppCalculator.GetBeatMapInfoAsync(lvlSelectionNavigationCtrl, beatmap);
             _selectedMapSearchString = lvlSelectionNavigationCtrl.selectedBeatmapLevel is CustomBeatmapLevel selectedCustomBeatmapLevel ? _ppCalculator.CreateSeachString(Hashing.GetCustomLevelHash(selectedCustomBeatmapLevel), "SOLO" + beatmap.parentDifficultyBeatmapSet.beatmapCharacteristic.serializedName, lvlSelectionNavigationCtrl.selectedDifficultyBeatmap.difficultyRank) : string.Empty;
-            _currentSelectionStars = _ppCalculator.ApplyModifierMultiplierToStars(_currentBeatMapInfo, _gameplayModifiers);
+            _currentSelectionStars = GetModifiedStars(_gameplayModifiers);
             _maxPP = -1;
             DisplayPP();
         }
@@ -332,22 +332,26 @@ namespace PPPredictor.Utilities
             {
                 _currentBeatMapInfo = await _ppCalculator.GetBeatMapInfoAsync(lvlSelectionNavigationCtrl, lvlSelectionNavigationCtrl.selectedDifficultyBeatmap);
                 _selectedMapSearchString = lvlSelectionNavigationCtrl.selectedBeatmapLevel is CustomBeatmapLevel selectedCustomBeatmapLevel ? _ppCalculator.CreateSeachString(Hashing.GetCustomLevelHash(selectedCustomBeatmapLevel), "SOLO" + lvlSelectionNavigationCtrl.selectedDifficultyBeatmap.parentDifficultyBeatmapSet.beatmapCharacteristic.serializedName, lvlSelectionNavigationCtrl.selectedDifficultyBeatmap.difficultyRank) : string.Empty;
-                _currentSelectionStars = _ppCalculator.ApplyModifierMultiplierToStars(_currentBeatMapInfo, _gameplayModifiers);
+                _currentSelectionStars = GetModifiedStars(_gameplayModifiers);
                 _maxPP = -1;
                 DisplayPP();
             }
         }
         #endregion
-        public double CalculatePPatPercentage(double percentage, bool levelFailed = false)
+        public double CalculatePPatPercentage(double currentStars, double percentage, GameplayModifiers gameplayModifiers, bool levelFailed = false)
         {
-            double stars = _currentSelectionStars;
-            if (levelFailed) stars = _ppCalculator.ApplyModifierMultiplierToStars(_currentBeatMapInfo, _gameplayModifiers, levelFailed); //Recalculate stars for beatleader
-            return _ppCalculator.CalculatePPatPercentage(stars, percentage, levelFailed);
+            if (levelFailed) currentStars = _ppCalculator.ApplyModifierMultiplierToStars(_currentBeatMapInfo, gameplayModifiers, levelFailed); //Recalculate stars for beatleader
+            return _ppCalculator.CalculatePPatPercentage(currentStars, percentage, levelFailed);
         }
 
-        public double CalculateMaxPP()
+        public double CalculateMaxPP(double stars, GameplayModifiers gameplayModifiers)
         {
-            return CalculatePPatPercentage(100);
+            return CalculatePPatPercentage(stars, 100, gameplayModifiers);
+        }
+
+        public double GetModifiedStars(GameplayModifiers gameplayModifiers)
+        {
+            return _ppCalculator.ApplyModifierMultiplierToStars(_currentBeatMapInfo, gameplayModifiers);
         }
 
         public double CalculatePPGain(double pp)
@@ -362,8 +366,8 @@ namespace PPPredictor.Utilities
 
         public async void DisplayPP()
         {
-            if (_maxPP == -1) _maxPP = CalculateMaxPP();
-            double pp = CalculatePPatPercentage(_percentage);
+            if (_maxPP == -1) _maxPP = CalculateMaxPP(_currentSelectionStars, _gameplayModifiers);
+            double pp = CalculatePPatPercentage(_currentSelectionStars, _percentage, _gameplayModifiers);
             PPGainResult ppGainResult = _ppCalculator.GetPlayerScorePPGain(_selectedMapSearchString, pp);
             double ppGains = _ppCalculator.Zeroizer(ppGainResult.GetDisplayPPValue());
             if(_maxPP > 0 && pp >= _maxPP)
