@@ -483,6 +483,10 @@ namespace scoresaberapi
     {
         [Newtonsoft.Json.JsonProperty("difficulty", Required = Newtonsoft.Json.Required.Always)]
         public double Difficulty1 { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("gameMode", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        public string GameMode { get; set; }
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.5.2.0 (Newtonsoft.Json v11.0.0.0)")]

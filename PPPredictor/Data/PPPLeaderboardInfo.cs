@@ -13,6 +13,7 @@ namespace PPPredictor.Data
         private string _lastSelectedMapPoolId;
         private string _customLeaderboardUserId;
         private string _ppSuffix;
+        private List<PPPModifierValues> _lsModifierValues;
 
         public string LeaderboardName { get => _leaderboardName; set => _leaderboardName = value; }
         public List<PPPMapPool> LsMapPools { get => _lsMapPools; set => _lsMapPools = value; }
@@ -26,6 +27,7 @@ namespace PPPredictor.Data
         internal PPPMapPool DefaultMapPool { get => _lsMapPools.Find(x => x.MapPoolType == MapPoolType.Default); }
         public string CustomLeaderboardUserId { get => _customLeaderboardUserId; set => _customLeaderboardUserId = value; }
         public string PpSuffix { get => _ppSuffix; set => _ppSuffix = value; }
+        public List<PPPModifierValues> LsModifierValues { get => _lsModifierValues; set => _lsModifierValues = value; }
 
         public PPPLeaderboardInfo(Leaderboard leaderboard)
         {
@@ -33,6 +35,7 @@ namespace PPPredictor.Data
             this._lsMapPools = new List<PPPMapPool>();
             this._customLeaderboardUserId = string.Empty;
             this._ppSuffix = "pp";
+            this._lsModifierValues = new List<PPPModifierValues>();
 
             switch (leaderboard)
             {

@@ -213,6 +213,8 @@ namespace PPPredictor.OpenAPIs
             public int value { get; set; }
             public float? stars { get; set; }
             public int status { get; set; }
+            public string modeName { get; set; }
+            public Dictionary<string, float> modifierValues { get; set; }
         }
 
         public class BeatLeaderPlayerList

@@ -15,6 +15,7 @@ namespace PPPredictor.Utilities
         internal static FlowCoordinator _parentFlow { get; private set; }
         internal static PPPredictorFlowCoordinator _flow { get; private set; }
         private static readonly string profilePath = Path.Combine(UnityGame.UserDataPath, "PPPredictorProfileInfo.json");
+        private static int _profileInfoVersion = 1;
         internal static ProfileInfo LoadProfileInfo()
         {
             MenuButtons.instance.RegisterButton(new MenuButton("PPPredictor", "Predict PP gains", ShowSettingsFlow, true));
@@ -24,6 +25,7 @@ namespace PPPredictor.Utilities
                 try
                 {
                     info = JsonConvert.DeserializeObject<ProfileInfo>(File.ReadAllText(profilePath));
+                    if (info.ProfileInfoVersion < _profileInfoVersion) info.ResetCachedData(); //If I need to refetch all data because of datastructure changes
                 }
                 catch (Exception ex)
                 {
@@ -45,6 +47,7 @@ namespace PPPredictor.Utilities
             bool saved = true;
             try
             {
+                profile.ProfileInfoVersion = _profileInfoVersion;
                 File.WriteAllText(profilePath, JsonConvert.SerializeObject(profile, Formatting.Indented, new JsonSerializerSettings
                 {
                     NullValueHandling = NullValueHandling.Ignore

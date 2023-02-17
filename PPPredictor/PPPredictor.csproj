@@ -141,7 +141,9 @@
     <Compile Include="Data\DisplayInfos\DisplayPPInfo.cs" />
     <Compile Include="Data\DisplayInfos\DisplaySessionInfo.cs" />
     <Compile Include="Data\PPPMapPoolEntry.cs" />
+    <Compile Include="Data\PPPBeatMapInfo.cs" />
     <Compile Include="Data\PPPLeaderboardInfo.cs" />
+    <Compile Include="Data\PPPModifierValues.cs" />
     <Compile Include="Data\PPPMapPool.cs" />
     <Compile Include="Data\PPPPlayer.cs" />
     <Compile Include="Data\PPPScore.cs" />
@@ -160,6 +162,7 @@
     <Compile Include="Utilities\Enums.cs" />
     <Compile Include="Interfaces\IPPPredictor.cs" />
     <Compile Include="Utilities\MainMenuMgr.cs" />
+    <Compile Include="Utilities\ParsingUtil.cs" />
     <Compile Include="Utilities\PPCalculatorBeatLeader.cs" />
     <Compile Include="Utilities\PPCalculatorHitBloq.cs" />
     <Compile Include="Utilities\PPCalculatorNoLeaderboard.cs" />

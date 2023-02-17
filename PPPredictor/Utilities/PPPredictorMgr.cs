@@ -200,6 +200,16 @@ namespace PPPredictor.Utilities
             return string.Empty;
         }
 
+        internal double GetMaxPPForCalculator(Leaderboard leaderBoardName)
+        {
+            IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());
+            if (predictor != null)
+            {
+                return predictor.CalculateMaxPP();
+            }
+            return 0;
+        }
+
         internal bool IsRanked(Leaderboard leaderBoardName)
         {
             IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());

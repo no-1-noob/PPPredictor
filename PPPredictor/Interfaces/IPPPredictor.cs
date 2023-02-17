@@ -15,6 +15,7 @@ namespace PPPredictor.Interfaces
         void RefreshCurrentData(int fetchLength);
         void ResetDisplay(bool resetAll);
         double CalculatePPatPercentage(double percentage, bool levelFailed = false);
+        double CalculateMaxPP();
         double CalculatePPGain(double pp);
         bool IsRanked();
         void CalculatePP();

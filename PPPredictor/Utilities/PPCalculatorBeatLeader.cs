@@ -14,29 +14,13 @@ namespace PPPredictor.Utilities
     public class PPCalculatorBeatLeader : PPCalculator
     {
         private readonly OpenAPIs.beatleaderapi beatleaderapi;
-        private Dictionary<string, float> dctModifiers;
         internal static float accumulationConstant = 0.965f;
 
         public PPCalculatorBeatLeader() : base() 
         {
             playerPerPages = 50;
             beatleaderapi = new OpenAPIs.beatleaderapi();
-            GetModifiers();
             UpdateAvailableMapPools();
-        }
-
-        private async void GetModifiers()
-        {
-            try
-            {
-                //TODO: SaveModifiers? Or load by Song directy?
-                dctModifiers = (Dictionary<string, float>)await beatleaderapi.GetModifiers();
-            }
-            catch (Exception ex)
-            {
-                Plugin.Log?.Error($"PPCalculatorBeatLeader GetModifiers Error: {ex.Message}");
-                dctModifiers = new Dictionary<string, float>();
-            }
         }
 
         protected override async Task<PPPPlayer> GetPlayerInfo(long userId)
@@ -112,17 +96,17 @@ namespace PPPredictor.Utilities
             }
         }
 
-        public override async Task<double> GetStarsForBeatmapAsync(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
+        public override async Task<PPPBeatMapInfo> GetBeatMapInfoAsync(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
         {
             try
             {
                 if (lvlSelectionNavigationCtrl.selectedBeatmapLevel is CustomBeatmapLevel selectedCustomBeatmapLevel)
                 {
                     string songHash = Hashing.GetCustomLevelHash(selectedCustomBeatmapLevel);
-                    string searchString = CreateSeachString(songHash, beatmap);
+                    string searchString = CreateSeachString(songHash, "SOLO" + beatmap.parentDifficultyBeatmapSet.beatmapCharacteristic.serializedName, beatmap.difficultyRank);
                     if(_leaderboardInfo.CurrentMapPool.MapPoolType == MapPoolType.Custom && !_leaderboardInfo.CurrentMapPool.LsMapPoolEntries.Where(x => x.Searchstring == searchString).Any())
                     {
-                        return 0; //Currently selected map is not contained in selected MapPool
+                        return new PPPBeatMapInfo(0); //Currently selected map is not contained in selected MapPool
                     }
                     ShortScore cachedInfo = _leaderboardInfo.DefaultMapPool.LsLeaderboardScores?.FirstOrDefault(x => x.Searchstring == searchString);
                     bool refetchInfo = cachedInfo != null && cachedInfo.FetchTime < DateTime.Now.AddDays(-7);
@@ -135,32 +119,40 @@ namespace PPPredictor.Utilities
                             BeatLeaderDifficulty diff = song.difficulties.FirstOrDefault(x => x.value == beatmap.difficultyRank);
                             if (diff != null)
                             {
-                                _leaderboardInfo.CurrentMapPool.LsLeaderboardScores.Add(new ShortScore(searchString, diff.stars.GetValueOrDefault(), DateTime.Now));
+                                //Find or insert ModifierValueId
+                                PPPModifierValues newModifierValues = new PPPModifierValues(diff.modifierValues);
+                                int modifierValueId = _leaderboardInfo.LsModifierValues.FindIndex(x => x.Equals(newModifierValues));
+                                if(modifierValueId == -1)
+                                {
+                                    modifierValueId = _leaderboardInfo.LsModifierValues.Select(x => x.Id).DefaultIfEmpty(-1).Max() + 1;
+                                    _leaderboardInfo.LsModifierValues.Add(new PPPModifierValues(modifierValueId, diff.modifierValues));
+                                }
+                                _leaderboardInfo.CurrentMapPool.LsLeaderboardScores.Add(new ShortScore(searchString, diff.stars.GetValueOrDefault(), DateTime.Now, modifierValueId));
                                 if (diff.stars.HasValue && diff.status == (int)BeatLeaderDifficultyStatus.ranked)
                                 {
-                                    return diff.stars.Value;
+                                    return new PPPBeatMapInfo(diff.stars.Value, modifierValueId);
                                 }
                             }
                         }
                     }
                     else
                     {
-                        return cachedInfo.Stars;
+                        return new PPPBeatMapInfo(cachedInfo.Stars, cachedInfo.ModifierValuesId);
                     }
                 }
-                return 0;
+                return new PPPBeatMapInfo();
             }
             catch (Exception ex)
             {
                 Plugin.Log?.Error($"PPCalculatorBeatLeader GetStarsForBeatmapAsync Error: {ex.Message}");
-                return -1;
+                return new PPPBeatMapInfo(-1, -1);
             }
         }
 
-        public override double ApplyModifierMultiplierToStars(double baseStars, GameplayModifiers gameplayModifiers, bool levelFailed)
+        public override double ApplyModifierMultiplierToStars(PPPBeatMapInfo beatMapInfo, GameplayModifiers gameplayModifiers, bool levelFailed)
         {
             List<string> lsModifiers = ParseModifiers(gameplayModifiers);
-            return baseStars *= GenerateModifierMultiplier(lsModifiers, levelFailed);
+            return beatMapInfo.BaseStars * GenerateModifierMultiplier(lsModifiers, beatMapInfo.ModifierValueId, levelFailed);
         }
 
         private List<string> ParseModifiers(GameplayModifiers gameplayModifiers)
@@ -190,10 +182,9 @@ namespace PPPredictor.Utilities
                 Plugin.Log?.Error($"PPCalculatorBeatLeader ParseModifiers Error: {ex.Message}");
                 return new List<string>();
             }
-            
         }
 
-        private double GenerateModifierMultiplier(List<string> lsModifier, bool levelFailed)
+        private double GenerateModifierMultiplier(List<string> lsModifier, int modifierValueId, bool levelFailed)
         {
             try
             {
@@ -201,8 +192,7 @@ namespace PPPredictor.Utilities
                 foreach (string modifier in lsModifier)
                 {
                     if (!levelFailed && modifier == "NF") continue; //Ignore nofail until the map is failed in gameplay
-                    multiplier += (dctModifiers[modifier] * 2);
-                    //TODO: Why *2???
+                    multiplier += _leaderboardInfo.LsModifierValues[modifierValueId].DctModifierValues[modifier];
                 }
                 return multiplier;
             }

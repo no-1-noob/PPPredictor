@@ -24,6 +24,7 @@ namespace PPPredictor.Data
         private List<PPPPlayer> _lsPlayerRankings;
         private DateTime _dtUtcLastRefresh;
         private DateTime _dtUtcLastSessionReset;
+        private DateTimeOffset _dtLastScoreSet;
 
         public string MapPoolName { get => _mapPoolName; set => _mapPoolName = value; }
         public float AccumulationConstant { get => _accumulationConstant; set => _accumulationConstant = value; }
@@ -42,6 +43,7 @@ namespace PPPredictor.Data
         public List<PPPPlayer> LsPlayerRankings { get => _lsPlayerRankings; set => _lsPlayerRankings = value; }
         public DateTime DtUtcLastRefresh { get => _dtUtcLastRefresh; set => _dtUtcLastRefresh = value; }
         public DateTime DtUtcLastSessionReset { get => _dtUtcLastSessionReset; set => _dtUtcLastSessionReset = value; }
+        public DateTimeOffset DtLastScoreSet { get => _dtLastScoreSet; set => _dtLastScoreSet = value; }
 
         [JsonConstructor]
 
@@ -62,6 +64,7 @@ namespace PPPredictor.Data
             _mapPoolName = string.Empty;
             _accumulationConstant = 0;
             _sortIndex = -1;
+            _dtLastScoreSet = new DateTime(2000, 1, 1);
         }
 
         public PPPMapPool(string id, string playListId, MapPoolType mapPoolType, string mapPoolName, float accumulationConstant, int sortIndex, IPPPCurve curve) : this()

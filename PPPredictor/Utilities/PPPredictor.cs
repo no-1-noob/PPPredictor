@@ -16,12 +16,13 @@ namespace PPPredictor.Utilities
         internal Leaderboard leaderboardName;
         #region internal values
         private float _percentage;
-        private double _currentSelectionBaseStars;
+        private PPPBeatMapInfo _currentBeatMapInfo = new PPPBeatMapInfo();
         private double _currentSelectionStars;
         private bool _rankGainRunning = false;
         private double _lastPPGainCall = 0;
         private string _selectedMapSearchString;
         private bool _isActive = false;
+        private double _maxPP = -1;
         #endregion
 
         public string LeaderBoardName
@@ -110,16 +111,18 @@ namespace PPPredictor.Utilities
             if (gameplaySetupViewController != null && gameplaySetupViewController.gameplayModifiers != null)
             {
                 _gameplayModifiers = gameplaySetupViewController.gameplayModifiers;
-                _currentSelectionStars = _ppCalculator.ApplyModifierMultiplierToStars(_currentSelectionBaseStars, _gameplayModifiers);
+                _currentSelectionStars = _ppCalculator.ApplyModifierMultiplierToStars(_currentBeatMapInfo, _gameplayModifiers);
+                _maxPP = -1;
                 CalculatePP();
             }
         }
 
         public async void DifficultyChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
         {
-            _currentSelectionBaseStars = await _ppCalculator.GetStarsForBeatmapAsync(lvlSelectionNavigationCtrl, beatmap);
-            _selectedMapSearchString = lvlSelectionNavigationCtrl.selectedBeatmapLevel is CustomBeatmapLevel selectedCustomBeatmapLevel ? _ppCalculator.CreateSeachString(Hashing.GetCustomLevelHash(selectedCustomBeatmapLevel), lvlSelectionNavigationCtrl.selectedDifficultyBeatmap) : string.Empty;
-            _currentSelectionStars = _ppCalculator.ApplyModifierMultiplierToStars(_currentSelectionBaseStars, _gameplayModifiers);
+            _currentBeatMapInfo = await _ppCalculator.GetBeatMapInfoAsync(lvlSelectionNavigationCtrl, beatmap);
+            _selectedMapSearchString = lvlSelectionNavigationCtrl.selectedBeatmapLevel is CustomBeatmapLevel selectedCustomBeatmapLevel ? _ppCalculator.CreateSeachString(Hashing.GetCustomLevelHash(selectedCustomBeatmapLevel), "SOLO" + beatmap.parentDifficultyBeatmapSet.beatmapCharacteristic.serializedName, lvlSelectionNavigationCtrl.selectedDifficultyBeatmap.difficultyRank) : string.Empty;
+            _currentSelectionStars = _ppCalculator.ApplyModifierMultiplierToStars(_currentBeatMapInfo, _gameplayModifiers);
+            _maxPP = -1;
             CalculatePP();
         }
 
@@ -127,9 +130,10 @@ namespace PPPredictor.Utilities
         {
             if (contentType == StandardLevelDetailViewController.ContentType.OwnedAndReady)
             {
-                _currentSelectionBaseStars = await _ppCalculator.GetStarsForBeatmapAsync(lvlSelectionNavigationCtrl, lvlSelectionNavigationCtrl.selectedDifficultyBeatmap);
-                _selectedMapSearchString = lvlSelectionNavigationCtrl.selectedBeatmapLevel is CustomBeatmapLevel selectedCustomBeatmapLevel ? _ppCalculator.CreateSeachString(Hashing.GetCustomLevelHash(selectedCustomBeatmapLevel), lvlSelectionNavigationCtrl.selectedDifficultyBeatmap) : string.Empty;
-                _currentSelectionStars = _ppCalculator.ApplyModifierMultiplierToStars(_currentSelectionBaseStars, _gameplayModifiers);
+                _currentBeatMapInfo = await _ppCalculator.GetBeatMapInfoAsync(lvlSelectionNavigationCtrl, lvlSelectionNavigationCtrl.selectedDifficultyBeatmap);
+                _selectedMapSearchString = lvlSelectionNavigationCtrl.selectedBeatmapLevel is CustomBeatmapLevel selectedCustomBeatmapLevel ? _ppCalculator.CreateSeachString(Hashing.GetCustomLevelHash(selectedCustomBeatmapLevel), "SOLO" + lvlSelectionNavigationCtrl.selectedDifficultyBeatmap.parentDifficultyBeatmapSet.beatmapCharacteristic.serializedName, lvlSelectionNavigationCtrl.selectedDifficultyBeatmap.difficultyRank) : string.Empty;
+                _currentSelectionStars = _ppCalculator.ApplyModifierMultiplierToStars(_currentBeatMapInfo, _gameplayModifiers);
+                _maxPP = -1;
                 CalculatePP();
             }
         }
@@ -156,8 +160,13 @@ namespace PPPredictor.Utilities
         public double CalculatePPatPercentage(double percentage, bool levelFailed = false)
         {
             double stars = _currentSelectionStars;
-            if (levelFailed) stars = _ppCalculator.ApplyModifierMultiplierToStars(_currentSelectionBaseStars, _gameplayModifiers, levelFailed); //Recalculate stars for beatleader
+            if (levelFailed) stars = _ppCalculator.ApplyModifierMultiplierToStars(_currentBeatMapInfo, _gameplayModifiers, levelFailed); //Recalculate stars for beatleader
             return _ppCalculator.CalculatePPatPercentage(stars, percentage, levelFailed);
+        }
+
+        public double CalculateMaxPP()
+        {
+            return CalculatePPatPercentage(100);
         }
 
         public double CalculatePPGain(double pp)
@@ -167,16 +176,24 @@ namespace PPPredictor.Utilities
 
         public bool IsRanked()
         {
-            return _currentSelectionBaseStars > 0;
+            return _currentBeatMapInfo.BaseStars > 0;
         }
 
         public async void CalculatePP()
         {
+            if (_maxPP == -1) _maxPP = CalculateMaxPP();
             double pp = CalculatePPatPercentage(_percentage);
             PPGainResult ppGainResult = _ppCalculator.GetPlayerScorePPGain(_selectedMapSearchString, pp);
             double ppGains = _ppCalculator.Zeroizer(ppGainResult.GetDisplayPPValue());
             DisplayPPInfo ppDisplay = new DisplayPPInfo();
-            ppDisplay.PPRaw = $"{pp:F2}{PPSuffix}";
+            if (_maxPP > 0 && pp >= _maxPP)
+            {
+                ppDisplay.PPRaw = $"<color=\"yellow\">{pp:F2}{PPSuffix}</color>";
+            }
+            else
+            {
+                ppDisplay.PPRaw = $"{pp:F2}{PPSuffix}";
+            }
             ppDisplay.PPGain = $"{ppGains:+0.##;-0.##;0}{PPSuffix}";
             ppDisplay.PPGainDiffColor = DisplayHelper.GetDisplayColor(ppGains, false, true);
 

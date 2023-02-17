@@ -10,18 +10,18 @@ using System.Threading.Tasks;
 
 namespace PPPredictor.Utilities
 {
-    class PPCalculatorHitBloq : PPCalculator
+    public class PPCalculatorHitBloq : PPCalculator
     {
         private readonly hitbloqapi hitbloqapi;
         //Dctionaries defined like here: https://github.com/DaFluffyPotato/hitbloq/blob/1e7bf18f92f1146bf8da2f24769aea072542b6e5/general.py#L24
-        private readonly Dictionary<string, string> dctDiffShorten = new Dictionary<string, string>{
+        private static readonly Dictionary<string, string> dctDiffShorten = new Dictionary<string, string>{
             { "ExpertPlus", "ep" },
             { "Expert", "ex" },
             { "Hard", "h" },
             { "Normal", "n" },
             { "Easy", "e" }
         };
-        private readonly Dictionary<string, string> dctCharShorten = new Dictionary<string, string>
+        private static readonly Dictionary<string, string> dctCharShorten = new Dictionary<string, string>
         {
             { "SoloStandard", "s" },
             { "Solo90Degree", "s90" },
@@ -34,6 +34,8 @@ namespace PPPredictor.Utilities
             { "SoloHorizontalStandard", "shs" },
             { "SoloVerticalStandard", "svs" },
         };
+        private static Dictionary<string, string> dctCharLengthen { get => dctCharShorten.ToDictionary(x => x.Value, x => x.Key); }
+        private static Dictionary<string, string> dctDiffLengthen { get => dctDiffShorten.ToDictionary(x => x.Value, x => x.Key); }
         public PPCalculatorHitBloq() : base()
         {
             playerPerPages = 10;
@@ -42,12 +44,12 @@ namespace PPPredictor.Utilities
             UpdateAvailableMapPools(); //TODO: implement for all?
         }
 
-        public override double ApplyModifierMultiplierToStars(double baseStars, GameplayModifiers gameplayModifiers, bool levelFailed = false)
+        public override double ApplyModifierMultiplierToStars(PPPBeatMapInfo beatMapInfo, GameplayModifiers gameplayModifiers, bool levelFailed = false)
         {
-            return baseStars;
+            return beatMapInfo.BaseStars;
         }
 
-        public override async Task<double> GetStarsForBeatmapAsync(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
+        public override async Task<PPPBeatMapInfo> GetBeatMapInfoAsync(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
         {
             try
             {
@@ -57,7 +59,7 @@ namespace PPPredictor.Utilities
                     string searchString = CreateSeachString(songHash, beatmap);
                     if (_leaderboardInfo.CurrentMapPool.MapPoolType == MapPoolType.Custom && !_leaderboardInfo.CurrentMapPool.LsMapPoolEntries.Where(x => x.Searchstring == searchString).Any())
                     {
-                        return 0; //Currently selected map is not contained in selected MapPool
+                        return new PPPBeatMapInfo(); //Currently selected map is not contained in selected MapPool
                     }
                     ShortScore cachedInfo = _leaderboardInfo.CurrentMapPool.LsLeaderboardScores?.FirstOrDefault(x => x.Searchstring.ToUpper() == searchString.ToUpper());
                     bool refetchInfo = cachedInfo != null && cachedInfo.FetchTime < DateTime.Now.AddDays(-7);
@@ -71,21 +73,21 @@ namespace PPPredictor.Utilities
                             {
                                 Plugin.Log?.Error($"GetStarsForBeatmapAsync Step GetNew Stars from backend: {stars}");
                                 _leaderboardInfo.CurrentMapPool.LsLeaderboardScores.Add(new ShortScore(searchString, stars, DateTime.Now));
-                                return stars;
+                                return new PPPBeatMapInfo(stars);
                             }
                         }
                     }
                     else
                     {
-                        return cachedInfo.Stars;
+                        return new PPPBeatMapInfo(cachedInfo.Stars);
                     }
                 }
-                return 0;
+                return new PPPBeatMapInfo();
             }
             catch (Exception ex)
             {
                 Plugin.Log?.Error($"PPCalculatorBeatLeader PPCalculatorHitBloq Error: {ex.Message}");
-                return -1;
+                return new PPPBeatMapInfo(-1);
             }
         }
 
@@ -169,7 +171,7 @@ namespace PPPredictor.Utilities
                 {
                     continue; //Do not get Playlist if it has been updated less than a day ago.
                 }
-                if(oldPool == null)
+                if (oldPool == null)
                 {
                     oldPool = new PPPMapPool(newMapPool.id, newMapPool.id, MapPoolType.Custom, newMapPool.title, 0, 0, CustomPPPCurve.DummyPPPCurve());
                     _leaderboardInfo.LsMapPools.Add(oldPool);
@@ -184,7 +186,7 @@ namespace PPPredictor.Utilities
             int page = 0;
             while (needMoreData)
             {
-                if(mapPool.MapPoolType != MapPoolType.Default) //Filter out default 
+                if (mapPool.MapPoolType != MapPoolType.Default) //Filter out default 
                 {
                     HitBloqMapPoolDetails mapPoolDetails = await this.hitbloqapi.GetHitBloqMapPoolDetails(mapPool.Id, page);
                     mapPool.AccumulationConstant = mapPoolDetails.accumulation_constant;
@@ -224,13 +226,38 @@ namespace PPPredictor.Utilities
                     string retVal = $"{hash}_{diff}_{chara}".ToUpper();
                     return retVal;
                 }
-                
+
             }
             catch (Exception ex)
             {
                 Plugin.Log?.Error($"PPCalculatorHitBloq ParseMapSearchStringForGetPlayerScorePPGain '{searchString}' Error: {ex} ");
             }
             return string.Empty;
+        }
+
+        public static (string, string, string) ParseHashDiffAndMode(string input)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(input))
+                {
+                    string[] arrEntries = input.Split('_');
+                    if (arrEntries.Count() == 3)
+                    {
+                        string hash = arrEntries[0];
+                        string diff = dctDiffLengthen[arrEntries[1]];
+                        string mode = dctCharLengthen[arrEntries[2]];
+                        return (hash, diff, mode);
+                    }
+                    return (string.Empty, string.Empty, string.Empty);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Plugin.Log?.Error($"PPCalculatorHitBloq ParseMapSearchStringForGetPlayerScorePPGain '{input}' Error: {ex} ");
+            }
+            return (string.Empty, string.Empty, string.Empty);
         }
     }
 }
