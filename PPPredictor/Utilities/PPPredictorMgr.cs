@@ -181,12 +181,12 @@ namespace PPPredictor.Utilities
             }
         }
 
-        internal double GetPPAtPercentageForCalculator(Leaderboard leaderBoardName, double percentage, bool levelFailed)
+        internal double GetPPAtPercentageForCalculator(Leaderboard leaderBoardName, double percentage, bool levelFailed, double stars, GameplayModifiers gameplayModifiers)
         {
             IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());
             if (predictor != null)
             {
-                return predictor.CalculatePPatPercentage(percentage, levelFailed);
+                return predictor.CalculatePPatPercentage(stars, percentage, gameplayModifiers, levelFailed);
             }
             return 0;
         }
@@ -200,12 +200,22 @@ namespace PPPredictor.Utilities
             return string.Empty;
         }
 
-        internal double GetMaxPPForCalculator(Leaderboard leaderBoardName)
+        internal double GetMaxPPForCalculator(Leaderboard leaderBoardName, double stars, GameplayModifiers gameplayModifiers)
         {
             IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());
             if (predictor != null)
             {
-                return predictor.CalculateMaxPP();
+                return predictor.CalculateMaxPP(stars, gameplayModifiers);
+            }
+            return 0;
+        }
+
+        internal double GetModifiedStarsForCalculator(Leaderboard leaderBoardName, GameplayModifiers gameplayModifiers)
+        {
+            IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());
+            if (predictor != null)
+            {
+                return predictor.GetModifiedStars(gameplayModifiers);
             }
             return 0;
         }

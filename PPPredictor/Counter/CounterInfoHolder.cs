@@ -22,12 +22,14 @@ namespace PPPredictor.Counter
         private readonly Leaderboard leaderboard;
         private readonly CustomConfigModel settings;
         private readonly CanvasUtility canvasUtility;
+        private GameplayModifiers gameplayModifiers;
+        private double modifiedStars;
         private float positionScale;
         private double maxPP = -1;
         private PPPredictorMgr ppPredictorMgr;
         private readonly string ppSuffix;
 
-        public CounterInfoHolder(Leaderboard leaderboard, CustomConfigModel settings, PPPredictorMgr ppPredictorMgr, string iconPath, Canvas canvas, CanvasUtility canvasUtility, float lineOffset, float positionScale) //CHECK WHEN NO C+ is installed??
+        public CounterInfoHolder(Leaderboard leaderboard, CustomConfigModel settings, PPPredictorMgr ppPredictorMgr, string iconPath, Canvas canvas, CanvasUtility canvasUtility, float lineOffset, float positionScale, GameplayModifiers gameplayModifiers) //CHECK WHEN NO C+ is installed??
         {
             this.leaderboard = leaderboard;
             this.settings = settings;
@@ -65,6 +67,8 @@ namespace PPPredictor.Counter
             {
                 icon = CreateIcon(canvas, iconPath, new Vector3((-1f + centerOffset) * positionScaleFactor, lineOffset, 0), Math.Abs(lineOffset));
             }
+            this.gameplayModifiers = gameplayModifiers;
+            modifiedStars = ppPredictorMgr.GetModifiedStarsForCalculator(leaderboard, gameplayModifiers);
             ppSuffix = ppPredictorMgr.GetPPSuffixForLeaderboard(leaderboard);
         }
 
@@ -105,10 +109,10 @@ namespace PPPredictor.Counter
             if (showInfo)
             {
                 if (Plugin.ProfileInfo.CounterUseIcons) icon.enabled = true;
-                double pp = ppPredictorMgr.GetPPAtPercentageForCalculator(leaderboard, percentage, levelFailed);
+                double pp = ppPredictorMgr.GetPPAtPercentageForCalculator(leaderboard, percentage, levelFailed, modifiedStars, gameplayModifiers);
                 double ppGain = Math.Round(ppPredictorMgr.GetPPGainForCalculator(leaderboard, pp), 2);
 
-                if (maxPP == -1) maxPP = ppPredictorMgr.GetMaxPPForCalculator(leaderboard);
+                if (maxPP == -1) maxPP = ppPredictorMgr.GetMaxPPForCalculator(leaderboard, modifiedStars, gameplayModifiers);
 
                 string maxPPReachedPrefix = string.Empty;
                 string maxPPReachedSuffix = string.Empty;
