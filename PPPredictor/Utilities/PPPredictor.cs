@@ -32,6 +32,10 @@ namespace PPPredictor.Utilities
                 return _leaderboardInfo.LeaderboardName;
             }
         }
+        public string LeaderBoardIcon
+        {
+            get { return _leaderboardInfo.LeaderboardIcon; }
+        }
 
         internal PPPLeaderboardInfo _leaderboardInfo;
         internal PPCalculator _ppCalculator;

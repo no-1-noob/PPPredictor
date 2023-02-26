@@ -371,6 +371,11 @@ namespace PPPredictor.UI.ViewController
             }
         }
 #pragma warning restore IDE0051 // Remove unused private members
+        [UIValue("leaderBoardIcon")]
+        internal string LeaderBoardIcon
+        {
+            get { return this.ppPredictorMgr.CurrentPPPredictor.LeaderBoardIcon; }
+        }
 #pragma warning disable IDE0051 // Remove unused private members
         [UIValue("isLeftArrowActive")]
         private bool IsLeftArrowActive
@@ -533,6 +538,7 @@ namespace PPPredictor.UI.ViewController
         private void UpdateLeaderBoardDisplay()
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LeaderBoardName)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LeaderBoardIcon)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MapPoolOptions)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentMapPool)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsLeftArrowActive)));

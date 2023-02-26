@@ -27,6 +27,7 @@ namespace PPPredictor.Interfaces
         event EventHandler OnMapPoolRefreshed;
         float Percentage { get; set; }
         string LeaderBoardName { get; }
+        string LeaderBoardIcon { get; }
         List<object> MapPoolOptions { get; }
         object CurrentMapPool { get; set; }
         string PPSuffix { get; }

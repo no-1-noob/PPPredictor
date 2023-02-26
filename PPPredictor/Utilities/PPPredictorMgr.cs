@@ -240,10 +240,30 @@ namespace PPPredictor.Utilities
             return 0;
         }
 
+        internal string GetLeaderboardIcon(Leaderboard leaderBoardName)
+        {
+            IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());
+            if (predictor != null)
+            {
+                return predictor.LeaderBoardIcon;
+            }
+            return string.Empty;
+        }
+
         internal void ActivateView(bool activate)
         {
             Plugin.Log?.Error($"ActivateView '{activate}'");
             ViewActivated?.Invoke(this, activate);
+        }
+
+        internal List<object> GetMapPoolsFromLeaderboard(Leaderboard leaderBoardName)
+        {
+            IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());
+            if (predictor != null)
+            {
+                return predictor.MapPoolOptions;
+            }
+            return new List<object>();
         }
 
         public void Initialize()

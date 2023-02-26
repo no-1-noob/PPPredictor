@@ -41,15 +41,20 @@
     </vertical>
   <vertical vertical-fit='PreferredSize' preferred-width='60' bg='panel-top' pad-top='1' pad-bottom='1'>
     <horizontal horizontal-fit='PreferredSize' pad-left='0' align='Left' child-align='MiddleLeft' min-height='8'>
-      <text text='~leaderBoardName' italics='true' align='Left' font-size='4' />
+      <vertical vertical-fit='PreferredSize' pad-right='1' pad-bottom='1'>
+        <image src='~leaderBoardIcon' preserve-aspect='true' preferred-width='4' min-width='4' preferred-height='3' min-height='3' pad-right='10'></image>
+      </vertical>
+      <vertical vertical-fit='PreferredSize'>
+        <text text='~leaderBoardName' italics='true' align='Left' font-size='4' />
+      </vertical>
     </horizontal>
     <horizontal horizontal-fit='PreferredSize' pad-left='0' align='Left' child-align='MiddleLeft' min-height='8'>
-      <dropdown-list-setting id='dropdown-map-pools' text='' value='current-map-pool' choices='map-pool-options' apply-on-change='true' interactable='~isMapPoolDropDownActive' size-delta-x='50' anchor-pos-x='-15'/>
+      <dropdown-list-setting id='dropdown-map-pools' text='' value='current-map-pool' choices='map-pool-options' apply-on-change='true' interactable='~isMapPoolDropDownActive' size-delta-x='55' anchor-pos-x='-18'/>
     </horizontal>
-    <horizontal horizontal-fit='PreferredSize' align='Left' ignore-layout='true' pad-right='40' pad-top='-4'>
+    <horizontal horizontal-fit='PreferredSize' align='Left' ignore-layout='true' pad-right='46' pad-top='-4'>
       <button text="←" hover-hint='Previous leaderboard' on-click='arrow-prev-leaderboard-clicked' min-width='6' pref-height='8' interactable='~isLeftArrowActive' active='~isLeaderboardNavigationActive'/>
     </horizontal>
-    <horizontal horizontal-fit='PreferredSize' align='Left' ignore-layout='true' pad-left='40' pad-top='-4'>
+    <horizontal horizontal-fit='PreferredSize' align='Left' ignore-layout='true' pad-left='49' pad-top='-4'>
       <button text="→" hover-hint='Next leaderboard' on-click='arrow-next-leaderboard-clicked' min-width='6' pref-height='8' interactable='~isRightArrowActive' active='~isLeaderboardNavigationActive'/>
     </horizontal>
   </vertical>
