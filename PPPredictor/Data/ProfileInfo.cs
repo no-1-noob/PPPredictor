@@ -26,6 +26,7 @@ namespace PPPredictor.Data
         private DateTime _dtLastVersionCheck;
         private bool _isVersionCheckEnabled;
         private int _profileInfoVersion;
+        private int _selectedTab;
 
         private bool _isScoreSaberEnabled;
         private bool _isBeatLeaderEnabled;
@@ -56,6 +57,7 @@ namespace PPPredictor.Data
             PpGainCalculationType = PPGainCalculationType.Weighted;
             RawPPLossHighlightThreshold = -10;
             ProfileInfoVersion = 0;
+            SelectedTab = 0;
         }
 
         internal void ResetCachedData()
@@ -95,5 +97,6 @@ namespace PPPredictor.Data
         public CounterDisplayType CounterDisplayType { get => _counterDisplayType; set => _counterDisplayType = value; }
         public int ProfileInfoVersion { get => _profileInfoVersion; set => _profileInfoVersion = value; }
         public bool IsHitBloqEnabled { get => _isHitBloqEnabled; set => _isHitBloqEnabled = value; }
+        public int SelectedTab { get => _selectedTab; set => _selectedTab = value; }
     }
 }

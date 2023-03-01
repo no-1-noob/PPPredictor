@@ -42,6 +42,9 @@
     <DisableZipRelease>True</DisableZipRelease>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>$(GameDirectory)\Libs\0Harmony.dll</HintPath>
+    </Reference>
     <Reference Include="BeatmapCore">
       <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\BeatmapCore.dll</HintPath>
     </Reference>

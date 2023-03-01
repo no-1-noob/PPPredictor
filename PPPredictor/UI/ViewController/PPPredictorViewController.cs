@@ -1,8 +1,10 @@
 ﻿using BeatSaberMarkupLanguage;
 using BeatSaberMarkupLanguage.Attributes;
+using BeatSaberMarkupLanguage.Components;
 using BeatSaberMarkupLanguage.Components.Settings;
 using BeatSaberMarkupLanguage.FloatingScreen;
 using BeatSaberMarkupLanguage.Parser;
+using HMUI;
 using PPPredictor.Data;
 using PPPredictor.Data.Curve;
 using PPPredictor.Data.DisplayInfos;
@@ -14,6 +16,8 @@ using System.Diagnostics;
 using System.Reflection;
 using UnityEngine;
 using Zenject;
+using HarmonyLib;
+using System.Threading.Tasks;
 
 namespace PPPredictor.UI.ViewController
 {
@@ -95,6 +99,7 @@ namespace PPPredictor.UI.ViewController
         {
             floatingScreen.HandleReleased -= OnScreenHandleReleased;
             ppPredictorMgr.ViewActivated -= PpPredictorMgr_ViewActivated;
+            if (tabSelector) tabSelector.textSegmentedControl.didSelectCellEvent -= OnSelectedCellEventChanged;
             Plugin.pppViewController = null;
         }
 
@@ -108,6 +113,10 @@ namespace PPPredictor.UI.ViewController
             DisplayInitialPercentages();
             this.ppPredictorMgr.ResetDisplay(false);
             CheckVersion();
+            if (tabSelector)
+            {
+                tabSelector.textSegmentedControl.didSelectCellEvent += OnSelectedCellEventChanged;
+            }
         }
 
 #pragma warning disable CS0649 // Field is never assigned to, and will always have its default value null
@@ -115,6 +124,8 @@ namespace PPPredictor.UI.ViewController
         [UIComponent("sliderFine")]
         private readonly SliderSetting sliderFine;
 #pragma warning restore CS0649 // Field is never assigned to, and will always have its default value null
+        [UIComponent("tabSelector")]
+        private readonly TabSelector tabSelector;
         [UIComponent("dropdown-map-pools")]
         private readonly DropDownListSetting dropDownMapPools;
         #endregion
@@ -465,7 +476,23 @@ namespace PPPredictor.UI.ViewController
         private void PpPredictorMgr_ViewActivated(object sender, bool active)
         {
             Plugin.Log?.Error($"PpPredictorMgr_ViewActivated {active}");
+            RefreshTabSelection();
             floatingScreen.gameObject.SetActive(active);
+        }
+
+        private async void RefreshTabSelection()
+        {
+            await Task.Delay(100);
+            if(tabSelector != null)
+            {
+                tabSelector.textSegmentedControl.SelectCellWithNumber(Plugin.ProfileInfo.SelectedTab);
+                AccessTools.Method(typeof(TabSelector), "TabSelected").Invoke(tabSelector, new object[] { tabSelector.textSegmentedControl, Plugin.ProfileInfo.SelectedTab });
+            }
+        }
+
+        private void OnSelectedCellEventChanged(SegmentedControl seg, int index)
+        {
+            Plugin.ProfileInfo.SelectedTab = index;
         }
 
         private void DisplayInitialPercentages()
