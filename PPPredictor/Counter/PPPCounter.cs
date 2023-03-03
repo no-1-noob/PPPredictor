@@ -66,17 +66,17 @@ namespace PPPredictor.Counter
                 float lineOffset = (originalLineOffset * (scoreboardCount / 2)) + (originalLineOffset * (scoreboardCount % 2));
                 if (Plugin.ProfileInfo.IsScoreSaberEnabled && ShowCounter(Leaderboard.ScoreSaber))
                 {
-                    lsCounterInfoHolder.Add(new CounterInfoHolder(Leaderboard.ScoreSaber, Settings, ppPredictorMgr, canvas, CanvasUtility, lineOffset, positionScale, setupData.gameplayModifiers));
+                    lsCounterInfoHolder.Add(new CounterInfoHolder(Leaderboard.ScoreSaber, Settings, ppPredictorMgr, canvas, CanvasUtility, lineOffset, originalLineOffset, positionScale, setupData.gameplayModifiers));
                     lineOffset -= originalLineOffset * 2;
                 }
                 if (Plugin.ProfileInfo.IsBeatLeaderEnabled && ShowCounter(Leaderboard.BeatLeader))
                 {
-                    lsCounterInfoHolder.Add(new CounterInfoHolder(Leaderboard.BeatLeader, Settings, ppPredictorMgr, canvas, CanvasUtility, lineOffset, positionScale, setupData.gameplayModifiers));
+                    lsCounterInfoHolder.Add(new CounterInfoHolder(Leaderboard.BeatLeader, Settings, ppPredictorMgr, canvas, CanvasUtility, lineOffset, originalLineOffset, positionScale, setupData.gameplayModifiers));
                     lineOffset -= originalLineOffset * 2;
                 }
                 if (Plugin.ProfileInfo.IsHitBloqEnabled && ShowCounter(Leaderboard.HitBloq))
                 {
-                    lsCounterInfoHolder.Add(new CounterInfoHolder(Leaderboard.HitBloq, Settings, ppPredictorMgr, canvas, CanvasUtility, lineOffset, positionScale, setupData.gameplayModifiers));
+                    lsCounterInfoHolder.Add(new CounterInfoHolder(Leaderboard.HitBloq, Settings, ppPredictorMgr, canvas, CanvasUtility, lineOffset, originalLineOffset, positionScale, setupData.gameplayModifiers));
                     lineOffset -= originalLineOffset * 2;
                 }
 

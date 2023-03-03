@@ -11,6 +11,7 @@
     <text text='Leaderboards' italics='true' align='Center' font-size='4' />
     <bool-setting text='ScoreSaber enabled' value='scoresaber-enabled' bind-value='true' apply-on-change='true'></bool-setting>
     <bool-setting text='BeatLeader enabled' value='beatleader-enabled' bind-value='true' apply-on-change='true'></bool-setting>
+    <bool-setting text='Hitbloq enabled' value='hitbloq-enabled' bind-value='true' apply-on-change='true'></bool-setting>
     <text text='Counter' italics='true' align='Center' font-size='4' />
     <dropdown-list-setting text='Scoring type' value='counter-scoring-type' choices='counter-scoring-type-options' bind-value='true' apply-on-change='true'/>
     <list-setting text='Display type' value='counter-display-type' choices='counter-display-type-options' bind-value='true' apply-on-change='true' rich-text='true' font-align='Left' word-wrapping='false'/>

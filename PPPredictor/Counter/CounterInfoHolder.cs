@@ -29,7 +29,7 @@ namespace PPPredictor.Counter
         private PPPredictorMgr ppPredictorMgr;
         private readonly string ppSuffix;
 
-        public CounterInfoHolder(Leaderboard leaderboard, CustomConfigModel settings, PPPredictorMgr ppPredictorMgr, Canvas canvas, CanvasUtility canvasUtility, float lineOffset, float positionScale, GameplayModifiers gameplayModifiers) //CHECK WHEN NO C+ is installed??
+        public CounterInfoHolder(Leaderboard leaderboard, CustomConfigModel settings, PPPredictorMgr ppPredictorMgr, Canvas canvas, CanvasUtility canvasUtility, float lineOffset, float offsetByLine, float positionScale, GameplayModifiers gameplayModifiers) //CHECK WHEN NO C+ is installed??
         {
             this.leaderboard = leaderboard;
             this.settings = settings;
@@ -66,7 +66,7 @@ namespace PPPredictor.Counter
             string iconPath = ppPredictorMgr.GetLeaderboardIcon(leaderboard);
             if (useIcon)
             {
-                icon = CreateIcon(canvas, iconPath, new Vector3((-1f + centerOffset) * positionScaleFactor, lineOffset, 0), Math.Abs(lineOffset));
+                icon = CreateIcon(canvas, iconPath, new Vector3((-1f + centerOffset) * positionScaleFactor, lineOffset, 0), Math.Abs(offsetByLine));
             }
             this.gameplayModifiers = gameplayModifiers;
             modifiedStars = ppPredictorMgr.GetModifiedStarsForCalculator(leaderboard, gameplayModifiers);

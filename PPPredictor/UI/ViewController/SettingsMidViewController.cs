@@ -119,6 +119,16 @@ namespace PPPredictor.UI.ViewController
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(BeatLeaderEnabled)));
             }
         }
+        [UIValue("hitbloq-enabled")]
+        public bool HitbloqEnabled
+        {
+            get => Plugin.ProfileInfo.IsHitBloqEnabled;
+            set
+            {
+                Plugin.ProfileInfo.IsHitBloqEnabled = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HitbloqEnabled)));
+            }
+        }
 
         [UIValue("display-session-values")]
         public bool DisplaySessionValues
@@ -229,6 +239,7 @@ namespace PPPredictor.UI.ViewController
             VersionCheckEnabled = Plugin.ProfileInfo.IsVersionCheckEnabled;
             ScoreSaberEnabled = Plugin.ProfileInfo.IsScoreSaberEnabled;
             BeatLeaderEnabled = Plugin.ProfileInfo.IsBeatLeaderEnabled;
+            HitbloqEnabled = Plugin.ProfileInfo.IsHitBloqEnabled;
             GeneralPPGainCalculation = Plugin.ProfileInfo.PpGainCalculationType.ToString();
             GeneralRawPPLossHighlightThreshold = Plugin.ProfileInfo.RawPPLossHighlightThreshold;
         }

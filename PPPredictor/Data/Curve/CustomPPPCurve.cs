@@ -27,7 +27,7 @@ namespace PPPredictor.Data.Curve
         {
             //TODO:  Hitbloq base_curve
             arrPPCurve = new double[crCurve.points.Count, 2];
-            switch (crCurve.type)
+            switch (crCurve.type?.ToLower())
             {
                 case "linear":
                     this.curveType = CurveType.Linear;

@@ -48,7 +48,7 @@ namespace PPPredictor.Data
             var (hash, diff, mode) = PPCalculatorHitBloq.ParseHashDiffAndMode(playerScore.song_id);
             songHash = hash;
             difficulty = ParsingUtil.ParseDifficultyNameToInt(diff);
-            gameMode = "Solo" + mode;
+            gameMode = mode;
         }
     }
 }

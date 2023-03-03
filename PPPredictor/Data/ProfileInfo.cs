@@ -92,11 +92,11 @@ namespace PPPredictor.Data
         public bool IsVersionCheckEnabled { get => _isVersionCheckEnabled; set => _isVersionCheckEnabled = value; }
         public bool IsScoreSaberEnabled { get => _isScoreSaberEnabled; set => _isScoreSaberEnabled = value; }
         public bool IsBeatLeaderEnabled { get => _isBeatLeaderEnabled; set => _isBeatLeaderEnabled = value; }
+        public bool IsHitBloqEnabled { get => _isHitBloqEnabled; set => _isHitBloqEnabled = value; }
         public PPGainCalculationType PpGainCalculationType { get => _ppGainCalculationType; set => _ppGainCalculationType = value; }
         public int RawPPLossHighlightThreshold { get => _rawPPLossHighlightThreshold; set => _rawPPLossHighlightThreshold = value; }
         public CounterDisplayType CounterDisplayType { get => _counterDisplayType; set => _counterDisplayType = value; }
         public int ProfileInfoVersion { get => _profileInfoVersion; set => _profileInfoVersion = value; }
-        public bool IsHitBloqEnabled { get => _isHitBloqEnabled; set => _isHitBloqEnabled = value; }
         public int SelectedTab { get => _selectedTab; set => _selectedTab = value; }
     }
 }

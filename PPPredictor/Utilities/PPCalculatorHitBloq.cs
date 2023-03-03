@@ -165,7 +165,6 @@ namespace PPPredictor.Utilities
             foreach (HitBloqMapPool newMapPool in hbMapPool)
             {
                 PPPMapPool oldPool = _leaderboardInfo.LsMapPools.Find(x => x.Id == newMapPool.id);
-                if (newMapPool.id != "poodles") continue; //Ignore all other than poodles for now
                 Plugin.Log?.Error($"PPCalculatorHitBloq UpdateAvailableMapPools Step1 {newMapPool.id}");
                 if (oldPool != null && DateTime.UtcNow.AddDays(-1) < oldPool.DtUtcLastRefresh)
                 {
@@ -177,6 +176,7 @@ namespace PPPredictor.Utilities
                     _leaderboardInfo.LsMapPools.Add(oldPool);
                 }
             }
+            _leaderboardInfo.LsMapPools = _leaderboardInfo.LsMapPools.OrderBy(x => x.MapPoolType).ThenBy(x => x.MapPoolName).ToList();
         }
 
         override public async Task UpdateMapPoolDetails(PPPMapPool mapPool)
@@ -213,28 +213,6 @@ namespace PPPredictor.Utilities
             return $"{hash}|_{beatmap.difficulty}_Solo{beatmap.parentDifficultyBeatmapSet.beatmapCharacteristic.serializedName}";
         }
 
-        public override string ParseMapSearchStringForGetPlayerScorePPGain(string searchString)
-        {
-            try
-            {
-                if (!string.IsNullOrEmpty(searchString))
-                {
-                    string hash = searchString.Split('|')[0];
-                    string diffAndChar = searchString.Split('|')[1];
-                    string diff = dctDiffShorten[diffAndChar.Split('_')[1]];
-                    string chara = dctCharShorten[diffAndChar.Split('_')[2]];
-                    string retVal = $"{hash}_{diff}_{chara}".ToUpper();
-                    return retVal;
-                }
-
-            }
-            catch (Exception ex)
-            {
-                Plugin.Log?.Error($"PPCalculatorHitBloq ParseMapSearchStringForGetPlayerScorePPGain '{searchString}' Error: {ex} ");
-            }
-            return string.Empty;
-        }
-
         public static (string, string, string) ParseHashDiffAndMode(string input)
         {
             try
@@ -255,7 +233,7 @@ namespace PPPredictor.Utilities
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"PPCalculatorHitBloq ParseMapSearchStringForGetPlayerScorePPGain '{input}' Error: {ex} ");
+                Plugin.Log?.Error($"PPCalculatorHitBloq ParseHashDiffAndMode '{input}' Error: {ex} ");
             }
             return (string.Empty, string.Empty, string.Empty);
         }

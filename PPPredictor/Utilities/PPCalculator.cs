@@ -96,7 +96,6 @@ namespace PPPredictor.Utilities
         {
             try
             {
-                mapSearchString = ParseMapSearchStringForGetPlayerScorePPGain(mapSearchString);
                 if (_leaderboardInfo.CurrentMapPool.LsScores.Count > 0 && !string.IsNullOrEmpty(mapSearchString))
                 {
                     if (pp > 0)
@@ -236,12 +235,6 @@ namespace PPPredictor.Utilities
         public abstract double ApplyModifierMultiplierToStars(PPPBeatMapInfo beatMapInfo, GameplayModifiers gameplayModifiers, bool levelFailed = false);
 
         public abstract string CreateSeachString(string hash, IDifficultyBeatmap beatmap);
-
-        //Needed for Hitbloq as they use 2 different types of searchStrings
-        public virtual string ParseMapSearchStringForGetPlayerScorePPGain(string mapSearchString)
-        {
-            return mapSearchString;
-        }
 
         public abstract Task UpdateMapPoolDetails(PPPMapPool mapPool);
     }
