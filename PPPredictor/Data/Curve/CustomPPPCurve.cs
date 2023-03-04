@@ -12,6 +12,9 @@ namespace PPPredictor.Data.Curve
         private readonly double[,] arrPPCurve;
         private readonly CurveType curveType;
         private readonly double basePPMultiplier;
+        private readonly double? baseline;
+        private readonly double? exponential;
+        private readonly double? cutoff;
         private readonly bool _isDummy;
         public bool isDummy { get => _isDummy; }
 
@@ -23,23 +26,36 @@ namespace PPPredictor.Data.Curve
             _isDummy = isDummy;
         }
 
+        public CustomPPPCurve(double[,] arrPPCurve, CurveType curveType, double basePPMultiplier, double? baseline, double? exponential, double? cutoff, bool isDummy = false) : this(arrPPCurve, curveType, basePPMultiplier, isDummy)
+        {
+            this.exponential = exponential;
+            this.baseline = baseline;
+            this.cutoff = cutoff;
+        }
+
         public CustomPPPCurve(CrCurve crCurve)
         {
             //TODO:  Hitbloq base_curve
-            arrPPCurve = new double[crCurve.points.Count, 2];
             switch (crCurve.type?.ToLower())
             {
                 case "linear":
+                    arrPPCurve = new double[crCurve.points.Count, 2];
+                    for (int i = 0; i < crCurve.points.Count; i++)
+                    {
+                        //Reversed insert. Should be 100% first
+                        arrPPCurve[crCurve.points.Count - 1 - i, 0] = crCurve.points[i][0];
+                        arrPPCurve[crCurve.points.Count - 1 - i, 1] = crCurve.points[i][1];
+                    }
                     this.curveType = CurveType.Linear;
+                    break;
+                case "basic":
+                    this.curveType = CurveType.Basic;
+                    this.baseline = crCurve.baseline;
+                    this.cutoff = crCurve.cutoff;
+                    this.exponential = crCurve.exponential;
                     break;
                 default:
                     break;
-            }
-            for (int i = 0; i < crCurve.points.Count; i++)
-            {
-                //Reversed insert. Should be 100% first
-                arrPPCurve[crCurve.points.Count - 1 - i, 0] = crCurve.points[i][0];
-                arrPPCurve[crCurve.points.Count - 1 - i, 1] = crCurve.points[i][1];
             }
             basePPMultiplier = 50;
         }
@@ -50,6 +66,8 @@ namespace PPPredictor.Data.Curve
             {
                 case CurveType.Linear:
                     return LinearCalculatePPatPercentage(star, percentage);
+                case CurveType.Basic:
+                    return BasicCurveCalculatePPatPercentage(star, percentage);
                 case CurveType.ScoreSaber:
                     return LinearCalculatePPatPercentage(star, failed ? percentage / 2.0f : percentage);
                 default:
@@ -114,13 +132,35 @@ namespace PPPredictor.Data.Curve
             }
         }
 
+        private double BasicCurveCalculatePPatPercentage(double star, double percentage)
+        {
+            double baseline = (this.baseline.HasValue ? this.baseline.Value : 0.78) * 100f;
+            double cutoff = this.cutoff.HasValue ? this.cutoff.Value : 0.5f;
+            double exponential = this.exponential.HasValue ? this.exponential.Value : 2.5;
+
+            double multiplier;
+            if(percentage < baseline)
+            {
+                multiplier = (percentage / 100f) * cutoff;
+            }
+            else
+            {
+                multiplier = (percentage / 100f) * cutoff + (1 - cutoff) * Math.Pow((percentage - baseline) / (100 - baseline), exponential);
+            }
+            return star * basePPMultiplier * multiplier;
+        }
+
         public CurveInfo ToCurveInfo()
         {
-            if(curveType == CurveType.ScoreSaber)
+            switch (curveType)
             {
-                return new CurveInfo(CurveType.ScoreSaber);
-            }
-            return new CurveInfo(CurveType.Linear, this.arrPPCurve, this.basePPMultiplier);
+                case CurveType.ScoreSaber:
+                    return new CurveInfo(CurveType.ScoreSaber);
+                case CurveType.Basic:
+                    return new CurveInfo(CurveType.Basic, this.arrPPCurve, this.basePPMultiplier, this.baseline, this.exponential, this.cutoff);
+                default:
+                    return new CurveInfo(CurveType.Linear, this.arrPPCurve, this.basePPMultiplier);
+            }            
         }
 
         public static CustomPPPCurve DummyPPPCurve()

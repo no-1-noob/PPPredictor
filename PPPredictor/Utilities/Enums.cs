@@ -45,7 +45,8 @@
     {
         ScoreSaber,
         BeatLeader,
-        Linear
+        Linear,
+        Basic
     }
     public enum PPGainCalculationType
     {

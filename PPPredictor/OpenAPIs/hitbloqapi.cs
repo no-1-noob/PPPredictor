@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -174,6 +175,12 @@ namespace PPPredictor.OpenAPIs
     {
         public List<float[]> points { get; set; }
         public string type { get; set; }
+        [DefaultValue(null)]
+        public double? baseline { get; set; }
+        [DefaultValue(null)]
+        public double? exponential { get; set; }
+        [DefaultValue(null)]
+        public double? cutoff { get; set; }
     }
 
     public class HitBloqUser
