@@ -57,6 +57,16 @@ namespace PPPredictor.Counter.Settings
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CounterUseIcons)));
             }
         }
+        [UIValue("counter-use-custom-mappool-icons")]
+        public bool CounterUseCustomMapPoolIcons
+        {
+            get => Plugin.ProfileInfo.CounterUseCustomMapPoolIcons;
+            set
+            {
+                Plugin.ProfileInfo.CounterUseCustomMapPoolIcons = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CounterUseCustomMapPoolIcons)));
+            }
+        }
         [UIValue("counter-highlight-target-percentage")]
         public bool CounterHighlightTargetPercentage
         {

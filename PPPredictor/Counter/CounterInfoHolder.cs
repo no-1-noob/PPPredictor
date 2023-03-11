@@ -63,10 +63,11 @@ namespace PPPredictor.Counter
             ppGainText.alignment = gainAlignment;
             ppText.alignment = TextAlignmentOptions.BottomRight;
             headerText.fontSize = ppText.fontSize = ppGainText.fontSize = fontSize;
-            string iconPath = ppPredictorMgr.GetLeaderboardIcon(leaderboard);
+            string iconPath = ppPredictorMgr.GetMapPoolIcon(leaderboard);
             if (useIcon)
             {
                 icon = CreateIcon(canvas, iconPath, new Vector3((-1f + centerOffset) * positionScaleFactor, lineOffset, 0), Math.Abs(offsetByLine));
+                LoadImage(icon, iconPath);
             }
             this.gameplayModifiers = gameplayModifiers;
             modifiedStars = ppPredictorMgr.GetModifiedStarsForCalculator(leaderboard, gameplayModifiers);
@@ -172,16 +173,27 @@ namespace PPPredictor.Counter
                 name = "UINoGlowCustom"
             };
             newImage.material = noGlowMat;
-            //Load Image
-            var assembly = Assembly.GetExecutingAssembly();
-            System.IO.Stream stream = assembly.GetManifestResourceStream(imageIdent);
-            byte[] data = new byte[stream.Length];
-            stream.Read(data, 0, (int)stream.Length);
+            return newImage;
+        }
+
+        private async void LoadImage(ImageView newImage, string imageIdent)
+        {
+            byte[] data = null;
+            if (Plugin.ProfileInfo.CounterUseCustomMapPoolIcons && imageIdent.Contains("http"))
+            {
+                data = await ppPredictorMgr.GetLeaderboardIconData(leaderboard);
+            }
+            if(data == null)
+            {
+                var assembly = Assembly.GetExecutingAssembly();
+                System.IO.Stream stream = assembly.GetManifestResourceStream(ppPredictorMgr.GetLeaderboardIcon(leaderboard));
+                data = new byte[stream.Length];
+                stream.Read(data, 0, (int)stream.Length);
+            }
             Texture2D texture = new Texture2D(1, 1);
             texture.LoadImage(data);
             texture.Apply();
             newImage.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
-            return newImage;
         }
     }
 }

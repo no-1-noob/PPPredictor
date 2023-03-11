@@ -17,6 +17,7 @@ namespace PPPredictor.Data
         private string _lastLeaderBoardSelected;
         private bool _counterHighlightTargetPercentage;
         private bool _counterUseIcons;
+        private bool _counterUseCustomMapPoolIcons;
         private CounterScoringType _counterScoringType;
         private PPGainCalculationType _ppGainCalculationType;
         private CounterDisplayType _counterDisplayType;
@@ -49,6 +50,7 @@ namespace PPPredictor.Data
             CounterHideWhenUnranked = true;
             AcknowledgedVersion = string.Empty;
             CounterUseIcons = true;
+            CounterUseCustomMapPoolIcons = true;
             DtLastVersionCheck = new DateTime(2000, 1, 1);
             IsVersionCheckEnabled = true;
             IsScoreSaberEnabled = true;
@@ -88,6 +90,7 @@ namespace PPPredictor.Data
         public bool CounterHideWhenUnranked { get => _counterHideWhenUnranked; set => _counterHideWhenUnranked = value; }
         public string AcknowledgedVersion { get => acknowledgedVersion; set => acknowledgedVersion = value; }
         public bool CounterUseIcons { get => _counterUseIcons; set => _counterUseIcons = value; }
+        public bool CounterUseCustomMapPoolIcons { get => _counterUseCustomMapPoolIcons; set => _counterUseCustomMapPoolIcons = value; }
         public DateTime DtLastVersionCheck { get => _dtLastVersionCheck; set => _dtLastVersionCheck = value; }
         public bool IsVersionCheckEnabled { get => _isVersionCheckEnabled; set => _isVersionCheckEnabled = value; }
         public bool IsScoreSaberEnabled { get => _isScoreSaberEnabled; set => _isScoreSaberEnabled = value; }

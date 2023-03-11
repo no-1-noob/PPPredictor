@@ -172,7 +172,7 @@ namespace PPPredictor.Utilities
                 }
                 if (oldPool == null)
                 {
-                    oldPool = new PPPMapPool(newMapPool.id, newMapPool.id, MapPoolType.Custom, newMapPool.title, 0, 0, CustomPPPCurve.DummyPPPCurve());
+                    oldPool = new PPPMapPool(newMapPool.id, newMapPool.id, MapPoolType.Custom, newMapPool.title, 0, 0, CustomPPPCurve.DummyPPPCurve(), newMapPool.image);
                     _leaderboardInfo.LsMapPools.Add(oldPool);
                 }
             }

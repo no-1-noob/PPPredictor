@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using BeatSaberMarkupLanguage.Attributes;
+using Newtonsoft.Json;
 using PPPredictor.Data.Curve;
 using PPPredictor.Interfaces;
 using PPPredictor.Utilities;
@@ -25,7 +26,10 @@ namespace PPPredictor.Data
         private DateTime _dtUtcLastRefresh;
         private DateTime _dtUtcLastSessionReset;
         private DateTimeOffset _dtLastScoreSet;
+        private string _iconUrl;
+        private byte[] _iconData;
 
+        [UIValue("mapPoolName")]
         public string MapPoolName { get => _mapPoolName; set => _mapPoolName = value; }
         public float AccumulationConstant { get => _accumulationConstant; set => _accumulationConstant = value; }
         public int SortIndex { get => _sortIndex; set => _sortIndex = value; }
@@ -44,6 +48,9 @@ namespace PPPredictor.Data
         public DateTime DtUtcLastRefresh { get => _dtUtcLastRefresh; set => _dtUtcLastRefresh = value; }
         public DateTime DtUtcLastSessionReset { get => _dtUtcLastSessionReset; set => _dtUtcLastSessionReset = value; }
         public DateTimeOffset DtLastScoreSet { get => _dtLastScoreSet; set => _dtLastScoreSet = value; }
+        public string IconUrl { get => _iconUrl; set => _iconUrl = value; }
+        [JsonIgnore]
+        public byte[] IconData { get => _iconData; set => _iconData = value; }
 
         [JsonConstructor]
 
@@ -67,7 +74,7 @@ namespace PPPredictor.Data
             _dtLastScoreSet = new DateTime(2000, 1, 1);
         }
 
-        public PPPMapPool(string id, string playListId, MapPoolType mapPoolType, string mapPoolName, float accumulationConstant, int sortIndex, IPPPCurve curve) : this()
+        public PPPMapPool(string id, string playListId, MapPoolType mapPoolType, string mapPoolName, float accumulationConstant, int sortIndex, IPPPCurve curve, string iconUrl) : this()
         {
             _id = id;
             _playListId = playListId;
@@ -76,9 +83,10 @@ namespace PPPredictor.Data
             _accumulationConstant = accumulationConstant;
             _sortIndex = sortIndex;
             _curve = curve;
+            _iconUrl= iconUrl;
         }
 
-        public PPPMapPool(MapPoolType mapPoolType, string mapPoolName, float accumulationConstant, int sortIndex, IPPPCurve curve) : this("-1", "-1", mapPoolType, mapPoolName, accumulationConstant, sortIndex, curve)
+        public PPPMapPool(MapPoolType mapPoolType, string mapPoolName, float accumulationConstant, int sortIndex, IPPPCurve curve) : this("-1", "-1", mapPoolType, mapPoolName, accumulationConstant, sortIndex, curve, string.Empty)
         {
         }
 

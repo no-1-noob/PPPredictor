@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -35,6 +36,19 @@ namespace PPPredictor.Utilities
         public string LeaderBoardIcon
         {
             get { return _leaderboardInfo.LeaderboardIcon; }
+        }
+        public string MapPoolIcon
+        {
+            get
+            {
+                string mapPoolIcon = _leaderboardInfo.CurrentMapPool?.IconUrl ?? string.Empty;
+                return !string.IsNullOrEmpty(mapPoolIcon) ? mapPoolIcon : _leaderboardInfo.LeaderboardIcon;
+            }
+        }
+        public byte[] MapPoolIconData
+        {
+            get { return _leaderboardInfo.CurrentMapPool?.IconData; }
+            set { _leaderboardInfo.CurrentMapPool.IconData = value; }
         }
 
         internal PPPLeaderboardInfo _leaderboardInfo;
@@ -348,6 +362,24 @@ namespace PPPredictor.Utilities
                 await _ppCalculator.UpdateMapPoolDetails(_leaderboardInfo.CurrentMapPool);
                 _leaderboardInfo.CurrentMapPool.DtUtcLastRefresh = DateTime.UtcNow;
                 IsDataLoading(false);
+            }
+        }
+
+        public async Task GetMapPoolIconData()
+        {
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    using (var response = await client.GetAsync(MapPoolIcon))
+                    {
+                        MapPoolIconData = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Plugin.Log.Error($"GetMapPoolIconData {MapPoolIcon}: {ex.Message}");
             }
         }
     }

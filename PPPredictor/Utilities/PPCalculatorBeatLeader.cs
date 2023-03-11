@@ -225,7 +225,7 @@ namespace PPPredictor.Utilities
                     }
                     if (oldPool == null)
                     {
-                        var mapPool = new PPPMapPool(eventItem.id.ToString(), eventItem.playListId.ToString(), MapPoolType.Custom, eventItem.name, accumulationConstant, sortIndex, new BeatLeaderPPPCurve());
+                        var mapPool = new PPPMapPool(eventItem.id.ToString(), eventItem.playListId.ToString(), MapPoolType.Custom, eventItem.name, accumulationConstant, sortIndex, new BeatLeaderPPPCurve(), string.Empty);
                         sortIndex++;
                         this._leaderboardInfo.LsMapPools.Add(mapPool);
                     }

@@ -249,6 +249,29 @@ namespace PPPredictor.Utilities
             }
             return string.Empty;
         }
+        internal string GetMapPoolIcon(Leaderboard leaderBoardName)
+        {
+            IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());
+            if (predictor != null)
+            {
+                return predictor.MapPoolIcon;
+            }
+            return string.Empty;
+        }
+
+        internal async Task<byte[]> GetLeaderboardIconData(Leaderboard leaderBoardName)
+        {
+            IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());
+            if (predictor != null)
+            {
+                if(predictor.MapPoolIconData == null)
+                {
+                    await predictor.GetMapPoolIconData();
+                }
+                return predictor.MapPoolIconData;
+            }
+            return null;
+        }
 
         internal void ActivateView(bool activate)
         {

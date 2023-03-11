@@ -21,6 +21,7 @@ namespace PPPredictor.Interfaces
         bool IsRanked();
         void CalculatePP();
         void SetActive(bool setActive);
+        Task GetMapPoolIconData();
         event EventHandler<bool> OnDataLoading;
         event EventHandler<DisplaySessionInfo> OnDisplaySessionInfo;
         event EventHandler<DisplayPPInfo> OnDisplayPPInfo;
@@ -28,6 +29,8 @@ namespace PPPredictor.Interfaces
         float Percentage { get; set; }
         string LeaderBoardName { get; }
         string LeaderBoardIcon { get; }
+        string MapPoolIcon { get; }
+        byte[] MapPoolIconData { get; set; }
         List<object> MapPoolOptions { get; }
         object CurrentMapPool { get; set; }
         string PPSuffix { get; }

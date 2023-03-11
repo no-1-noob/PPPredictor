@@ -16,6 +16,7 @@
     <dropdown-list-setting text='Scoring type' value='counter-scoring-type' choices='counter-scoring-type-options' bind-value='true' apply-on-change='true'/>
     <list-setting text='Display type' value='counter-display-type' choices='counter-display-type-options' bind-value='true' apply-on-change='true' rich-text='true' font-align='Left' word-wrapping='false'/>
     <bool-setting text='Use leaderboard icons' value='counter-use-icons' bind-value='true' apply-on-change='true'></bool-setting>
+    <bool-setting text='Use custom map pool icons (if available)' value='counter-use-custom-mappool-icons' bind-value='true' apply-on-change='true'></bool-setting>
     <bool-setting text='Highlight if target % is reached (when icons are not used)' value='counter-highlight-target-percentage' bind-value='true' apply-on-change='true'></bool-setting>
     <bool-setting text='Hide when unranked' value='counter-hide-when-unranked' bind-value='true' apply-on-change='true'></bool-setting>
     <text text='Reset' italics='true' align='Center' font-size='4' />

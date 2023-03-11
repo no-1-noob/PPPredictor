@@ -177,6 +177,16 @@ namespace PPPredictor.UI.ViewController
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CounterUseIcons)));
             }
         }
+        [UIValue("counter-use-custom-mappool-icons")]
+        public bool CounterUseCustomMapPoolIcons
+        {
+            get => Plugin.ProfileInfo.CounterUseCustomMapPoolIcons;
+            set
+            {
+                Plugin.ProfileInfo.CounterUseCustomMapPoolIcons = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CounterUseCustomMapPoolIcons)));
+            }
+        }
         [UIValue("counter-highlight-target-percentage")]
         public bool CounterHighlightTargetPercentage
         {
@@ -233,6 +243,7 @@ namespace PPPredictor.UI.ViewController
             ResetSessionHours = Plugin.ProfileInfo.ResetSessionHours;
             CounterDisplayType = EnumHelper.CounterDisplayTypeGetDisplayValue(Plugin.ProfileInfo.CounterDisplayType);
             CounterUseIcons = Plugin.ProfileInfo.CounterUseIcons;
+            CounterUseCustomMapPoolIcons = Plugin.ProfileInfo.CounterUseCustomMapPoolIcons;
             CounterHighlightTargetPercentage = Plugin.ProfileInfo.CounterHighlightTargetPercentage;
             CounterHideWhenUnranked = Plugin.ProfileInfo.CounterHideWhenUnranked;
             CounterScoringType = Plugin.ProfileInfo.CounterScoringType.ToString();
