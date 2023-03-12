@@ -49,17 +49,17 @@ namespace PPPredictor.Utilities
             return beatMapInfo.BaseStars;
         }
 
-        public override async Task<PPPBeatMapInfo> GetBeatMapInfoAsync(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
+        public override async Task<PPPBeatMapInfo> GetBeatMapInfoAsync(PPPBeatMapInfo beatMapInfo)
         {
             try
             {
-                if (lvlSelectionNavigationCtrl.selectedBeatmapLevel is CustomBeatmapLevel selectedCustomBeatmapLevel)
+                if (beatMapInfo.SelectedCustomBeatmapLevel != null)
                 {
-                    string songHash = Hashing.GetCustomLevelHash(selectedCustomBeatmapLevel);
-                    string searchString = CreateSeachString(songHash, beatmap);
+                    string songHash = Hashing.GetCustomLevelHash(beatMapInfo.SelectedCustomBeatmapLevel);
+                    string searchString = CreateSeachString(songHash, beatMapInfo.Beatmap);
                     if (_leaderboardInfo.CurrentMapPool.MapPoolType == MapPoolType.Custom && !_leaderboardInfo.CurrentMapPool.LsMapPoolEntries.Where(x => x.Searchstring == searchString).Any())
                     {
-                        return new PPPBeatMapInfo(); //Currently selected map is not contained in selected MapPool
+                        return new PPPBeatMapInfo(beatMapInfo, 0); //Currently selected map is not contained in selected MapPool
                     }
                     ShortScore cachedInfo = _leaderboardInfo.CurrentMapPool.LsLeaderboardScores?.FirstOrDefault(x => x.Searchstring.ToUpper() == searchString.ToUpper());
                     bool refetchInfo = cachedInfo != null && cachedInfo.FetchTime < DateTime.Now.AddDays(-7);
@@ -73,21 +73,21 @@ namespace PPPredictor.Utilities
                             {
                                 Plugin.Log?.Error($"GetStarsForBeatmapAsync Step GetNew Stars from backend: {stars}");
                                 _leaderboardInfo.CurrentMapPool.LsLeaderboardScores.Add(new ShortScore(searchString, stars, DateTime.Now));
-                                return new PPPBeatMapInfo(stars);
+                                return new PPPBeatMapInfo(beatMapInfo, stars);
                             }
                         }
                     }
                     else
                     {
-                        return new PPPBeatMapInfo(cachedInfo.Stars);
+                        return new PPPBeatMapInfo(beatMapInfo, cachedInfo.Stars);
                     }
                 }
-                return new PPPBeatMapInfo();
+                return beatMapInfo;
             }
             catch (Exception ex)
             {
                 Plugin.Log?.Error($"PPCalculatorBeatLeader PPCalculatorHitBloq Error: {ex.Message}");
-                return new PPPBeatMapInfo(-1);
+                return new PPPBeatMapInfo(beatMapInfo, -1);
             }
         }
 
@@ -159,24 +159,22 @@ namespace PPPredictor.Utilities
 
         public async void UpdateAvailableMapPools()
         {
-            Plugin.Log?.Error($"PPCalculatorHitBloq UpdateAvailableMapPools");
             List<HitBloqMapPool> hbMapPool = await hitbloqapi.GetHitBloqMapPools();
             //check if this map pool is already in list
             foreach (HitBloqMapPool newMapPool in hbMapPool)
             {
                 PPPMapPool oldPool = _leaderboardInfo.LsMapPools.Find(x => x.Id == newMapPool.id);
-                Plugin.Log?.Error($"PPCalculatorHitBloq UpdateAvailableMapPools Step1 {newMapPool.id}");
                 if (oldPool != null && DateTime.UtcNow.AddDays(-1) < oldPool.DtUtcLastRefresh)
                 {
                     continue; //Do not get Playlist if it has been updated less than a day ago.
                 }
                 if (oldPool == null)
                 {
-                    oldPool = new PPPMapPool(newMapPool.id, newMapPool.id, MapPoolType.Custom, newMapPool.title, 0, 0, CustomPPPCurve.DummyPPPCurve(), newMapPool.image);
+                    oldPool = new PPPMapPool(newMapPool.id, newMapPool.id, MapPoolType.Custom, newMapPool.title, 0, 0, CustomPPPCurve.DummyPPPCurve(), newMapPool.image, newMapPool.popularity);
                     _leaderboardInfo.LsMapPools.Add(oldPool);
                 }
             }
-            _leaderboardInfo.LsMapPools = _leaderboardInfo.LsMapPools.OrderBy(x => x.MapPoolType).ThenBy(x => x.MapPoolName).ToList();
+            _leaderboardInfo.LsMapPools = _leaderboardInfo.LsMapPools.OrderBy(x => x.MapPoolType).ThenByDescending(x => x.Popularity).ThenBy(x => x.MapPoolName).ToList();
         }
 
         override public async Task UpdateMapPoolDetails(PPPMapPool mapPool)

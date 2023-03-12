@@ -26,6 +26,7 @@ namespace PPPredictor.Data
         private DateTime _dtUtcLastRefresh;
         private DateTime _dtUtcLastSessionReset;
         private DateTimeOffset _dtLastScoreSet;
+        private double _popularity;
         private string _iconUrl;
         private byte[] _iconData;
 
@@ -51,12 +52,12 @@ namespace PPPredictor.Data
         public string IconUrl { get => _iconUrl; set => _iconUrl = value; }
         [JsonIgnore]
         public byte[] IconData { get => _iconData; set => _iconData = value; }
+        public double Popularity { get => _popularity; set => _popularity = value; }
 
         [JsonConstructor]
 
         public PPPMapPool()
         {
-            _sessionPlayer = new PPPPlayer();
             _currentPlayer = new PPPPlayer();
             _lsScores = new List<ShortScore>();
             LsLeaderboardScores = new List<ShortScore>();
@@ -72,9 +73,10 @@ namespace PPPredictor.Data
             _accumulationConstant = 0;
             _sortIndex = -1;
             _dtLastScoreSet = new DateTime(2000, 1, 1);
+            _popularity = 0;
         }
 
-        public PPPMapPool(string id, string playListId, MapPoolType mapPoolType, string mapPoolName, float accumulationConstant, int sortIndex, IPPPCurve curve, string iconUrl) : this()
+        public PPPMapPool(string id, string playListId, MapPoolType mapPoolType, string mapPoolName, float accumulationConstant, int sortIndex, IPPPCurve curve, string iconUrl, double popularity = 0) : this()
         {
             _id = id;
             _playListId = playListId;
@@ -84,6 +86,7 @@ namespace PPPredictor.Data
             _sortIndex = sortIndex;
             _curve = curve;
             _iconUrl= iconUrl;
+            _popularity = popularity;
         }
 
         public PPPMapPool(MapPoolType mapPoolType, string mapPoolName, float accumulationConstant, int sortIndex, IPPPCurve curve) : this("-1", "-1", mapPoolType, mapPoolName, accumulationConstant, sortIndex, curve, string.Empty)

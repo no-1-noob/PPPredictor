@@ -18,12 +18,9 @@ namespace PPPredictor.Utilities
         #region internal values
         private float _percentage;
         private PPPBeatMapInfo _currentBeatMapInfo = new PPPBeatMapInfo();
-        private double _currentSelectionStars;
         private bool _rankGainRunning = false;
         private double _lastPPGainCall = 0;
-        private string _selectedMapSearchString;
         private bool _isActive = false;
-        private double _maxPP = -1;
         #endregion
 
         public string LeaderBoardName
@@ -129,31 +126,38 @@ namespace PPPredictor.Utilities
             if (gameplaySetupViewController != null && gameplaySetupViewController.gameplayModifiers != null)
             {
                 _gameplayModifiers = gameplaySetupViewController.gameplayModifiers;
-                _currentSelectionStars = _ppCalculator.ApplyModifierMultiplierToStars(_currentBeatMapInfo, _gameplayModifiers);
-                _maxPP = -1;
+                _currentBeatMapInfo.CurrentSelectionStars = _ppCalculator.ApplyModifierMultiplierToStars(_currentBeatMapInfo, _gameplayModifiers);
+                _currentBeatMapInfo.MaxPP = -1;
                 CalculatePP();
             }
         }
 
         public async void DifficultyChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
         {
-            _currentBeatMapInfo = await _ppCalculator.GetBeatMapInfoAsync(lvlSelectionNavigationCtrl, beatmap);
-            _selectedMapSearchString = lvlSelectionNavigationCtrl.selectedBeatmapLevel is CustomBeatmapLevel selectedCustomBeatmapLevel ? _ppCalculator.CreateSeachString(Hashing.GetCustomLevelHash(selectedCustomBeatmapLevel), "SOLO" + beatmap.parentDifficultyBeatmapSet.beatmapCharacteristic.serializedName, lvlSelectionNavigationCtrl.selectedDifficultyBeatmap.difficultyRank) : string.Empty;
-            _currentSelectionStars = GetModifiedStars(_gameplayModifiers);
-            _maxPP = -1;
-            CalculatePP();
+            await UpdateCurrentBeatMapInfos(lvlSelectionNavigationCtrl, beatmap);
         }
 
         public async void DetailContentChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, StandardLevelDetailViewController.ContentType contentType)
         {
             if (contentType == StandardLevelDetailViewController.ContentType.OwnedAndReady)
             {
-                _currentBeatMapInfo = await _ppCalculator.GetBeatMapInfoAsync(lvlSelectionNavigationCtrl, lvlSelectionNavigationCtrl.selectedDifficultyBeatmap);
-                _selectedMapSearchString = lvlSelectionNavigationCtrl.selectedBeatmapLevel is CustomBeatmapLevel selectedCustomBeatmapLevel ? _ppCalculator.CreateSeachString(Hashing.GetCustomLevelHash(selectedCustomBeatmapLevel), "SOLO" + lvlSelectionNavigationCtrl.selectedDifficultyBeatmap.parentDifficultyBeatmapSet.beatmapCharacteristic.serializedName, lvlSelectionNavigationCtrl.selectedDifficultyBeatmap.difficultyRank) : string.Empty;
-                _currentSelectionStars = GetModifiedStars(_gameplayModifiers);
-                _maxPP = -1;
-                CalculatePP();
+                await UpdateCurrentBeatMapInfos(lvlSelectionNavigationCtrl, lvlSelectionNavigationCtrl.selectedDifficultyBeatmap);
             }
+        }
+
+        private async Task UpdateCurrentBeatMapInfos(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
+        {
+            _currentBeatMapInfo = new PPPBeatMapInfo(lvlSelectionNavigationCtrl.selectedBeatmapLevel as CustomBeatmapLevel, beatmap);
+            await UpdateCurrentBeatMapInfos();
+            CalculatePP();
+        }
+
+        private async Task UpdateCurrentBeatMapInfos()
+        {
+            _currentBeatMapInfo = await _ppCalculator.GetBeatMapInfoAsync(_currentBeatMapInfo);
+            _currentBeatMapInfo.SelectedMapSearchString = _currentBeatMapInfo.SelectedCustomBeatmapLevel != null ? _ppCalculator.CreateSeachString(Hashing.GetCustomLevelHash(_currentBeatMapInfo.SelectedCustomBeatmapLevel), "SOLO" + _currentBeatMapInfo.Beatmap.parentDifficultyBeatmapSet.beatmapCharacteristic.serializedName, _currentBeatMapInfo.Beatmap.difficultyRank) : string.Empty;
+            _currentBeatMapInfo.CurrentSelectionStars = GetModifiedStars(_gameplayModifiers);
+            _currentBeatMapInfo.MaxPP = -1;
         }
         #endregion
 
@@ -193,7 +197,7 @@ namespace PPPredictor.Utilities
 
         public double CalculatePPGain(double pp)
         {
-            return _ppCalculator.GetPlayerScorePPGain(_selectedMapSearchString, pp).GetDisplayPPValue();
+            return _ppCalculator.GetPlayerScorePPGain(_currentBeatMapInfo.SelectedMapSearchString, pp).GetDisplayPPValue();
         }
 
         public bool IsRanked()
@@ -203,12 +207,12 @@ namespace PPPredictor.Utilities
 
         public async void CalculatePP()
         {
-            if (_maxPP == -1) _maxPP = CalculateMaxPP(_currentSelectionStars, _gameplayModifiers);
-            double pp = CalculatePPatPercentage(_currentSelectionStars, _percentage, _gameplayModifiers);
-            PPGainResult ppGainResult = _ppCalculator.GetPlayerScorePPGain(_selectedMapSearchString, pp);
+            if (_currentBeatMapInfo.MaxPP == -1) _currentBeatMapInfo.MaxPP = CalculateMaxPP(_currentBeatMapInfo.CurrentSelectionStars, _gameplayModifiers);
+            double pp = CalculatePPatPercentage(_currentBeatMapInfo.CurrentSelectionStars, _percentage, _gameplayModifiers);
+            PPGainResult ppGainResult = _ppCalculator.GetPlayerScorePPGain(_currentBeatMapInfo.SelectedMapSearchString, pp);
             double ppGains = _ppCalculator.Zeroizer(ppGainResult.GetDisplayPPValue());
             DisplayPPInfo ppDisplay = new DisplayPPInfo();
-            if (_maxPP > 0 && pp >= _maxPP)
+            if (_currentBeatMapInfo.MaxPP > 0 && pp >= _currentBeatMapInfo.MaxPP)
             {
                 ppDisplay.PPRaw = $"<color=\"yellow\">{pp:F2}{PPSuffix}</color>";
             }
@@ -292,12 +296,16 @@ namespace PPPredictor.Utilities
             }
             SendDisplaySessionInfo(sessionDisplay);
         }
-        public async void RefreshCurrentData(int fetchLength)
+        public async void RefreshCurrentData(int fetchLength, bool refreshStars = false)
         {
             await UpdateCurrentAndCheckResetSession(false);
             IsDataLoading(true);
             string userId = await GetUserInfo();
             await _ppCalculator.GetPlayerScores(userId, fetchLength);
+            if (refreshStars) //MapPool change to a pool that has never been selected before;
+            {
+                await UpdateCurrentBeatMapInfos();
+            }
             CalculatePP();
             IsDataLoading(false);
         }

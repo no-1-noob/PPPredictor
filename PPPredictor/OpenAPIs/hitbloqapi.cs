@@ -161,6 +161,7 @@ namespace PPPredictor.OpenAPIs
         public string title { get; set; }
         public string short_description { get; set; }
         public string image { get; set; }
+        public int popularity { get; set; }
     }
 
     public class HitBloqMapPoolDetails
@@ -169,7 +170,6 @@ namespace PPPredictor.OpenAPIs
         public CrCurve cr_curve { get; set; }
         public List<string> leaderboard_id_list { get; set; }
         public string long_description { get; set; }
-        public int priority { get; set; }
     }
 
     public class CrCurve

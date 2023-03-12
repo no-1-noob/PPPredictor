@@ -72,27 +72,27 @@ namespace PPPredictor.Utilities
             }
         }
 
-        public override Task<PPPBeatMapInfo> GetBeatMapInfoAsync(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
+        public override Task<PPPBeatMapInfo> GetBeatMapInfoAsync(PPPBeatMapInfo beatMapInfo)
         {
             try
             {
-                if (lvlSelectionNavigationCtrl.selectedBeatmapLevel is CustomBeatmapLevel selectedCustomBeatmapLevel)
+                if (beatMapInfo.SelectedCustomBeatmapLevel != null)
                 {
-                    if (SongDetails.songs.FindByHash(Hashing.GetCustomLevelHash(selectedCustomBeatmapLevel), out Song song))
+                    if (SongDetails.songs.FindByHash(Hashing.GetCustomLevelHash(beatMapInfo.SelectedCustomBeatmapLevel), out Song song))
                     {
-                        if (song.GetDifficulty(out SongDifficulty songDiff, (MapDifficulty)beatmap.difficulty))
+                        if (song.GetDifficulty(out SongDifficulty songDiff, (MapDifficulty)beatMapInfo.Beatmap.difficulty))
                         {
-                            return Task.FromResult(new PPPBeatMapInfo(songDiff.stars, 0));
+                            return Task.FromResult(new PPPBeatMapInfo(beatMapInfo, songDiff.stars, 0));
                         }
                     }
-                    return Task.FromResult(new PPPBeatMapInfo());
+                    return Task.FromResult(new PPPBeatMapInfo (beatMapInfo, 0));
                 }
-                return Task.FromResult(new PPPBeatMapInfo());
+                return Task.FromResult(new PPPBeatMapInfo(beatMapInfo, 0));
             }
             catch (Exception ex)
             {
                 Plugin.Log?.Error($"PPCalculatorScoreSaber GetStarsForBeatmapAsync Error: {ex.Message}");
-                return Task.FromResult(new PPPBeatMapInfo(-1, -1));
+                return Task.FromResult(new PPPBeatMapInfo(beatMapInfo , - 1, -1));
             }
         }
 

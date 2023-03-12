@@ -96,17 +96,17 @@ namespace PPPredictor.Utilities
             }
         }
 
-        public override async Task<PPPBeatMapInfo> GetBeatMapInfoAsync(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
+        public override async Task<PPPBeatMapInfo> GetBeatMapInfoAsync(PPPBeatMapInfo beatMapInfo)
         {
             try
             {
-                if (lvlSelectionNavigationCtrl.selectedBeatmapLevel is CustomBeatmapLevel selectedCustomBeatmapLevel)
+                if (beatMapInfo.SelectedCustomBeatmapLevel != null)
                 {
-                    string songHash = Hashing.GetCustomLevelHash(selectedCustomBeatmapLevel);
-                    string searchString = CreateSeachString(songHash, "SOLO" + beatmap.parentDifficultyBeatmapSet.beatmapCharacteristic.serializedName, beatmap.difficultyRank);
+                    string songHash = Hashing.GetCustomLevelHash(beatMapInfo.SelectedCustomBeatmapLevel);
+                    string searchString = CreateSeachString(songHash, "SOLO" + beatMapInfo.Beatmap.parentDifficultyBeatmapSet.beatmapCharacteristic.serializedName, beatMapInfo.Beatmap.difficultyRank);
                     if(_leaderboardInfo.CurrentMapPool.MapPoolType == MapPoolType.Custom && !_leaderboardInfo.CurrentMapPool.LsMapPoolEntries.Where(x => x.Searchstring == searchString).Any())
                     {
-                        return new PPPBeatMapInfo(0); //Currently selected map is not contained in selected MapPool
+                        return new PPPBeatMapInfo(beatMapInfo, 0); //Currently selected map is not contained in selected MapPool
                     }
                     ShortScore cachedInfo = _leaderboardInfo.DefaultMapPool.LsLeaderboardScores?.FirstOrDefault(x => x.Searchstring == searchString);
                     bool refetchInfo = cachedInfo != null && cachedInfo.FetchTime < DateTime.Now.AddDays(-7);
@@ -116,7 +116,7 @@ namespace PPPredictor.Utilities
                         BeatLeaderSong song = await beatleaderapi.GetSongByHash(songHash);
                         if (song != null)
                         {
-                            BeatLeaderDifficulty diff = song.difficulties.FirstOrDefault(x => x.value == beatmap.difficultyRank);
+                            BeatLeaderDifficulty diff = song.difficulties.FirstOrDefault(x => x.value == beatMapInfo.Beatmap.difficultyRank);
                             if (diff != null)
                             {
                                 //Find or insert ModifierValueId
@@ -130,22 +130,22 @@ namespace PPPredictor.Utilities
                                 _leaderboardInfo.CurrentMapPool.LsLeaderboardScores.Add(new ShortScore(searchString, diff.stars.GetValueOrDefault(), DateTime.Now, modifierValueId));
                                 if (diff.stars.HasValue && diff.status == (int)BeatLeaderDifficultyStatus.ranked)
                                 {
-                                    return new PPPBeatMapInfo(diff.stars.Value, modifierValueId);
+                                    return new PPPBeatMapInfo(beatMapInfo ,diff.stars.Value, modifierValueId);
                                 }
                             }
                         }
                     }
                     else
                     {
-                        return new PPPBeatMapInfo(cachedInfo.Stars, cachedInfo.ModifierValuesId);
+                        return new PPPBeatMapInfo(beatMapInfo, cachedInfo.Stars, cachedInfo.ModifierValuesId);
                     }
                 }
-                return new PPPBeatMapInfo();
+                return beatMapInfo;
             }
             catch (Exception ex)
             {
                 Plugin.Log?.Error($"PPCalculatorBeatLeader GetStarsForBeatmapAsync Error: {ex.Message}");
-                return new PPPBeatMapInfo(-1, -1);
+                return new PPPBeatMapInfo(beatMapInfo, - 1, -1);
             }
         }
 

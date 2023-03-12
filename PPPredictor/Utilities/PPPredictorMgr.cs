@@ -148,11 +148,11 @@ namespace PPPredictor.Utilities
             }
         }
 
-        internal void RefreshCurrentData(int v)
+        internal void RefreshCurrentData(int v, bool refreshStars = false)
         {
             foreach (var item in _lsPPPredictor)
             {
-                item.RefreshCurrentData(v);
+                item.RefreshCurrentData(v, refreshStars);
             }
         }
 

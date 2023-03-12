@@ -450,7 +450,7 @@ namespace PPPredictor.UI.ViewController
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentMapPool)));
                 if(isCurrentMapPoolChanging)
                 {
-                    this.RefreshCurrentData(10);
+                    this.RefreshCurrentData(10, true);
                 }
             }
         }
@@ -461,9 +461,9 @@ namespace PPPredictor.UI.ViewController
             DisplayInitialPercentages();
             this.ppPredictorMgr.ResetDisplay(v);
         }
-        internal void RefreshCurrentData(int count)
+        internal void RefreshCurrentData(int count, bool refreshStars = false)
         {
-            this.ppPredictorMgr.RefreshCurrentData(count);
+            this.ppPredictorMgr.RefreshCurrentData(count, refreshStars);
         }
 
         internal bool IsCurrentMapPoolChanging(object value)

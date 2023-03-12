@@ -12,9 +12,9 @@ namespace PPPredictor.Utilities
             return 0;
         }
 
-        public override Task<PPPBeatMapInfo> GetBeatMapInfoAsync(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
+        public override Task<PPPBeatMapInfo> GetBeatMapInfoAsync(PPPBeatMapInfo beatMapInfo)
         {
-            return Task.FromResult(new PPPBeatMapInfo());
+            return Task.FromResult(beatMapInfo);
         }
 
         protected override Task<PPPPlayer> GetPlayerInfo(long userId)
