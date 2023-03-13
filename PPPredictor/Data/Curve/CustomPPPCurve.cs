@@ -2,14 +2,14 @@
 using PPPredictor.OpenAPIs;
 using PPPredictor.Utilities;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace PPPredictor.Data.Curve
 {
     class CustomPPPCurve : IPPPCurve
     {
-        //TODO: Make arrPPCurve a list?
-        private readonly double[,] arrPPCurve;
+        private readonly List<(double, double)> arrPPCurve;
         private readonly CurveType curveType;
         private readonly double basePPMultiplier;
         private readonly double? baseline;
@@ -18,7 +18,7 @@ namespace PPPredictor.Data.Curve
         private readonly bool _isDummy;
         public bool isDummy { get => _isDummy; }
 
-        public CustomPPPCurve(double[,] arrPPCurve, CurveType curveType, double basePPMultiplier, bool isDummy = false)
+        public CustomPPPCurve(List<(double, double)> arrPPCurve, CurveType curveType, double basePPMultiplier, bool isDummy = false)
         {
             this.arrPPCurve = arrPPCurve;
             this.curveType = curveType;
@@ -26,7 +26,7 @@ namespace PPPredictor.Data.Curve
             _isDummy = isDummy;
         }
 
-        public CustomPPPCurve(double[,] arrPPCurve, CurveType curveType, double basePPMultiplier, double? baseline, double? exponential, double? cutoff, bool isDummy = false) : this(arrPPCurve, curveType, basePPMultiplier, isDummy)
+        public CustomPPPCurve(List<(double, double)> arrPPCurve, CurveType curveType, double basePPMultiplier, double? baseline, double? exponential, double? cutoff, bool isDummy = false) : this(arrPPCurve, curveType, basePPMultiplier, isDummy)
         {
             this.exponential = exponential;
             this.baseline = baseline;
@@ -35,17 +35,16 @@ namespace PPPredictor.Data.Curve
 
         public CustomPPPCurve(CrCurve crCurve)
         {
-            //TODO:  Hitbloq base_curve
             switch (crCurve.type?.ToLower())
             {
                 case "linear":
-                    arrPPCurve = new double[crCurve.points.Count, 2];
+                    arrPPCurve = new List<(double, double)>();
                     for (int i = 0; i < crCurve.points.Count; i++)
                     {
-                        //Reversed insert. Should be 100% first
-                        arrPPCurve[crCurve.points.Count - 1 - i, 0] = crCurve.points[i][0];
-                        arrPPCurve[crCurve.points.Count - 1 - i, 1] = crCurve.points[i][1];
+                        arrPPCurve.Add((crCurve.points[i][0], crCurve.points[i][1]));
+
                     }
+                    arrPPCurve.Reverse();
                     this.curveType = CurveType.Linear;
                     break;
                 case "basic":
@@ -75,6 +74,17 @@ namespace PPPredictor.Data.Curve
             }
         }
 
+        public double CalculateMaxPP(double star)
+        {
+            double percent = 100;
+            if(curveType == CurveType.Linear && arrPPCurve.Count > 1)
+            {
+                (double, double) peakMultiplier = arrPPCurve.Aggregate((i1, i2) => i1.Item2 > i2.Item2 ? i1 : i2);
+                percent = peakMultiplier.Item1 * 100;
+            }
+            return CalculatePPatPercentage(star, percent, false);
+        }
+
         private double LinearCalculatePPatPercentage(double star, double percentage)
         {
             try
@@ -94,17 +104,17 @@ namespace PPPredictor.Data.Curve
         {
             try
             {
-                for (int i = 0; i < arrPPCurve.GetLength(0); i++)
+                for (int i = 0; i < arrPPCurve.Count; i++)
                 {
-                    if (arrPPCurve[i, 0] == percentage)
+                    if (arrPPCurve[i].Item1 == percentage)
                     {
-                        return arrPPCurve[i, 1];
+                        return arrPPCurve[i].Item2;
                     }
                     else
                     {
-                        if (arrPPCurve[i + 1, 0] < percentage)
+                        if (arrPPCurve[i + 1].Item1 < percentage)
                         {
-                            return CalculateMultiplierAtPercentageWithLine((arrPPCurve[i + 1, 0], arrPPCurve[i + 1, 1]), (arrPPCurve[i, 0], arrPPCurve[i, 1]), percentage);
+                            return CalculateMultiplierAtPercentageWithLine((arrPPCurve[i + 1].Item1, arrPPCurve[i + 1].Item2), (arrPPCurve[i].Item1, arrPPCurve[i].Item2), percentage);
                         }
                     }
                 }
@@ -165,7 +175,7 @@ namespace PPPredictor.Data.Curve
 
         public static CustomPPPCurve DummyPPPCurve()
         {
-            return new CustomPPPCurve(new double[0, 2] { }, CurveType.Linear, 0, true);
+            return new CustomPPPCurve(new List<(double, double)>(), CurveType.Linear, 0, true);
         }
 
         public override string ToString()

@@ -37,15 +37,15 @@ namespace PPPredictor.Data
         {
             LsLeaderboardInfo = new List<PPPLeaderboardInfo>();
             LastPercentageSelected = 90;
-            Position = new SVector3(2.5f, 0.05f, 2.0f);
-            EulerAngles = new SVector3(88, 60, 0);
+            Position = new SVector3(4.189056f, 1.14293063f, -0.5054281f);
+            EulerAngles = new SVector3(0f, 90f, 359.437439f);
             WindowHandleEnabled = false;
             DisplaySessionValues = false;
             ResetSessionHours = 12;
             LastSessionReset = new DateTime();
             LastLeaderBoardSelected = Leaderboard.ScoreSaber.ToString();
             CounterDisplayType = CounterDisplayType.PP;
-            CounterScoringType = CounterScoringType.Global;
+            CounterScoringType = CounterScoringType.Local;
             CounterHighlightTargetPercentage = true;
             CounterHideWhenUnranked = true;
             AcknowledgedVersion = string.Empty;

@@ -50,5 +50,10 @@ namespace PPPredictor
         {
             Plugin.Log?.Error(text);
         }
+
+        internal static async Task<UserInfo> GetUserInfoBS()
+        {
+            return await BS_Utils.Gameplay.GetUserInfo.GetUserAsync();
+        }
     }
 }

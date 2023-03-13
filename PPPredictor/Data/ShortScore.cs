@@ -23,10 +23,11 @@ namespace PPPredictor.Data
             this._pp = pp;
         }
 
-        public ShortScore(string searchstring, double pp, DateTime fetchTime)
+        public ShortScore(string searchstring, double stars, DateTime fetchTime)
         {
             this._searchstring = searchstring.ToUpper();
-            this._pp = pp;
+            this._stars = stars;
+            this._fetchTime = fetchTime;
         }
 
         public ShortScore(string searchstring, double stars, DateTime fetchTime, int modifierValuesId)

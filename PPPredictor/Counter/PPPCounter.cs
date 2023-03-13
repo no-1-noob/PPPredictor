@@ -36,11 +36,21 @@ namespace PPPredictor.Counter
             
         }
 
-        private void SetupCounter()
+        private async void SetupCounter()
         {
             try
             {
-
+                try
+                {
+                    if (setupData.previewBeatmapLevel is CustomBeatmapLevel)
+                    {
+                        await ppPredictorMgr.UpdateCurrentBeatMapInfos(setupData.previewBeatmapLevel as CustomBeatmapLevel, setupData.difficultyBeatmap);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Plugin.DebugPrint($"PPPCounter change selected Map: UpdateCurrentBeatMapInfos failed {ex.Message}");
+                }
 #if DEBUG
                 //Center Helper for development
                 /*float offsetPlus = 0.1f;

@@ -15,13 +15,14 @@ namespace PPPredictor.Interfaces
         void RefreshCurrentData(int fetchLength, bool refreshStars = false);
         void ResetDisplay(bool resetAll);
         double CalculatePPatPercentage(double stars, double percentage, GameplayModifiers gameplayModifiers, bool levelFailed = false);
-        double CalculateMaxPP(double stars, GameplayModifiers gameplayModifiers);
+        double CalculateMaxPP(double stars);
         double GetModifiedStars(GameplayModifiers gameplayModifiers);
         double CalculatePPGain(double pp);
         bool IsRanked();
         void CalculatePP();
         void SetActive(bool setActive);
         Task GetMapPoolIconData();
+        Task UpdateCurrentBeatMapInfos(CustomBeatmapLevel selectedBeatmapLevel, IDifficultyBeatmap beatmap);
         event EventHandler<bool> OnDataLoading;
         event EventHandler<DisplaySessionInfo> OnDisplaySessionInfo;
         event EventHandler<DisplayPPInfo> OnDisplayPPInfo;

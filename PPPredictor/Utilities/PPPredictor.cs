@@ -147,7 +147,12 @@ namespace PPPredictor.Utilities
 
         private async Task UpdateCurrentBeatMapInfos(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
         {
-            _currentBeatMapInfo = new PPPBeatMapInfo(lvlSelectionNavigationCtrl.selectedBeatmapLevel as CustomBeatmapLevel, beatmap);
+            await UpdateCurrentBeatMapInfos(lvlSelectionNavigationCtrl.selectedBeatmapLevel as CustomBeatmapLevel, beatmap);
+        }
+
+        public async Task UpdateCurrentBeatMapInfos(CustomBeatmapLevel selectedBeatmapLevel, IDifficultyBeatmap beatmap)
+        {
+            _currentBeatMapInfo = new PPPBeatMapInfo(selectedBeatmapLevel, beatmap);
             await UpdateCurrentBeatMapInfos();
             CalculatePP();
         }
@@ -185,9 +190,9 @@ namespace PPPredictor.Utilities
             return _ppCalculator.CalculatePPatPercentage(currentStars, percentage, levelFailed);
         }
 
-        public double CalculateMaxPP(double stars, GameplayModifiers gameplayModifiers)
+        public double CalculateMaxPP(double modifiedStars)
         {
-            return CalculatePPatPercentage(stars, 100, gameplayModifiers);
+            return _ppCalculator.CalculateMaxPP(modifiedStars);
         }
 
         public double GetModifiedStars(GameplayModifiers gameplayModifiers)
@@ -207,7 +212,7 @@ namespace PPPredictor.Utilities
 
         public async void CalculatePP()
         {
-            if (_currentBeatMapInfo.MaxPP == -1) _currentBeatMapInfo.MaxPP = CalculateMaxPP(_currentBeatMapInfo.CurrentSelectionStars, _gameplayModifiers);
+            if (_currentBeatMapInfo.MaxPP == -1) _currentBeatMapInfo.MaxPP = CalculateMaxPP(_currentBeatMapInfo.CurrentSelectionStars);
             double pp = CalculatePPatPercentage(_currentBeatMapInfo.CurrentSelectionStars, _percentage, _gameplayModifiers);
             PPGainResult ppGainResult = _ppCalculator.GetPlayerScorePPGain(_currentBeatMapInfo.SelectedMapSearchString, pp);
             double ppGains = _ppCalculator.Zeroizer(ppGainResult.GetDisplayPPValue());
@@ -354,7 +359,7 @@ namespace PPPredictor.Utilities
         {
             if (string.IsNullOrEmpty(_leaderboardInfo.CustomLeaderboardUserId))
             {
-                return (await BS_Utils.Gameplay.GetUserInfo.GetUserAsync()).platformUserId;
+                return (await Plugin.GetUserInfoBS()).platformUserId;
             }
             else
             {

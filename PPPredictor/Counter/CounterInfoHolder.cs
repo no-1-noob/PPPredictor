@@ -114,7 +114,7 @@ namespace PPPredictor.Counter
                 double pp = ppPredictorMgr.GetPPAtPercentageForCalculator(leaderboard, percentage, levelFailed, modifiedStars, gameplayModifiers);
                 double ppGain = Math.Round(ppPredictorMgr.GetPPGainForCalculator(leaderboard, pp), 2);
 
-                if (maxPP == -1) maxPP = ppPredictorMgr.GetMaxPPForCalculator(leaderboard, modifiedStars, gameplayModifiers);
+                if (maxPP == -1) maxPP = ppPredictorMgr.GetMaxPPForCalculator(leaderboard, modifiedStars);
 
                 string maxPPReachedPrefix = string.Empty;
                 string maxPPReachedSuffix = string.Empty;

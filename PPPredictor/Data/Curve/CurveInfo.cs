@@ -1,4 +1,5 @@
 ﻿using PPPredictor.Utilities;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace PPPredictor.Data.Curve
@@ -6,13 +7,13 @@ namespace PPPredictor.Data.Curve
     public class CurveInfo
     {
         private CurveType _curveType;
-        private double[,] _arrPPCurve;
+        private List<(double, double)> _arrPPCurve;
         private double? basePPMultiplier;
         private double? baseline;
         private double? exponential;
         private double? cutoff;
 
-        public double[,] ArrPPCurve { get => _arrPPCurve; set => _arrPPCurve = value; }
+        public List<(double, double)> ArrPPCurve { get => _arrPPCurve; set => _arrPPCurve = value; }
         [DefaultValue(null)]
         public double? BasePPMultiplier { get => basePPMultiplier; set => basePPMultiplier = value; }
         public CurveType CurveType { get => _curveType; set => _curveType = value; }
@@ -32,14 +33,14 @@ namespace PPPredictor.Data.Curve
             _curveType = curveType;
         }
 
-        public CurveInfo(CurveType curveType, double[,] arrPPCurve, double basePPMultiplier)
+        public CurveInfo(CurveType curveType, List<(double, double)> arrPPCurve, double basePPMultiplier)
         {
             _curveType = curveType;
             _arrPPCurve = arrPPCurve;
             this.basePPMultiplier = basePPMultiplier;
         }
 
-        public CurveInfo(CurveType curveType, double[,] arrPPCurve, double basePPMultiplier, double? baseline, double? exponential, double? cutoff) : this(curveType, arrPPCurve, basePPMultiplier)
+        public CurveInfo(CurveType curveType, List<(double, double)> arrPPCurve, double basePPMultiplier, double? baseline, double? exponential, double? cutoff) : this(curveType, arrPPCurve, basePPMultiplier)
         {
             this.baseline = baseline;
             this.exponential = exponential;

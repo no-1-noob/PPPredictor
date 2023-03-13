@@ -26,6 +26,11 @@ namespace PPPredictor.Data.Curve
             }
         }
 
+        public double CalculateMaxPP(double star)
+        {
+            return CalculatePPatPercentage(star, 100, false);
+        }
+
         public CurveInfo ToCurveInfo()
         {
             CurveInfo retCurve = new CurveInfo

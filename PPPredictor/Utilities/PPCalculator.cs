@@ -165,13 +165,13 @@ namespace PPPredictor.Utilities
                 if (_leaderboardInfo.CurrentMapPool.CurrentPlayer.Rank > worstRankFetched) _leaderboardInfo.CurrentMapPool.LsPlayerRankings = new List<PPPPlayer>();
 
                 double bestRankFetched = _leaderboardInfo.CurrentMapPool.LsPlayerRankings.Select(x => x.Rank).DefaultIfEmpty(-1).Min();
-                double fetchIndexPage = bestRankFetched > 0 ? Math.Floor((bestRankFetched - 1) / playerPerPages) + 1 : Math.Floor(_leaderboardInfo.CurrentMapPool.CurrentPlayer.Rank / playerPerPages) + 1;
+                double fetchIndexPage = bestRankFetched > 0 ? Math.Floor((bestRankFetched - 1) / playerPerPages) + _leaderboardInfo.LeaderboardFirstPageIndex : Math.Floor(_leaderboardInfo.CurrentMapPool.CurrentPlayer.Rank / playerPerPages) + _leaderboardInfo.LeaderboardFirstPageIndex;
                 bool needMoreData = true;
                 while (needMoreData)
                 {
                     int indexOfBetterPlayer = _leaderboardInfo.CurrentMapPool.LsPlayerRankings.FindIndex(x => x.Pp > pp);
                     var ppBetterPlayer = indexOfBetterPlayer > -1 ? _leaderboardInfo.CurrentMapPool.LsPlayerRankings[indexOfBetterPlayer].Pp : -1d;
-                    if (indexOfBetterPlayer != -1 || fetchIndexPage == 0 || (bestRankFetched == 1 && indexOfBetterPlayer == -1)) //bestRankFetched == 1: Special case for first place; congratz ;)
+                    if (indexOfBetterPlayer != -1 || fetchIndexPage == _leaderboardInfo.LeaderboardFirstPageIndex - 1 || (bestRankFetched == 1 && indexOfBetterPlayer == -1)) //bestRankFetched == 1: Special case for first place; congratz ;)
                     {
                         //Found a better player or already fetched until rank 1
                         needMoreData = false;
@@ -203,6 +203,11 @@ namespace PPPredictor.Utilities
         internal double CalculatePPatPercentage(double star, double percentage, bool failed)
         {
             return _leaderboardInfo.CurrentMapPool.Curve.CalculatePPatPercentage(star, percentage, failed);
+        }
+
+        internal double CalculateMaxPP(double star)
+        {
+            return _leaderboardInfo.CurrentMapPool.Curve.CalculateMaxPP(star);
         }
 
         public double WeightPP(double rawPP, int index, float accumulationConstant)

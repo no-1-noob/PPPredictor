@@ -11,6 +11,7 @@ namespace PPPredictor.Interfaces
     {
         bool isDummy { get; }
         double CalculatePPatPercentage(double star, double percentage, bool failed);
+        double CalculateMaxPP(double star);
         CurveInfo ToCurveInfo();
     }
 }

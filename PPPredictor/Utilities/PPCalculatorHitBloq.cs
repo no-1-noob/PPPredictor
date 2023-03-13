@@ -46,7 +46,7 @@ namespace PPPredictor.Utilities
 
         public override double ApplyModifierMultiplierToStars(PPPBeatMapInfo beatMapInfo, GameplayModifiers gameplayModifiers, bool levelFailed = false)
         {
-            return beatMapInfo.BaseStars;
+            return levelFailed ? 0 : beatMapInfo.BaseStars;
         }
 
         public override async Task<PPPBeatMapInfo> GetBeatMapInfoAsync(PPPBeatMapInfo beatMapInfo)
@@ -144,7 +144,7 @@ namespace PPPredictor.Utilities
         {
             try
             {
-                string platformUserId = (await BS_Utils.Gameplay.GetUserInfo.GetUserAsync()).platformUserId;
+                string platformUserId = (await Plugin.GetUserInfoBS()).platformUserId;
                 HitBloqUserId userId = await hitbloqapi.GetHitBloqUserIdByUserId(platformUserId);
                 if (userId != null)
                 {

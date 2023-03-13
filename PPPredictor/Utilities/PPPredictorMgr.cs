@@ -200,12 +200,12 @@ namespace PPPredictor.Utilities
             return string.Empty;
         }
 
-        internal double GetMaxPPForCalculator(Leaderboard leaderBoardName, double stars, GameplayModifiers gameplayModifiers)
+        internal double GetMaxPPForCalculator(Leaderboard leaderBoardName, double stars)
         {
             IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());
             if (predictor != null)
             {
-                return predictor.CalculateMaxPP(stars, gameplayModifiers);
+                return predictor.CalculateMaxPP(stars);
             }
             return 0;
         }
@@ -287,6 +287,11 @@ namespace PPPredictor.Utilities
                 return predictor.MapPoolOptions;
             }
             return new List<object>();
+        }
+
+        internal async Task UpdateCurrentBeatMapInfos(CustomBeatmapLevel selectedBeatmapLevel, IDifficultyBeatmap beatmap)
+        {
+            await Task.WhenAll(_lsPPPredictor.Select(predictor => predictor.UpdateCurrentBeatMapInfos(selectedBeatmapLevel, beatmap)));
         }
 
         public void Initialize()
