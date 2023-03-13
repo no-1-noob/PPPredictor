@@ -1,4 +1,10 @@
-﻿namespace PPPredictor.Utilities
+﻿using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
+using System.IO;
+using UnityEngine;
+
+namespace PPPredictor.Utilities
 {
     class DisplayHelper
     {
@@ -18,6 +24,56 @@
                 return $"red";
             }
             return "white";
+        }
+
+        /// <summary>
+        /// Resize the image to the specified width and height.
+        /// </summary>
+        /// <param name="image">The image to resize.</param>
+        /// <param name="width">The width to resize to.</param>
+        /// <param name="height">The height to resize to.</param>
+        /// <returns>The resized image.</returns>
+        /// Taken from https://stackoverflow.com/questions/1922040/how-to-resize-an-image-c-sharp
+        public static byte[] ResizeImage(byte[] data, int width, int height)
+        {
+            byte[] output = null;
+            try
+            {
+                using (var ms = new MemoryStream(data))
+                {
+                    Image img = Image.FromStream(ms);
+                    var destRect = new Rectangle(0, 0, width, height);
+                    var destImage = new Bitmap(width, height);
+
+                    destImage.SetResolution(img.HorizontalResolution, img.VerticalResolution);
+
+                    using (var graphics = System.Drawing.Graphics.FromImage(destImage))
+                    {
+                        graphics.CompositingMode = CompositingMode.SourceCopy;
+                        graphics.CompositingQuality = CompositingQuality.HighQuality;
+                        graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                        graphics.SmoothingMode = SmoothingMode.HighQuality;
+                        graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                        using (var wrapMode = new ImageAttributes())
+                        {
+                            wrapMode.SetWrapMode(System.Drawing.Drawing2D.WrapMode.TileFlipXY);
+                            graphics.DrawImage(img, destRect, 0, 0, img.Width, img.Height, GraphicsUnit.Pixel, wrapMode);
+                        }
+                    }
+
+                    using (var msOut = new MemoryStream())
+                    {
+                        destImage.Save(msOut, destImage.RawFormat);
+                        output = msOut.ToArray();
+                    }
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Plugin.Log.Error($"ResizeImage error {ex.Message}");
+            }
+            return output;
         }
     }
 }

@@ -49,7 +49,7 @@ namespace PPPredictor.Counter
                 }
                 catch (Exception ex)
                 {
-                    Plugin.DebugPrint($"PPPCounter change selected Map: UpdateCurrentBeatMapInfos failed {ex.Message}");
+                    Plugin.Log.Error($"PPPCounter change selected Map: UpdateCurrentBeatMapInfos failed {ex.Message}");
                 }
 #if DEBUG
                 //Center Helper for development
@@ -66,8 +66,8 @@ namespace PPPredictor.Counter
                     testPlus.alignment = TextAlignmentOptions.Center;
                     testPlus.text = "+";
                 }*/
-                debugPercentage = CanvasUtility.CreateTextFromSettings(Settings, new Vector3(0, 0, 0));
-                debugPercentage.alignment = TextAlignmentOptions.Center;
+                //debugPercentage = CanvasUtility.CreateTextFromSettings(Settings, new Vector3(0, 0, 0));
+                //debugPercentage.alignment = TextAlignmentOptions.Center;
 #endif
                 var canvas = CanvasUtility.GetCanvasFromID(this.Settings.CanvasID);
                 float positionScale = CanvasUtility.GetCanvasSettingsFromCanvas(canvas).PositionScale;

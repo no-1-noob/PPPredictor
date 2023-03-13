@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -28,6 +29,7 @@ namespace PPPredictor.OpenAPIs
             try
             {
                 HttpResponseMessage response = await client.GetAsync($"api/tools/ss_to_hitbloq/{id}");
+                DebugPrintHitbloqNetwork(response.RequestMessage.RequestUri.ToString());
                 if (response.IsSuccessStatusCode)
                 {
                     string result = await response.Content.ReadAsStringAsync();
@@ -46,6 +48,7 @@ namespace PPPredictor.OpenAPIs
             try
             {
                 HttpResponseMessage response = await client.GetAsync($"api/map_pools_detailed");
+                DebugPrintHitbloqNetwork(response.RequestMessage.RequestUri.ToString());
                 if (response.IsSuccessStatusCode)
                 {
                     string result = await response.Content.ReadAsStringAsync();
@@ -64,6 +67,7 @@ namespace PPPredictor.OpenAPIs
             try
             {
                 HttpResponseMessage response = await client.GetAsync($"api/ranked_list/{poolIdent}/{page}");
+                DebugPrintHitbloqNetwork(response.RequestMessage.RequestUri.ToString());
                 if (response.IsSuccessStatusCode)
                 {
                     string result = await response.Content.ReadAsStringAsync();
@@ -82,6 +86,7 @@ namespace PPPredictor.OpenAPIs
             try
             {
                 HttpResponseMessage response = await client.GetAsync($"api/player_rank/{poolIdent}/{userId}");
+                DebugPrintHitbloqNetwork(response.RequestMessage.RequestUri.ToString());
                 if (response.IsSuccessStatusCode)
                 {
                     string result = await response.Content.ReadAsStringAsync();
@@ -100,6 +105,7 @@ namespace PPPredictor.OpenAPIs
             try
             {
                 HttpResponseMessage response = await client.GetAsync($"api/user/{userId}/scores?page={page}&pool={poolId}&sort=newest");
+                DebugPrintHitbloqNetwork(response.RequestMessage.RequestUri.ToString());
                 if (response.IsSuccessStatusCode)
                 {
                     string result = await response.Content.ReadAsStringAsync();
@@ -118,6 +124,7 @@ namespace PPPredictor.OpenAPIs
             try
             {
                 HttpResponseMessage response = await client.GetAsync($"api/ladder/{mapPoolId}/players/{page}");
+                DebugPrintHitbloqNetwork(response.RequestMessage.RequestUri.ToString());
                 if (response.IsSuccessStatusCode)
                 {
                     string result = await response.Content.ReadAsStringAsync();
@@ -136,6 +143,7 @@ namespace PPPredictor.OpenAPIs
             try
             {
                 HttpResponseMessage response = await client.GetAsync($"api/leaderboard/{searchString}/info");
+                DebugPrintHitbloqNetwork(response.RequestMessage.RequestUri.ToString());
                 if (response.IsSuccessStatusCode)
                 {
                     string result = await response.Content.ReadAsStringAsync();
@@ -147,6 +155,12 @@ namespace PPPredictor.OpenAPIs
                 Plugin.Log?.Error($"Error in GetLeaderBoardInfo: {ex.Message}");
             }
             return new HitBloqLeaderboardInfo();
+        }
+
+        [Conditional("HITBLOQNETWORK")]
+        public void DebugPrintHitbloqNetwork(string message)
+        {
+            Plugin.DebugPrint($"HitbloqNetwork: {message}");
         }
     }
 
@@ -162,6 +176,7 @@ namespace PPPredictor.OpenAPIs
         public string short_description { get; set; }
         public string image { get; set; }
         public int popularity { get; set; }
+        public string download_url { get; set; }
     }
 
     public class HitBloqMapPoolDetails

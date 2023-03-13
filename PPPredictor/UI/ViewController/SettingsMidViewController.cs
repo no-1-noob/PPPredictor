@@ -16,6 +16,7 @@ namespace PPPredictor.UI.ViewController
         private readonly List<object> scoringTypeOptions;
         private readonly List<object> generalPPGainCalculationOptions;
         private readonly List<object> counterDisplayTypeOptions;
+        private readonly List<object> hitbloqMapPoolSortingOptions;
 
         public SettingsMidViewController()
         {
@@ -33,6 +34,11 @@ namespace PPPredictor.UI.ViewController
             foreach (CounterDisplayType enumValue in Enum.GetValues(typeof(CounterDisplayType)))
             {
                 counterDisplayTypeOptions.Add(EnumHelper.CounterDisplayTypeGetDisplayValue(enumValue));
+            }
+            hitbloqMapPoolSortingOptions = new List<object>();
+            foreach (MapPoolSorting enumValue in Enum.GetValues(typeof(MapPoolSorting)))
+            {
+                hitbloqMapPoolSortingOptions.Add(enumValue.ToString());
             }
         }
 
@@ -99,34 +105,19 @@ namespace PPPredictor.UI.ViewController
             }
         }
 
-        [UIValue("scoresaber-enabled")]
-        public bool ScoreSaberEnabled
+        [UIValue("hitbloq-mappool-sorting-options")]
+        public List<object> HitbloqMapPoolSortingOptions
         {
-            get => Plugin.ProfileInfo.IsScoreSaberEnabled;
-            set
-            {
-                Plugin.ProfileInfo.IsScoreSaberEnabled = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ScoreSaberEnabled)));
-            }
+            get => this.hitbloqMapPoolSortingOptions;
         }
-        [UIValue("beatleader-enabled")]
-        public bool BeatLeaderEnabled
+        [UIValue("hitbloq-mappool-sorting")]
+        public string HitbloqMapPoolSorting
         {
-            get => Plugin.ProfileInfo.IsBeatLeaderEnabled;
+            get => Plugin.ProfileInfo.HitbloqMapPoolSorting.ToString();
             set
             {
-                Plugin.ProfileInfo.IsBeatLeaderEnabled = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(BeatLeaderEnabled)));
-            }
-        }
-        [UIValue("hitbloq-enabled")]
-        public bool HitbloqEnabled
-        {
-            get => Plugin.ProfileInfo.IsHitBloqEnabled;
-            set
-            {
-                Plugin.ProfileInfo.IsHitBloqEnabled = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HitbloqEnabled)));
+                Plugin.ProfileInfo.HitbloqMapPoolSorting = (MapPoolSorting)Enum.Parse(typeof(MapPoolSorting), value);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HitbloqMapPoolSorting)));
             }
         }
 
@@ -248,9 +239,7 @@ namespace PPPredictor.UI.ViewController
             CounterHideWhenUnranked = Plugin.ProfileInfo.CounterHideWhenUnranked;
             CounterScoringType = Plugin.ProfileInfo.CounterScoringType.ToString();
             VersionCheckEnabled = Plugin.ProfileInfo.IsVersionCheckEnabled;
-            ScoreSaberEnabled = Plugin.ProfileInfo.IsScoreSaberEnabled;
-            BeatLeaderEnabled = Plugin.ProfileInfo.IsBeatLeaderEnabled;
-            HitbloqEnabled = Plugin.ProfileInfo.IsHitBloqEnabled;
+            HitbloqMapPoolSorting = Plugin.ProfileInfo.HitbloqMapPoolSorting.ToString();
             GeneralPPGainCalculation = Plugin.ProfileInfo.PpGainCalculationType.ToString();
             GeneralRawPPLossHighlightThreshold = Plugin.ProfileInfo.RawPPLossHighlightThreshold;
         }

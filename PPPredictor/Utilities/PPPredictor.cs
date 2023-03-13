@@ -63,6 +63,7 @@ namespace PPPredictor.Utilities
             leaderboardName = leaderBoard;
             LoadInfos();
             _ppCalculator = new T() { _leaderboardInfo = _leaderboardInfo };
+            _ppCalculator.OnMapPoolRefreshed += PPCalculator_OnMapPoolRefreshed;
 
         }
         #endregion
@@ -90,10 +91,13 @@ namespace PPPredictor.Utilities
             get => (object)_leaderboardInfo.CurrentMapPool;
             set
             {
-
+                bool isCurrentMapPoolChanging = IsCurrentMapPoolChanging(value);
                 _leaderboardInfo.CurrentMapPool = (PPPMapPool)value;
                 UpdateMapPoolDetails();
-                Plugin.Log?.Error($"Set MapPool {value} Player: {_leaderboardInfo.CurrentMapPool.CurrentPlayer}");
+                if (isCurrentMapPoolChanging)
+                {
+                    this.RefreshCurrentData(10, true);
+                }
                 SetActive(true);
             }
         }
@@ -179,7 +183,7 @@ namespace PPPredictor.Utilities
         {
             if (_isActive) OnDisplaySessionInfo?.Invoke(this, displaySessionInfo);
         }
-        private void SendMapPoolRefresh()
+        private void PPCalculator_OnMapPoolRefreshed(object sender, EventArgs e)
         {
             OnMapPoolRefreshed?.Invoke(this, null);
         }
@@ -208,6 +212,13 @@ namespace PPPredictor.Utilities
         public bool IsRanked()
         {
             return _currentBeatMapInfo.BaseStars > 0;
+        }
+
+        internal bool IsCurrentMapPoolChanging(object value)
+        {
+            var currentPool = CurrentMapPool as PPPMapPool;
+            var newMapPool = value as PPPMapPool;
+            return (currentPool != null && newMapPool != null && currentPool.Id != newMapPool.Id);
         }
 
         public async void CalculatePP()
@@ -386,7 +397,9 @@ namespace PPPredictor.Utilities
                 {
                     using (var response = await client.GetAsync(MapPoolIcon))
                     {
-                        MapPoolIconData = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
+                        byte[] rawData = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
+                        byte[] resizedData = DisplayHelper.ResizeImage(rawData, 128, 128);
+                        MapPoolIconData = resizedData;
                     }
                 }
             }
@@ -394,6 +407,11 @@ namespace PPPredictor.Utilities
             {
                 Plugin.Log.Error($"GetMapPoolIconData {MapPoolIcon}: {ex.Message}");
             }
+        }
+
+        public PPPMapPool FindPoolWithSyncURL(string syncUrl)
+        {
+            return _leaderboardInfo.LsMapPools.FirstOrDefault(x => x.SyncUrl == syncUrl);
         }
     }
 }

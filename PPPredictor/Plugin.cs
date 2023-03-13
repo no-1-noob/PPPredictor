@@ -4,6 +4,8 @@ using PPPredictor.Installers;
 using PPPredictor.UI.ViewController;
 using PPPredictor.Utilities;
 using SiraUtil.Zenject;
+using System.Diagnostics;
+using System.Threading.Tasks;
 using IPALogger = IPA.Logging.Logger;
 
 namespace PPPredictor
@@ -46,6 +48,7 @@ namespace PPPredictor
             ProfileInfoMgr.SaveProfile(ProfileInfo);
         }
 
+        [Conditional("DEBUG")]
         public static void DebugPrint(string text)
         {
             Plugin.Log?.Error(text);

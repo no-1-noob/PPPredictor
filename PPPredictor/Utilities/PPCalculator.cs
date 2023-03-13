@@ -12,6 +12,7 @@ namespace PPPredictor.Utilities
     {
         internal PPPLeaderboardInfo _leaderboardInfo;
         protected int playerPerPages = 0; //Cause a null reference if not set ;)
+        public event EventHandler OnMapPoolRefreshed;
 
         public PPCalculator()
         {
@@ -225,6 +226,11 @@ namespace PPPredictor.Utilities
             if (pp < -0.01 || pp > 0.01) return pp;
             if ((pp > -0.01 && pp < 0) || (pp < 0.01 && pp > 0)) return 0;
             return pp;
+        }
+
+        protected void SendMapPoolRefreshed()
+        {
+            OnMapPoolRefreshed?.Invoke(this, null);
         }
 
         protected abstract Task<PPPPlayer> GetPlayerInfo(long userId);

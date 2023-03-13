@@ -1,13 +1,13 @@
-﻿using BeatSaberMarkupLanguage.FloatingScreen;
+﻿using BeatSaberPlaylistsLib.Types;
+using IPA.Loader;
+using PPPredictor.Data;
 using PPPredictor.Data.DisplayInfos;
 using PPPredictor.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using UnityEngine;
 using Zenject;
 
 namespace PPPredictor.Utilities
@@ -42,6 +42,7 @@ namespace PPPredictor.Utilities
 
         internal void ResetPredictors()
         {
+            RefreshLeaderboardVisibilityByIPAPluginManager();
             _lsPPPredictor = new List<IPPPredictor>();
             CurrentPPPredictor = null;
             if (Plugin.ProfileInfo.IsScoreSaberEnabled) _lsPPPredictor.Add(new PPPredictor<PPCalculatorScoreSaber>(Leaderboard.ScoreSaber));
@@ -69,6 +70,14 @@ namespace PPPredictor.Utilities
             }
             CurrentPPPredictor.SetActive(true);
             SetNavigationArrowInteractivity();
+        }
+
+        private void RefreshLeaderboardVisibilityByIPAPluginManager()
+        {
+            List<PluginMetadata> lsEnabledPlugin = PluginManager.EnabledPlugins.ToList();
+            Plugin.ProfileInfo.IsScoreSaberEnabled = lsEnabledPlugin.FirstOrDefault(x => x.Name == "ScoreSaber") != null;
+            Plugin.ProfileInfo.IsBeatLeaderEnabled = lsEnabledPlugin.FirstOrDefault(x => x.Name == "BeatLeader") != null;
+            Plugin.ProfileInfo.IsHitBloqEnabled = lsEnabledPlugin.FirstOrDefault(x => x.Name == "Hitbloq") != null;
         }
 
         private void PPPredictor_OnMapPoolRefreshed(object sender, EventArgs e)
@@ -275,7 +284,6 @@ namespace PPPredictor.Utilities
 
         internal void ActivateView(bool activate)
         {
-            Plugin.Log?.Error($"ActivateView '{activate}'");
             ViewActivated?.Invoke(this, activate);
         }
 
@@ -307,6 +315,27 @@ namespace PPPredictor.Utilities
                 pPPredictor.OnDisplayPPInfo -= PPPredictor_OnDisplayPPInfo;
                 pPPredictor.OnDisplaySessionInfo -= PPPredictor_OnDisplaySessionInfo;
                 pPPredictor.OnMapPoolRefreshed -= PPPredictor_OnMapPoolRefreshed;
+            }
+        }
+
+        internal void FindPoolWithSyncURL(IPlaylist playlist)
+        {
+            if (playlist != null)
+            {
+                if (playlist.TryGetCustomData("syncURL", out object outSyncURL))
+                {
+                    foreach (IPPPredictor predictor in _lsPPPredictor)
+                    {
+                        PPPMapPool mapPool = predictor.FindPoolWithSyncURL(outSyncURL as string);
+                        if(mapPool != null)
+                        {
+                            predictor.CurrentMapPool = mapPool;
+                            index = _lsPPPredictor.FindIndex(x => x.LeaderBoardName == predictor.LeaderBoardName);
+                            CyclePredictors(0);
+                            break;
+                        }
+                    }
+                }
             }
         }
     }

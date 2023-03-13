@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using PPPredictor.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -28,6 +29,7 @@ namespace PPPredictor.OpenAPIs
             try
             {
                 HttpResponseMessage response = await client.GetAsync($"modifiers");
+                DebugPrintBeatLeaderNetwork(response.RequestMessage.RequestUri.ToString());
                 if (response.IsSuccessStatusCode)
                 {
                     string result = await response.Content.ReadAsStringAsync();
@@ -46,6 +48,7 @@ namespace PPPredictor.OpenAPIs
             try
             {
                 HttpResponseMessage response = await client.GetAsync($"/events?count=10000&sortBy=date&order=desc");
+                DebugPrintBeatLeaderNetwork(response.RequestMessage.RequestUri.ToString());
                 if (response.IsSuccessStatusCode)
                 {
                     string result = await response.Content.ReadAsStringAsync();
@@ -64,6 +67,7 @@ namespace PPPredictor.OpenAPIs
             try
             {
                 HttpResponseMessage response = await client.GetAsync($"/map/hash/{hash}");
+                DebugPrintBeatLeaderNetwork(response.RequestMessage.RequestUri.ToString());
                 if (response.IsSuccessStatusCode)
                 {
                     string result = await response.Content.ReadAsStringAsync();
@@ -82,6 +86,7 @@ namespace PPPredictor.OpenAPIs
             try
             {
                 HttpResponseMessage response = await client.GetAsync($"/player/{userId}?stats=true");
+                DebugPrintBeatLeaderNetwork(response.RequestMessage.RequestUri.ToString());
                 if (response.IsSuccessStatusCode)
                 {
                     string result = await response.Content.ReadAsStringAsync();
@@ -105,6 +110,7 @@ namespace PPPredictor.OpenAPIs
                     requestUrl += $"&eventId={eventId}";
                 }
                 HttpResponseMessage response = await client.GetAsync(requestUrl);
+                DebugPrintBeatLeaderNetwork(response.RequestMessage.RequestUri.ToString());
                 if (response.IsSuccessStatusCode)
                 {
                     string result = await response.Content.ReadAsStringAsync();
@@ -123,6 +129,7 @@ namespace PPPredictor.OpenAPIs
             try
             {
                 HttpResponseMessage response = await client.GetAsync($"players?sortBy={sortBy}&page={page}&count={count}&order={order}&mapsType=ranked&friends=false");
+                DebugPrintBeatLeaderNetwork(response.RequestMessage.RequestUri.ToString());
                 if (response.IsSuccessStatusCode)
                 {
                     string result = await response.Content.ReadAsStringAsync();
@@ -141,6 +148,7 @@ namespace PPPredictor.OpenAPIs
             try
             {
                 HttpResponseMessage response = await client.GetAsync($"event/{eventId}/players?sortBy={sortBy}&page={page}&count={count}&order={order}");
+                DebugPrintBeatLeaderNetwork(response.RequestMessage.RequestUri.ToString());
                 if (response.IsSuccessStatusCode)
                 {
                     string result = await response.Content.ReadAsStringAsync();
@@ -159,6 +167,7 @@ namespace PPPredictor.OpenAPIs
             try
             {
                 HttpResponseMessage response = await client.GetAsync($"playlist/{playListId}");
+                DebugPrintBeatLeaderNetwork(response.RequestMessage.RequestUri.ToString());
                 if (response.IsSuccessStatusCode)
                 {
                     string result = await response.Content.ReadAsStringAsync();
@@ -170,6 +179,12 @@ namespace PPPredictor.OpenAPIs
                 Plugin.Log?.Error($"Error in beatleaderapi GetPlayList: {ex.Message}");
             }
             return new BeatLeaderPlayList();
+        }
+
+        [Conditional("BEATLEADERNETWORK")]
+        public void DebugPrintBeatLeaderNetwork(string message)
+        {
+            Plugin.DebugPrint($"BeatLeaderNetwork: {message}");
         }
 
         public class BeatLeaderEventList

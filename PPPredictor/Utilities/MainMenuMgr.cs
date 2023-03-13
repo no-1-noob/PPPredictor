@@ -1,5 +1,6 @@
 ﻿using System;
 using Zenject;
+using BeatSaberPlaylistsLib.Types;
 
 namespace PPPredictor.Utilities
 {
@@ -8,6 +9,7 @@ namespace PPPredictor.Utilities
         [Inject] private readonly LevelSelectionNavigationController levelSelectionNavigationController;
         [Inject] private readonly GameplaySetupViewController gameplaySetupViewController;
         [Inject] private readonly PPPredictorMgr ppPredictorMgr;
+        [Inject] private readonly AnnotatedBeatmapLevelCollectionsViewController annotatedBeatmapLevelCollectionsViewController;
 
         public MainMenuMgr()
         {
@@ -20,6 +22,7 @@ namespace PPPredictor.Utilities
             levelSelectionNavigationController.didActivateEvent -= OnLevelSelectionActivated;
             levelSelectionNavigationController.didDeactivateEvent -= OnLevelSelectionDeactivated;
             gameplaySetupViewController.didChangeGameplayModifiersEvent -= DidChangeGameplayModifiersEvent;
+            annotatedBeatmapLevelCollectionsViewController.didSelectAnnotatedBeatmapLevelCollectionEvent -= AnnotatedBeatmapLevelCollectionsViewController_didSelectAnnotatedBeatmapLevelCollectionEvent;
         }
 
         public void Initialize()
@@ -29,6 +32,7 @@ namespace PPPredictor.Utilities
             levelSelectionNavigationController.didActivateEvent += OnLevelSelectionActivated;
             levelSelectionNavigationController.didDeactivateEvent += OnLevelSelectionDeactivated;
             gameplaySetupViewController.didChangeGameplayModifiersEvent += DidChangeGameplayModifiersEvent;
+            annotatedBeatmapLevelCollectionsViewController.didSelectAnnotatedBeatmapLevelCollectionEvent += AnnotatedBeatmapLevelCollectionsViewController_didSelectAnnotatedBeatmapLevelCollectionEvent;
         }
 
         private void DidChangeGameplayModifiersEvent()
@@ -53,6 +57,11 @@ namespace PPPredictor.Utilities
         private void OnLevelSelectionDeactivated(bool removedFromHierarchy, bool screenSystemDisabling)
         {
             this.ppPredictorMgr.ActivateView(false);
+        }
+
+        private void AnnotatedBeatmapLevelCollectionsViewController_didSelectAnnotatedBeatmapLevelCollectionEvent(IAnnotatedBeatmapLevelCollection annotatedBeatmapLevelCollection)
+        {
+            this.ppPredictorMgr.FindPoolWithSyncURL(annotatedBeatmapLevelCollection as IPlaylist);
         }
     }
 }

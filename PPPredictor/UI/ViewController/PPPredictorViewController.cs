@@ -57,7 +57,7 @@ namespace PPPredictor.UI.ViewController
             ppPredictorMgr.OnDataLoading += PpPredictorMgr_OnDataLoading;
             ppPredictorMgr.OnDisplayPPInfo += PpPredictorMgr_OnDisplayPPInfo;
             ppPredictorMgr.OnDisplaySessionInfo += PpPredictorMgr_OnDisplaySessionInfo;
-            ppPredictorMgr.OnMapPoolRefreshed += PpPredictorMgr_OnMapPoolRefreshed; ;
+            ppPredictorMgr.OnMapPoolRefreshed += PpPredictorMgr_OnMapPoolRefreshed;
         }
 
         private void PpPredictorMgr_OnMapPoolRefreshed(object sender, EventArgs e)
@@ -445,13 +445,8 @@ namespace PPPredictor.UI.ViewController
             get => this.ppPredictorMgr.CurrentPPPredictor.CurrentMapPool;
             set
             {
-                bool isCurrentMapPoolChanging = IsCurrentMapPoolChanging(value);
                 this.ppPredictorMgr.CurrentPPPredictor.CurrentMapPool = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentMapPool)));
-                if(isCurrentMapPoolChanging)
-                {
-                    this.RefreshCurrentData(10, true);
-                }
             }
         }
         #endregion
@@ -466,16 +461,8 @@ namespace PPPredictor.UI.ViewController
             this.ppPredictorMgr.RefreshCurrentData(count, refreshStars);
         }
 
-        internal bool IsCurrentMapPoolChanging(object value)
-        {
-            var currentPool = this.ppPredictorMgr.CurrentPPPredictor.CurrentMapPool as PPPMapPool;
-            var newMapPool = value as PPPMapPool;
-            return (currentPool != null && newMapPool != null && currentPool.Id != newMapPool.Id);
-        }
-
         private void PpPredictorMgr_ViewActivated(object sender, bool active)
         {
-            Plugin.Log?.Error($"PpPredictorMgr_ViewActivated {active}");
             RefreshTabSelection();
             floatingScreen.gameObject.SetActive(active);
         }

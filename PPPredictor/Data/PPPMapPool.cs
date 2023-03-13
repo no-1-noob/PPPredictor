@@ -29,6 +29,7 @@ namespace PPPredictor.Data
         private double _popularity;
         private string _iconUrl;
         private byte[] _iconData;
+        private string _syncUrl;
 
         [UIValue("mapPoolName")]
         public string MapPoolName { get => _mapPoolName; set => _mapPoolName = value; }
@@ -53,6 +54,7 @@ namespace PPPredictor.Data
         [JsonIgnore]
         public byte[] IconData { get => _iconData; set => _iconData = value; }
         public double Popularity { get => _popularity; set => _popularity = value; }
+        public string SyncUrl { get => _syncUrl; set => _syncUrl = value; }
 
         [JsonConstructor]
 
@@ -74,9 +76,10 @@ namespace PPPredictor.Data
             _sortIndex = -1;
             _dtLastScoreSet = new DateTime(2000, 1, 1);
             _popularity = 0;
+            _syncUrl = string.Empty;
         }
 
-        public PPPMapPool(string id, string playListId, MapPoolType mapPoolType, string mapPoolName, float accumulationConstant, int sortIndex, IPPPCurve curve, string iconUrl, double popularity = 0) : this()
+        public PPPMapPool(string id, string playListId, MapPoolType mapPoolType, string mapPoolName, float accumulationConstant, int sortIndex, IPPPCurve curve, string iconUrl, double popularity = 0, string syncUrl = "") : this()
         {
             _id = id;
             _playListId = playListId;
@@ -87,6 +90,7 @@ namespace PPPredictor.Data
             _curve = curve;
             _iconUrl= iconUrl;
             _popularity = popularity;
+            _syncUrl= syncUrl;
         }
 
         public PPPMapPool(MapPoolType mapPoolType, string mapPoolName, float accumulationConstant, int sortIndex, IPPPCurve curve) : this("-1", "-1", mapPoolType, mapPoolName, accumulationConstant, sortIndex, curve, string.Empty)

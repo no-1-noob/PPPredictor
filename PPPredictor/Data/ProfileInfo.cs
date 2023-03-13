@@ -1,4 +1,5 @@
-﻿using PPPredictor.Utilities;
+﻿using Newtonsoft.Json;
+using PPPredictor.Utilities;
 using System;
 using System.Collections.Generic;
 
@@ -28,6 +29,7 @@ namespace PPPredictor.Data
         private bool _isVersionCheckEnabled;
         private int _profileInfoVersion;
         private int _selectedTab;
+        private MapPoolSorting _hitbloqMapPoolSorting;
 
         private bool _isScoreSaberEnabled;
         private bool _isBeatLeaderEnabled;
@@ -38,7 +40,7 @@ namespace PPPredictor.Data
             LsLeaderboardInfo = new List<PPPLeaderboardInfo>();
             LastPercentageSelected = 90;
             Position = new SVector3(4.189056f, 1.14293063f, -0.5054281f);
-            EulerAngles = new SVector3(0f, 90f, 359.437439f);
+            EulerAngles = new SVector3(1f, 90.1f, 359.437439f);
             WindowHandleEnabled = false;
             DisplaySessionValues = false;
             ResetSessionHours = 12;
@@ -60,6 +62,7 @@ namespace PPPredictor.Data
             RawPPLossHighlightThreshold = -10;
             ProfileInfoVersion = 0;
             SelectedTab = 0;
+            HitbloqMapPoolSorting = MapPoolSorting.Popularity;
         }
 
         internal void ResetCachedData()
@@ -93,13 +96,17 @@ namespace PPPredictor.Data
         public bool CounterUseCustomMapPoolIcons { get => _counterUseCustomMapPoolIcons; set => _counterUseCustomMapPoolIcons = value; }
         public DateTime DtLastVersionCheck { get => _dtLastVersionCheck; set => _dtLastVersionCheck = value; }
         public bool IsVersionCheckEnabled { get => _isVersionCheckEnabled; set => _isVersionCheckEnabled = value; }
+        [JsonIgnore]
         public bool IsScoreSaberEnabled { get => _isScoreSaberEnabled; set => _isScoreSaberEnabled = value; }
+        [JsonIgnore]
         public bool IsBeatLeaderEnabled { get => _isBeatLeaderEnabled; set => _isBeatLeaderEnabled = value; }
+        [JsonIgnore]
         public bool IsHitBloqEnabled { get => _isHitBloqEnabled; set => _isHitBloqEnabled = value; }
         public PPGainCalculationType PpGainCalculationType { get => _ppGainCalculationType; set => _ppGainCalculationType = value; }
         public int RawPPLossHighlightThreshold { get => _rawPPLossHighlightThreshold; set => _rawPPLossHighlightThreshold = value; }
         public CounterDisplayType CounterDisplayType { get => _counterDisplayType; set => _counterDisplayType = value; }
         public int ProfileInfoVersion { get => _profileInfoVersion; set => _profileInfoVersion = value; }
         public int SelectedTab { get => _selectedTab; set => _selectedTab = value; }
+        public MapPoolSorting HitbloqMapPoolSorting { get => _hitbloqMapPoolSorting; set => _hitbloqMapPoolSorting = value; }
     }
 }

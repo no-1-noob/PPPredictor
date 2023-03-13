@@ -170,11 +170,20 @@ namespace PPPredictor.Utilities
                 }
                 if (oldPool == null)
                 {
-                    oldPool = new PPPMapPool(newMapPool.id, newMapPool.id, MapPoolType.Custom, newMapPool.title, 0, 0, CustomPPPCurve.DummyPPPCurve(), newMapPool.image, newMapPool.popularity);
+                    oldPool = new PPPMapPool(newMapPool.id, newMapPool.id, MapPoolType.Custom, newMapPool.title, 0, 0, CustomPPPCurve.DummyPPPCurve(), newMapPool.image, newMapPool.popularity, newMapPool.download_url);
                     _leaderboardInfo.LsMapPools.Add(oldPool);
                 }
             }
-            _leaderboardInfo.LsMapPools = _leaderboardInfo.LsMapPools.OrderBy(x => x.MapPoolType).ThenByDescending(x => x.Popularity).ThenBy(x => x.MapPoolName).ToList();
+            switch (Plugin.ProfileInfo.HitbloqMapPoolSorting)
+            {
+                case MapPoolSorting.Alphabetical:
+                    _leaderboardInfo.LsMapPools = _leaderboardInfo.LsMapPools.OrderBy(x => x.MapPoolType).ThenBy(x => x.MapPoolName).ToList();
+                    break;
+                case MapPoolSorting.Popularity:
+                    _leaderboardInfo.LsMapPools = _leaderboardInfo.LsMapPools.OrderBy(x => x.MapPoolType).ThenByDescending(x => x.Popularity).ThenBy(x => x.MapPoolName).ToList();
+                    break;
+            }
+            SendMapPoolRefreshed();
         }
 
         override public async Task UpdateMapPoolDetails(PPPMapPool mapPool)

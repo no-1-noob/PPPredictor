@@ -54,6 +54,12 @@
         Raw
     }
 
+    public enum MapPoolSorting
+    {
+        Alphabetical,
+        Popularity
+    }
+
     public enum CounterDisplayType
     {
         PP,

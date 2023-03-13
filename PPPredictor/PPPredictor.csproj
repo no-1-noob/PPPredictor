@@ -25,7 +25,7 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <Optimize>true</Optimize>
@@ -33,6 +33,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <DefineConstants>
+    </DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="$(DefineConstants.Contains('CIBuild')) OR '$(NCrunch)' == '1'">
     <DisableCopyToPlugins>True</DisableCopyToPlugins>
@@ -41,12 +43,33 @@
     <DisableCopyToPlugins>True</DisableCopyToPlugins>
     <DisableZipRelease>True</DisableZipRelease>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug HITBLOQNETWORK'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug HITBLOQNETWORK\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;HITBLOQNETWORK</DefineConstants>
+    <DebugType>portable</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug BEATLEADERNETWORK'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug BEATLEADERNETWORK\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;BEATLEADERNETWORK</DefineConstants>
+    <DebugType>portable</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
       <HintPath>$(GameDirectory)\Libs\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="BeatmapCore">
       <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\BeatmapCore.dll</HintPath>
+    </Reference>
+    <Reference Include="BeatSaberPlaylistsLib">
+      <HintPath>$(GameDirectory)\Libs\BeatSaberPlaylistsLib.dll</HintPath>
     </Reference>
     <Reference Include="BSML">
       <HintPath>$(GameDirectory)\Plugins\BSML.dll</HintPath>
@@ -75,6 +98,7 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />

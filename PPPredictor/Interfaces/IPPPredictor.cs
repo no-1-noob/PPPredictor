@@ -1,4 +1,5 @@
-﻿using PPPredictor.Data.DisplayInfos;
+﻿using PPPredictor.Data;
+using PPPredictor.Data.DisplayInfos;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -21,6 +22,7 @@ namespace PPPredictor.Interfaces
         bool IsRanked();
         void CalculatePP();
         void SetActive(bool setActive);
+        PPPMapPool FindPoolWithSyncURL(string syncUrl);
         Task GetMapPoolIconData();
         Task UpdateCurrentBeatMapInfos(CustomBeatmapLevel selectedBeatmapLevel, IDifficultyBeatmap beatmap);
         event EventHandler<bool> OnDataLoading;
