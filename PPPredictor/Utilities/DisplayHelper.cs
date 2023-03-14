@@ -8,22 +8,27 @@ namespace PPPredictor.Utilities
 {
     class DisplayHelper
     {
+        internal static readonly string ColorCountryRankDisabled = "grey";
+        internal static readonly string ColorWhite = "white";
+        internal static readonly string ColorGreen = "green";
+        internal static readonly string ColorYellow = "yellow";
+        internal static readonly string ColorRed = "red";
         public static string GetDisplayColor(double value, bool invert, bool isPPGainWithVergeOption = false)
         {
             if (invert) value *= -1;
             if (value > 0)
             {
-                return $"green";
+                return ColorGreen;
             }
             else if (isPPGainWithVergeOption && Plugin.ProfileInfo.PpGainCalculationType == PPGainCalculationType.Raw && value < 0 && value >= Plugin.ProfileInfo.RawPPLossHighlightThreshold)
             {
-                return $"yellow";
+                return ColorYellow;
             }
             else if (value < 0)
             {
-                return $"red";
+                return ColorRed;
             }
-            return "white";
+            return ColorWhite;
         }
 
         /// <summary>

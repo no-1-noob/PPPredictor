@@ -15,6 +15,7 @@ namespace PPPredictor.Data
         private string _customLeaderboardUserId;
         private string _ppSuffix;
         private int _leaderboardFirstPageIndex;
+        private bool _isCountryRankEnabled;
         private List<PPPModifierValues> _lsModifierValues;
 
         public string LeaderboardName { get => _leaderboardName; set => _leaderboardName = value; }
@@ -32,6 +33,7 @@ namespace PPPredictor.Data
         public string PpSuffix { get => _ppSuffix; set => _ppSuffix = value; }
         public List<PPPModifierValues> LsModifierValues { get => _lsModifierValues; set => _lsModifierValues = value; }
         public int LeaderboardFirstPageIndex { get => _leaderboardFirstPageIndex; set => _leaderboardFirstPageIndex = value; }
+        public bool IsCountryRankEnabled { get => _isCountryRankEnabled; set => _isCountryRankEnabled = value; }
 
         public PPPLeaderboardInfo(Leaderboard leaderboard)
         {
@@ -40,6 +42,7 @@ namespace PPPredictor.Data
             this._customLeaderboardUserId = string.Empty;
             this._ppSuffix = "pp";
             this.LeaderboardFirstPageIndex = 1;
+            this.IsCountryRankEnabled = true;
             this._lsModifierValues = new List<PPPModifierValues>();
 
             switch (leaderboard)
@@ -59,6 +62,7 @@ namespace PPPredictor.Data
                 case Leaderboard.HitBloq:
                     _leaderboardIcon = "PPPredictor.Resources.LeaderBoardLogos.HitBloq.png";
                     _ppSuffix = "cr";
+                    IsCountryRankEnabled = false;
                     LeaderboardFirstPageIndex = 0;
                     _lsMapPools.Add(new PPPMapPool(MapPoolType.Default, $"☞ Select a map pool ☜", 0, 0, new CustomPPPCurve(new List<(double, double)>(), CurveType.Linear, 0)));
                     break;

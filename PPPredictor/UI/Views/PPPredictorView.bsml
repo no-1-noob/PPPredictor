@@ -24,7 +24,6 @@
 
     <tab tags='tabs' tab-name='PPPredictor'>
       <!-- Buttons -->
-      <!--Tab selection save-->
       <!--BG length-->
       <horizontal horizontal-fit='PreferredSize' pad-left='0' align='Left' child-align='MiddleLeft' preferred-height='0' anchor-pos-y='7'>
         <vertical vertical-fit='PreferredSize' align='Left' ignore-layout='true' pad-left='47' spacing='-1'>
@@ -38,7 +37,7 @@
         <horizontal horizontal-fit='PreferredSize' pad-left='0' align='Center' child-align='MiddleLeft'>
           <vertical vertical-fit='PreferredSize' child-align='MiddleLeft'>
             <text text='Global' align='Left' font-size='4' />
-            <text text='Country ' align='Left' font-size='4' />
+            <text text='Country ' align='Left' font-size='4' font-color='~countryRankFontColor'/>
             <text text='PP ' align='Left' font-size='4' />
           </vertical>
           <vertical vertical-fit='PreferredSize' preferred-width='30' child-align='MiddleLeft'>
@@ -49,10 +48,10 @@
               <text text=']' italics='true' align='Left' font-size='4' />
             </horizontal>
             <horizontal horizontal-fit='PreferredSize' align='Left' child-align='MiddleLeft'>
-              <text text='~predictedCountryRank' italics='true' align='Left' font-size='4' />
-              <text text='[' italics='true' align='Left' font-size='4' />
+              <text text='~predictedCountryRank' italics='true' align='Left' font-size='4' font-color='~countryRankFontColor'/>
+              <text text='[' italics='true' align='Left' font-size='4' font-color='~countryRankFontColor'/>
               <text text='~predictedCountryRankDiff' font-color='~predictedCountryRankDiffColor' italics='true' align='Left' font-size='4' />
-              <text text=']' italics='true' align='Left' font-size='4' />
+              <text text=']' italics='true' align='Left' font-size='4' font-color='~countryRankFontColor'/>
             </horizontal>
             <horizontal horizontal-fit='PreferredSize' align='Center' child-align='MiddleLeft'>
               <text text='~ppRaw' italics='true' align='Center' font-size='4' />
@@ -83,7 +82,7 @@
         <horizontal horizontal-fit='PreferredSize' pad-left='0' align='Center' child-align='MiddleLeft' preferred-width='40'>
           <vertical vertical-fit='PreferredSize' child-align='MiddleLeft'>
             <text text='Global' align='Left' font-size='4' />
-            <text text='Country ' align='Left' font-size='4' />
+            <text text='Country ' align='Left' font-size='4' font-color='~countryRankFontColor'/>
             <text text='PP ' align='Left' font-size='4' />
           </vertical>
           <vertical vertical-fit='PreferredSize' preferred-width='30' child-align='MiddleLeft'>
@@ -94,10 +93,10 @@
               <text text=']' italics='true' align='Left' font-size='4' />
             </horizontal>
             <horizontal horizontal-fit='PreferredSize' align='Left' child-align='MiddleLeft'>
-              <text text='~sessionCountryRank' italics='true' align='Left' font-size='4' />
-              <text text='[' italics='true' align='Left' font-size='4' />
+              <text text='~sessionCountryRank' italics='true' align='Left' font-size='4' font-color='~countryRankFontColor'/>
+              <text text='[' italics='true' align='Left' font-size='4' font-color='~countryRankFontColor'/>
               <text text='~sessionCountryRankDiff' font-color='~sessionCountryRankDiffColor' italics='true' align='Left' font-size='4' />
-              <text text=']' italics='true' align='Left' font-size='4' />
+              <text text=']' italics='true' align='Left' font-size='4' font-color='~countryRankFontColor'/>
             </horizontal>
             <horizontal horizontal-fit='PreferredSize' align='Left' child-align='MiddleLeft'>
               <text text='~sessionPP' italics='true' align='Center' font-size='4' />

@@ -291,6 +291,13 @@ namespace PPPredictor.UI.ViewController
         }
 #pragma warning restore IDE0051 // Remove unused private members
 #pragma warning disable IDE0051 // Remove unused private members
+        [UIValue("countryRankFontColor")]
+        private string CountryRankFontColor
+        {
+            get => displaySessionInfo.CountryRankFontColor;
+        }
+#pragma warning restore IDE0051 // Remove unused private members
+#pragma warning disable IDE0051 // Remove unused private members
         [UIValue("sessionPP")]
         private string SessionPP
         {
@@ -531,6 +538,7 @@ namespace PPPredictor.UI.ViewController
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionCountryRank)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionCountryRankDiff)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionCountryRankDiffColor)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CountryRankFontColor)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionPP)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionPPDiff)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionPPDiffColor)));

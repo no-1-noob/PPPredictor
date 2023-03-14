@@ -137,7 +137,7 @@ namespace PPPredictor.Utilities
                             ppAfterPlay += weightedPP;
                             index++;
                         }
-                        return new PPGainResult(Math.Round(ppAfterPlay, 2, MidpointRounding.AwayFromZero), Zeroizer(Math.Round(ppAfterPlay - _leaderboardInfo.CurrentMapPool.CurrentPlayer.Pp, 2, MidpointRounding.AwayFromZero)), pp - previousPP);
+                        return new PPGainResult(Math.Round(ppAfterPlay, 2, MidpointRounding.AwayFromZero), Zeroizer(Math.Round(ppAfterPlay - _leaderboardInfo.CurrentMapPool.CurrentPlayer.Pp, 2, MidpointRounding.AwayFromZero), 0.02), pp - previousPP);
                     }
                     //Try to find old pp value if the map has been failed
                     ShortScore oldScore = _leaderboardInfo.CurrentMapPool.LsScores.Find(x => x.Searchstring == mapSearchString);
@@ -160,7 +160,7 @@ namespace PPPredictor.Utilities
         {
             try
             {
-                if (pp == _leaderboardInfo.CurrentMapPool.CurrentPlayer.Pp) return new RankGainResult(_leaderboardInfo.CurrentMapPool.CurrentPlayer.Rank, _leaderboardInfo.CurrentMapPool.CurrentPlayer.CountryRank, _leaderboardInfo.CurrentMapPool.CurrentPlayer); //Fucking bullshit
+                if (pp == _leaderboardInfo.CurrentMapPool.CurrentPlayer.Pp || pp < _leaderboardInfo.CurrentMapPool.CurrentPlayer.Pp) return new RankGainResult(_leaderboardInfo.CurrentMapPool.CurrentPlayer.Rank, _leaderboardInfo.CurrentMapPool.CurrentPlayer.CountryRank, _leaderboardInfo.CurrentMapPool.CurrentPlayer); //Fucking bullshit
                 //Refetch if the current rank has decrease outside of fetched range (first GetPlayerRankGain call after loading saved Session data, then update from web)
                 double worstRankFetched = _leaderboardInfo.CurrentMapPool.LsPlayerRankings.Select(x => x.Rank).DefaultIfEmpty(Double.MaxValue).Max();
                 if (_leaderboardInfo.CurrentMapPool.CurrentPlayer.Rank > worstRankFetched) _leaderboardInfo.CurrentMapPool.LsPlayerRankings = new List<PPPPlayer>();
@@ -221,10 +221,10 @@ namespace PPPredictor.Utilities
             return $"{hash}_{gameMode}_{difficulty}".ToUpper();
         }
 
-        public double Zeroizer(double pp)
+        public double Zeroizer(double pp, double limit = 0.01)
         {
-            if (pp < -0.01 || pp > 0.01) return pp;
-            if ((pp > -0.01 && pp < 0) || (pp < 0.01 && pp > 0)) return 0;
+            if (pp < -limit || pp > limit) return pp;
+            if ((pp > -limit && pp < 0) || (pp < limit && pp > 0)) return 0;
             return pp;
         }
 
