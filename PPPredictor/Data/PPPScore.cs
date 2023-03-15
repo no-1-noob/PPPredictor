@@ -1,8 +1,6 @@
 ﻿using PPPredictor.OpenAPIs;
 using PPPredictor.Utilities;
-using scoresaberapi;
 using System;
-using System.Linq;
 
 namespace PPPredictor.Data
 {
@@ -20,13 +18,13 @@ namespace PPPredictor.Data
         public double Difficulty1 { get => difficulty; }
         public string GameMode { get => gameMode; }
 
-        public PPPScore(PlayerScore playerScore)
+        public PPPScore(ScoresaberAPI.ScoreSaberPlayerScore playerScore)
         {
-            timeSet = playerScore.Score.TimeSet;
-            pp = playerScore.Score.Pp;
-            songHash = playerScore.Leaderboard.SongHash;
-            difficulty = playerScore.Leaderboard.Difficulty.Difficulty1;
-            gameMode = playerScore.Leaderboard.Difficulty.GameMode;
+            timeSet = playerScore.score.timeSet;
+            pp = playerScore.score.pp;
+            songHash = playerScore.leaderboard.songHash;
+            difficulty = playerScore.leaderboard.difficulty.difficulty;
+            gameMode = playerScore.leaderboard.difficulty.gameMode;
         }
 
         public PPPScore(BeatleaderAPI.BeatLeaderPlayerScore playerScore)

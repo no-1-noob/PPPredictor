@@ -110,10 +110,7 @@ namespace PPPredictor.Utilities
         internal void LoadInfos()
         {
             _leaderboardInfo = Plugin.ProfileInfo.LsLeaderboardInfo.Find(x => x.LeaderboardName == leaderboardName.ToString());
-            if(_leaderboardInfo != null)
-            {
-                _leaderboardInfo.SetCurrentMapPool();
-            }
+            _leaderboardInfo?.SetCurrentMapPool();
             if (_leaderboardInfo == null)
             {
                 _leaderboardInfo = new PPPLeaderboardInfo(leaderboardName);

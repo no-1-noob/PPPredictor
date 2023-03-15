@@ -61,6 +61,15 @@
     <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug SCORESABERNETWORK'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug SCORESABERNETWORK\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;SCORESABERNETWORK</DefineConstants>
+    <DebugType>portable</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
       <HintPath>$(GameDirectory)\Libs\0Harmony.dll</HintPath>
@@ -183,6 +192,7 @@
     <Compile Include="Interfaces\IPPPCurve.cs" />
     <Compile Include="OpenAPIs\beatleaderapi.cs" />
     <Compile Include="OpenAPIs\hitbloqapi.cs" />
+    <Compile Include="OpenAPIs\scoresaberapi.cs" />
     <Compile Include="UI\PPPredictorFlowCoordinator.cs" />
     <Compile Include="UI\ViewController\SettingsMidViewController.cs" />
     <Compile Include="Utilities\DisplayHelper.cs" />
@@ -199,7 +209,6 @@
     <Compile Include="Utilities\ProfileInfoMgr.cs" />
     <Compile Include="Data\ShortScore.cs" />
     <Compile Include="UI\ViewController\PPPredictorViewController.cs" />
-    <Compile Include="OpenAPIs\scoresaber-public-api-1.0.0.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\PPCalculator.cs" />
@@ -215,12 +224,6 @@
   <ItemGroup>
     <EmbeddedResource Include="Counter\Settings\CounterSettings.bsml" />
     <None Include="Directory.Build.props" Condition="Exists('Directory.Build.props')" />
-    <None Include="OpenAPIs\scoresaber-public-api-1.0.0.json">
-      <Namespace>scoresaberapi</Namespace>
-      <ClassName>scoresaberapi</ClassName>
-      <CodeGenerator>NSwagCSharp</CodeGenerator>
-      <SourceUri>https://docs.scoresaber.com/scoresaber-public-api-1.0.0.json</SourceUri>
-    </None>
     <None Include="PPPredictor.csproj.user" Condition="Exists('PPPredictor.csproj.user')" />
     <EmbeddedResource Include="UI\Views\PPPredictorView.bsml" />
     <EmbeddedResource Include="UI\Views\SettingsMidView.bsml" />

@@ -1,25 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
 using PPPredictor.Data;
-using scoresaberapi;
+using PPPredictor.OpenAPIs;
 using SongCore.Utilities;
 using SongDetailsCache;
 using SongDetailsCache.Structs;
+using static PPPredictor.OpenAPIs.ScoresaberAPI;
 
 namespace PPPredictor.Utilities
 {
     class PPCalculatorScoreSaber : PPCalculator
     {
         internal static readonly float accumulationConstant = 0.965f;
-        private readonly HttpClient httpClient = new HttpClient();
-        private readonly scoresaberapi.scoresaberapi scoreSaberClient;
+        private readonly ScoresaberAPI scoresaberAPI;
+
         private SongDetails SongDetails { get; }
         public PPCalculatorScoreSaber() : base()
         {
             playerPerPages = 50;
-            scoreSaberClient = new scoresaberapi.scoresaberapi(httpClient);
+            scoresaberAPI = new ScoresaberAPI();
             SongDetails = SongDetails.Init().Result;
         }
 
@@ -27,8 +27,7 @@ namespace PPPredictor.Utilities
         {
             try
             {
-                var playerInfo = scoreSaberClient.BasicAsync(userId);
-                var scoreSaberPlayer = await playerInfo;
+                ScoreSaberPlayer scoreSaberPlayer = await scoresaberAPI.GetPlayer(userId);
                 PPPPlayer player = new PPPPlayer(scoreSaberPlayer);
                 return player;
             }
@@ -43,8 +42,8 @@ namespace PPPredictor.Utilities
         {
             try
             {
-                PlayerScoreCollection scoreSaberCollection = await scoreSaberClient.Scores3Async(userId, pageSize, Sort.Recent, page, true);
-                return new PPPScoreCollection(scoreSaberCollection);
+                ScoreSaberPlayerScoreList scoreSaberPlayerScoreList = await scoresaberAPI.GetPlayerScores(userId, pageSize, page);
+                return new PPPScoreCollection(scoreSaberPlayerScoreList);
             }
             catch (Exception ex)
             {
@@ -58,8 +57,8 @@ namespace PPPredictor.Utilities
             try
             {
                 List<PPPPlayer> lsPlayer = new List<PPPPlayer>();
-                PlayerCollection scoreSaberPlayerCollection = await scoreSaberClient.PlayersAsync(null, fetchIndexPage, null, true);
-                foreach (var scoreSaberPlayer in scoreSaberPlayerCollection.Players)
+                ScoreSaberPlayerList scoreSaberPlayerCollection = await scoresaberAPI.GetPlayers(fetchIndexPage);
+                foreach (var scoreSaberPlayer in scoreSaberPlayerCollection.players)
                 {
                     lsPlayer.Add(new PPPPlayer(scoreSaberPlayer));
                 }

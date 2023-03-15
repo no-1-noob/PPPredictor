@@ -1,5 +1,4 @@
 ﻿using PPPredictor.OpenAPIs;
-using static PPPredictor.OpenAPIs.BeatleaderAPI;
 
 namespace PPPredictor.Data
 {
@@ -26,15 +25,15 @@ namespace PPPredictor.Data
             this.isErrorUser = isErrorUser;
             rank = countryRank = pp = 0;
         }
-        public PPPPlayer(scoresaberapi.Player scoreSaberPlayer)
+        public PPPPlayer(ScoresaberAPI.ScoreSaberPlayer scoreSaberPlayer)
         {
-            rank = scoreSaberPlayer.Rank;
-            countryRank = scoreSaberPlayer.CountryRank;
-            pp = scoreSaberPlayer.Pp;
-            country = scoreSaberPlayer.Country;
+            rank = scoreSaberPlayer.rank;
+            countryRank = scoreSaberPlayer.countryRank;
+            pp = scoreSaberPlayer.pp;
+            country = scoreSaberPlayer.country;
         }
 
-        public PPPPlayer(BeatLeaderPlayer beatLeaderPlayerEvent)
+        public PPPPlayer(BeatleaderAPI.BeatLeaderPlayer beatLeaderPlayerEvent)
         {
             rank = beatLeaderPlayerEvent.rank;
             countryRank = beatLeaderPlayerEvent.countryRank;
@@ -42,7 +41,7 @@ namespace PPPredictor.Data
             country = beatLeaderPlayerEvent.country;
         }
 
-        public PPPPlayer(BeatLeaderPlayerEvents beatLeaderPlayerEvent)
+        public PPPPlayer(BeatleaderAPI.BeatLeaderPlayerEvents beatLeaderPlayerEvent)
         {
             rank = beatLeaderPlayerEvent.rank;
             countryRank = beatLeaderPlayerEvent.countryRank;
