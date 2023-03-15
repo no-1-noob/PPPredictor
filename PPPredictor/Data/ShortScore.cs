@@ -3,7 +3,7 @@ using System;
 
 namespace PPPredictor.Data
 {
-    public class ShortScore
+    class ShortScore
     {
         private readonly string _searchstring;
         private double _pp;

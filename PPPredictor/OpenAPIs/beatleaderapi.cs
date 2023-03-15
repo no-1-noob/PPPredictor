@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace PPPredictor.OpenAPIs
 {
-    public class BeatleaderAPI
+    class BeatleaderAPI
     {
         private static readonly string baseUrl = "https://api.beatleader.xyz";
         private readonly HttpClient client;

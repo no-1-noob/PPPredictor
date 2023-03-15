@@ -1,6 +1,6 @@
 ﻿namespace PPPredictor.Utilities
 {
-    public enum BeatLeaderDifficultyStatus
+    enum BeatLeaderDifficultyStatus
     {
         unranked = 0,
         nominated = 1,
@@ -11,7 +11,7 @@
         inevent = 6
     }
 
-    public enum PPPBeatMapDifficulty
+    enum PPPBeatMapDifficulty
     {
         Easy = 1,
         Normal = 3,
@@ -20,7 +20,7 @@
         ExpertPlus = 9
     }
 
-    public enum Leaderboard
+    enum Leaderboard
     {
         ScoreSaber,
         BeatLeader,
@@ -29,38 +29,38 @@
         HitBloq
     }
 
-    public enum CounterScoringType
+    enum CounterScoringType
     {
         Global,
         Local
     }
 
-    public enum MapPoolType
+    enum MapPoolType
     {
         Default,
         Custom
     }
 
-    public enum CurveType
+    enum CurveType
     {
         ScoreSaber,
         BeatLeader,
         Linear,
         Basic
     }
-    public enum PPGainCalculationType
+    enum PPGainCalculationType
     {
         Weighted,
         Raw
     }
 
-    public enum MapPoolSorting
+    enum MapPoolSorting
     {
         Alphabetical,
         Popularity
     }
 
-    public enum CounterDisplayType
+    enum CounterDisplayType
     {
         PP,
         PPNoSuffix,
@@ -72,7 +72,7 @@
         GainNoBracketsNoSuffix
     }
 
-    public class EnumHelper
+    class EnumHelper
     {
         private const string CounterDisplayTypePP = "PP: 100pp";
         private const string CounterDisplayTypePPAndGain = "PP & Gain: 100pp [<color=green>10pp</color>]";

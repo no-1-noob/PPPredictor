@@ -1,6 +1,6 @@
 ﻿namespace PPPredictor.Data
 {
-    public class PPPBeatMapInfo
+    class PPPBeatMapInfo
     {
         double _baseStars = 0;
         double _currentSelectionStars;

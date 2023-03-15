@@ -1,7 +1,7 @@
 ﻿using PPPredictor.Utilities;
 namespace PPPredictor.Data
 {
-    public class PPGainResult
+    class PPGainResult
     {
         private readonly double _ppTotal;
         private readonly double _ppGainWeighted;

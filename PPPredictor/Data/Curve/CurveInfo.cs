@@ -4,7 +4,7 @@ using System.ComponentModel;
 
 namespace PPPredictor.Data.Curve
 {
-    public class CurveInfo
+    class CurveInfo
     {
         private CurveType _curveType;
         private List<(double, double)> _arrPPCurve;

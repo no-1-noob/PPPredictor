@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace PPPredictor.Data
 {
-    public class PPPLeaderboardInfo
+    class PPPLeaderboardInfo
     {
         private List<PPPMapPool> _lsMapPools;
         private string _leaderboardName;

@@ -11,7 +11,7 @@ using static PPPredictor.OpenAPIs.BeatleaderAPI;
 
 namespace PPPredictor.Utilities
 {
-    public class PPCalculatorBeatLeader : PPCalculator
+    class PPCalculatorBeatLeader : PPCalculator
     {
         private readonly OpenAPIs.BeatleaderAPI beatleaderapi;
         internal static float accumulationConstant = 0.965f;

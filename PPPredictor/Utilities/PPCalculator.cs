@@ -8,7 +8,7 @@ using scoresaberapi;
 
 namespace PPPredictor.Utilities
 {
-    public abstract class PPCalculator
+    abstract class PPCalculator
     {
         internal PPPLeaderboardInfo _leaderboardInfo;
         protected int playerPerPages = 0; //Cause a null reference if not set ;)

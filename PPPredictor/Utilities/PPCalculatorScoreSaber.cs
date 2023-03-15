@@ -10,7 +10,7 @@ using SongDetailsCache.Structs;
 
 namespace PPPredictor.Utilities
 {
-    public class PPCalculatorScoreSaber : PPCalculator
+    class PPCalculatorScoreSaber : PPCalculator
     {
         internal static readonly float accumulationConstant = 0.965f;
         private readonly HttpClient httpClient = new HttpClient();

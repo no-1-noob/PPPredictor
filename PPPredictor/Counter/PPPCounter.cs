@@ -8,7 +8,7 @@ using Zenject;
 
 namespace PPPredictor.Counter
 {
-    public class PPPCounter : CountersPlus.Counters.Custom.BasicCustomCounter
+    class PPPCounter : CountersPlus.Counters.Custom.BasicCustomCounter
     {
 #pragma warning disable CS0649
         [Inject] private readonly ScoreController scoreController;

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace PPPredictor.Data
 {
-    public class ProfileInfo
+    class ProfileInfo
     {
         List<PPPLeaderboardInfo> _lsLeaderboardInfo;
         private float _lastPercentageSelected;

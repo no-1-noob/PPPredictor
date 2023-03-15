@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace PPPredictor.Data
 {
-    public class PPPModifierValues
+    class PPPModifierValues
     {
         private int id;
         private Dictionary<string, float> dctModifierValues = new Dictionary<string, float>();

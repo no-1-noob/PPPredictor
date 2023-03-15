@@ -23,7 +23,7 @@ namespace PPPredictor.UI.ViewController
 {
     [ViewDefinition("PPPredictor.UI.Views.PPPredictorView.bsml")]
     [HotReload(RelativePathToLayout = @"..\Views\PPPredictorView.bsml")]
-    public class PPPredictorViewController : IInitializable, IDisposable, INotifyPropertyChanged
+    class PPPredictorViewController : IInitializable, IDisposable, INotifyPropertyChanged
     {
         private static readonly string githubUrl = "https://github.com/no-1-noob/PPPredictor/releases/latest";
         private FloatingScreen floatingScreen;

@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace PPPredictor.Data
 {
-    public class PPPMapPool
+    class PPPMapPool
     {
         private string _id;
         private string _playListId;

@@ -7,10 +7,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static PPPredictor.OpenAPIs.HitbloqAPI;
 
 namespace PPPredictor.Utilities
 {
-    public class PPCalculatorHitBloq : PPCalculator
+    class PPCalculatorHitBloq : PPCalculator
     {
         private readonly HitbloqAPI hitbloqapi;
         //Dctionaries defined like here: https://github.com/DaFluffyPotato/hitbloq/blob/1e7bf18f92f1146bf8da2f24769aea072542b6e5/general.py#L24

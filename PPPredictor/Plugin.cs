@@ -11,7 +11,7 @@ using IPALogger = IPA.Logging.Logger;
 namespace PPPredictor
 {
     [Plugin(RuntimeOptions.DynamicInit)]
-    public class Plugin
+    class Plugin
     {
         internal static Plugin Instance { get; private set; }
         internal static IPALogger Log { get; private set; }
@@ -48,7 +48,6 @@ namespace PPPredictor
             ProfileInfoMgr.SaveProfile(ProfileInfo);
         }
 
-        [Conditional("DEBUG")]
         public static void DebugPrint(string text)
         {
             Plugin.Log?.Error(text);

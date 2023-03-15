@@ -2,7 +2,7 @@
 
 namespace PPPredictor.Data
 {
-    public class PPPMapPoolEntry
+    class PPPMapPoolEntry
     {
         private string _searchstring;
         public string Searchstring { get => _searchstring; set => _searchstring = value; }

@@ -3,11 +3,10 @@ using PPPredictor.Utilities;
 using scoresaberapi;
 using System;
 using System.Linq;
-using static PPPredictor.OpenAPIs.BeatleaderAPI;
 
 namespace PPPredictor.Data
 {
-    public class PPPScore
+    class PPPScore
     {
         readonly DateTimeOffset timeSet;
         readonly double pp;
@@ -30,7 +29,7 @@ namespace PPPredictor.Data
             gameMode = playerScore.Leaderboard.Difficulty.GameMode;
         }
 
-        public PPPScore(BeatLeaderPlayerScore playerScore)
+        public PPPScore(BeatleaderAPI.BeatLeaderPlayerScore playerScore)
         {
             if(long.TryParse(playerScore.timeset, out long timeSetLong)){
                 timeSet = new DateTime(1970, 1, 1).AddSeconds(timeSetLong);
@@ -41,7 +40,7 @@ namespace PPPredictor.Data
             gameMode = "Solo" + playerScore.leaderboard.difficulty.modeName;
         }
 
-        public PPPScore(HitBloqScores playerScore)
+        public PPPScore(HitbloqAPI.HitBloqScores playerScore)
         {
             timeSet = new DateTime(1970, 1, 1).AddSeconds(playerScore.time);
             pp = playerScore.cr_received;

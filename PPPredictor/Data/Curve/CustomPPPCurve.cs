@@ -33,7 +33,7 @@ namespace PPPredictor.Data.Curve
             this.cutoff = cutoff;
         }
 
-        public CustomPPPCurve(CrCurve crCurve)
+        public CustomPPPCurve(HitbloqAPI.HitBloqCrCurve crCurve)
         {
             switch (crCurve.type?.ToLower())
             {

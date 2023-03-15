@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PPPredictor
+namespace PPPredictor.Utilities
 {
-    public class ParsingUtil
+    class ParsingUtil
     {
         static readonly Dictionary<string, double> dctDifficultyNameToInt = new Dictionary<string, double>{
             { "ExpertPlus", 9 },

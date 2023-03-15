@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace PPPredictor.Events
 {
-    public class PPPredictorEventsMgr : INotifyScoreUpload
+    class PPPredictorEventsMgr : INotifyScoreUpload
     {
         public async void OnScoreUploaded()
         {

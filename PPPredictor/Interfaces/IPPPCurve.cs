@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace PPPredictor.Interfaces
 {
-    public interface IPPPCurve
+    interface IPPPCurve
     {
         bool IsDummy { get; }
         double CalculatePPatPercentage(double star, double percentage, bool failed);

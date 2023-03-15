@@ -3,7 +3,7 @@ using static PPPredictor.OpenAPIs.BeatleaderAPI;
 
 namespace PPPredictor.Data
 {
-    public class PPPPlayer
+    class PPPPlayer
     {
         private double rank;
         private double countryRank;
@@ -50,7 +50,7 @@ namespace PPPredictor.Data
             country = beatLeaderPlayerEvent.country;
         }
 
-        public PPPPlayer(HitBloqUser hitBloqUser)
+        public PPPPlayer(HitbloqAPI.HitBloqUser hitBloqUser)
         {
             rank = hitBloqUser.rank;
             countryRank = 0;

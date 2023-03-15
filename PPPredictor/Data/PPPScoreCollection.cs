@@ -5,7 +5,7 @@ using static PPPredictor.OpenAPIs.BeatleaderAPI;
 
 namespace PPPredictor.Data
 {
-    public class PPPScoreCollection
+    class PPPScoreCollection
     {
         private readonly List<PPPScore> lsPPPScore = new List<PPPScore>();
         private readonly double page;
@@ -47,7 +47,7 @@ namespace PPPredictor.Data
             }
         }
 
-        public PPPScoreCollection(List<HitBloqScores> lsHitBloqScores, int page)
+        public PPPScoreCollection(List<HitbloqAPI.HitBloqScores> lsHitBloqScores, int page)
         {
             this.page = page;
             this.itemsPerPage = 10;
