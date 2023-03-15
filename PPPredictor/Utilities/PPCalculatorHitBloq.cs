@@ -12,7 +12,7 @@ namespace PPPredictor.Utilities
 {
     public class PPCalculatorHitBloq : PPCalculator
     {
-        private readonly hitbloqapi hitbloqapi;
+        private readonly HitbloqAPI hitbloqapi;
         //Dctionaries defined like here: https://github.com/DaFluffyPotato/hitbloq/blob/1e7bf18f92f1146bf8da2f24769aea072542b6e5/general.py#L24
         private static readonly Dictionary<string, string> dctDiffShorten = new Dictionary<string, string>{
             { "ExpertPlus", "ep" },
@@ -34,12 +34,12 @@ namespace PPPredictor.Utilities
             { "SoloHorizontalStandard", "shs" },
             { "SoloVerticalStandard", "svs" },
         };
-        private static Dictionary<string, string> dctCharLengthen { get => dctCharShorten.ToDictionary(x => x.Value, x => x.Key); }
-        private static Dictionary<string, string> dctDiffLengthen { get => dctDiffShorten.ToDictionary(x => x.Value, x => x.Key); }
+        private static Dictionary<string, string> DctCharLengthen { get => dctCharShorten.ToDictionary(x => x.Value, x => x.Key); }
+        private static Dictionary<string, string> DctDiffLengthen { get => dctDiffShorten.ToDictionary(x => x.Value, x => x.Key); }
         public PPCalculatorHitBloq() : base()
         {
             playerPerPages = 10;
-            hitbloqapi = new hitbloqapi();
+            hitbloqapi = new HitbloqAPI();
             UpdateUserId();
             UpdateAvailableMapPools(); //TODO: implement for all?
         }
@@ -71,7 +71,6 @@ namespace PPPredictor.Utilities
                         {
                             if (leaderboardInfo.star_rating.TryGetValue(_leaderboardInfo.CurrentMapPool.Id, out var stars))
                             {
-                                Plugin.Log?.Error($"GetStarsForBeatmapAsync Step GetNew Stars from backend: {stars}");
                                 _leaderboardInfo.CurrentMapPool.LsLeaderboardScores.Add(new ShortScore(searchString, stars, DateTime.Now));
                                 return new PPPBeatMapInfo(beatMapInfo, stars);
                             }
@@ -109,10 +108,8 @@ namespace PPPredictor.Utilities
         {
             try
             {
-                Plugin.Log?.Error($"PPCalculatorHitBloq GetPlayers {fetchIndexPage}");
                 List<PPPPlayer> lsPlayer = new List<PPPPlayer>();
                 HitBloqLadder ladder = await hitbloqapi.GetPlayerListForMapPool(fetchIndexPage, _leaderboardInfo.CurrentMapPool.Id);
-                Plugin.Log.Error($"GetPlayers index: {fetchIndexPage}");
                 foreach (var hitBloqPlayer in ladder.ladder)
                 {
                     lsPlayer.Add(new PPPPlayer(hitBloqPlayer));
@@ -230,8 +227,8 @@ namespace PPPredictor.Utilities
                     if (arrEntries.Count() == 3)
                     {
                         string hash = arrEntries[0];
-                        string diff = dctDiffLengthen[arrEntries[1]];
-                        string mode = dctCharLengthen[arrEntries[2]];
+                        string diff = DctDiffLengthen[arrEntries[1]];
+                        string mode = DctCharLengthen[arrEntries[2]];
                         return (hash, diff, mode);
                     }
                     return (string.Empty, string.Empty, string.Empty);

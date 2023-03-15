@@ -9,7 +9,7 @@ namespace PPPredictor.Interfaces
 {
     public interface IPPPCurve
     {
-        bool isDummy { get; }
+        bool IsDummy { get; }
         double CalculatePPatPercentage(double star, double percentage, bool failed);
         double CalculateMaxPP(double star);
         CurveInfo ToCurveInfo();

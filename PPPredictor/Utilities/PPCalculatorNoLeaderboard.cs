@@ -37,8 +37,9 @@ namespace PPPredictor.Utilities
             return $"{hash}_{beatmap.difficultyRank}";
         }
 
-        public override async Task UpdateMapPoolDetails(PPPMapPool mapPool)
+        public override Task UpdateMapPoolDetails(PPPMapPool mapPool)
         {
+            return Task.CompletedTask;
         }
     }
 }

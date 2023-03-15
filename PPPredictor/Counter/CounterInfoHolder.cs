@@ -22,12 +22,14 @@ namespace PPPredictor.Counter
         private readonly Leaderboard leaderboard;
         private readonly CustomConfigModel settings;
         private readonly CanvasUtility canvasUtility;
-        private GameplayModifiers gameplayModifiers;
-        private double modifiedStars;
-        private float positionScale;
+        private readonly GameplayModifiers gameplayModifiers;
+        private readonly double modifiedStars;
+        private readonly float positionScale;
         private double maxPP = -1;
-        private PPPredictorMgr ppPredictorMgr;
+        private readonly PPPredictorMgr ppPredictorMgr;
         private readonly string ppSuffix;
+
+        public double MaxPP { get => maxPP; }
 
         public CounterInfoHolder(Leaderboard leaderboard, CustomConfigModel settings, PPPredictorMgr ppPredictorMgr, Canvas canvas, CanvasUtility canvasUtility, float lineOffset, float offsetByLine, float positionScale, GameplayModifiers gameplayModifiers) //CHECK WHEN NO C+ is installed??
         {
@@ -37,9 +39,9 @@ namespace PPPredictor.Counter
             this.canvasUtility = canvasUtility;
             this.positionScale = positionScale;
             float positionScaleFactor = 10 / positionScale;
-            lineOffset = lineOffset * positionScaleFactor;
+            lineOffset *= positionScaleFactor;
             TextAlignmentOptions gainAlignment = TextAlignmentOptions.BottomLeft;
-            float centerOffset = getCenterOffset();
+            float centerOffset = GetCenterOffset();
             float iconTextOffset = (Plugin.ProfileInfo.CounterUseIcons ? -.9f : 0f);
             float displayTypeOffset = 0;
             if (Plugin.ProfileInfo.CounterDisplayType == CounterDisplayType.PPNoSuffix || Plugin.ProfileInfo.CounterDisplayType == CounterDisplayType.PPAndGainNoSuffix || Plugin.ProfileInfo.CounterDisplayType == CounterDisplayType.PPAndGainNoBracketsNoSuffix || Plugin.ProfileInfo.CounterDisplayType == CounterDisplayType.GainNoBracketsNoSuffix)
@@ -74,7 +76,7 @@ namespace PPPredictor.Counter
             ppSuffix = ppPredictorMgr.GetPPSuffixForLeaderboard(leaderboard);
         }
 
-        private float getCenterOffset()
+        private float GetCenterOffset()
         {
             switch (Plugin.ProfileInfo.CounterDisplayType)
             {
@@ -165,7 +167,7 @@ namespace PPPredictor.Counter
             GameObject imageGameObject = new GameObject(imageIdent, typeof(RectTransform));
             ImageView newImage = imageGameObject.AddComponent<ImageView>();
             newImage.rectTransform.SetParent(canvas.transform, false);
-            newImage.rectTransform.anchoredPosition = positionScale * (canvasUtility.GetAnchoredPositionFromConfig(settings) + offset + new Vector3(0, lineOffset / 1.25f, 0));
+            newImage.rectTransform.anchoredPosition = positionScale * (canvasUtility.GetAnchoredPositionFromConfig(settings) + offset + new Vector3(0, (lineOffset / (positionScale * 0.125f)) + (0.15f / positionScale), 0));
             newImage.rectTransform.sizeDelta = new Vector2(2.5f, 2.5f);
             newImage.enabled = false;
             var noGlowMat = new Material(Resources.FindObjectsOfTypeAll<Material>().Where(m => m.name == "UINoGlow").First())
@@ -194,6 +196,14 @@ namespace PPPredictor.Counter
             texture.LoadImage(data);
             texture.Apply();
             newImage.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
+        }
+
+        internal void MoveIconForLongMaxPP(int digits)
+        {
+            if(digits > 3)
+            {
+                icon.rectTransform.anchoredPosition -= new Vector2((digits - 3) * 1f, 0);
+            }
         }
     }
 }

@@ -12,7 +12,7 @@ namespace PPPredictor.UI.ViewController
     [ViewDefinition("PPPredictor.UI.Views.SettingsMidView.bsml")]
     class SettingsMidViewController : BSMLAutomaticViewController, INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler PropertyChanged;
+        public new event PropertyChangedEventHandler PropertyChanged;
         private readonly List<object> scoringTypeOptions;
         private readonly List<object> generalPPGainCalculationOptions;
         private readonly List<object> counterDisplayTypeOptions;
@@ -75,6 +75,17 @@ namespace PPPredictor.UI.ViewController
             {
                 Plugin.ProfileInfo.IsVersionCheckEnabled = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(VersionCheckEnabled)));
+            }
+        }
+
+        [UIValue("predictor-switch-syncurl-enabled")]
+        public bool PredictorSwitchSyncUrlEnabled
+        {
+            get => Plugin.ProfileInfo.IsPredictorSwitchBySyncUrlEnabled;
+            set
+            {
+                Plugin.ProfileInfo.IsPredictorSwitchBySyncUrlEnabled = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictorSwitchSyncUrlEnabled)));
             }
         }
 
@@ -239,6 +250,7 @@ namespace PPPredictor.UI.ViewController
             CounterHideWhenUnranked = Plugin.ProfileInfo.CounterHideWhenUnranked;
             CounterScoringType = Plugin.ProfileInfo.CounterScoringType.ToString();
             VersionCheckEnabled = Plugin.ProfileInfo.IsVersionCheckEnabled;
+            PredictorSwitchSyncUrlEnabled = Plugin.ProfileInfo.IsPredictorSwitchBySyncUrlEnabled;
             HitbloqMapPoolSorting = Plugin.ProfileInfo.HitbloqMapPoolSorting.ToString();
             GeneralPPGainCalculation = Plugin.ProfileInfo.PpGainCalculationType.ToString();
             GeneralRawPPLossHighlightThreshold = Plugin.ProfileInfo.RawPPLossHighlightThreshold;

@@ -27,7 +27,9 @@ namespace PPPredictor.UI.ViewController
     {
         private static readonly string githubUrl = "https://github.com/no-1-noob/PPPredictor/releases/latest";
         private FloatingScreen floatingScreen;
+#pragma warning disable CS0649
         [Inject] private readonly PPPredictorMgr ppPredictorMgr;
+#pragma warning restore CS0649
         public event PropertyChangedEventHandler PropertyChanged;
         private DisplaySessionInfo displaySessionInfo;
         private DisplayPPInfo displayPPInfo;
@@ -102,9 +104,10 @@ namespace PPPredictor.UI.ViewController
             if (tabSelector) tabSelector.textSegmentedControl.didSelectCellEvent -= OnSelectedCellEventChanged;
             Plugin.pppViewController = null;
         }
-
+#pragma warning disable CS0649
         [UIParams]
         private readonly BSMLParserParams bsmlParserParams;
+#pragma warning restore CS0649
 
         [UIAction("#post-parse")]
         protected void PostParse()
@@ -123,12 +126,12 @@ namespace PPPredictor.UI.ViewController
         #region UI Components
         [UIComponent("sliderFine")]
         private readonly SliderSetting sliderFine;
-#pragma warning restore CS0649 // Field is never assigned to, and will always have its default value null
         [UIComponent("tabSelector")]
         private readonly TabSelector tabSelector;
         [UIComponent("dropdown-map-pools")]
         private readonly DropDownListSetting dropDownMapPools;
         #endregion
+#pragma warning restore CS0649 // Field is never assigned to, and will always have its default value null
 
 
         #region buttons
@@ -226,202 +229,149 @@ namespace PPPredictor.UI.ViewController
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SliderFineValue)));
             }
         }
-#pragma warning disable IDE0051 // Remove unused private members
         [UIValue("ppRaw")]
         private string PPRaw
         {
             get => displayPPInfo.PPRaw;
         }
-#pragma warning restore IDE0051 // Remove unused private members
-#pragma warning disable IDE0051 // Remove unused private members
         [UIValue("ppGain")]
         private string PPGain
         {
             get => displayPPInfo.PPGain;
         }
-#pragma warning restore IDE0051 // Remove unused private members
-#pragma warning disable IDE0051 // Remove unused private members
         [UIValue("ppGainDiffColor")]
         private string PPGainDiffColor
         {
             get => displayPPInfo.PPGainDiffColor;
         }
-#pragma warning restore IDE0051 // Remove unused private members
-#pragma warning disable IDE0051 // Remove unused private members
         #region UI Values session
         [UIValue("sessionRank")]
         private string SessionRank
         {
             get => displaySessionInfo.SessionRank;
         }
-#pragma warning restore IDE0051 // Remove unused private members
-#pragma warning disable IDE0051 // Remove unused private members
         [UIValue("sessionRankDiff")]
         private string SessionRankDiff
         {
             get => displaySessionInfo.SessionRankDiff;
         }
-#pragma warning restore IDE0051 // Remove unused private members
-#pragma warning disable IDE0051 // Remove unused private members
         [UIValue("sessionRankDiffColor")]
         private string SessionRankDiffColor
         {
             get => displaySessionInfo.SessionRankDiffColor;
         }
-#pragma warning restore IDE0051 // Remove unused private members
-#pragma warning disable IDE0051 // Remove unused private members
         [UIValue("sessionCountryRank")]
         private string SessionCountryRank
         {
             get => displaySessionInfo.SessionCountryRank;
         }
-#pragma warning restore IDE0051 // Remove unused private members
-#pragma warning disable IDE0051 // Remove unused private members
         [UIValue("sessionCountryRankDiff")]
         private string SessionCountryRankDiff
         {
             get => displaySessionInfo.SessionCountryRankDiff;
         }
-#pragma warning restore IDE0051 // Remove unused private members
-#pragma warning disable IDE0051 // Remove unused private members
         [UIValue("sessionCountryRankDiffColor")]
         private string SessionCountryRankDiffColor
         {
             get => displaySessionInfo.SessionCountryRankDiffColor;
         }
-#pragma warning restore IDE0051 // Remove unused private members
-#pragma warning disable IDE0051 // Remove unused private members
         [UIValue("countryRankFontColor")]
         private string CountryRankFontColor
         {
             get => displaySessionInfo.CountryRankFontColor;
         }
-#pragma warning restore IDE0051 // Remove unused private members
-#pragma warning disable IDE0051 // Remove unused private members
         [UIValue("sessionPP")]
         private string SessionPP
         {
             get => displaySessionInfo.SessionPP;
         }
-#pragma warning restore IDE0051 // Remove unused private members
-#pragma warning disable IDE0051 // Remove unused private members
         [UIValue("sessionPPDiff")]
         private string SessionPPDiff
         {
             get => displaySessionInfo.SessionPPDiff;
         }
-#pragma warning restore IDE0051 // Remove unused private members
-#pragma warning disable IDE0051 // Remove unused private members
         [UIValue("sessionPPDiffColor")]
         private string SessionPPDiffColor
         {
             get => displaySessionInfo.SessionPPDiffColor;
         }
-#pragma warning restore IDE0051 // Remove unused private members
         #endregion
         #region UI Values Predicted Rank
-#pragma warning disable IDE0051 // Remove unused private members
         [UIValue("predictedRank")]
         private string PredictedRank
         {
             get => displayPPInfo.PredictedRank;
         }
-#pragma warning restore IDE0051 // Remove unused private members
-#pragma warning disable IDE0051 // Remove unused private members
         [UIValue("predictedRankDiff")]
         private string PredictedRankDiff
         {
             get => displayPPInfo.PredictedRankDiff;
         }
-#pragma warning restore IDE0051 // Remove unused private members
-#pragma warning disable IDE0051 // Remove unused private members
         [UIValue("predictedRankDiffColor")]
         private string PredictedRankDiffColor
         {
             get => displayPPInfo.PredictedRankDiffColor;
         }
-#pragma warning restore IDE0051 // Remove unused private members
-#pragma warning disable IDE0051 // Remove unused private members
         [UIValue("predictedCountryRank")]
         private string PredictedCountryRank
         {
             get => displayPPInfo.PredictedCountryRank;
         }
-#pragma warning restore IDE0051 // Remove unused private members
-#pragma warning disable IDE0051 // Remove unused private members
         [UIValue("predictedCountryRankDiff")]
         private string PredictedCountryRankDiff
         {
             get => displayPPInfo.PredictedCountryRankDiff;
         }
-#pragma warning restore IDE0051 // Remove unused private members
-#pragma warning disable IDE0051 // Remove unused private members
         [UIValue("predictedCountryRankDiffColor")]
         private string PredictedCountryRankDiffColor
         {
             get => displayPPInfo.PredictedCountryRankDiffColor;
         }
-#pragma warning restore IDE0051 // Remove unused private members
-#pragma warning disable IDE0051 // Remove unused private members
         #endregion
         [UIValue("isDataLoading")]
         private bool IsDataLoading
         {
             get => _isDataLoading;
         }
-#pragma warning restore IDE0051 // Remove unused private members
-#pragma warning disable IDE0051 // Remove unused private members
         [UIValue("isNoDataLoading")]
         private bool IsNoDataLoading
         {
             get => !_isDataLoading;
         }
-#pragma warning restore IDE0051 // Remove unused private members
-#pragma warning disable IDE0051 // Remove unused private members
         [UIValue("leaderBoardName")]
         internal string LeaderBoardName
         {
             get
             {
-                Plugin.Log?.Error($"Get LeaderBoardName View Controller DropDownSettings? '{dropDownMapPools}'");
                 dropDownMapPools?.UpdateChoices(); //Refresh map pools here...
                 return this.ppPredictorMgr.CurrentPPPredictor.LeaderBoardName;
             }
         }
-#pragma warning restore IDE0051 // Remove unused private members
         [UIValue("leaderBoardIcon")]
         internal string LeaderBoardIcon
         {
             get { return this.ppPredictorMgr.CurrentPPPredictor.LeaderBoardIcon; }
         }
-#pragma warning disable IDE0051 // Remove unused private members
         [UIValue("isLeftArrowActive")]
         private bool IsLeftArrowActive
         {
             get => this.ppPredictorMgr.IsLeftArrowActive;
         }
-#pragma warning restore IDE0051 // Remove unused private members
-#pragma warning disable IDE0051 // Remove unused private members
         [UIValue("isRightArrowActive")]
         private bool IsRightArrowActive
         {
             get => this.ppPredictorMgr.IsRightArrowActive;
         }
-#pragma warning restore IDE0051 // Remove unused private members
-#pragma warning disable IDE0051 // Remove unused private members
         [UIValue("isMapPoolDropDownActive")]
         private bool IsMapPoolDropDownActive
         {
             get => this.ppPredictorMgr.IsMapPoolDropDownActive;
         }
-#pragma warning restore IDE0051 // Remove unused private members
-#pragma warning disable IDE0051 // Remove unused private members
         [UIValue("isLeaderboardNavigationActive")]
         private bool IsLeaderboardNavigationActive
         {
             get => this.ppPredictorMgr.IsLeaderboardNavigationActive;
         }
-#pragma warning restore IDE0051 // Remove unused private members
         #region update UI data
         [UIValue("newVersion")]
         private string NewVersion { get; set; }
@@ -523,7 +473,6 @@ namespace PPPredictor.UI.ViewController
 
         private void UpdateMapPoolChoices()
         {
-            Plugin.Log?.Error($"UpdateMapPoolChoices? '{dropDownMapPools}'");
             dropDownMapPools.values = this.ppPredictorMgr.CurrentPPPredictor.MapPoolOptions;
             dropDownMapPools.Value = this.ppPredictorMgr.CurrentPPPredictor.CurrentMapPool;
             dropDownMapPools.ApplyValue();

@@ -7,19 +7,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using static PPPredictor.OpenAPIs.beatleaderapi;
+using static PPPredictor.OpenAPIs.BeatleaderAPI;
 
 namespace PPPredictor.Utilities
 {
     public class PPCalculatorBeatLeader : PPCalculator
     {
-        private readonly OpenAPIs.beatleaderapi beatleaderapi;
+        private readonly OpenAPIs.BeatleaderAPI beatleaderapi;
         internal static float accumulationConstant = 0.965f;
 
         public PPCalculatorBeatLeader() : base() 
         {
             playerPerPages = 50;
-            beatleaderapi = new OpenAPIs.beatleaderapi();
+            beatleaderapi = new OpenAPIs.BeatleaderAPI();
             UpdateAvailableMapPools();
         }
 
@@ -63,7 +63,6 @@ namespace PPPredictor.Utilities
                 {
                     scoreSaberPlayerCollection = await beatleaderapi.GetPlayersInEventLeaderboard(long.Parse(_leaderboardInfo.CurrentMapPool.Id), "pp", (int)fetchIndexPage, playerPerPages, "desc");
                 }
-                Plugin.Log.Error($"GetPlayers index: {fetchIndexPage}");
                 foreach (var scoreSaberPlayer in scoreSaberPlayerCollection.data)
                 {
                     lsPlayer.Add(new PPPPlayer(scoreSaberPlayer));

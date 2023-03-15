@@ -82,7 +82,6 @@ namespace PPPredictor.Utilities
         {
             get
             {
-                Plugin.Log?.Error($"Get map-pool-options");
                 return _leaderboardInfo.LsMapPools.Select(f => (object)f).ToList();
             }
         }

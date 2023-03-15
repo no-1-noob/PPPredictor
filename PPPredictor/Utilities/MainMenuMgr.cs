@@ -6,10 +6,12 @@ namespace PPPredictor.Utilities
 {
     class MainMenuMgr : IInitializable, IDisposable
     {
+#pragma warning disable CS0649 // Field is never assigned to, and will always have its default value null
         [Inject] private readonly LevelSelectionNavigationController levelSelectionNavigationController;
         [Inject] private readonly GameplaySetupViewController gameplaySetupViewController;
         [Inject] private readonly PPPredictorMgr ppPredictorMgr;
         [Inject] private readonly AnnotatedBeatmapLevelCollectionsViewController annotatedBeatmapLevelCollectionsViewController;
+#pragma warning restore CS0649 // Field is never assigned to, and will always have its default value null
 
         public MainMenuMgr()
         {

@@ -16,7 +16,7 @@ namespace PPPredictor.Data.Curve
         private readonly double? exponential;
         private readonly double? cutoff;
         private readonly bool _isDummy;
-        public bool isDummy { get => _isDummy; }
+        public bool IsDummy { get => _isDummy; }
 
         public CustomPPPCurve(List<(double, double)> arrPPCurve, CurveType curveType, double basePPMultiplier, bool isDummy = false)
         {
@@ -144,9 +144,9 @@ namespace PPPredictor.Data.Curve
 
         private double BasicCurveCalculatePPatPercentage(double star, double percentage)
         {
-            double baseline = (this.baseline.HasValue ? this.baseline.Value : 0.78) * 100f;
-            double cutoff = this.cutoff.HasValue ? this.cutoff.Value : 0.5f;
-            double exponential = this.exponential.HasValue ? this.exponential.Value : 2.5;
+            double baseline = (this.baseline ?? 0.78) * 100f;
+            double cutoff = this.cutoff ?? 0.5f;
+            double exponential = this.exponential ?? 2.5f;
 
             double multiplier;
             if(percentage < baseline)
@@ -180,7 +180,7 @@ namespace PPPredictor.Data.Curve
 
         public override string ToString()
         {
-            return $"CustomPPPCurve curveType:{curveType.ToString()} - basePPMultiplier: {basePPMultiplier} - dummy? {isDummy}";
+            return $"CustomPPPCurve curveType:{curveType} - basePPMultiplier: {basePPMultiplier} - dummy? {IsDummy}";
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using PPPredictor.OpenAPIs;
 using scoresaberapi;
 using System.Collections.Generic;
-using static PPPredictor.OpenAPIs.beatleaderapi;
+using static PPPredictor.OpenAPIs.BeatleaderAPI;
 
 namespace PPPredictor.Data
 {

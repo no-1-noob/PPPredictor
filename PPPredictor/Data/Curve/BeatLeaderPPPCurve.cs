@@ -6,7 +6,7 @@ namespace PPPredictor.Data.Curve
     class BeatLeaderPPPCurve : IPPPCurve
     {
         private readonly double ppCalcWeight = 42;
-        public bool isDummy { get => false; }
+        public bool IsDummy { get => false; }
         public double CalculatePPatPercentage(double star, double percentage, bool failed)
         {
             try

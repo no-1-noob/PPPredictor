@@ -40,7 +40,7 @@ namespace PPPredictor.Data
         public List<PPPMapPoolEntry> LsMapPoolEntries { get => _lsMapPoolEntries; set => _lsMapPoolEntries = value; }
         public MapPoolType MapPoolType { get => _mapPoolType; set => _mapPoolType = value; }
         internal IPPPCurve Curve { get => _curve; set => _curve = value; }
-        public CurveInfo CurveInfo { get => _curve.isDummy ? null : _curve.ToCurveInfo(); set => _curve = CurveParser.ParseToCurve(value); }
+        public CurveInfo CurveInfo { get => _curve.IsDummy ? null : _curve.ToCurveInfo(); set => _curve = CurveParser.ParseToCurve(value); }
         public PPPPlayer SessionPlayer { get => _sessionPlayer; set => _sessionPlayer = value; }
         public PPPPlayer CurrentPlayer { get => _currentPlayer; set => _currentPlayer = value; }
         public string Id { get => _id; set => _id = value; }

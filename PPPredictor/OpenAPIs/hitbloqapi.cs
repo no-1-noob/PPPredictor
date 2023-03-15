@@ -10,12 +10,12 @@ using System.Threading.Tasks;
 
 namespace PPPredictor.OpenAPIs
 {
-    public class hitbloqapi
+    public class HitbloqAPI
     {
         private static readonly string baseUrl = "https://hitbloq.com";
-        private HttpClient client;
+        private readonly HttpClient client;
 
-        public hitbloqapi()
+        public HitbloqAPI()
         {
             client = new HttpClient();
             client.DefaultRequestHeaders.Accept.Clear();
@@ -164,6 +164,7 @@ namespace PPPredictor.OpenAPIs
         }
     }
 
+#pragma warning disable IDE1006 // Naming Styles; api dictates them...
     public class HitBloqUserId
     {
         public long id { get; set; }
@@ -222,4 +223,5 @@ namespace PPPredictor.OpenAPIs
     {
         public Dictionary<string, double> star_rating { get; set; }
     }
+#pragma warning restore IDE1006 // Naming Styles
 }

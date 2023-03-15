@@ -12,10 +12,10 @@ namespace PPPredictor.Utilities
 {
     class ProfileInfoMgr
     {
-        internal static FlowCoordinator _parentFlow { get; private set; }
-        internal static PPPredictorFlowCoordinator _flow { get; private set; }
+        internal static FlowCoordinator ParentFlow { get; private set; }
+        private static PPPredictorFlowCoordinator _flow;
         private static readonly string profilePath = Path.Combine(UnityGame.UserDataPath, "PPPredictorProfileInfo.json");
-        private static int _profileInfoVersion = 2;
+        private static readonly int _profileInfoVersion = 2;
         internal static ProfileInfo LoadProfileInfo()
         {
             MenuButtons.instance.RegisterButton(new MenuButton("PPPredictor", "Predict PP gains", ShowSettingsFlow, true));
@@ -72,9 +72,9 @@ namespace PPPredictor.Utilities
             if (_flow == null)
                 _flow = BeatSaberUI.CreateFlowCoordinator<PPPredictorFlowCoordinator>();
 
-            _parentFlow = BeatSaberUI.MainFlowCoordinator.YoungestChildFlowCoordinatorOrSelf();
+            ParentFlow = BeatSaberUI.MainFlowCoordinator.YoungestChildFlowCoordinatorOrSelf();
 
-            BeatSaberUI.PresentFlowCoordinator(_parentFlow, _flow, immediately: true);
+            BeatSaberUI.PresentFlowCoordinator(ParentFlow, _flow, immediately: true);
         }
     }
 }

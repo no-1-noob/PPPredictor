@@ -1,6 +1,7 @@
 ﻿using PPPredictor.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using Zenject;
@@ -9,12 +10,15 @@ namespace PPPredictor.Counter
 {
     public class PPPCounter : CountersPlus.Counters.Custom.BasicCustomCounter
     {
+#pragma warning disable CS0649
         [Inject] private readonly ScoreController scoreController;
         [Inject] private readonly GameplayCoreSceneSetupData setupData;
         [Inject] private readonly PPPredictorMgr ppPredictorMgr;
+#pragma warning restore CS0649
         private List<CounterInfoHolder> lsCounterInfoHolder;
         private int maxPossibleScore = 0;
         private bool _levelFailed = false;
+        private bool _iconMoved = false;
 #if DEBUG
         private TMP_Text debugPercentage;
 #endif
@@ -144,6 +148,12 @@ namespace PPPredictor.Counter
             debugPercentage.text = $"{Plugin.ProfileInfo.CounterScoringType} {percentage:F2}%";
 #endif
             lsCounterInfoHolder.ForEach(item => item.UpdateCounterText(percentage, _levelFailed));
+            if(!_iconMoved && !lsCounterInfoHolder.Where(x => x.MaxPP == -1).Any())
+            {
+                _iconMoved = true;
+                double maxMaxPP = lsCounterInfoHolder.Select(x => x.MaxPP).Max();
+                lsCounterInfoHolder.ForEach(item => item.MoveIconForLongMaxPP(Math.Truncate(maxMaxPP).ToString().Length));
+            }
         }
 
         //Stupid way to do it but works

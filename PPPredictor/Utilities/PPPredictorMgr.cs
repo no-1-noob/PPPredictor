@@ -18,7 +18,6 @@ namespace PPPredictor.Utilities
         private List<IPPPredictor> _lsPPPredictor;
         private int index = 0;
         internal IPPPredictor CurrentPPPredictor;
-        private PropertyChangedEventHandler propertyChanged;
         private bool isLeftArrowActive = false;
         private bool isRightArrowActive = false;
         private bool isMapPoolDropDownActive = true;
@@ -320,12 +319,19 @@ namespace PPPredictor.Utilities
 
         internal void FindPoolWithSyncURL(IPlaylist playlist)
         {
-            if (playlist != null)
+            if (playlist != null && Plugin.ProfileInfo.IsPredictorSwitchBySyncUrlEnabled)
             {
-                if (playlist.TryGetCustomData("syncURL", out object outSyncURL))
+                if (playlist.TryGetCustomData("syncURL", out object outSyncURL) && !string.IsNullOrEmpty(outSyncURL as string))
                 {
+                    string syncUrl = outSyncURL.ToString();
                     foreach (IPPPredictor predictor in _lsPPPredictor)
                     {
+                        if (syncUrl.Contains(".beatleader.") && predictor.LeaderBoardName == Leaderboard.BeatLeader.ToString())
+                        {
+                            index = _lsPPPredictor.FindIndex(x => x.LeaderBoardName == predictor.LeaderBoardName);
+                            CyclePredictors(0);
+                            break;
+                        }
                         PPPMapPool mapPool = predictor.FindPoolWithSyncURL(outSyncURL as string);
                         if(mapPool != null)
                         {

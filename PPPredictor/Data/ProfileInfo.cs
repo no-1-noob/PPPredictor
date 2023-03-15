@@ -30,6 +30,7 @@ namespace PPPredictor.Data
         private int _profileInfoVersion;
         private int _selectedTab;
         private MapPoolSorting _hitbloqMapPoolSorting;
+        private bool _isPredictorSwitchBySyncUrlEnabled;
 
         private bool _isScoreSaberEnabled;
         private bool _isBeatLeaderEnabled;
@@ -63,6 +64,7 @@ namespace PPPredictor.Data
             ProfileInfoVersion = 0;
             SelectedTab = 0;
             HitbloqMapPoolSorting = MapPoolSorting.Popularity;
+            IsPredictorSwitchBySyncUrlEnabled = true;
         }
 
         internal void ResetCachedData()
@@ -108,5 +110,6 @@ namespace PPPredictor.Data
         public int ProfileInfoVersion { get => _profileInfoVersion; set => _profileInfoVersion = value; }
         public int SelectedTab { get => _selectedTab; set => _selectedTab = value; }
         public MapPoolSorting HitbloqMapPoolSorting { get => _hitbloqMapPoolSorting; set => _hitbloqMapPoolSorting = value; }
+        public bool IsPredictorSwitchBySyncUrlEnabled { get => _isPredictorSwitchBySyncUrlEnabled; set => _isPredictorSwitchBySyncUrlEnabled = value; }
     }
 }

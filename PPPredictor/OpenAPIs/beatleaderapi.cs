@@ -10,12 +10,12 @@ using System.Threading.Tasks;
 
 namespace PPPredictor.OpenAPIs
 {
-    public class beatleaderapi
+    public class BeatleaderAPI
     {
         private static readonly string baseUrl = "https://api.beatleader.xyz";
-        private HttpClient client;
+        private readonly HttpClient client;
 
-        public beatleaderapi()
+        public BeatleaderAPI()
         {
             client = new HttpClient();
             client.DefaultRequestHeaders.Accept.Clear();
@@ -187,6 +187,7 @@ namespace PPPredictor.OpenAPIs
             Plugin.DebugPrint($"BeatLeaderNetwork: {message}");
         }
 
+#pragma warning disable IDE1006 // Naming Styles; api dictates them...
         public class BeatLeaderEventList
         {
             public List<BeatLeaderEvent> data { get; set; }
@@ -319,5 +320,6 @@ namespace PPPredictor.OpenAPIs
             public PPPBeatMapDifficulty name { get; set; }
             public string characteristic { get; set; }
         }
-    }   
+    }
+#pragma warning restore IDE1006 // Naming Styles; api dictates them...
 }
