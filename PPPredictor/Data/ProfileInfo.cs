@@ -74,7 +74,7 @@ namespace PPPredictor.Data
                 foreach (var mapPool in leaderBoardInfo.LsMapPools)
                 {
                     mapPool.LsScores = new List<ShortScore>();
-                    mapPool.LsLeaderboardScores = new List<ShortScore>();
+                    mapPool.LsLeaderboadInfo = new List<ShortScore>();
                     mapPool.DtLastScoreSet = new DateTime(2000, 1, 1);
                 }
                 leaderBoardInfo.LsModifierValues = new List<PPPModifierValues>();

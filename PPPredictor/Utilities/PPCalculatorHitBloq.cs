@@ -58,23 +58,17 @@ namespace PPPredictor.Utilities
                 {
                     string songHash = Hashing.GetCustomLevelHash(beatMapInfo.SelectedCustomBeatmapLevel);
                     string searchString = CreateSeachString(songHash, beatMapInfo.Beatmap);
-                    if (_leaderboardInfo.CurrentMapPool.MapPoolType == MapPoolType.Custom && !_leaderboardInfo.CurrentMapPool.LsMapPoolEntries.Where(x => x.Searchstring == searchString).Any())
-                    {
-                        return new PPPBeatMapInfo(beatMapInfo, 0); //Currently selected map is not contained in selected MapPool
-                    }
-                    ShortScore cachedInfo = _leaderboardInfo.CurrentMapPool.LsLeaderboardScores?.FirstOrDefault(x => x.Searchstring.ToUpper() == searchString.ToUpper());
+                    ShortScore cachedInfo = _leaderboardInfo.CurrentMapPool.LsLeaderboadInfo?.FirstOrDefault(x => x.Searchstring.ToUpper() == searchString.ToUpper());
                     bool refetchInfo = cachedInfo != null && cachedInfo.FetchTime < DateTime.Now.AddDays(-7);
                     if (cachedInfo == null || refetchInfo)
                     {
-                        if (refetchInfo) _leaderboardInfo.CurrentMapPool.LsLeaderboardScores?.Remove(cachedInfo);
+                        if (refetchInfo) _leaderboardInfo.CurrentMapPool.LsLeaderboadInfo?.Remove(cachedInfo);
                         HitBloqLeaderboardInfo leaderboardInfo = await hitbloqapi.GetLeaderBoardInfo(searchString);
                         if (leaderboardInfo != null)
                         {
-                            if (leaderboardInfo.star_rating.TryGetValue(_leaderboardInfo.CurrentMapPool.Id, out var stars))
-                            {
-                                _leaderboardInfo.CurrentMapPool.LsLeaderboardScores.Add(new ShortScore(searchString, stars, DateTime.Now));
-                                return new PPPBeatMapInfo(beatMapInfo, stars);
-                            }
+                            leaderboardInfo.star_rating.TryGetValue(_leaderboardInfo.CurrentMapPool.Id, out var stars);
+                            _leaderboardInfo.CurrentMapPool.LsLeaderboadInfo.Add(new ShortScore(searchString, stars, DateTime.Now));
+                            return new PPPBeatMapInfo(beatMapInfo, stars);
                         }
                     }
                     else
@@ -186,29 +180,13 @@ namespace PPPredictor.Utilities
 
         override public async Task UpdateMapPoolDetails(PPPMapPool mapPool)
         {
-            mapPool.LsMapPoolEntries.Clear();
-            bool needMoreData = true;
-            int page = 0;
-            while (needMoreData)
+            if (mapPool.MapPoolType != MapPoolType.Default) //Filter out default 
             {
-                if (mapPool.MapPoolType != MapPoolType.Default) //Filter out default 
+                HitBloqMapPoolDetails mapPoolDetails = await this.hitbloqapi.GetHitBloqMapPoolDetails(mapPool.Id, 0);
+                mapPool.AccumulationConstant = mapPoolDetails.accumulation_constant;
+                if(mapPoolDetails.cr_curve != null)
                 {
-                    HitBloqMapPoolDetails mapPoolDetails = await this.hitbloqapi.GetHitBloqMapPoolDetails(mapPool.Id, page);
-                    mapPool.AccumulationConstant = mapPoolDetails.accumulation_constant;
                     mapPool.Curve = new CustomPPPCurve(mapPoolDetails.cr_curve);
-                    if (mapPoolDetails.leaderboard_id_list.Count == 0)
-                    {
-                        needMoreData = false;
-                    }
-                    foreach (string songSearchString in mapPoolDetails.leaderboard_id_list)
-                    {
-                        mapPool.LsMapPoolEntries.Add(new PPPMapPoolEntry(songSearchString));
-                    }
-                    page++;
-                }
-                else
-                {
-                    needMoreData = false;
                 }
             }
         }

@@ -73,7 +73,7 @@ namespace PPPredictor.OpenAPIs
                     string result = await response.Content.ReadAsStringAsync();
                     return JsonConvert.DeserializeObject<HitBloqMapPoolDetails>(result);
                 }
-            }
+                }
             catch (Exception ex)
             {
                 Plugin.Log?.Error($"Error in GetHitBloqMapPoolDetails: {ex.Message}");

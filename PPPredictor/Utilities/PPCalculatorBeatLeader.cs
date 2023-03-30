@@ -107,11 +107,11 @@ namespace PPPredictor.Utilities
                     {
                         return new PPPBeatMapInfo(beatMapInfo, 0); //Currently selected map is not contained in selected MapPool
                     }
-                    ShortScore cachedInfo = _leaderboardInfo.DefaultMapPool.LsLeaderboardScores?.FirstOrDefault(x => x.Searchstring == searchString);
+                    ShortScore cachedInfo = _leaderboardInfo.DefaultMapPool.LsLeaderboadInfo?.FirstOrDefault(x => x.Searchstring == searchString);
                     bool refetchInfo = cachedInfo != null && cachedInfo.FetchTime < DateTime.Now.AddDays(-7);
                     if (cachedInfo == null || refetchInfo)
                     {
-                        if (refetchInfo) _leaderboardInfo.DefaultMapPool.LsLeaderboardScores?.Remove(cachedInfo);
+                        if (refetchInfo) _leaderboardInfo.DefaultMapPool.LsLeaderboadInfo?.Remove(cachedInfo);
                         BeatLeaderSong song = await beatleaderapi.GetSongByHash(songHash);
                         if (song != null)
                         {
@@ -126,7 +126,7 @@ namespace PPPredictor.Utilities
                                     modifierValueId = _leaderboardInfo.LsModifierValues.Select(x => x.Id).DefaultIfEmpty(-1).Max() + 1;
                                     _leaderboardInfo.LsModifierValues.Add(new PPPModifierValues(modifierValueId, diff.modifierValues));
                                 }
-                                _leaderboardInfo.CurrentMapPool.LsLeaderboardScores.Add(new ShortScore(searchString, diff.stars.GetValueOrDefault(), DateTime.Now, modifierValueId));
+                                _leaderboardInfo.CurrentMapPool.LsLeaderboadInfo.Add(new ShortScore(searchString, diff.stars.GetValueOrDefault(), DateTime.Now, modifierValueId));
                                 if (diff.stars.HasValue && diff.status == (int)BeatLeaderDifficultyStatus.ranked)
                                 {
                                     return new PPPBeatMapInfo(beatMapInfo ,diff.stars.Value, modifierValueId);

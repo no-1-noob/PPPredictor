@@ -5,7 +5,7 @@ using PPPredictor.Data.DisplayInfos;
 using PPPredictor.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Zenject;
@@ -14,7 +14,8 @@ namespace PPPredictor.Utilities
 {
     class PPPredictorMgr : IInitializable, IDisposable
     {
-
+        private const string _beatleaderSyncUrlIdentifier = ".beatleader.";
+        private const string _customDataSyncUrl = "syncURL";
         private List<IPPPredictor> _lsPPPredictor;
         private int index = 0;
         internal IPPPredictor CurrentPPPredictor;
@@ -74,9 +75,9 @@ namespace PPPredictor.Utilities
         private void RefreshLeaderboardVisibilityByIPAPluginManager()
         {
             List<PluginMetadata> lsEnabledPlugin = PluginManager.EnabledPlugins.ToList();
-            Plugin.ProfileInfo.IsScoreSaberEnabled = lsEnabledPlugin.FirstOrDefault(x => x.Name == "ScoreSaber") != null;
-            Plugin.ProfileInfo.IsBeatLeaderEnabled = lsEnabledPlugin.FirstOrDefault(x => x.Name == "BeatLeader") != null;
-            Plugin.ProfileInfo.IsHitBloqEnabled = lsEnabledPlugin.FirstOrDefault(x => x.Name == "Hitbloq") != null;
+            Plugin.ProfileInfo.IsScoreSaberEnabled = lsEnabledPlugin.FirstOrDefault(x => x.Name == Leaderboard.ScoreSaber.ToString()) != null;
+            Plugin.ProfileInfo.IsBeatLeaderEnabled = lsEnabledPlugin.FirstOrDefault(x => x.Name == Leaderboard.BeatLeader.ToString()) != null;
+            Plugin.ProfileInfo.IsHitBloqEnabled = lsEnabledPlugin.FirstOrDefault(x => x.Name == CultureInfo.CurrentCulture.TextInfo.ToTitleCase(Leaderboard.HitBloq.ToString())) != null;
         }
 
         private void PPPredictor_OnMapPoolRefreshed(object sender, EventArgs e)
@@ -321,12 +322,12 @@ namespace PPPredictor.Utilities
         {
             if (playlist != null && Plugin.ProfileInfo.IsPredictorSwitchBySyncUrlEnabled)
             {
-                if (playlist.TryGetCustomData("syncURL", out object outSyncURL) && !string.IsNullOrEmpty(outSyncURL as string))
+                if (playlist.TryGetCustomData(_customDataSyncUrl, out object outSyncURL) && !string.IsNullOrEmpty(outSyncURL as string))
                 {
                     string syncUrl = outSyncURL.ToString();
                     foreach (IPPPredictor predictor in _lsPPPredictor)
                     {
-                        if (syncUrl.Contains(".beatleader.") && predictor.LeaderBoardName == Leaderboard.BeatLeader.ToString())
+                        if (syncUrl.Contains(_beatleaderSyncUrlIdentifier) && predictor.LeaderBoardName == Leaderboard.BeatLeader.ToString())
                         {
                             index = _lsPPPredictor.FindIndex(x => x.LeaderBoardName == predictor.LeaderBoardName);
                             CyclePredictors(0);

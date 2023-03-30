@@ -20,7 +20,7 @@ namespace PPPredictor.Data
         private PPPPlayer _sessionPlayer;
         private PPPPlayer _currentPlayer;
         private List<ShortScore> _lsScores;
-        private List<ShortScore> _lsLeaderboardScores;
+        private List<ShortScore> _lsLeaderboardInfo;
         private List<PPPMapPoolEntry> _lsMapPoolEntries;
         private List<PPPPlayer> _lsPlayerRankings;
         private DateTime _dtUtcLastRefresh;
@@ -36,7 +36,7 @@ namespace PPPredictor.Data
         public float AccumulationConstant { get => _accumulationConstant; set => _accumulationConstant = value; }
         public int SortIndex { get => _sortIndex; set => _sortIndex = value; }
         public List<ShortScore> LsScores { get => _lsScores; set => _lsScores = value; }
-        public List<ShortScore> LsLeaderboardScores { get => _lsLeaderboardScores; set => _lsLeaderboardScores = value; }
+        public List<ShortScore> LsLeaderboadInfo { get => _lsLeaderboardInfo; set => _lsLeaderboardInfo = value; }
         public List<PPPMapPoolEntry> LsMapPoolEntries { get => _lsMapPoolEntries; set => _lsMapPoolEntries = value; }
         public MapPoolType MapPoolType { get => _mapPoolType; set => _mapPoolType = value; }
         internal IPPPCurve Curve { get => _curve; set => _curve = value; }
@@ -62,7 +62,7 @@ namespace PPPredictor.Data
         {
             _currentPlayer = new PPPPlayer();
             _lsScores = new List<ShortScore>();
-            LsLeaderboardScores = new List<ShortScore>();
+            LsLeaderboadInfo = new List<ShortScore>();
             _lsMapPoolEntries = new List<PPPMapPoolEntry>();
             _lsPlayerRankings = new List<PPPPlayer>();
             _dtUtcLastRefresh = new DateTime(2000, 1, 1);
