@@ -12,6 +12,9 @@
     <text text='Leaderboard Specific Settings' italics='true' align='Center' font-size='4' />
     <text text='HitBloq' italics='true' align='Center' font-size='3' />
     <dropdown-list-setting text='Map pool sorting' value='hitbloq-mappool-sorting' choices='hitbloq-mappool-sorting-options' bind-value='true' apply-on-change='true'/>
+    <text text='Main menu position presets' italics='true' align='Center' font-size='4' />
+    <dropdown-list-setting text='Position Presets' value='menu-position-preset' choices='menu-position-preset-options' bind-value='true' apply-on-change='true'/>
+    <button text='Apply selected menu position preset' on-click='apply-menu-position-preset' min-width='16' pref-height='8' interactable='true'/>
     <text text='Counter' italics='true' align='Center' font-size='4' />
     <dropdown-list-setting text='Scoring type' value='counter-scoring-type' choices='counter-scoring-type-options' bind-value='true' apply-on-change='true'/>
     <list-setting text='Display type' value='counter-display-type' choices='counter-display-type-options' bind-value='true' apply-on-change='true' rich-text='true' font-align='Left' word-wrapping='false'/>
@@ -20,13 +23,23 @@
     <bool-setting text='Highlight if target % is reached (when icons are not used)' value='counter-highlight-target-percentage' bind-value='true' apply-on-change='true'></bool-setting>
     <bool-setting text='Hide when unranked' value='counter-hide-when-unranked' bind-value='true' apply-on-change='true'></bool-setting>
     <text text='Reset' italics='true' align='Center' font-size='4' />
-    <button text='Reset cached data and settings' on-click='reset-data' min-width='16' pref-height='8' interactable='true'/>
-    <modal id='resetModal' show-event='open-reset-modal' hide-event='close-reset-modal' click-off-closes="true" anchor-pos-y='10' size-delta-x='80' size-delta-y='15' move-to-center='true'>
+    <button text='Reset cache (scores/stars/etc.)' on-click='reset-cache' min-width='16' pref-height='8' interactable='true'/>
+    <button text='Reset settings' on-click='reset-settings' min-width='16' pref-height='8' interactable='true'/>
+    <modal id='resetSettingsModal' show-event='open-reset-settings-modal' hide-event='close-reset-settings-modal' click-off-closes="true" anchor-pos-y='10' size-delta-x='80' size-delta-y='15' move-to-center='true'>
       <vertical horizontal-fit='PreferredSize' vertical-fit='PreferredSize'>
-        <text text='Do you want to reset your settings and fetch all data again?'></text>
+        <text text='Do you want to reset your settings?'></text>
         <horizontal horizontal-fit='PreferredSize' spacing='2' pad-left='0' align='Center' child-align='MiddleLeft'>
-          <button text='Reset' on-click='confirm-reset-modal'/>
-          <button text='Cancel' click-event='close-reset-modal'/>
+          <button text='Reset' on-click='confirm-reset-settings-modal'/>
+          <button text='Cancel' click-event='close-reset-settings-modal'/>
+        </horizontal>
+      </vertical>
+    </modal>
+    <modal id='resetCacheModal' show-event='open-reset-cache-modal' hide-event='close-reset-cache-modal' click-off-closes="true" anchor-pos-y='10' size-delta-x='80' size-delta-y='15' move-to-center='true'>
+      <vertical horizontal-fit='PreferredSize' vertical-fit='PreferredSize'>
+        <text text='Do you want to reset your cache (Scores/Stars/etc.) ?'></text>
+        <horizontal horizontal-fit='PreferredSize' spacing='2' pad-left='0' align='Center' child-align='MiddleLeft'>
+          <button text='Reset' on-click='confirm-reset-cache-modal'/>
+          <button text='Cancel' click-event='close-reset-cache-modal'/>
         </horizontal>
       </vertical>
     </modal>

@@ -17,6 +17,9 @@ namespace PPPredictor.UI.ViewController
         private readonly List<object> generalPPGainCalculationOptions;
         private readonly List<object> counterDisplayTypeOptions;
         private readonly List<object> hitbloqMapPoolSortingOptions;
+        private readonly List<object> menuPositionPresetOptions;
+
+        private MenuPositionPreset _selectedMenuPositionPreset;
 
         public SettingsMidViewController()
         {
@@ -40,6 +43,12 @@ namespace PPPredictor.UI.ViewController
             {
                 hitbloqMapPoolSortingOptions.Add(enumValue.ToString());
             }
+            menuPositionPresetOptions = new List<object>();
+            foreach (MenuPositionPreset enumValue in Enum.GetValues(typeof(MenuPositionPreset)))
+            {
+                menuPositionPresetOptions.Add(enumValue.ToString());
+            }
+            _selectedMenuPositionPreset = Utilities.MenuPositionPreset.UnderScoreboard;
         }
 
         #region settings
@@ -49,10 +58,15 @@ namespace PPPredictor.UI.ViewController
 #pragma warning restore CS0649 // Field is never assigned to, and will always have its default value null
 
 #pragma warning disable IDE0051 // Remove unused private members
-        [UIAction("reset-data")]
-        private void ResetData()
+        [UIAction("reset-settings")]
+        private void ResetSettings()
         {
-            bsmlParserParams.EmitEvent("open-reset-modal");
+            bsmlParserParams.EmitEvent("open-reset-settings-modal");
+        }
+        [UIAction("reset-cache")]
+        private void ResetCache()
+        {
+            bsmlParserParams.EmitEvent("open-reset-cache-modal");
         }
 #pragma warning restore IDE0051 // Remove unused private members
 
@@ -226,14 +240,57 @@ namespace PPPredictor.UI.ViewController
         }
         #endregion
 
+        #region Menu Positioning
+        [UIAction("apply-menu-position-preset")]
+        private void ApplyMenuPositionPreset()
+        {
+            Plugin.DebugPrint($"ApplyMenuPositionPreset {_selectedMenuPositionPreset}");
+            switch (_selectedMenuPositionPreset)
+            {
+                case Utilities.MenuPositionPreset.UnderScoreboard:
+                    Plugin.ProfileInfo.Position = MenuPositionHelper.UnderScoreboardPosition;
+                    Plugin.ProfileInfo.EulerAngles = MenuPositionHelper.UnderScoreboardEulerAngles;
+                    break;
+                case Utilities.MenuPositionPreset.RightOfScoreboard:
+                    Plugin.ProfileInfo.Position = MenuPositionHelper.RightOfScoreboardPosition;
+                    Plugin.ProfileInfo.EulerAngles = MenuPositionHelper.RightOfScoreboardEulerAngles;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        [UIValue("menu-position-preset-options")]
+        public List<object> MenuPositionPresetOptions
+        {
+            get => this.menuPositionPresetOptions;
+        }
+        [UIValue("menu-position-preset")]
+        public string MenuPositionPreset
+        {
+            get => _selectedMenuPositionPreset.ToString();
+            set
+            {
+                _selectedMenuPositionPreset = (MenuPositionPreset)Enum.Parse(typeof(MenuPositionPreset), value);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MenuPositionPreset)));
+            }
+        }
+        #endregion
+
 #pragma warning disable IDE0051 // Remove unused private members
         #region modal actions
-        [UIAction("confirm-reset-modal")]
-        private void ConfirmResetModal()
+        [UIAction("confirm-reset-settings-modal")]
+        private void ConfirmResetSettingsModal()
         {
-            ProfileInfoMgr.ResetProfile();
+            ProfileInfoMgr.ResetSettings();
             RefreshSettingsDisplay();
-            bsmlParserParams.EmitEvent("close-reset-modal");
+            bsmlParserParams.EmitEvent("close-reset-settings-modal");
+        }
+        [UIAction("confirm-reset-cache-modal")]
+        private void ConfirmResetCacheModal()
+        {
+            ProfileInfoMgr.ResetCache();
+            bsmlParserParams.EmitEvent("close-reset-cache-modal");
         }
 #pragma warning restore IDE0051 // Remove unused private members
         #endregion

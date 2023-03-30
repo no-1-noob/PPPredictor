@@ -40,8 +40,8 @@ namespace PPPredictor.Data
         {
             LsLeaderboardInfo = new List<PPPLeaderboardInfo>();
             LastPercentageSelected = 90;
-            Position = new SVector3(4.189056f, 1.14293063f, -0.5054281f);
-            EulerAngles = new SVector3(1f, 90.1f, 359.437439f);
+            Position = MenuPositionHelper.UnderScoreboardPosition;
+            EulerAngles = MenuPositionHelper.UnderScoreboardEulerAngles;
             WindowHandleEnabled = false;
             DisplaySessionValues = false;
             ResetSessionHours = 12;

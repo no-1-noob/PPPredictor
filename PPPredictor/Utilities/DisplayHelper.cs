@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using PPPredictor.Data;
+using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
@@ -80,5 +81,13 @@ namespace PPPredictor.Utilities
             }
             return output;
         }
+    }
+
+    class MenuPositionHelper
+    {
+        internal static readonly SVector3 UnderScoreboardPosition = new SVector3(2.5f, 0.05f, 2.0f);
+        internal static readonly SVector3 UnderScoreboardEulerAngles = new SVector3(88, 60, 0);
+        internal static readonly SVector3 RightOfScoreboardPosition = new SVector3(4.189056f, 1.14293063f, -0.5054281f);
+        internal static readonly SVector3 RightOfScoreboardEulerAngles = new SVector3(1f, 90.1f, 359.437439f);
     }
 }

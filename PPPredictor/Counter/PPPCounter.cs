@@ -144,9 +144,6 @@ namespace PPPredictor.Counter
 
         private void DisplayCounterText(double percentage)
         {
-#if DEBUG
-            debugPercentage.text = $"{Plugin.ProfileInfo.CounterScoringType} {percentage:F2}%";
-#endif
             lsCounterInfoHolder.ForEach(item => item.UpdateCounterText(percentage, _levelFailed));
             if(!_iconMoved && !lsCounterInfoHolder.Where(x => x.MaxPP == -1).Any())
             {

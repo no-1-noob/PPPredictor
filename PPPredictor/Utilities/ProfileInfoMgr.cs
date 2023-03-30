@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using PPPredictor.Data;
 using PPPredictor.UI;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace PPPredictor.Utilities
@@ -62,9 +63,16 @@ namespace PPPredictor.Utilities
             return saved;
         }
 
-        internal static void ResetProfile()
+        internal static void ResetSettings()
         {
+            List<PPPLeaderboardInfo> lsCachedData =  Plugin.ProfileInfo.LsLeaderboardInfo;
             Plugin.ProfileInfo = new ProfileInfo();
+            Plugin.ProfileInfo.LsLeaderboardInfo = lsCachedData;
+        }
+
+        internal static void ResetCache()
+        {
+            Plugin.ProfileInfo.LsLeaderboardInfo = new List<PPPLeaderboardInfo>();
         }
 
         public static void ShowSettingsFlow()

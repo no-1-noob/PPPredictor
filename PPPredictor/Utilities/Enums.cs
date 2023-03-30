@@ -60,6 +60,12 @@
         Popularity
     }
 
+    enum MenuPositionPreset
+    {
+        UnderScoreboard,
+        RightOfScoreboard
+    }
+
     enum CounterDisplayType
     {
         PP,
