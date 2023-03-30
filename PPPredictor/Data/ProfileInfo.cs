@@ -11,7 +11,6 @@ namespace PPPredictor.Data
         private float _lastPercentageSelected;
         private SVector3 _position;
         private SVector3 _eulerAngles;
-        private bool _windowHandleEnabled;
         private bool _displaySessionValues;
         private int _resetSessionHours;
         private DateTime _lastSessionReset;
@@ -42,7 +41,6 @@ namespace PPPredictor.Data
             LastPercentageSelected = 90;
             Position = MenuPositionHelper.UnderScoreboardPosition;
             EulerAngles = MenuPositionHelper.UnderScoreboardEulerAngles;
-            WindowHandleEnabled = false;
             DisplaySessionValues = false;
             ResetSessionHours = 12;
             LastSessionReset = new DateTime();
@@ -84,7 +82,6 @@ namespace PPPredictor.Data
         public float LastPercentageSelected { get => _lastPercentageSelected; set => _lastPercentageSelected = value; }
         public SVector3 Position { get => _position; set => _position = value; }
         public SVector3 EulerAngles { get => _eulerAngles; set => _eulerAngles = value; }
-        public bool WindowHandleEnabled { get => _windowHandleEnabled; set => _windowHandleEnabled = value; }
         public bool DisplaySessionValues { get => _displaySessionValues; set => _displaySessionValues = value; }
         public int ResetSessionHours { get => _resetSessionHours; set => _resetSessionHours = value; }
         public DateTime LastSessionReset { get => _lastSessionReset; set => _lastSessionReset = value; }

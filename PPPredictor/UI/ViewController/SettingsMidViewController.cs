@@ -70,17 +70,6 @@ namespace PPPredictor.UI.ViewController
         }
 #pragma warning restore IDE0051 // Remove unused private members
 
-        [UIValue("window-handle-enabled")]
-        public bool WindowHandleEnabled
-        {
-            get => Plugin.ProfileInfo.WindowHandleEnabled;
-            set
-            {
-                Plugin.ProfileInfo.WindowHandleEnabled = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(WindowHandleEnabled)));
-            }
-        }
-
         [UIValue("version-check-enabled")]
         public bool VersionCheckEnabled
         {
@@ -297,7 +286,6 @@ namespace PPPredictor.UI.ViewController
 
         private void RefreshSettingsDisplay()
         {
-            WindowHandleEnabled = Plugin.ProfileInfo.WindowHandleEnabled;
             DisplaySessionValues = Plugin.ProfileInfo.DisplaySessionValues;
             ResetSessionHours = Plugin.ProfileInfo.ResetSessionHours;
             CounterDisplayType = EnumHelper.CounterDisplayTypeGetDisplayValue(Plugin.ProfileInfo.CounterDisplayType);

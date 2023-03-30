@@ -4,7 +4,6 @@
     <bool-setting text='Display session values' hover-hint='Display the Rank/PP value from the start of the session instead of the current value' value='display-session-values' bind-value='true' apply-on-change='true'></bool-setting>
     <slider-setting text='Reset session after X hours' value='reset-session-hours' hover-hint='Rest the session automatically after X hours. 0 = do not reset automatically' min='0' max='100' increment='1' bind-value='true' apply-on-change='true' integer-only='true'/>
     <text text='General' italics='true' align='Center' font-size='4' />
-    <bool-setting text='Show window handle' value='window-handle-enabled' bind-value='true' apply-on-change='true'></bool-setting>
     <bool-setting text='Enable version checker' value='version-check-enabled' bind-value='true' apply-on-change='true'></bool-setting>
     <bool-setting text='Enable predictor switch by playlist' value='predictor-switch-syncurl-enabled' bind-value='true' apply-on-change='true'></bool-setting>
     <dropdown-list-setting text='PP gain calculation' value='general-pp-gain-calculation' choices='general-pp-gain-calculation-options' bind-value='true' apply-on-change='true'/>

@@ -31,6 +31,9 @@
           <button text='🔃' hover-hint='Refresh Profile' on-click='refresh-profile-clicked' min-width='8' pref-height='8' interactable='~isNoDataLoading' />
           <action-button text='?' id='update-info-button' active='~isNewVersionAvailable' hover-hint='Update available' on-click='show-update-clicked' min-width='6' pref-height='8' interactable='~isNoDataLoading' />
         </vertical>
+        <horizontal horizontal-fit='PreferredSize' align='Left' ignore-layout='true' pad-left='56' pad-top='-17'>
+          <button text='~movePanelIcon' hover-hint='Click to enable movement of the panel. After unlocking just grab the panel somewhere and move it around. (Other buttons are disabled while movement is on)' on-click='move-panel-clicked' min-width='4' pref-height='6' font-size='3'/>
+        </horizontal>
       </horizontal>
       <!-- /Buttons -->
       <vertical horizontal-fit='PreferredSize' preferred-width='60' vertical-fit='PreferredSize' anchor-pos-y='-1'>

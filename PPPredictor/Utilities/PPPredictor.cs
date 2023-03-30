@@ -21,6 +21,7 @@ namespace PPPredictor.Utilities
         private bool _rankGainRunning = false;
         private double _lastPPGainCall = 0;
         private bool _isActive = false;
+        private int _loadingCounter = 0;
         #endregion
 
         public string LeaderBoardName
@@ -169,7 +170,8 @@ namespace PPPredictor.Utilities
         #region event sending
         private void IsDataLoading(bool isDataLoading)
         {
-            if (_isActive) OnDataLoading?.Invoke(this, isDataLoading);
+            _loadingCounter += isDataLoading ? +1 : -1;
+            if (_isActive && ((isDataLoading && _loadingCounter == 1) || (!isDataLoading && _loadingCounter == 0))) OnDataLoading?.Invoke(this, isDataLoading);
         }
         private void SendDisplayPPInfo(DisplayPPInfo displayPPInfo)
         {

@@ -5,8 +5,6 @@ using BeatSaberMarkupLanguage.Components.Settings;
 using BeatSaberMarkupLanguage.FloatingScreen;
 using BeatSaberMarkupLanguage.Parser;
 using HMUI;
-using PPPredictor.Data;
-using PPPredictor.Data.Curve;
 using PPPredictor.Data.DisplayInfos;
 using PPPredictor.Utilities;
 using System;
@@ -34,6 +32,7 @@ namespace PPPredictor.UI.ViewController
         private DisplaySessionInfo displaySessionInfo;
         private DisplayPPInfo displayPPInfo;
         private bool _isDataLoading;
+        private bool _isScreenMoving = false;
 
         public PPPredictorViewController() {}
 
@@ -49,10 +48,16 @@ namespace PPPredictor.UI.ViewController
             floatingScreen = FloatingScreen.CreateFloatingScreen(new Vector2(75, 100), true, Plugin.ProfileInfo.Position, new Quaternion(0, 0, 0, 0));
             floatingScreen.gameObject.name = "BSMLFloatingScreen_PPPredictor";
             floatingScreen.gameObject.SetActive(false);
-            floatingScreen.ShowHandle = Plugin.ProfileInfo.WindowHandleEnabled;
             floatingScreen.transform.eulerAngles = Plugin.ProfileInfo.EulerAngles;
             floatingScreen.transform.localScale = new Vector3(0.03f, 0.03f, 0.03f);
-            floatingScreen.HandleSide = FloatingScreen.Side.Left;
+            floatingScreen.handle.transform.localScale = new Vector2(60, 70);
+            floatingScreen.handle.transform.localPosition = new Vector3(0, 0, .1f);
+            floatingScreen.handle.transform.localRotation = Quaternion.identity;
+            floatingScreen.handle.hideFlags = HideFlags.HideInHierarchy;
+            floatingScreen.ShowHandle = _isScreenMoving;
+            MeshRenderer floatingScreenMeshRenderer = floatingScreen.handle.GetComponent<MeshRenderer>();
+            if(floatingScreenMeshRenderer) floatingScreenMeshRenderer.enabled = false; //Make it invisible ;)
+
             floatingScreen.HandleReleased += OnScreenHandleReleased;
             BSMLParser.instance.Parse(BeatSaberMarkupLanguage.Utilities.GetResourceContent(Assembly.GetExecutingAssembly(), "PPPredictor.UI.Views.PPPredictorView.bsml"), floatingScreen.gameObject, this);
             ppPredictorMgr.ViewActivated += PpPredictorMgr_ViewActivated;
@@ -336,7 +341,7 @@ namespace PPPredictor.UI.ViewController
         [UIValue("isNoDataLoading")]
         private bool IsNoDataLoading
         {
-            get => !_isDataLoading;
+            get => !(_isDataLoading || _isScreenMoving);
         }
         [UIValue("leaderBoardName")]
         internal string LeaderBoardName
@@ -355,17 +360,17 @@ namespace PPPredictor.UI.ViewController
         [UIValue("isLeftArrowActive")]
         private bool IsLeftArrowActive
         {
-            get => this.ppPredictorMgr.IsLeftArrowActive;
+            get => this.ppPredictorMgr.IsLeftArrowActive && !_isScreenMoving;
         }
         [UIValue("isRightArrowActive")]
         private bool IsRightArrowActive
         {
-            get => this.ppPredictorMgr.IsRightArrowActive;
+            get => this.ppPredictorMgr.IsRightArrowActive && !_isScreenMoving;
         }
         [UIValue("isMapPoolDropDownActive")]
         private bool IsMapPoolDropDownActive
         {
-            get => this.ppPredictorMgr.IsMapPoolDropDownActive;
+            get => this.ppPredictorMgr.IsMapPoolDropDownActive && !_isScreenMoving;
         }
         [UIValue("isLeaderboardNavigationActive")]
         private bool IsLeaderboardNavigationActive
@@ -405,6 +410,23 @@ namespace PPPredictor.UI.ViewController
                 this.ppPredictorMgr.CurrentPPPredictor.CurrentMapPool = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentMapPool)));
             }
+        }
+        #endregion
+
+        #region moving panel
+        [UIAction("move-panel-clicked")]
+        private void MovePanelClicked()
+        {
+            _isScreenMoving = !_isScreenMoving;
+            floatingScreen.ShowHandle = _isScreenMoving;
+            UpdateLoadingDisplay();
+            UpdateLeaderBoardDisplay();
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MovePanelIcon)));
+        }
+        [UIValue("movePanelIcon")]
+        private string MovePanelIcon
+        {
+            get => _isScreenMoving ? "🔓" : "🔒";
         }
         #endregion
         internal void ResetDisplay(bool v)
@@ -447,7 +469,6 @@ namespace PPPredictor.UI.ViewController
 
         public void ResetPosition()
         {
-            floatingScreen.ShowHandle = Plugin.ProfileInfo.WindowHandleEnabled;
             floatingScreen.transform.eulerAngles = Plugin.ProfileInfo.EulerAngles;
             floatingScreen.transform.position = Plugin.ProfileInfo.Position;
         }
