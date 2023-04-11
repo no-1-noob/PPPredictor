@@ -189,7 +189,7 @@ namespace PPPredictor.OpenAPIs
 
         public class HitBloqCrCurve
         {
-            public List<float[]> points { get; set; }
+            public List<double[]> points { get; set; }
             public string type { get; set; }
             [DefaultValue(null)]
             public double? baseline { get; set; }
