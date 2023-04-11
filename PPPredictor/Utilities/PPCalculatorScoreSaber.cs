@@ -146,14 +146,14 @@ namespace PPPredictor.Utilities
             }
         }
 
-        public override double CalculatePPatPercentage(double star, double percentage, bool levelFailed)
+        public override double CalculatePPatPercentage(PPPBeatMapInfo currentBeatMapInfo, double percentage, bool levelFailed, GameplayModifiers gameplayModifiers)
         {
             try
             {
                 percentage /= 100.0;
                 if (levelFailed) percentage /= 2.0; //Halve score if nofail triggered
                 double multiplier = CalculateMultiplierAtPercentage(percentage);
-                return multiplier * star * basePPMultiplier;
+                return multiplier * currentBeatMapInfo.BaseStarRating.Stars * basePPMultiplier;
             }
             catch (Exception ex)
             {
@@ -172,7 +172,7 @@ namespace PPPredictor.Utilities
                     {
                         if (song.GetDifficulty(out SongDifficulty songDiff, (MapDifficulty)beatmap.difficulty))
                         {
-                            return Task.FromResult(new PPPBeatMapInfo(songDiff.stars, 0));
+                            return Task.FromResult(new PPPBeatMapInfo(new PPPStarRating(songDiff.stars), 0));
                         }
                     }
                     return Task.FromResult(new PPPBeatMapInfo());
@@ -182,13 +182,8 @@ namespace PPPredictor.Utilities
             catch (Exception ex)
             {
                 Plugin.Log?.Error($"PPCalculatorScoreSaber GetStarsForBeatmapAsync Error: {ex.Message}");
-                return Task.FromResult(new PPPBeatMapInfo(-1, -1));
+                return Task.FromResult(new PPPBeatMapInfo(new PPPStarRating(-1), -1));
             }
-        }
-
-        public override double ApplyModifierMultiplierToStars(PPPBeatMapInfo beatMapInfo, GameplayModifiers gameplayModifiers, bool levelFailed)
-        {
-            return beatMapInfo.BaseStars;
         }
     }
 }

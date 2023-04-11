@@ -665,10 +665,22 @@ namespace beatleaderapi
     
         [Newtonsoft.Json.JsonProperty("rankedTime", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int RankedTime { get; set; }
-    
+
         [Newtonsoft.Json.JsonProperty("stars", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public float? Stars { get; set; }
-    
+
+        [Newtonsoft.Json.JsonProperty("predictedAcc", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public float? PredictedAcc { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("passRating", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public float? PassRating { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("accRating", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public float? AccRating { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("techRating", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public float? TechRating { get; set; }
+
         [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int Type { get; set; }
     
@@ -692,6 +704,8 @@ namespace beatleaderapi
 
         [Newtonsoft.Json.JsonProperty("modifierValues", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Dictionary<string, float> ModifierValues { get; set; }
+        [Newtonsoft.Json.JsonProperty("modifiersRating", Required = Newtonsoft.Json.Required.AllowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public Dictionary<string, double> ModifiersRating { get; set; }
 
 
     }

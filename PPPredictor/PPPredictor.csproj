@@ -140,6 +140,7 @@
     <Compile Include="Data\PPPPlayer.cs" />
     <Compile Include="Data\PPPScore.cs" />
     <Compile Include="Data\PPPScoreCollection.cs" />
+    <Compile Include="Data\PPPStarRating.cs" />
     <Compile Include="Installers\PPPPredictorDisplayInstaller.cs" />
     <Compile Include="Events\PPPredictorEventsMgr.cs" />
     <Compile Include="Data\ProfileInfo.cs" />
