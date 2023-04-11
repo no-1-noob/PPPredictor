@@ -23,7 +23,6 @@ namespace PPPredictor.Counter
         private readonly CustomConfigModel settings;
         private readonly CanvasUtility canvasUtility;
         private GameplayModifiers gameplayModifiers;
-        private double modifiedStars;
         private float positionScale;
         private double maxPP = -1;
 
@@ -65,7 +64,6 @@ namespace PPPredictor.Counter
                 icon = CreateIcon(canvas, iconPath, new Vector3((-1f + centerOffset) * positionScaleFactor, lineOffset, 0), Math.Abs(lineOffset));
             }
             this.gameplayModifiers = gameplayModifiers;
-            modifiedStars = Plugin.pppViewController.ppPredictorMgr.GetModifiedStarsForCalculator(leaderboard, gameplayModifiers);
         }
 
         private float getCenterOffset()
@@ -105,10 +103,10 @@ namespace PPPredictor.Counter
             if (showInfo)
             {
                 if (Plugin.ProfileInfo.CounterUseIcons) icon.enabled = true;
-                double pp = Plugin.pppViewController.ppPredictorMgr.GetPPAtPercentageForCalculator(leaderboard, percentage, levelFailed, modifiedStars, gameplayModifiers);
+                double pp = Plugin.pppViewController.ppPredictorMgr.GetPPAtPercentageForCalculator(leaderboard, percentage, levelFailed, gameplayModifiers);
                 double ppGain = Math.Round(Plugin.pppViewController.ppPredictorMgr.GetPPGainForCalculator(leaderboard, pp), 2);
 
-                if (maxPP == -1) maxPP = Plugin.pppViewController.ppPredictorMgr.GetMaxPPForCalculator(leaderboard, modifiedStars, gameplayModifiers);
+                if (maxPP == -1) maxPP = Plugin.pppViewController.ppPredictorMgr.GetMaxPPForCalculator(leaderboard, gameplayModifiers);
 
                 string maxPPReachedPrefix = string.Empty;
                 string maxPPReachedSuffix = string.Empty;

@@ -12,6 +12,7 @@ namespace PPPredictor.Utilities
     {
         private List<PPPPlayer> _lsPlayerRankings;
         internal PPPLeaderboardInfo _leaderboardInfo;
+        internal double accConstant = 0.965;
 
         public PPCalculator()
         {
@@ -200,7 +201,7 @@ namespace PPPredictor.Utilities
 
         public double WeightPP(double rawPP, int index)
         {
-            return rawPP * Math.Pow(0.965, (index - 1));
+            return rawPP * Math.Pow(accConstant, (index - 1));
         }
 
         public string CreateSeachString(string hash, string gameMode, int difficulty)
@@ -222,11 +223,9 @@ namespace PPPredictor.Utilities
 
         protected abstract Task<List<PPPPlayer>> GetPlayers(double fetchIndexPage);
 
-        public abstract double CalculatePPatPercentage(double star, double percentage, bool levelFailed);
+        public abstract double CalculatePPatPercentage(PPPBeatMapInfo currentBeatMapInfo, double percentage, bool levelFailed, GameplayModifiers gameplayModifiers);
 
         public abstract Task<PPPBeatMapInfo> GetBeatMapInfoAsync(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap);
-
-        public abstract double ApplyModifierMultiplierToStars(PPPBeatMapInfo beatMapInfo, GameplayModifiers gameplayModifiers, bool levelFailed = false);
 
     }
 }

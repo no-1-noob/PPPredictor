@@ -1,4 +1,5 @@
 ﻿using BeatSaberMarkupLanguage.FloatingScreen;
+using PPPredictor.Data;
 using PPPredictor.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -154,32 +155,22 @@ namespace PPPredictor.Utilities
             }
         }
 
-        internal double GetPPAtPercentageForCalculator(Leaderboard leaderBoardName, double percentage, bool levelFailed, double stars, GameplayModifiers gameplayModifiers)
+        internal double GetPPAtPercentageForCalculator(Leaderboard leaderBoardName, double percentage, bool levelFailed, GameplayModifiers gameplayModifiers)
         {
             IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());
             if (predictor != null)
             {
-                return predictor.CalculatePPatPercentage(stars, percentage, gameplayModifiers, levelFailed);
+                return predictor.CalculatePPatPercentage(percentage, gameplayModifiers, levelFailed);
             }
             return 0;
         }
 
-        internal double GetMaxPPForCalculator(Leaderboard leaderBoardName, double stars, GameplayModifiers gameplayModifiers)
+        internal double GetMaxPPForCalculator(Leaderboard leaderBoardName, GameplayModifiers gameplayModifiers)
         {
             IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());
             if (predictor != null)
             {
-                return predictor.CalculateMaxPP(stars, gameplayModifiers);
-            }
-            return 0;
-        }
-
-        internal double GetModifiedStarsForCalculator(Leaderboard leaderBoardName, GameplayModifiers gameplayModifiers)
-        {
-            IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());
-            if (predictor != null)
-            {
-                return predictor.GetModifiedStars(gameplayModifiers);
+                return predictor.CalculateMaxPP(gameplayModifiers);
             }
             return 0;
         }
