@@ -183,7 +183,7 @@ namespace PPPredictor.Utilities
             }
         }
 
-        private double GenerateModifierMultiplier(List<string> lsModifier, int modifierValueId, bool levelFailed)
+        private double GenerateModifierMultiplier(List<string> lsModifier, int modifierValueId, bool levelFailed, bool ignoreSpeedMultiplier)
         {
             try
             {
@@ -191,6 +191,7 @@ namespace PPPredictor.Utilities
                 foreach (string modifier in lsModifier)
                 {
                     if (!levelFailed && modifier == "NF") continue; //Ignore nofail until the map is failed in gameplay
+                    if (ignoreSpeedMultiplier && (modifier == "SF" || modifier == "SS" || modifier == "FS")) continue; //Ignore speed multies and use the precomputed values from backend
                     multiplier += _leaderboardInfo.LsModifierValues[modifierValueId].DctModifierValues[modifier];
                 }
                 return multiplier;

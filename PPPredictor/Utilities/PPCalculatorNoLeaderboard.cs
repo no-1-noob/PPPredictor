@@ -7,10 +7,6 @@ namespace PPPredictor.Utilities
     class PPCalculatorNoLeaderboard : PPCalculator
     {
         //Dummy class, for when no Leaderboards are selected in the options. mhh... why even use this mod then
-        public override double ApplyModifierMultiplierToStars(PPPBeatMapInfo beatMapInfo, GameplayModifiers gameplayModifiers, bool levelFailed)
-        {
-            return 0;
-        }
 
         public override Task<PPPBeatMapInfo> GetBeatMapInfoAsync(PPPBeatMapInfo beatMapInfo)
         {

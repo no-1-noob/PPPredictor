@@ -4,13 +4,14 @@
     {
         double _baseStars = 0;
         double _currentSelectionStars;
+        PPPStarRating _baseStarRating = new PPPStarRating();
         int _modifierValueId = 0;
         CustomBeatmapLevel _selectedCustomBeatmapLevel;
         IDifficultyBeatmap _beatmap;
         double _maxPP = -1;
         string _selectedMapSearchString;
 
-        public double BaseStars { get => _baseStars; set => _baseStars = value; }
+        public PPPStarRating BaseStarRating { get => _baseStarRating; set => _baseStarRating = value; }
         public int ModifierValueId { get => _modifierValueId; set => _modifierValueId = value; }
         public CustomBeatmapLevel SelectedCustomBeatmapLevel { get => _selectedCustomBeatmapLevel; set => _selectedCustomBeatmapLevel = value; }
         public IDifficultyBeatmap Beatmap { get => _beatmap; set => _beatmap = value; }

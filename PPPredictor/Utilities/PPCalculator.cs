@@ -238,6 +238,7 @@ namespace PPPredictor.Utilities
 
         protected abstract Task<List<PPPPlayer>> GetPlayers(double fetchIndexPage);
 
+        public abstract double CalculatePPatPercentage(double star, double percentage, bool levelFailed);
 
         public abstract Task<PPPBeatMapInfo> GetBeatMapInfoAsync(PPPBeatMapInfo beatMapInfo);
 

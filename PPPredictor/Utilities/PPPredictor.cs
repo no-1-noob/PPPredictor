@@ -186,13 +186,12 @@ namespace PPPredictor.Utilities
             OnMapPoolRefreshed?.Invoke(this, null);
         }
         #endregion
-        public double CalculatePPatPercentage(double currentStars, double percentage, GameplayModifiers gameplayModifiers, bool levelFailed = false)
+        public double CalculatePPatPercentage(double percentage, GameplayModifiers gameplayModifiers, bool levelFailed = false)
         {
-            if (levelFailed) currentStars = _ppCalculator.ApplyModifierMultiplierToStars(_currentBeatMapInfo, gameplayModifiers, levelFailed); //Recalculate stars for beatleader
-            return _ppCalculator.CalculatePPatPercentage(currentStars, percentage, levelFailed);
+            return _ppCalculator.CalculatePPatPercentage(_currentBeatMapInfo, percentage, levelFailed, gameplayModifiers);
         }
 
-        public double CalculateMaxPP(double modifiedStars)
+        public double CalculateMaxPP(GameplayModifiers gameplayModifiers)
         {
             return _ppCalculator.CalculateMaxPP(modifiedStars);
         }
@@ -209,7 +208,7 @@ namespace PPPredictor.Utilities
 
         public bool IsRanked()
         {
-            return _currentBeatMapInfo.BaseStars > 0;
+            return _currentBeatMapInfo.BaseStarRating.IsRanked();
         }
 
         internal bool IsCurrentMapPoolChanging(object value)
@@ -221,7 +220,7 @@ namespace PPPredictor.Utilities
 
         public async void CalculatePP()
         {
-            if (_currentBeatMapInfo.MaxPP == -1) _currentBeatMapInfo.MaxPP = CalculateMaxPP(_currentBeatMapInfo.CurrentSelectionStars);
+            if (_currentBeatMapInfo.MaxPP == -1) _currentBeatMapInfo.MaxPP = CalculateMaxPP(_gameplayModifiers);
             double pp = CalculatePPatPercentage(_currentBeatMapInfo.CurrentSelectionStars, _percentage, _gameplayModifiers);
             PPGainResult ppGainResult = _ppCalculator.GetPlayerScorePPGain(_currentBeatMapInfo.SelectedMapSearchString, pp);
             double ppGains = _ppCalculator.Zeroizer(ppGainResult.GetDisplayPPValue());

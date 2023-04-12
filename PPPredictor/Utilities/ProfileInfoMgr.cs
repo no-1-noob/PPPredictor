@@ -16,7 +16,7 @@ namespace PPPredictor.Utilities
         internal static FlowCoordinator ParentFlow { get; private set; }
         private static PPPredictorFlowCoordinator _flow;
         private static readonly string profilePath = Path.Combine(UnityGame.UserDataPath, "PPPredictorProfileInfo.json");
-        private static readonly int _profileInfoVersion = 2;
+        private static readonly int _profileInfoVersion = 3;
         internal static ProfileInfo LoadProfileInfo()
         {
             MenuButtons.instance.RegisterButton(new MenuButton("PPPredictor", "Predict PP gains", ShowSettingsFlow, true));
