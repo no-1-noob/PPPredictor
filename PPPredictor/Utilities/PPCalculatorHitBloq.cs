@@ -45,9 +45,10 @@ namespace PPPredictor.Utilities
             UpdateAvailableMapPools(); //TODO: implement for all?
         }
 
-        public override double ApplyModifierMultiplierToStars(PPPBeatMapInfo beatMapInfo, GameplayModifiers gameplayModifiers, bool levelFailed = false)
+        public override PPPBeatMapInfo ApplyModifiersToBeatmapInfo(PPPBeatMapInfo beatMapInfo, GameplayModifiers gameplayModifiers, bool levelFailed = false)
         {
-            return levelFailed ? 0 : beatMapInfo.BaseStars;
+            beatMapInfo.ModifiedStarRating = new PPPStarRating(levelFailed ? 0 : beatMapInfo.BaseStarRating.Stars);
+            return beatMapInfo;
         }
 
         public override async Task<PPPBeatMapInfo> GetBeatMapInfoAsync(PPPBeatMapInfo beatMapInfo)
@@ -59,7 +60,7 @@ namespace PPPredictor.Utilities
                     string songHash = Hashing.GetCustomLevelHash(beatMapInfo.SelectedCustomBeatmapLevel);
                     string searchString = CreateSeachString(songHash, beatMapInfo.Beatmap);
                     ShortScore cachedInfo = _leaderboardInfo.CurrentMapPool.LsLeaderboadInfo?.FirstOrDefault(x => x.Searchstring.ToUpper() == searchString.ToUpper());
-                    bool refetchInfo = cachedInfo != null && cachedInfo.FetchTime < DateTime.Now.AddDays(-7);
+                    bool refetchInfo = cachedInfo != null && cachedInfo.FetchTime < DateTime.Now.AddDays(ProfileInfo.RefetchMapInfoAfterDays);
                     if (cachedInfo == null || refetchInfo)
                     {
                         if (refetchInfo) _leaderboardInfo.CurrentMapPool.LsLeaderboadInfo?.Remove(cachedInfo);
@@ -67,13 +68,13 @@ namespace PPPredictor.Utilities
                         if (leaderboardInfo != null)
                         {
                             leaderboardInfo.star_rating.TryGetValue(_leaderboardInfo.CurrentMapPool.Id, out var stars);
-                            _leaderboardInfo.CurrentMapPool.LsLeaderboadInfo.Add(new ShortScore(searchString, stars, DateTime.Now));
-                            return new PPPBeatMapInfo(beatMapInfo, stars);
+                            _leaderboardInfo.CurrentMapPool.LsLeaderboadInfo.Add(new ShortScore(searchString, new PPPStarRating(stars), DateTime.Now));
+                            return new PPPBeatMapInfo(beatMapInfo, new PPPStarRating(stars));
                         }
                     }
                     else
                     {
-                        return new PPPBeatMapInfo(beatMapInfo, cachedInfo.Stars);
+                        return new PPPBeatMapInfo(beatMapInfo, cachedInfo.StarRating);
                     }
                 }
                 return beatMapInfo;
@@ -81,7 +82,7 @@ namespace PPPredictor.Utilities
             catch (Exception ex)
             {
                 Plugin.Log?.Error($"PPCalculatorBeatLeader PPCalculatorHitBloq Error: {ex.Message}");
-                return new PPPBeatMapInfo(beatMapInfo, -1);
+                return new PPPBeatMapInfo(beatMapInfo, new PPPStarRating(-1));
             }
         }
 

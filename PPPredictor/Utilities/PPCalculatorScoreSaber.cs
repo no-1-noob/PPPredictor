@@ -81,23 +81,23 @@ namespace PPPredictor.Utilities
                     {
                         if (song.GetDifficulty(out SongDifficulty songDiff, (MapDifficulty)beatMapInfo.Beatmap.difficulty))
                         {
-                            return Task.FromResult(new PPPBeatMapInfo(beatMapInfo, songDiff.stars, 0));
+                            return Task.FromResult(new PPPBeatMapInfo(beatMapInfo, new PPPStarRating(songDiff.stars)));
                         }
                     }
-                    return Task.FromResult(new PPPBeatMapInfo (beatMapInfo, 0));
+                    return Task.FromResult(new PPPBeatMapInfo (beatMapInfo, new PPPStarRating(0)));
                 }
-                return Task.FromResult(new PPPBeatMapInfo(beatMapInfo, 0));
+                return Task.FromResult(new PPPBeatMapInfo(beatMapInfo, new PPPStarRating(0)));
             }
             catch (Exception ex)
             {
                 Plugin.Log?.Error($"PPCalculatorScoreSaber GetStarsForBeatmapAsync Error: {ex.Message}");
-                return Task.FromResult(new PPPBeatMapInfo(beatMapInfo , - 1, -1));
+                return Task.FromResult(new PPPBeatMapInfo(beatMapInfo , new PPPStarRating(-1)));
             }
         }
 
-        public override double ApplyModifierMultiplierToStars(PPPBeatMapInfo beatMapInfo, GameplayModifiers gameplayModifiers, bool levelFailed)
+        public override PPPBeatMapInfo ApplyModifiersToBeatmapInfo(PPPBeatMapInfo beatMapInfo, GameplayModifiers gameplayModifiers, bool levelFailed)
         {
-            return beatMapInfo.BaseStars;
+            return beatMapInfo;
         }
 
         public override string CreateSeachString(string hash, IDifficultyBeatmap beatmap)

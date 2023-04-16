@@ -16,7 +16,6 @@ namespace PPPredictor.Data
         private string _ppSuffix;
         private int _leaderboardFirstPageIndex;
         private bool _isCountryRankEnabled;
-        private List<PPPModifierValues> _lsModifierValues;
 
         public string LeaderboardName { get => _leaderboardName; set => _leaderboardName = value; }
         public string LeaderboardIcon { get => _leaderboardIcon; set => _leaderboardIcon = value; }
@@ -31,7 +30,6 @@ namespace PPPredictor.Data
         internal PPPMapPool DefaultMapPool { get => _lsMapPools.Find(x => x.MapPoolType == MapPoolType.Default); }
         public string CustomLeaderboardUserId { get => _customLeaderboardUserId; set => _customLeaderboardUserId = value; }
         public string PpSuffix { get => _ppSuffix; set => _ppSuffix = value; }
-        public List<PPPModifierValues> LsModifierValues { get => _lsModifierValues; set => _lsModifierValues = value; }
         public int LeaderboardFirstPageIndex { get => _leaderboardFirstPageIndex; set => _leaderboardFirstPageIndex = value; }
         public bool IsCountryRankEnabled { get => _isCountryRankEnabled; set => _isCountryRankEnabled = value; }
 
@@ -43,7 +41,6 @@ namespace PPPredictor.Data
             this._ppSuffix = "pp";
             this.LeaderboardFirstPageIndex = 1;
             this.IsCountryRankEnabled = true;
-            this._lsModifierValues = new List<PPPModifierValues>();
 
             switch (leaderboard)
             {

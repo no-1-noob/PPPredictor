@@ -190,12 +190,12 @@ namespace PPPredictor.Utilities
             }
         }
 
-        internal double GetPPAtPercentageForCalculator(Leaderboard leaderBoardName, double percentage, bool levelFailed, GameplayModifiers gameplayModifiers)
+        internal double GetPPAtPercentageForCalculator(Leaderboard leaderBoardName, double percentage, bool levelFailed, PPPBeatMapInfo beatMapInfo)
         {
             IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());
             if (predictor != null)
             {
-                return predictor.CalculatePPatPercentage(percentage, gameplayModifiers, levelFailed);
+                return predictor.CalculatePPatPercentage(percentage, beatMapInfo, levelFailed);
             }
             return 0;
         }
@@ -209,24 +209,25 @@ namespace PPPredictor.Utilities
             return string.Empty;
         }
 
-        internal double GetMaxPPForCalculator(Leaderboard leaderBoardName, double stars)
+        internal double GetMaxPPForCalculator(Leaderboard leaderBoardName)
         {
             IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());
             if (predictor != null)
             {
-                return predictor.CalculateMaxPP(stars);
+                return predictor.CalculateMaxPP();
             }
             return 0;
         }
 
-        internal double GetModifiedStarsForCalculator(Leaderboard leaderBoardName, GameplayModifiers gameplayModifiers)
+        internal PPPBeatMapInfo GetModifiedBeatMapInfo(Leaderboard leaderBoardName, GameplayModifiers gameplayModifiers)
         {
             IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());
             if (predictor != null)
             {
-                return predictor.GetModifiedStars(gameplayModifiers);
+                return predictor.GetModifiedBeatMapInfo(gameplayModifiers);
+
             }
-            return 0;
+            return new PPPBeatMapInfo();
         }
 
         internal bool IsRanked(Leaderboard leaderBoardName)

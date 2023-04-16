@@ -19,6 +19,7 @@ namespace PPPredictor.OpenAPIs
         {
             client = new HttpClient();
             client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Add("User-Agent", "PPPredictor");
             client.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue("application/json"));
             client.BaseAddress = new Uri(baseUrl);
@@ -184,7 +185,7 @@ namespace PPPredictor.OpenAPIs
         [Conditional("BEATLEADERNETWORK")]
         public void DebugPrintBeatLeaderNetwork(string message)
         {
-            Plugin.DebugPrint($"BeatLeaderNetwork: {message}");
+            Plugin.DebugNetworkPrint($"BeatLeaderNetwork: {message}");
         }
 
 #pragma warning disable IDE1006 // Naming Styles; api dictates them...
@@ -227,10 +228,15 @@ namespace PPPredictor.OpenAPIs
         public class BeatLeaderDifficulty
         {
             public int value { get; set; }
-            public float? stars { get; set; }
+            public double? stars { get; set; }
+            public double? predictedAcc { get; set; }
+            public double? passRating { get; set; }
+            public double? accRating { get; set; }
+            public double? techRating { get; set; }
             public int status { get; set; }
             public string modeName { get; set; }
-            public Dictionary<string, float> modifierValues { get; set; }
+            public Dictionary<string, double> modifierValues { get; set; }
+            public Dictionary<string, double> modifiersRating { get; set; }
         }
 
         public class BeatLeaderPlayerList

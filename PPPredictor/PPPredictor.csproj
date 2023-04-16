@@ -179,7 +179,6 @@
     <Compile Include="Data\PPPMapPoolEntry.cs" />
     <Compile Include="Data\PPPBeatMapInfo.cs" />
     <Compile Include="Data\PPPLeaderboardInfo.cs" />
-    <Compile Include="Data\PPPModifierValues.cs" />
     <Compile Include="Data\PPPMapPool.cs" />
     <Compile Include="Data\PPPPlayer.cs" />
     <Compile Include="Data\PPPScore.cs" />

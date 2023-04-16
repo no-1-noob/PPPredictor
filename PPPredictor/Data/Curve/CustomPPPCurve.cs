@@ -59,22 +59,22 @@ namespace PPPredictor.Data.Curve
             basePPMultiplier = 50;
         }
 
-        public double CalculatePPatPercentage(double star, double percentage, bool failed)
+        public double CalculatePPatPercentage(PPPBeatMapInfo beatMapInfo, double percentage, bool failed)
         {
             switch (curveType)
             {
                 case CurveType.Linear:
-                    return LinearCalculatePPatPercentage(star, percentage);
+                    return LinearCalculatePPatPercentage(beatMapInfo, percentage);
                 case CurveType.Basic:
-                    return BasicCurveCalculatePPatPercentage(star, percentage);
+                    return BasicCurveCalculatePPatPercentage(beatMapInfo, percentage);
                 case CurveType.ScoreSaber:
-                    return LinearCalculatePPatPercentage(star, failed ? percentage / 2.0f : percentage);
+                    return LinearCalculatePPatPercentage(beatMapInfo, failed ? percentage / 2.0f : percentage);
                 default:
                     return 0;
             }
         }
 
-        public double CalculateMaxPP(double star)
+        public double CalculateMaxPP(PPPBeatMapInfo beatMapInfo)
         {
             double percent = 100;
             if(curveType == CurveType.Linear && arrPPCurve.Count > 1)
@@ -82,16 +82,16 @@ namespace PPPredictor.Data.Curve
                 (double, double) peakMultiplier = arrPPCurve.Aggregate((i1, i2) => i1.Item2 > i2.Item2 ? i1 : i2);
                 percent = peakMultiplier.Item1 * 100;
             }
-            return CalculatePPatPercentage(star, percent, false);
+            return CalculatePPatPercentage(beatMapInfo, percent, false);
         }
 
-        private double LinearCalculatePPatPercentage(double star, double percentage)
+        private double LinearCalculatePPatPercentage(PPPBeatMapInfo beatMapInfo, double percentage)
         {
             try
             {
                 percentage /= 100.0;
                 double multiplier = CalculateMultiplierAtPercentage(percentage);
-                return multiplier * star * basePPMultiplier;
+                return multiplier * beatMapInfo.ModifiedStarRating.Stars * basePPMultiplier;
             }
             catch (Exception ex)
             {
@@ -142,7 +142,7 @@ namespace PPPredictor.Data.Curve
             }
         }
 
-        private double BasicCurveCalculatePPatPercentage(double star, double percentage)
+        private double BasicCurveCalculatePPatPercentage(PPPBeatMapInfo beatMapInfo, double percentage)
         {
             double baseline = (this.baseline ?? 0.78) * 100f;
             double cutoff = this.cutoff ?? 0.5f;
@@ -157,7 +157,7 @@ namespace PPPredictor.Data.Curve
             {
                 multiplier = (percentage / 100f) * cutoff + (1 - cutoff) * Math.Pow((percentage - baseline) / (100 - baseline), exponential);
             }
-            return star * basePPMultiplier * multiplier;
+            return beatMapInfo.ModifiedStarRating.Stars * basePPMultiplier * multiplier;
         }
 
         public CurveInfo ToCurveInfo()

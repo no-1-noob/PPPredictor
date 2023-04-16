@@ -15,6 +15,9 @@ namespace PPPredictor.Utilities
     {
         private readonly OpenAPIs.BeatleaderAPI beatleaderapi;
         internal static float accumulationConstant = 0.965f;
+        private const string AccRating = "AccRating";
+        private const string PassRating = "PassRating";
+        private const string TechRating = "TechRating";
 
         public PPCalculatorBeatLeader() : base() 
         {
@@ -105,10 +108,10 @@ namespace PPPredictor.Utilities
                     string searchString = CreateSeachString(songHash, "SOLO" + beatMapInfo.Beatmap.parentDifficultyBeatmapSet.beatmapCharacteristic.serializedName, beatMapInfo.Beatmap.difficultyRank);
                     if(_leaderboardInfo.CurrentMapPool.MapPoolType == MapPoolType.Custom && !_leaderboardInfo.CurrentMapPool.LsMapPoolEntries.Where(x => x.Searchstring == searchString).Any())
                     {
-                        return new PPPBeatMapInfo(beatMapInfo, 0); //Currently selected map is not contained in selected MapPool
+                        return new PPPBeatMapInfo(beatMapInfo, new PPPStarRating(0)); //Currently selected map is not contained in selected MapPool
                     }
                     ShortScore cachedInfo = _leaderboardInfo.DefaultMapPool.LsLeaderboadInfo?.FirstOrDefault(x => x.Searchstring == searchString);
-                    bool refetchInfo = cachedInfo != null && cachedInfo.FetchTime < DateTime.Now.AddDays(-7);
+                    bool refetchInfo = cachedInfo != null && cachedInfo.FetchTime < DateTime.Now.AddDays(ProfileInfo.RefetchMapInfoAfterDays);
                     if (cachedInfo == null || refetchInfo)
                     {
                         if (refetchInfo) _leaderboardInfo.DefaultMapPool.LsLeaderboadInfo?.Remove(cachedInfo);
@@ -118,25 +121,17 @@ namespace PPPredictor.Utilities
                             BeatLeaderDifficulty diff = song.difficulties.FirstOrDefault(x => x.value == beatMapInfo.Beatmap.difficultyRank);
                             if (diff != null)
                             {
-                                //Find or insert ModifierValueId
-                                PPPModifierValues newModifierValues = new PPPModifierValues(diff.modifierValues);
-                                int modifierValueId = _leaderboardInfo.LsModifierValues.FindIndex(x => x.Equals(newModifierValues));
-                                if(modifierValueId == -1)
-                                {
-                                    modifierValueId = _leaderboardInfo.LsModifierValues.Select(x => x.Id).DefaultIfEmpty(-1).Max() + 1;
-                                    _leaderboardInfo.LsModifierValues.Add(new PPPModifierValues(modifierValueId, diff.modifierValues));
-                                }
-                                _leaderboardInfo.CurrentMapPool.LsLeaderboadInfo.Add(new ShortScore(searchString, diff.stars.GetValueOrDefault(), DateTime.Now, modifierValueId));
+                                _leaderboardInfo.CurrentMapPool.LsLeaderboadInfo.Add(new ShortScore(searchString, new PPPStarRating(diff), DateTime.Now));
                                 if (diff.stars.HasValue && diff.status == (int)BeatLeaderDifficultyStatus.ranked)
                                 {
-                                    return new PPPBeatMapInfo(beatMapInfo ,diff.stars.Value, modifierValueId);
+                                    return new PPPBeatMapInfo(beatMapInfo , new PPPStarRating(diff));
                                 }
                             }
                         }
                     }
                     else
                     {
-                        return new PPPBeatMapInfo(beatMapInfo, cachedInfo.Stars, cachedInfo.ModifierValuesId);
+                        return new PPPBeatMapInfo(beatMapInfo, cachedInfo.StarRating);
                     }
                 }
                 return beatMapInfo;
@@ -144,14 +139,32 @@ namespace PPPredictor.Utilities
             catch (Exception ex)
             {
                 Plugin.Log?.Error($"PPCalculatorBeatLeader GetStarsForBeatmapAsync Error: {ex.Message}");
-                return new PPPBeatMapInfo(beatMapInfo, - 1, -1);
+                return new PPPBeatMapInfo(beatMapInfo, new PPPStarRating(-1));
             }
         }
 
-        public override double ApplyModifierMultiplierToStars(PPPBeatMapInfo beatMapInfo, GameplayModifiers gameplayModifiers, bool levelFailed)
+        public override PPPBeatMapInfo ApplyModifiersToBeatmapInfo(PPPBeatMapInfo beatMapInfo, GameplayModifiers gameplayModifiers, bool levelFailed)
         {
             List<string> lsModifiers = ParseModifiers(gameplayModifiers);
-            return beatMapInfo.BaseStars * GenerateModifierMultiplier(lsModifiers, beatMapInfo.ModifierValueId, levelFailed);
+            double accRating = beatMapInfo.BaseStarRating.AccRating;
+            double passRating = beatMapInfo.BaseStarRating.PassRating;
+            double techRating = beatMapInfo.BaseStarRating.TechRating;
+            if (beatMapInfo.BaseStarRating.ModifiersRating != null)
+            {
+                foreach (string modifier in lsModifiers.Select(x => x.ToLower()))
+                {
+                    if (beatMapInfo.BaseStarRating.ModifiersRating.ContainsKey(modifier + AccRating))
+                    {
+                        accRating = beatMapInfo.BaseStarRating.ModifiersRating[modifier + AccRating];
+                        passRating = beatMapInfo.BaseStarRating.ModifiersRating[modifier + PassRating];
+                        techRating = beatMapInfo.BaseStarRating.ModifiersRating[modifier + TechRating];
+
+                        break;
+                    }
+                }
+            }
+            beatMapInfo.ModifiedStarRating = new PPPStarRating(GenerateModifierMultiplier(lsModifiers, beatMapInfo, levelFailed, beatMapInfo.BaseStarRating.ModifiersRating != null), accRating, passRating, techRating);
+            return beatMapInfo;
         }
 
         private List<string> ParseModifiers(GameplayModifiers gameplayModifiers)
@@ -183,7 +196,7 @@ namespace PPPredictor.Utilities
             }
         }
 
-        private double GenerateModifierMultiplier(List<string> lsModifier, int modifierValueId, bool levelFailed, bool ignoreSpeedMultiplier)
+        private double GenerateModifierMultiplier(List<string> lsModifier, PPPBeatMapInfo beatMapInfo, bool levelFailed, bool ignoreSpeedMultiplier)
         {
             try
             {
@@ -192,7 +205,10 @@ namespace PPPredictor.Utilities
                 {
                     if (!levelFailed && modifier == "NF") continue; //Ignore nofail until the map is failed in gameplay
                     if (ignoreSpeedMultiplier && (modifier == "SF" || modifier == "SS" || modifier == "FS")) continue; //Ignore speed multies and use the precomputed values from backend
-                    multiplier += _leaderboardInfo.LsModifierValues[modifierValueId].DctModifierValues[modifier];
+                    if(beatMapInfo.BaseStarRating.ModifierValues.TryGetValue(modifier.ToLower(), out double value))
+                    {
+                        multiplier += value;
+                    }
                 }
                 return multiplier;
             }

@@ -2,6 +2,7 @@
 using PPPredictor.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PPPredictor.Data
 {
@@ -34,6 +35,8 @@ namespace PPPredictor.Data
         private bool _isScoreSaberEnabled;
         private bool _isBeatLeaderEnabled;
         private bool _isHitBloqEnabled;
+
+        internal const int RefetchMapInfoAfterDays = -7;
 
         public ProfileInfo()
         {
@@ -75,7 +78,6 @@ namespace PPPredictor.Data
                     mapPool.LsLeaderboadInfo = new List<ShortScore>();
                     mapPool.DtLastScoreSet = new DateTime(2000, 1, 1);
                 }
-                leaderBoardInfo.LsModifierValues = new List<PPPModifierValues>();
             }
         }
 
@@ -108,5 +110,16 @@ namespace PPPredictor.Data
         public int SelectedTab { get => _selectedTab; set => _selectedTab = value; }
         public MapPoolSorting HitbloqMapPoolSorting { get => _hitbloqMapPoolSorting; set => _hitbloqMapPoolSorting = value; }
         public bool IsPredictorSwitchBySyncUrlEnabled { get => _isPredictorSwitchBySyncUrlEnabled; set => _isPredictorSwitchBySyncUrlEnabled = value; }
+
+        internal void ClearOldMapInfos()
+        {
+            foreach (PPPLeaderboardInfo leaderboard in LsLeaderboardInfo)
+            {
+                foreach (PPPMapPool mapPool in leaderboard.LsMapPools)
+                {
+                    mapPool.LsLeaderboadInfo = mapPool.LsLeaderboadInfo.Where(x => x.FetchTime > DateTime.Now.AddDays(ProfileInfo.RefetchMapInfoAfterDays)).ToList();
+                }
+            }
+        }
     }
 }

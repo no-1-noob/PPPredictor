@@ -1,6 +1,7 @@
 ﻿using CountersPlus.Custom;
 using CountersPlus.Utils;
 using HMUI;
+using PPPredictor.Data;
 using PPPredictor.Utilities;
 using System;
 using System.Linq;
@@ -23,7 +24,8 @@ namespace PPPredictor.Counter
         private readonly CustomConfigModel settings;
         private readonly CanvasUtility canvasUtility;
         private readonly GameplayModifiers gameplayModifiers;
-        private readonly double modifiedStars;
+        private readonly PPPBeatMapInfo modifiedBeatMapInfo;
+        private readonly PPPBeatMapInfo failedBeatMapInfo;
         private readonly float positionScale;
         private double maxPP = -1;
         private readonly PPPredictorMgr ppPredictorMgr;
@@ -72,7 +74,8 @@ namespace PPPredictor.Counter
                 LoadImage(icon, iconPath);
             }
             this.gameplayModifiers = gameplayModifiers;
-            modifiedStars = ppPredictorMgr.GetModifiedStarsForCalculator(leaderboard, gameplayModifiers);
+            modifiedBeatMapInfo = ppPredictorMgr.GetModifiedBeatMapInfo(leaderboard, gameplayModifiers);
+            failedBeatMapInfo = ppPredictorMgr.GetModifiedBeatMapInfo(leaderboard, gameplayModifiers);
             ppSuffix = ppPredictorMgr.GetPPSuffixForLeaderboard(leaderboard);
         }
 
@@ -113,10 +116,10 @@ namespace PPPredictor.Counter
             if (showInfo)
             {
                 if (Plugin.ProfileInfo.CounterUseIcons) icon.enabled = true;
-                double pp = ppPredictorMgr.GetPPAtPercentageForCalculator(leaderboard, percentage, levelFailed, modifiedStars, gameplayModifiers);
+                double pp = ppPredictorMgr.GetPPAtPercentageForCalculator(leaderboard, percentage, levelFailed, levelFailed ? failedBeatMapInfo : modifiedBeatMapInfo);
                 double ppGain = Math.Round(ppPredictorMgr.GetPPGainForCalculator(leaderboard, pp), 2);
 
-                if (maxPP == -1) maxPP = ppPredictorMgr.GetMaxPPForCalculator(leaderboard, modifiedStars);
+                if (maxPP == -1) maxPP = ppPredictorMgr.GetMaxPPForCalculator(leaderboard);
 
                 string maxPPReachedPrefix = string.Empty;
                 string maxPPReachedSuffix = string.Empty;

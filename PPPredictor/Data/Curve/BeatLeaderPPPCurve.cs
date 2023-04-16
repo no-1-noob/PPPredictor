@@ -1,23 +1,57 @@
 ﻿using PPPredictor.Interfaces;
 using System;
+using System.Collections.Generic;
 
 namespace PPPredictor.Data.Curve
 {
     class BeatLeaderPPPCurve : IPPPCurve
     {
-        private readonly double ppCalcWeight = 42;
+        private readonly List<(double, double)> accPointList = new List<(double, double)> {
+                (1.0, 7.424),
+                (0.999, 6.241),
+                (0.9975, 5.158),
+                (0.995, 4.010),
+                (0.9925, 3.241),
+                (0.99, 2.700),
+                (0.9875, 2.303),
+                (0.985, 2.007),
+                (0.9825, 1.786),
+                (0.98, 1.618),
+                (0.9775, 1.490),
+                (0.975, 1.392),
+                (0.9725, 1.315),
+                (0.97, 1.256),
+                (0.965, 1.167),
+                (0.96, 1.101),
+                (0.955, 1.047),
+                (0.95, 1.000),
+                (0.94, 0.919),
+                (0.93, 0.847),
+                (0.92, 0.786),
+                (0.91, 0.734),
+                (0.9, 0.692),
+                (0.875, 0.606),
+                (0.85, 0.537),
+                (0.825, 0.480),
+                (0.8, 0.429),
+                (0.75, 0.345),
+                (0.7, 0.286),
+                (0.65, 0.246),
+                (0.6, 0.217),
+                (0.0, 0.000) };
         public bool IsDummy { get => false; }
-        public double CalculatePPatPercentage(double star, double percentage, bool failed)
+        public double CalculatePPatPercentage(PPPBeatMapInfo beatMapInfo, double percentage, bool failed)
         {
             try
             {
-                if (star <= 0) return 0;
-                var l = 1.0 - (0.03 * ((star - 0.5) - 3) / 11);
-                var n = percentage / 100.0;
-                n = Math.Min(n, l - 0.001);
-                var a = 0.96 * l;
-                var f = 1.2 - (0.6 * ((star - 0.5) / 14));
-                return (star + 0.5) * ppCalcWeight * Math.Pow((Math.Log(l / (l - n)) / (Math.Log(l / (l - a)))), f);
+                percentage /= 100.0;
+                if (!failed)
+                {
+                    var (passPP, accPP, techPP) = CalculatePP(percentage, beatMapInfo.ModifiedStarRating.AccRating * beatMapInfo.ModifiedStarRating.Multiplier, beatMapInfo.ModifiedStarRating.PassRating * beatMapInfo.ModifiedStarRating.Multiplier, beatMapInfo.ModifiedStarRating.TechRating * beatMapInfo.ModifiedStarRating.Multiplier);
+                    var rawPP = Inflate(passPP + accPP + techPP);
+                    return rawPP;
+                }
+                return 0;
             }
             catch (Exception ex)
             {
@@ -26,9 +60,47 @@ namespace PPPredictor.Data.Curve
             }
         }
 
-        public double CalculateMaxPP(double star)
+        private (double, double, double) CalculatePP(double accuracy, double accRating, double passRating, double techRating)
         {
-            return CalculatePPatPercentage(star, 100, false);
+            double passPP = 15.2f * Math.Exp(Math.Pow(passRating, 1 / 2.62f)) - 30f;
+            if (double.IsInfinity(passPP) || double.IsNaN(passPP) || double.IsNegativeInfinity(passPP) || passPP < 0)
+            {
+                passPP = 0;
+            }
+            double accPP = AccCurve(accuracy) * accRating * 34f;
+            double techPP = Math.Exp(1.9f * accuracy) * techRating;
+
+            return (passPP, accPP, techPP);
+        }
+
+        private double AccCurve(double acc)
+        {
+            int i = 0;
+            for (; i < accPointList.Count; i++)
+            {
+                if (accPointList[i].Item1 <= acc)
+                {
+                    break;
+                }
+            }
+
+            if (i == 0)
+            {
+                i = 1;
+            }
+
+            double middle_dis = (acc - accPointList[i - 1].Item1) / (accPointList[i].Item1 - accPointList[i - 1].Item1);
+            return (accPointList[i - 1].Item2 + middle_dis * (accPointList[i].Item2 - accPointList[i - 1].Item2));
+        }
+
+        private double Inflate(double pp)
+        {
+            return (650f * Math.Pow(pp, 1.3f)) / Math.Pow(650f, 1.3f);
+        }
+
+        public double CalculateMaxPP(PPPBeatMapInfo beatMapInfo)
+        {
+            return CalculatePPatPercentage(beatMapInfo, 100, false);
         }
 
         public CurveInfo ToCurveInfo()

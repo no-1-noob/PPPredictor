@@ -199,14 +199,14 @@ namespace PPPredictor.Utilities
             }
         }
 
-        internal double CalculatePPatPercentage(double star, double percentage, bool failed)
+        internal double CalculatePPatPercentage(PPPBeatMapInfo _currentBeatMapInfo, double percentage, bool failed)
         {
-            return _leaderboardInfo.CurrentMapPool.Curve.CalculatePPatPercentage(star, percentage, failed);
+            return _leaderboardInfo.CurrentMapPool.Curve.CalculatePPatPercentage(_currentBeatMapInfo, percentage, failed);
         }
 
-        internal double CalculateMaxPP(double star)
+        internal double CalculateMaxPP(PPPBeatMapInfo _currentBeatMapInfo)
         {
-            return _leaderboardInfo.CurrentMapPool.Curve.CalculateMaxPP(star);
+            return _leaderboardInfo.CurrentMapPool.Curve.CalculateMaxPP(_currentBeatMapInfo);
         }
 
         public double WeightPP(double rawPP, int index, float accumulationConstant)
@@ -238,11 +238,9 @@ namespace PPPredictor.Utilities
 
         protected abstract Task<List<PPPPlayer>> GetPlayers(double fetchIndexPage);
 
-        public abstract double CalculatePPatPercentage(double star, double percentage, bool levelFailed);
-
         public abstract Task<PPPBeatMapInfo> GetBeatMapInfoAsync(PPPBeatMapInfo beatMapInfo);
 
-        public abstract double ApplyModifierMultiplierToStars(PPPBeatMapInfo beatMapInfo, GameplayModifiers gameplayModifiers, bool levelFailed = false);
+        public abstract PPPBeatMapInfo ApplyModifiersToBeatmapInfo(PPPBeatMapInfo beatMapInfo, GameplayModifiers gameplayModifiers, bool levelFailed = false);
 
         public abstract string CreateSeachString(string hash, IDifficultyBeatmap beatmap);
 

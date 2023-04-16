@@ -233,7 +233,6 @@ namespace PPPredictor.UI.ViewController
         [UIAction("apply-menu-position-preset")]
         private void ApplyMenuPositionPreset()
         {
-            Plugin.DebugPrint($"ApplyMenuPositionPreset {_selectedMenuPositionPreset}");
             switch (_selectedMenuPositionPreset)
             {
                 case Utilities.MenuPositionPreset.UnderScoreboard:

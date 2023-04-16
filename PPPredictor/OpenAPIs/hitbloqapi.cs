@@ -19,6 +19,7 @@ namespace PPPredictor.OpenAPIs
         {
             client = new HttpClient();
             client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Add("User-Agent", "PPPredictor");
             client.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue("application/json"));
             client.BaseAddress = new Uri(baseUrl);
@@ -160,7 +161,7 @@ namespace PPPredictor.OpenAPIs
         [Conditional("HITBLOQNETWORK")]
         public void DebugPrintHitbloqNetwork(string message)
         {
-            Plugin.DebugPrint($"HitbloqNetwork: {message}");
+            Plugin.DebugNetworkPrint($"HitbloqNetwork: {message}");
         }
 
 #pragma warning disable IDE1006 // Naming Styles; api dictates them...

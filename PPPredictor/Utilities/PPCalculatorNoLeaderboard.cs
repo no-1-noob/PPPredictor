@@ -37,5 +37,10 @@ namespace PPPredictor.Utilities
         {
             return Task.CompletedTask;
         }
+
+        public override PPPBeatMapInfo ApplyModifiersToBeatmapInfo(PPPBeatMapInfo beatMapInfo, GameplayModifiers gameplayModifiers, bool levelFailed = false)
+        {
+            return beatMapInfo;
+        }
     }
 }

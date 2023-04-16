@@ -49,9 +49,11 @@ namespace PPPredictor.Utilities
             try
             {
                 profile.ProfileInfoVersion = _profileInfoVersion;
+                profile.ClearOldMapInfos();
                 File.WriteAllText(profilePath, JsonConvert.SerializeObject(profile, Formatting.Indented, new JsonSerializerSettings
                 {
-                    NullValueHandling = NullValueHandling.Ignore
+                    NullValueHandling = NullValueHandling.Ignore,
+                    DefaultValueHandling = DefaultValueHandling.Ignore
                 }));
             }
             catch (Exception ex)

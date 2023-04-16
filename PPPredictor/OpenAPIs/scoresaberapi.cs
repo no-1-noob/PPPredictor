@@ -17,6 +17,7 @@ namespace PPPredictor.OpenAPIs
         {
             client = new HttpClient();
             client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Add("User-Agent", "PPPredictor");
             client.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue("application/json"));
             client.BaseAddress = new Uri(baseUrl);
@@ -25,7 +26,7 @@ namespace PPPredictor.OpenAPIs
         [Conditional("SCORESABERNETWORK")]
         public void DebugPrintBeatLeaderNetwork(string message)
         {
-            Plugin.DebugPrint($"ScoreSaberNetwork: {message}");
+            Plugin.DebugNetworkPrint($"ScoreSaberNetwork: {message}");
         }
 
         public async Task<ScoreSaberPlayerList> GetPlayers(double? page)

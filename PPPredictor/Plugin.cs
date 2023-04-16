@@ -53,6 +53,11 @@ namespace PPPredictor
             Plugin.Log?.Error(text);
         }
 
+        public static void DebugNetworkPrint(string text)
+        {
+            Plugin.Log?.Error(text);
+        }
+
         internal static async Task<UserInfo> GetUserInfoBS()
         {
             return await BS_Utils.Gameplay.GetUserInfo.GetUserAsync();
