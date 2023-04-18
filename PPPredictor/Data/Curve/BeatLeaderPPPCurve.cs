@@ -22,23 +22,23 @@ namespace PPPredictor.Data.Curve
                 (0.9725, 1.315),
                 (0.97, 1.256),
                 (0.965, 1.167),
-                (0.96, 1.101),
-                (0.955, 1.047),
+                (0.96, 1.094),
+                (0.955, 1.039),
                 (0.95, 1.000),
-                (0.94, 0.919),
-                (0.93, 0.847),
-                (0.92, 0.786),
-                (0.91, 0.734),
-                (0.9, 0.692),
-                (0.875, 0.606),
-                (0.85, 0.537),
-                (0.825, 0.480),
-                (0.8, 0.429),
-                (0.75, 0.345),
-                (0.7, 0.286),
-                (0.65, 0.246),
-                (0.6, 0.217),
-                (0.0, 0.000) };
+                (0.94, 0.931),
+                (0.93, 0.867),
+                (0.92, 0.813),
+                (0.91, 0.768),
+                (0.9, 0.729),
+                (0.875, 0.650),
+                (0.85, 0.581),
+                (0.825, 0.522),
+                (0.8, 0.473),
+                (0.75, 0.404),
+                (0.7, 0.345),
+                (0.65, 0.296),
+                (0.6, 0.256),
+                (0.0, 0.000), };
         public bool IsDummy { get => false; }
         public double CalculatePPatPercentage(PPPBeatMapInfo beatMapInfo, double percentage, bool failed)
         {
@@ -68,7 +68,7 @@ namespace PPPredictor.Data.Curve
                 passPP = 0;
             }
             double accPP = AccCurve(accuracy) * accRating * 34f;
-            double techPP = Math.Exp(1.9f * accuracy) * techRating;
+            double techPP = Math.Exp(1.9f * accuracy) * 1.08f * techRating;
 
             return (passPP, accPP, techPP);
         }
