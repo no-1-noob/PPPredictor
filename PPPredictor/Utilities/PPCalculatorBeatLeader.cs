@@ -23,7 +23,7 @@ namespace PPPredictor.Utilities
         {
             playerPerPages = 50;
             beatleaderapi = new OpenAPIs.BeatleaderAPI();
-            UpdateAvailableMapPools();
+            //UpdateAvailableMapPools();
         }
 
         protected override async Task<PPPPlayer> GetPlayerInfo(long userId)

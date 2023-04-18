@@ -478,7 +478,7 @@ namespace PPPredictor.UI.ViewController
             if(Plugin.ProfileInfo.IsVersionCheckEnabled && (DateTime.Now - Plugin.ProfileInfo.DtLastVersionCheck).TotalHours >= 12)
             {
                 CurrentVersion = typeof(Plugin).Assembly.GetName().Version.ToString();
-                CurrentVersion = CurrentVersion.Substring(0, CurrentVersion.Length - 2);
+                CurrentVersion = $"{CurrentVersion.Substring(0, CurrentVersion.Length - 2)}{Plugin.Beta}";
                 string acknowledgedVersion = Plugin.ProfileInfo.AcknowledgedVersion;
                 NewVersion = await VersionChecker.VersionChecker.GetCurrentVersionAsync();
                 if (string.IsNullOrEmpty(NewVersion) || NewVersion == CurrentVersion || NewVersion == acknowledgedVersion)
