@@ -33,6 +33,10 @@ namespace PPPredictor.Data
         public int LeaderboardFirstPageIndex { get => _leaderboardFirstPageIndex; set => _leaderboardFirstPageIndex = value; }
         public bool IsCountryRankEnabled { get => _isCountryRankEnabled; set => _isCountryRankEnabled = value; }
 
+        public PPPLeaderboardInfo()
+        {
+        }
+
         public PPPLeaderboardInfo(Leaderboard leaderboard)
         {
             this._leaderboardName = leaderboard.ToString();
