@@ -14,6 +14,7 @@ namespace PPPredictor.Utilities
     class PPCalculatorHitBloq : PPCalculator
     {
         private readonly HitbloqAPI hitbloqapi;
+        private readonly string unserPoolId = "-1";
         //Dctionaries defined like here: https://github.com/DaFluffyPotato/hitbloq/blob/1e7bf18f92f1146bf8da2f24769aea072542b6e5/general.py#L24
         private static readonly Dictionary<string, string> dctDiffShorten = new Dictionary<string, string>{
             { "ExpertPlus", "ep" },
@@ -40,6 +41,7 @@ namespace PPPredictor.Utilities
         public PPCalculatorHitBloq() : base()
         {
             playerPerPages = 10;
+            hasGetAllScoresFunctionality = true;
             hitbloqapi = new HitbloqAPI();
             UpdateUserId();
             UpdateAvailableMapPools(); //TODO: implement for all?
@@ -90,6 +92,7 @@ namespace PPPredictor.Utilities
         {
             try
             {
+                if (_leaderboardInfo.CurrentMapPool.Id == unserPoolId) return new PPPPlayer(true);
                 HitBloqUser player = await hitbloqapi.GetHitBloqUserByPool(userId, _leaderboardInfo.CurrentMapPool.Id);
                 return new PPPPlayer(player);
             }
@@ -129,6 +132,21 @@ namespace PPPredictor.Utilities
             catch (Exception ex)
             {
                 Plugin.Log?.Error($"PPCalculatorHitBloq GetRecentScores Error: {ex.Message}");
+                return new PPPScoreCollection();
+            }
+        }
+
+        protected override async Task<PPPScoreCollection> GetAllScores(string userId)
+        {
+            try
+            {
+                if(_leaderboardInfo.CurrentMapPool.Id == unserPoolId) return new PPPScoreCollection();
+                List<HitBloqScores> lsHitBloqSCores = await hitbloqapi.GetAllScores(userId, _leaderboardInfo.CurrentMapPool.Id);
+                return new PPPScoreCollection(lsHitBloqSCores, 0);
+            }
+            catch (Exception ex)
+            {
+                Plugin.Log?.Error($"PPCalculatorHitBloq GetAllScores Error: {ex.Message}");
                 return new PPPScoreCollection();
             }
         }

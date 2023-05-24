@@ -120,6 +120,25 @@ namespace PPPredictor.OpenAPIs
             return new List<HitBloqScores>();
         }
 
+        public async Task<List<HitBloqScores>> GetAllScores(string userId, string poolId)
+        {
+            try
+            {
+                HttpResponseMessage response = await client.GetAsync($"api/user/{userId}/all_scores?pool={poolId}");
+                DebugPrintHitbloqNetwork(response.RequestMessage.RequestUri.ToString());
+                if (response.IsSuccessStatusCode)
+                {
+                    string result = await response.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<List<HitBloqScores>>(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                Plugin.Log?.Error($"Error in GetAllScores: {ex.Message}");
+            }
+            return new List<HitBloqScores>();
+        }
+
         public async Task<HitBloqLadder> GetPlayerListForMapPool(double page, string mapPoolId)
         {
             try

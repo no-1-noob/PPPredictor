@@ -52,6 +52,11 @@ namespace PPPredictor.Utilities
             }
         }
 
+        protected override Task<PPPScoreCollection> GetAllScores(string userId)
+        {
+            return Task.FromResult(new PPPScoreCollection());
+        }
+
         protected override async Task<List<PPPPlayer>> GetPlayers(double fetchIndexPage)
         {
             try

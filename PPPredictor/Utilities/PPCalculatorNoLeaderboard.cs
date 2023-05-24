@@ -28,6 +28,11 @@ namespace PPPredictor.Utilities
             return Task.FromResult(new PPPScoreCollection());
         }
 
+        protected override Task<PPPScoreCollection> GetAllScores(string userId)
+        {
+            return Task.FromResult(new PPPScoreCollection());
+        }
+
         public override string CreateSeachString(string hash, IDifficultyBeatmap beatmap)
         {
             return $"{hash}_{beatmap.difficultyRank}";

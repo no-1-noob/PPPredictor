@@ -10,6 +10,7 @@ namespace PPPredictor.Utilities
     {
         internal PPPLeaderboardInfo _leaderboardInfo;
         protected int playerPerPages = 0; //Cause a null reference if not set ;)
+        protected bool hasGetAllScoresFunctionality = false;
         public event EventHandler OnMapPoolRefreshed;
 
         public PPCalculator()
@@ -36,12 +37,20 @@ namespace PPPredictor.Utilities
                 DateTimeOffset dtNewLastScoreSet = new DateTime(2000, 1, 1);
                 while (hasMoreData)
                 {
-                    PPPScoreCollection playerscores = await GetRecentScores(userId, pageSize, page);
-                    if (playerscores.Page * playerscores.ItemsPerPage >= playerscores.Total)
+                    if (_leaderboardInfo.CurrentMapPool.LsScores == null) _leaderboardInfo.CurrentMapPool.LsScores = new List<ShortScore>();
+                    PPPScoreCollection playerscores = null;
+                    if (hasGetAllScoresFunctionality && _leaderboardInfo.CurrentMapPool.LsScores.Count == 0)
                     {
+                        playerscores = await GetAllScores(userId);
                         hasMoreData = false;
                     }
-                    if (_leaderboardInfo.CurrentMapPool.LsScores == null) _leaderboardInfo.CurrentMapPool.LsScores = new List<ShortScore>();
+                    else {
+                        playerscores = await GetRecentScores(userId, pageSize, page);
+                        if (playerscores.Page * playerscores.ItemsPerPage >= playerscores.Total)
+                        {
+                            hasMoreData = false;
+                        }
+                    }
                     foreach (PPPScore scores in playerscores.LsPPPScore)
                     {
                         string searchString = CreateSeachString(scores.SongHash, scores.GameMode, (int)scores.Difficulty1);
@@ -235,6 +244,8 @@ namespace PPPredictor.Utilities
         //TODO: Test when user does not exist yet
 
         protected abstract Task<PPPScoreCollection> GetRecentScores(string userId, int pageSize, int page);
+
+        protected abstract Task<PPPScoreCollection> GetAllScores(string userId);
 
         protected abstract Task<List<PPPPlayer>> GetPlayers(double fetchIndexPage);
 

@@ -98,6 +98,11 @@ namespace PPPredictor.Utilities
             }
         }
 
+        protected override Task<PPPScoreCollection> GetAllScores(string userId)
+        {
+            return Task.FromResult(new PPPScoreCollection());
+        }
+
         public override async Task<PPPBeatMapInfo> GetBeatMapInfoAsync(PPPBeatMapInfo beatMapInfo)
         {
             try
