@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace PPPredictor.Utilities
 {
@@ -22,6 +23,9 @@ namespace PPPredictor.Utilities
         private double _lastPPGainCall = 0;
         private bool _isActive = false;
         private int _loadingCounter = 0;
+        private DisplayPPInfo _ppDisplay = new DisplayPPInfo();
+        private PPGainResult _ppGainResult = new PPGainResult();
+        private Timer _rankTimer;
         #endregion
 
         public string LeaderBoardName
@@ -65,6 +69,12 @@ namespace PPPredictor.Utilities
             LoadInfos();
             _ppCalculator = new T() { _leaderboardInfo = _leaderboardInfo };
             _ppCalculator.OnMapPoolRefreshed += PPCalculator_OnMapPoolRefreshed;
+
+            
+            _rankTimer = new System.Timers.Timer(500);
+            _rankTimer.Elapsed += OnRankTimerElapsed;
+            _rankTimer.AutoReset = false;
+            _rankTimer.Enabled = false;
 
         }
         #endregion
@@ -222,32 +232,38 @@ namespace PPPredictor.Utilities
         {
             if (_currentBeatMapInfo.MaxPP == -1) _currentBeatMapInfo.MaxPP = CalculateMaxPP();
             double pp = CalculatePPatPercentage(_percentage, _currentBeatMapInfo);
-            PPGainResult ppGainResult = _ppCalculator.GetPlayerScorePPGain(_currentBeatMapInfo.SelectedMapSearchString, pp);
-            double ppGains = _ppCalculator.Zeroizer(ppGainResult.GetDisplayPPValue());
-            DisplayPPInfo ppDisplay = new DisplayPPInfo();
+            _ppGainResult = _ppCalculator.GetPlayerScorePPGain(_currentBeatMapInfo.SelectedMapSearchString, pp);
+            double ppGains = _ppCalculator.Zeroizer(_ppGainResult.GetDisplayPPValue());
+            _ppDisplay = new DisplayPPInfo();
             if (_currentBeatMapInfo.MaxPP > 0 && pp >= _currentBeatMapInfo.MaxPP)
             {
-                ppDisplay.PPRaw = $"<color=\"yellow\">{pp:F2}{PPSuffix}</color>";
+                _ppDisplay.PPRaw = $"<color=\"yellow\">{pp:F2}{PPSuffix}</color>";
             }
             else
             {
-                ppDisplay.PPRaw = $"{pp:F2}{PPSuffix}";
+                _ppDisplay.PPRaw = $"{pp:F2}{PPSuffix}";
             }
-            ppDisplay.PPGain = $"{ppGains:+0.##;-0.##;0}{PPSuffix}";
-            ppDisplay.PPGainDiffColor = DisplayHelper.GetDisplayColor(ppGains, false, true);
+            _ppDisplay.PPGain = $"{ppGains:+0.##;-0.##;0}{PPSuffix}";
+            _ppDisplay.PPGainDiffColor = DisplayHelper.GetDisplayColor(ppGains, false, true);
 
+            DisplayRankGain(null, _ppDisplay);
+            //Restart rank calculation timer
+            _rankTimer.Stop();
+            _rankTimer.Start();
+        }
+
+        private async void OnRankTimerElapsed(object sender, ElapsedEventArgs e)
+        {
             RankGainResult rankGain = new RankGainResult(1, 2, 3, 4);
-            DisplayRankGain(null, ppDisplay);
             if (_rankGainRunning)
             {
-                _lastPPGainCall = ppGainResult.PpTotal;
+                _lastPPGainCall = _ppGainResult.PpTotal;
                 return;
             }
-
             if (_lastPPGainCall == 0)
             {
                 _rankGainRunning = true;
-                rankGain = await _ppCalculator.GetPlayerRankGain(ppGainResult.PpTotal);
+                rankGain = await _ppCalculator.GetPlayerRankGain(_ppGainResult.PpTotal);
                 _rankGainRunning = false;
             }
             if (_lastPPGainCall > 0)
@@ -257,7 +273,7 @@ namespace PPPredictor.Utilities
                 _rankGainRunning = false;
                 _lastPPGainCall = 0;
             }
-            DisplayRankGain(rankGain, ppDisplay);
+            DisplayRankGain(rankGain, _ppDisplay);
         }
 
         private void DisplayRankGain(RankGainResult rankGainResult, DisplayPPInfo ppDisplay)

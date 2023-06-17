@@ -11,6 +11,8 @@ namespace PPPredictor.Data
         public double PpGainWeighted { get => _ppGainWeighted; }
         public double PpGainRaw => _ppGainRaw;
 
+        public PPGainResult() : this(0,0,0) { }
+
         public PPGainResult(double ppTotal, double ppGain, double ppGainRaw)
         {
             _ppTotal = ppTotal;

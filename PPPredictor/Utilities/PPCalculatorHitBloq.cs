@@ -42,6 +42,7 @@ namespace PPPredictor.Utilities
         {
             playerPerPages = 10;
             hasGetAllScoresFunctionality = true;
+            hasPPToRankFunctionality = true;
             hitbloqapi = new HitbloqAPI();
             UpdateUserId();
             UpdateAvailableMapPools(); //TODO: implement for all?
@@ -119,6 +120,21 @@ namespace PPPredictor.Utilities
             {
                 Plugin.Log?.Error($"PPCalculatorHitBloq GetPlayers Error: {ex.Message}");
                 return new List<PPPPlayer>();
+            }
+        }
+
+        internal override async Task<int> GetPPToRank(string mappoolid, double pp)
+        {
+            if (string.IsNullOrEmpty(mappoolid)) return -1;
+            try
+            {
+                HitBloqRankFromCr rank = await hitbloqapi.GetPlayerRankByCr(mappoolid, pp);
+                return rank.rank;
+            }
+            catch (Exception ex)
+            {
+                Plugin.Log?.Error($"PPCalculatorHitBloq GetPPToRank Error: {ex.Message}");
+                return -1;
             }
         }
 

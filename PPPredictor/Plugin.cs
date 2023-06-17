@@ -13,7 +13,7 @@ namespace PPPredictor
     [Plugin(RuntimeOptions.DynamicInit)]
     class Plugin
     {
-        internal static string Beta = ".beta03";
+        internal static string Beta = string.Empty;
         internal static Plugin Instance { get; private set; }
         internal static IPALogger Log { get; private set; }
 

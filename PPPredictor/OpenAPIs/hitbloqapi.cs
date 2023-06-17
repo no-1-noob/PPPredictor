@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -158,6 +159,25 @@ namespace PPPredictor.OpenAPIs
             return new HitBloqLadder();
         }
 
+        public async Task<HitBloqRankFromCr> GetPlayerRankByCr(string mapPoolId, double cr)
+        {
+            try
+            {
+                HttpResponseMessage response = await client.GetAsync($"api/ladder/{mapPoolId}/cr_to_rank/{cr.ToString(new CultureInfo("en-US"))}");
+                DebugPrintHitbloqNetwork(response.RequestMessage.RequestUri.ToString());
+                if (response.IsSuccessStatusCode)
+                {
+                    string result = await response.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<HitBloqRankFromCr>(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                Plugin.Log?.Error($"Error in GetPlayerRankByCr: {ex.Message}");
+            }
+            return new HitBloqRankFromCr();
+        }
+
         public async Task<HitBloqLeaderboardInfo> GetLeaderBoardInfo(string searchString)
         {
             try
@@ -236,6 +256,11 @@ namespace PPPredictor.OpenAPIs
         public class HitBloqLadder
         {
             public List<HitBloqUser> ladder { get; set; }
+        }
+
+        public class HitBloqRankFromCr
+        {
+            public int rank { get; set; }
         }
 
         public class HitBloqLeaderboardInfo
