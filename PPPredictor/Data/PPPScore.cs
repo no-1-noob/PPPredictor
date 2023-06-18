@@ -1,11 +1,10 @@
-﻿using beatleaderapi;
+﻿using PPPredictor.OpenAPIs;
 using PPPredictor.Utilities;
-using scoresaberapi;
 using System;
 
 namespace PPPredictor.Data
 {
-    public class PPPScore
+    class PPPScore
     {
         readonly DateTimeOffset timeSet;
         readonly double pp;
@@ -19,24 +18,34 @@ namespace PPPredictor.Data
         public double Difficulty1 { get => difficulty; }
         public string GameMode { get => gameMode; }
 
-        public PPPScore(PlayerScore playerScore)
+        public PPPScore(ScoresaberAPI.ScoreSaberPlayerScore playerScore)
         {
-            this.timeSet = playerScore.Score.TimeSet;
-            this.pp = playerScore.Score.Pp;
-            this.songHash = playerScore.Leaderboard.SongHash;
-            this.difficulty = playerScore.Leaderboard.Difficulty.Difficulty1;
-            this.gameMode = playerScore.Leaderboard.Difficulty.GameMode;
+            timeSet = playerScore.score.timeSet;
+            pp = playerScore.score.pp;
+            songHash = playerScore.leaderboard.songHash;
+            difficulty = playerScore.leaderboard.difficulty.difficulty;
+            gameMode = playerScore.leaderboard.difficulty.gameMode;
         }
 
-        public PPPScore(ScoreResponseWithMyScore playerScore)
+        public PPPScore(BeatleaderAPI.BeatLeaderPlayerScore playerScore)
         {
-            if(long.TryParse(playerScore.Timeset, out long timeSetLong)){
-                this.timeSet = new DateTime(1970, 1, 1).AddSeconds(timeSetLong);
+            if(long.TryParse(playerScore.timeset, out long timeSetLong)){
+                timeSet = new DateTime(1970, 1, 1).AddSeconds(timeSetLong);
             }
-            this.pp = (int)playerScore.Leaderboard.Difficulty.Status == (int)BeatLeaderDifficultyStatus.ranked ? playerScore.Pp : 0;
-            this.songHash = playerScore.Leaderboard.Song.Hash;
-            this.difficulty = playerScore.Leaderboard.Difficulty.Value;
-            this.gameMode = "Solo"+playerScore.Leaderboard.Difficulty.ModeName;
+            pp = (int)playerScore.leaderboard.difficulty.status == (int)BeatLeaderDifficultyStatus.ranked ? playerScore.pp : 0;
+            songHash = playerScore.leaderboard.song.hash;
+            difficulty = playerScore.leaderboard.difficulty.value;
+            gameMode = "Solo" + playerScore.leaderboard.difficulty.modeName;
+        }
+
+        public PPPScore(HitbloqAPI.HitBloqScores playerScore)
+        {
+            timeSet = new DateTime(1970, 1, 1).AddSeconds(playerScore.time);
+            pp = playerScore.cr_received;
+            var (hash, diff, mode) = PPCalculatorHitBloq.ParseHashDiffAndMode(playerScore.song_id);
+            songHash = hash;
+            difficulty = ParsingUtil.ParseDifficultyNameToInt(diff);
+            gameMode = mode;
         }
     }
 }

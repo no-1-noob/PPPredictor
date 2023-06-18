@@ -1,6 +1,6 @@
 ﻿namespace PPPredictor.Data
 {
-    public class RankGainResult
+    class RankGainResult
     {
         private double _rankGlobal;
         private double _rankCountry;

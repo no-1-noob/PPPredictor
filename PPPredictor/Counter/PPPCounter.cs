@@ -1,19 +1,24 @@
 ﻿using PPPredictor.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using Zenject;
 
 namespace PPPredictor.Counter
 {
-    public class PPPCounter : CountersPlus.Counters.Custom.BasicCustomCounter
+    class PPPCounter : CountersPlus.Counters.Custom.BasicCustomCounter
     {
+#pragma warning disable CS0649
         [Inject] private readonly ScoreController scoreController;
         [Inject] private readonly GameplayCoreSceneSetupData setupData;
+        [Inject] private readonly PPPredictorMgr ppPredictorMgr;
+#pragma warning restore CS0649
         private List<CounterInfoHolder> lsCounterInfoHolder;
         private int maxPossibleScore = 0;
         private bool _levelFailed = false;
+        private bool _iconMoved = false;
 #if DEBUG
         private TMP_Text debugPercentage;
 #endif
@@ -35,11 +40,21 @@ namespace PPPredictor.Counter
             
         }
 
-        private void SetupCounter()
+        private async void SetupCounter()
         {
             try
             {
-
+                try
+                {
+                    if (setupData.previewBeatmapLevel is CustomBeatmapLevel)
+                    {
+                        await ppPredictorMgr.UpdateCurrentBeatMapInfos(setupData.previewBeatmapLevel as CustomBeatmapLevel, setupData.difficultyBeatmap);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Plugin.Log.Error($"PPPCounter change selected Map: UpdateCurrentBeatMapInfos failed {ex.Message}");
+                }
 #if DEBUG
                 //Center Helper for development
                 /*float offsetPlus = 0.1f;
@@ -55,8 +70,8 @@ namespace PPPredictor.Counter
                     testPlus.alignment = TextAlignmentOptions.Center;
                     testPlus.text = "+";
                 }*/
-                debugPercentage = CanvasUtility.CreateTextFromSettings(Settings, new Vector3(0, 0, 0));
-                debugPercentage.alignment = TextAlignmentOptions.Center;
+                //debugPercentage = CanvasUtility.CreateTextFromSettings(Settings, new Vector3(0, 0, 0));
+                //debugPercentage.alignment = TextAlignmentOptions.Center;
 #endif
                 var canvas = CanvasUtility.GetCanvasFromID(this.Settings.CanvasID);
                 float positionScale = CanvasUtility.GetCanvasSettingsFromCanvas(canvas).PositionScale;
@@ -65,12 +80,17 @@ namespace PPPredictor.Counter
                 float lineOffset = (originalLineOffset * (scoreboardCount / 2)) + (originalLineOffset * (scoreboardCount % 2));
                 if (Plugin.ProfileInfo.IsScoreSaberEnabled && ShowCounter(Leaderboard.ScoreSaber))
                 {
-                    lsCounterInfoHolder.Add(new CounterInfoHolder(Leaderboard.ScoreSaber, Settings, "PPPredictor.Resources.LeaderBoardLogos.ScoreSaber.png", canvas, CanvasUtility, lineOffset, positionScale, setupData.gameplayModifiers));
+                    lsCounterInfoHolder.Add(new CounterInfoHolder(Leaderboard.ScoreSaber, Settings, ppPredictorMgr, canvas, CanvasUtility, lineOffset, originalLineOffset, positionScale, setupData.gameplayModifiers));
                     lineOffset -= originalLineOffset * 2;
                 }
                 if (Plugin.ProfileInfo.IsBeatLeaderEnabled && ShowCounter(Leaderboard.BeatLeader))
                 {
-                    lsCounterInfoHolder.Add(new CounterInfoHolder(Leaderboard.BeatLeader, Settings, "PPPredictor.Resources.LeaderBoardLogos.BeatLeader.png", canvas, CanvasUtility, lineOffset, positionScale, setupData.gameplayModifiers));
+                    lsCounterInfoHolder.Add(new CounterInfoHolder(Leaderboard.BeatLeader, Settings, ppPredictorMgr, canvas, CanvasUtility, lineOffset, originalLineOffset, positionScale, setupData.gameplayModifiers));
+                    lineOffset -= originalLineOffset * 2;
+                }
+                if (Plugin.ProfileInfo.IsHitBloqEnabled && ShowCounter(Leaderboard.HitBloq))
+                {
+                    lsCounterInfoHolder.Add(new CounterInfoHolder(Leaderboard.HitBloq, Settings, ppPredictorMgr, canvas, CanvasUtility, lineOffset, originalLineOffset, positionScale, setupData.gameplayModifiers));
                     lineOffset -= originalLineOffset * 2;
                 }
 
@@ -124,10 +144,13 @@ namespace PPPredictor.Counter
 
         private void DisplayCounterText(double percentage)
         {
-#if DEBUG
-            debugPercentage.text = "+";//$"{Plugin.ProfileInfo.CounterScoringType} {percentage:F2}%";
-#endif
             lsCounterInfoHolder.ForEach(item => item.UpdateCounterText(percentage, _levelFailed));
+            if(!_iconMoved && !lsCounterInfoHolder.Where(x => x.MaxPP == -1).Any())
+            {
+                _iconMoved = true;
+                double maxMaxPP = lsCounterInfoHolder.Select(x => x.MaxPP).Max();
+                lsCounterInfoHolder.ForEach(item => item.MoveIconForLongMaxPP(Math.Truncate(maxMaxPP).ToString().Length));
+            }
         }
 
         //Stupid way to do it but works
@@ -136,12 +159,13 @@ namespace PPPredictor.Counter
             int reVal = 0;
             if (ShowScoreSaber()) reVal++;
             if (ShowBeatLeader()) reVal++;
+            if (ShowHitBloq()) reVal++;
             return reVal;
         }
 
         private bool ShowCounter(Leaderboard leaderboard)
         {
-            return Plugin.pppViewController.ppPredictorMgr.IsRanked(leaderboard) || !Plugin.ProfileInfo.CounterHideWhenUnranked;
+            return ppPredictorMgr.IsRanked(leaderboard) || !Plugin.ProfileInfo.CounterHideWhenUnranked;
         }
 
         private bool ShowScoreSaber()
@@ -152,6 +176,11 @@ namespace PPPredictor.Counter
         private bool ShowBeatLeader()
         {
             return Plugin.ProfileInfo.IsBeatLeaderEnabled && ShowCounter(Leaderboard.BeatLeader);
+        }
+
+        private bool ShowHitBloq()
+        {
+            return Plugin.ProfileInfo.IsHitBloqEnabled && ShowCounter(Leaderboard.HitBloq);
         }
     }
 }

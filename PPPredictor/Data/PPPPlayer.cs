@@ -1,6 +1,8 @@
-﻿namespace PPPredictor.Data
+﻿using PPPredictor.OpenAPIs;
+
+namespace PPPredictor.Data
 {
-    public class PPPPlayer
+    class PPPPlayer
     {
         private double rank;
         private double countryRank;
@@ -23,28 +25,41 @@
             this.isErrorUser = isErrorUser;
             rank = countryRank = pp = 0;
         }
-        public PPPPlayer(scoresaberapi.Player scoreSaberPlayer)
+        public PPPPlayer(ScoresaberAPI.ScoreSaberPlayer scoreSaberPlayer)
         {
-            this.rank = scoreSaberPlayer.Rank;
-            this.countryRank = scoreSaberPlayer.CountryRank;
-            this.pp = scoreSaberPlayer.Pp;
-            this.country = scoreSaberPlayer.Country;
+            rank = scoreSaberPlayer.rank;
+            countryRank = scoreSaberPlayer.countryRank;
+            pp = scoreSaberPlayer.pp;
+            country = scoreSaberPlayer.country;
         }
 
-        public PPPPlayer(beatleaderapi.Player scoreSaberPlayer)
+        public PPPPlayer(BeatleaderAPI.BeatLeaderPlayer beatLeaderPlayerEvent)
         {
-            this.rank = scoreSaberPlayer.Rank;
-            this.countryRank = scoreSaberPlayer.CountryRank;
-            this.pp = scoreSaberPlayer.Pp;
-            this.country = scoreSaberPlayer.Country;
+            rank = beatLeaderPlayerEvent.rank;
+            countryRank = beatLeaderPlayerEvent.countryRank;
+            pp = beatLeaderPlayerEvent.pp;
+            country = beatLeaderPlayerEvent.country;
         }
 
-        public PPPPlayer(beatleaderapi.PlayerResponseWithStats scoreSaberPlayer)
+        public PPPPlayer(BeatleaderAPI.BeatLeaderPlayerEvents beatLeaderPlayerEvent)
         {
-            this.rank = scoreSaberPlayer.Rank;
-            this.countryRank = scoreSaberPlayer.CountryRank;
-            this.pp = scoreSaberPlayer.Pp;
-            this.country = scoreSaberPlayer.Country;
+            rank = beatLeaderPlayerEvent.rank;
+            countryRank = beatLeaderPlayerEvent.countryRank;
+            pp = beatLeaderPlayerEvent.pp;
+            country = beatLeaderPlayerEvent.country;
+        }
+
+        public PPPPlayer(HitbloqAPI.HitBloqUser hitBloqUser)
+        {
+            rank = hitBloqUser.rank;
+            countryRank = 0;
+            pp = hitBloqUser.cr;
+            country = string.Empty;
+        }
+
+        public override string ToString()
+        {
+            return $"PPPPlayer: (Rank): {rank} (CountryRank): {countryRank} (PP): {pp} (Country): {country}";
         }
     }
 }

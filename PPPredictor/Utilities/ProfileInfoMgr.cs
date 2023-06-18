@@ -6,16 +6,17 @@ using Newtonsoft.Json;
 using PPPredictor.Data;
 using PPPredictor.UI;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace PPPredictor.Utilities
 {
     class ProfileInfoMgr
     {
-        internal static FlowCoordinator _parentFlow { get; private set; }
-        internal static PPPredictorFlowCoordinator _flow { get; private set; }
+        internal static FlowCoordinator ParentFlow { get; private set; }
+        private static PPPredictorFlowCoordinator _flow;
         private static readonly string profilePath = Path.Combine(UnityGame.UserDataPath, "PPPredictorProfileInfo.json");
-        private static int _profileInfoVersion = 2;
+        private static readonly int _profileInfoVersion = 4;
         internal static ProfileInfo LoadProfileInfo()
         {
             MenuButtons.instance.RegisterButton(new MenuButton("PPPredictor", "Predict PP gains", ShowSettingsFlow, true));
@@ -48,7 +49,12 @@ namespace PPPredictor.Utilities
             try
             {
                 profile.ProfileInfoVersion = _profileInfoVersion;
-                File.WriteAllText(profilePath, JsonConvert.SerializeObject(profile, Formatting.Indented));
+                profile.ClearOldMapInfos();
+                File.WriteAllText(profilePath, JsonConvert.SerializeObject(profile, Formatting.Indented, new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore,
+                    DefaultValueHandling = DefaultValueHandling.Ignore
+                }));
             }
             catch (Exception ex)
             {
@@ -59,9 +65,16 @@ namespace PPPredictor.Utilities
             return saved;
         }
 
-        internal static void ResetProfile()
+        internal static void ResetSettings()
         {
+            List<PPPLeaderboardInfo> lsCachedData =  Plugin.ProfileInfo.LsLeaderboardInfo;
             Plugin.ProfileInfo = new ProfileInfo();
+            Plugin.ProfileInfo.LsLeaderboardInfo = lsCachedData;
+        }
+
+        internal static void ResetCache()
+        {
+            Plugin.ProfileInfo.LsLeaderboardInfo = new List<PPPLeaderboardInfo>();
         }
 
         public static void ShowSettingsFlow()
@@ -69,9 +82,9 @@ namespace PPPredictor.Utilities
             if (_flow == null)
                 _flow = BeatSaberUI.CreateFlowCoordinator<PPPredictorFlowCoordinator>();
 
-            _parentFlow = BeatSaberUI.MainFlowCoordinator.YoungestChildFlowCoordinatorOrSelf();
+            ParentFlow = BeatSaberUI.MainFlowCoordinator.YoungestChildFlowCoordinatorOrSelf();
 
-            BeatSaberUI.PresentFlowCoordinator(_parentFlow, _flow, immediately: true);
+            BeatSaberUI.PresentFlowCoordinator(ParentFlow, _flow, immediately: true);
         }
     }
 }

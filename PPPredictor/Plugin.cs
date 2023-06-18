@@ -1,15 +1,19 @@
 ﻿using IPA;
 using PPPredictor.Data;
+using PPPredictor.Installers;
 using PPPredictor.UI.ViewController;
 using PPPredictor.Utilities;
 using SiraUtil.Zenject;
+using System.Diagnostics;
+using System.Threading.Tasks;
 using IPALogger = IPA.Logging.Logger;
 
 namespace PPPredictor
 {
     [Plugin(RuntimeOptions.DynamicInit)]
-    public class Plugin
+    class Plugin
     {
+        internal static string Beta = string.Empty;
         internal static Plugin Instance { get; private set; }
         internal static IPALogger Log { get; private set; }
 
@@ -30,6 +34,8 @@ namespace PPPredictor
             ProfileInfo = ProfileInfoMgr.LoadProfileInfo();
             zenjector.UseSiraSync();
             zenjector.Install<PPPPredictorDisplayInstaller>(Location.Menu);
+            zenjector.Install<MainMenuInstaller>(Location.Menu);
+            zenjector.Install<CoreInstaller>(Location.App);
         }
 
         [OnStart]
@@ -41,6 +47,21 @@ namespace PPPredictor
         public void OnApplicationQuit()
         {
             ProfileInfoMgr.SaveProfile(ProfileInfo);
+        }
+
+        public static void DebugPrint(string text)
+        {
+            Plugin.Log?.Error(text);
+        }
+
+        public static void DebugNetworkPrint(string text)
+        {
+            Plugin.Log?.Error(text);
+        }
+
+        internal static async Task<UserInfo> GetUserInfoBS()
+        {
+            return await BS_Utils.Gameplay.GetUserInfo.GetUserAsync();
         }
     }
 }

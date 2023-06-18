@@ -25,7 +25,7 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <Optimize>true</Optimize>
@@ -33,6 +33,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <DefineConstants>
+    </DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="$(DefineConstants.Contains('CIBuild')) OR '$(NCrunch)' == '1'">
     <DisableCopyToPlugins>True</DisableCopyToPlugins>
@@ -41,9 +43,42 @@
     <DisableCopyToPlugins>True</DisableCopyToPlugins>
     <DisableZipRelease>True</DisableZipRelease>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug HITBLOQNETWORK'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug HITBLOQNETWORK\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;HITBLOQNETWORK</DefineConstants>
+    <DebugType>portable</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug BEATLEADERNETWORK'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug BEATLEADERNETWORK\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;BEATLEADERNETWORK</DefineConstants>
+    <DebugType>portable</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug SCORESABERNETWORK'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug SCORESABERNETWORK\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;SCORESABERNETWORK</DefineConstants>
+    <DebugType>portable</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>$(GameDirectory)\Libs\0Harmony.dll</HintPath>
+    </Reference>
     <Reference Include="BeatmapCore">
       <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\BeatmapCore.dll</HintPath>
+    </Reference>
+    <Reference Include="BeatSaberPlaylistsLib">
+      <HintPath>$(GameDirectory)\Libs\BeatSaberPlaylistsLib.dll</HintPath>
     </Reference>
     <Reference Include="BSML">
       <HintPath>$(GameDirectory)\Plugins\BSML.dll</HintPath>
@@ -72,6 +107,7 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
@@ -134,23 +170,38 @@
     <Compile Include="Counter\CounterInfoHolder.cs" />
     <Compile Include="Counter\PPPCounter.cs" />
     <Compile Include="Counter\Settings\CounterSettings.cs" />
+    <Compile Include="Data\Curve\BeatLeaderPPPCurve.cs" />
+    <Compile Include="Data\Curve\CurveInfo.cs" />
+    <Compile Include="Data\Curve\CurveParser.cs" />
+    <Compile Include="Data\Curve\CustomPPPCurve.cs" />
+    <Compile Include="Data\DisplayInfos\DisplayPPInfo.cs" />
+    <Compile Include="Data\DisplayInfos\DisplaySessionInfo.cs" />
+    <Compile Include="Data\PPPMapPoolEntry.cs" />
     <Compile Include="Data\PPPBeatMapInfo.cs" />
     <Compile Include="Data\PPPLeaderboardInfo.cs" />
-    <Compile Include="Data\PPPModifierValues.cs" />
+    <Compile Include="Data\PPPMapPool.cs" />
     <Compile Include="Data\PPPPlayer.cs" />
     <Compile Include="Data\PPPScore.cs" />
     <Compile Include="Data\PPPScoreCollection.cs" />
+    <Compile Include="Installers\CoreInstaller.cs" />
+    <Compile Include="Installers\MainMenuInstaller.cs" />
     <Compile Include="Data\PPPStarRating.cs" />
     <Compile Include="Installers\PPPPredictorDisplayInstaller.cs" />
     <Compile Include="Events\PPPredictorEventsMgr.cs" />
     <Compile Include="Data\ProfileInfo.cs" />
-    <Compile Include="OpenAPIs\beatleader-v1.cs" />
+    <Compile Include="Interfaces\IPPPCurve.cs" />
+    <Compile Include="OpenAPIs\beatleaderapi.cs" />
+    <Compile Include="OpenAPIs\hitbloqapi.cs" />
+    <Compile Include="OpenAPIs\scoresaberapi.cs" />
     <Compile Include="UI\PPPredictorFlowCoordinator.cs" />
     <Compile Include="UI\ViewController\SettingsMidViewController.cs" />
     <Compile Include="Utilities\DisplayHelper.cs" />
     <Compile Include="Utilities\Enums.cs" />
     <Compile Include="Interfaces\IPPPredictor.cs" />
+    <Compile Include="Utilities\MainMenuMgr.cs" />
+    <Compile Include="Utilities\ParsingUtil.cs" />
     <Compile Include="Utilities\PPCalculatorBeatLeader.cs" />
+    <Compile Include="Utilities\PPCalculatorHitBloq.cs" />
     <Compile Include="Utilities\PPCalculatorNoLeaderboard.cs" />
     <Compile Include="Utilities\PPCalculatorScoreSaber.cs" />
     <Compile Include="Utilities\PPPredictor.cs" />
@@ -158,7 +209,6 @@
     <Compile Include="Utilities\ProfileInfoMgr.cs" />
     <Compile Include="Data\ShortScore.cs" />
     <Compile Include="UI\ViewController\PPPredictorViewController.cs" />
-    <Compile Include="OpenAPIs\scoresaber-public-api-1.0.0.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\PPCalculator.cs" />
@@ -174,18 +224,6 @@
   <ItemGroup>
     <EmbeddedResource Include="Counter\Settings\CounterSettings.bsml" />
     <None Include="Directory.Build.props" Condition="Exists('Directory.Build.props')" />
-    <None Include="OpenAPIs\scoresaber-public-api-1.0.0.json">
-      <Namespace>scoresaberapi</Namespace>
-      <ClassName>scoresaberapi</ClassName>
-      <CodeGenerator>NSwagCSharp</CodeGenerator>
-      <SourceUri>https://docs.scoresaber.com/scoresaber-public-api-1.0.0.json</SourceUri>
-    </None>
-    <None Include="OpenAPIs\beatleader-v1.json">
-      <Namespace>beatleaderapi</Namespace>
-      <ClassName>beatleaderapi</ClassName>
-      <CodeGenerator>NSwagCSharp</CodeGenerator>
-      <SourceUri>https://api.beatleader.xyz/swagger/v1/swagger.json</SourceUri>
-    </None>
     <None Include="PPPredictor.csproj.user" Condition="Exists('PPPredictor.csproj.user')" />
     <EmbeddedResource Include="UI\Views\PPPredictorView.bsml" />
     <EmbeddedResource Include="UI\Views\SettingsMidView.bsml" />
@@ -211,6 +249,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\LeaderBoardLogos\BeatLeader.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\LeaderBoardLogos\HitBloq.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

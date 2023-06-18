@@ -8,14 +8,9 @@ namespace PPPredictor.Utilities
     {
         //Dummy class, for when no Leaderboards are selected in the options. mhh... why even use this mod then
 
-        public override double CalculatePPatPercentage(PPPBeatMapInfo currentBeatMapInfo, double percentage, bool levelFailed, GameplayModifiers gameplayModifiers)
+        public override Task<PPPBeatMapInfo> GetBeatMapInfoAsync(PPPBeatMapInfo beatMapInfo)
         {
-            return 0;
-        }
-
-        public override Task<PPPBeatMapInfo> GetBeatMapInfoAsync(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
-        {
-            return Task.FromResult(new PPPBeatMapInfo());
+            return Task.FromResult(beatMapInfo);
         }
 
         protected override Task<PPPPlayer> GetPlayerInfo(long userId)
@@ -31,6 +26,26 @@ namespace PPPredictor.Utilities
         protected override Task<PPPScoreCollection> GetRecentScores(string userId, int pageSize, int page)
         {
             return Task.FromResult(new PPPScoreCollection());
+        }
+
+        protected override Task<PPPScoreCollection> GetAllScores(string userId)
+        {
+            return Task.FromResult(new PPPScoreCollection());
+        }
+
+        public override string CreateSeachString(string hash, IDifficultyBeatmap beatmap)
+        {
+            return $"{hash}_{beatmap.difficultyRank}";
+        }
+
+        public override Task UpdateMapPoolDetails(PPPMapPool mapPool)
+        {
+            return Task.CompletedTask;
+        }
+
+        public override PPPBeatMapInfo ApplyModifiersToBeatmapInfo(PPPBeatMapInfo beatMapInfo, GameplayModifiers gameplayModifiers, bool levelFailed = false)
+        {
+            return beatMapInfo;
         }
     }
 }

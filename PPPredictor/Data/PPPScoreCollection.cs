@@ -1,10 +1,10 @@
-﻿using beatleaderapi;
-using scoresaberapi;
+﻿using PPPredictor.OpenAPIs;
 using System.Collections.Generic;
+using static PPPredictor.OpenAPIs.BeatleaderAPI;
 
 namespace PPPredictor.Data
 {
-    public class PPPScoreCollection
+    class PPPScoreCollection
     {
         private readonly List<PPPScore> lsPPPScore = new List<PPPScore>();
         private readonly double page;
@@ -24,26 +24,39 @@ namespace PPPredictor.Data
             total = -1;
         }
 
-        public PPPScoreCollection(PlayerScoreCollection scoreSaberPlayerScoreCollection)
+        public PPPScoreCollection(ScoresaberAPI.ScoreSaberPlayerScoreList scoreSaberPlayerScoreList)
         {
-            this.page = scoreSaberPlayerScoreCollection.Metadata.Page;
-            this.itemsPerPage = scoreSaberPlayerScoreCollection.Metadata.ItemsPerPage;
-            this.total = scoreSaberPlayerScoreCollection.Metadata.Total;
-            foreach (var playerScore in scoreSaberPlayerScoreCollection.PlayerScores)
+            this.page = scoreSaberPlayerScoreList.metadata.page;
+            this.itemsPerPage = scoreSaberPlayerScoreList.metadata.itemsPerPage;
+            this.total = scoreSaberPlayerScoreList.metadata.total;
+            foreach (var playerScore in scoreSaberPlayerScoreList.playerScores)
             {
                 lsPPPScore.Add(new PPPScore(playerScore));
             }
         }
 
-        public PPPScoreCollection(ScoreResponseWithMyScoreResponseWithMetadata scoreSaberPlayerScoreCollection)
+        public PPPScoreCollection(BeatLeaderPlayerScoreList beatLeaderPlayerScoreList)
         {
-            this.page = scoreSaberPlayerScoreCollection.Metadata.Page;
-            this.itemsPerPage = scoreSaberPlayerScoreCollection.Metadata.ItemsPerPage;
-            this.total = scoreSaberPlayerScoreCollection.Metadata.Total;
-            foreach (var playerScore in scoreSaberPlayerScoreCollection.Data)
+            this.page = beatLeaderPlayerScoreList.metadata.page;
+            this.itemsPerPage = beatLeaderPlayerScoreList.metadata.itemsPerPage;
+            this.total = beatLeaderPlayerScoreList.metadata.total;
+            foreach (var playerScore in beatLeaderPlayerScoreList.data)
             {
                 lsPPPScore.Add(new PPPScore(playerScore));
             }
         }
+
+        public PPPScoreCollection(List<HitbloqAPI.HitBloqScores> lsHitBloqScores, int page)
+        {
+            this.page = page;
+            this.itemsPerPage = 10;
+            this.total = (lsHitBloqScores.Count > 0) ? page * itemsPerPage + 1 : 0;
+            foreach (var playerScore in lsHitBloqScores)
+            {
+                lsPPPScore.Add(new PPPScore(playerScore));
+            }
+        }
+
+        
     }
 }

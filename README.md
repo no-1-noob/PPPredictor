@@ -4,28 +4,32 @@ A mod that allows you to see how many PP (and rank) you could earn for a specifi
 
 A list/explanation of all options is available [here](https://github.com/no-1-noob/PPPredictor/wiki/Settings).
 
-![grafik](https://user-images.githubusercontent.com/91905916/194377950-bb5883a2-d3fc-4b46-9390-952937a39e20.png)
+![grafik](https://github.com/no-1-noob/PPPredictor/assets/91905916/414f0405-d50c-4262-bde7-bb83e6392560)
+![grafik](https://github.com/no-1-noob/PPPredictor/assets/91905916/5be3a90e-eba7-4c66-a873-acca5e1aa61a)
 
   Features
   -----
 
 ### Supports
+(The mod for the leaderboard has to be installed for PPPredictor to show it in its selection)
 - ScoreSaber
 - BeatLeader
+- HitBloq
 
 ### Counters+
 Optional Counters+ implementation
+Custom MapPool icons for HitBloq MapPools
 
-![grafik](https://user-images.githubusercontent.com/91905916/194379222-ab3b576f-390e-408c-9fdc-8358db3f3b82.png)
+![grafik](https://github.com/no-1-noob/PPPredictor/assets/91905916/e3e008a0-965e-438d-986c-10dabe81ec9d)
 
 
- !!Session!!
+ Session
  -----
  Shows you how many ranks and PP you have gained since you reset your session.
  
- !!PPPredictor!!
+ PPPredictor
  -----
- Shows how many PP the current map could give you, if you complete it at the selected percentage.
+ Shows how much PP the current map could give you, if you complete it at the selected percentage.
  The displayed values are the following:
  
  Raw PP [Weighted PP]

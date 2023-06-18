@@ -23,7 +23,7 @@ namespace PPPredictor.UI
         private void Close()
         {
             Plugin.pppViewController.ApplySettings();
-            ProfileInfoMgr._parentFlow.DismissFlowCoordinator(instance, () => {
+            ProfileInfoMgr.ParentFlow.DismissFlowCoordinator(instance, () => {
                 instance = null;
             }, immediately: true);
         }

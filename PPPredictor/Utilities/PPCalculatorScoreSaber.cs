@@ -1,57 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
 using PPPredictor.Data;
-using scoresaberapi;
+using PPPredictor.OpenAPIs;
 using SongCore.Utilities;
 using SongDetailsCache;
 using SongDetailsCache.Structs;
+using static PPPredictor.OpenAPIs.ScoresaberAPI;
 
 namespace PPPredictor.Utilities
 {
-    public class PPCalculatorScoreSaber : PPCalculator
+    class PPCalculatorScoreSaber : PPCalculator
     {
-        private readonly double basePPMultiplier = 42.117208413;
-        private readonly HttpClient httpClient = new HttpClient();
-        private readonly scoresaberapi.scoresaberapi scoreSaberClient;
-        private readonly double[,] arrPPCurve = new double[32, 2] {
-            {1, 7},
-            {0.999, 6.24},
-            {0.9975, 5.31},
-            {0.995, 4.14},
-            {0.9925, 3.31},
-            {0.99, 2.73},
-            {0.9875, 2.31},
-            {0.985, 2.0},
-            {0.9825, 1.775},
-            {0.98, 1.625},
-            {0.9775, 1.515},
-            {0.975, 1.43},
-            {0.9725, 1.36},
-            {0.97, 1.3},
-            {0.965, 1.195},
-            {0.96, 1.115},
-            {0.955, 1.05},
-            {0.95, 1},
-            {0.94, 0.94},
-            {0.93, 0.885},
-            {0.92, 0.835},
-            {0.91, 0.79},
-            {0.9, 0.75},
-            {0.875, 0.655},
-            {0.85, 0.57},
-            {0.825, 0.51},
-            {0.8, 0.47},
-            {0.75, 0.40},
-            {0.7, 0.34},
-            {0.65, 0.29},
-            {0.6, 0.25},
-            {0.0, 0.0}, };
+        internal static readonly float accumulationConstant = 0.965f;
+        private readonly ScoresaberAPI scoresaberAPI;
+
         private SongDetails SongDetails { get; }
         public PPCalculatorScoreSaber() : base()
         {
-            scoreSaberClient = new scoresaberapi.scoresaberapi(httpClient);
+            playerPerPages = 50;
+            scoresaberAPI = new ScoresaberAPI();
             SongDetails = SongDetails.Init().Result;
         }
 
@@ -59,8 +27,7 @@ namespace PPPredictor.Utilities
         {
             try
             {
-                var playerInfo = scoreSaberClient.BasicAsync(userId);
-                var scoreSaberPlayer = await playerInfo;
+                ScoreSaberPlayer scoreSaberPlayer = await scoresaberAPI.GetPlayer(userId);
                 PPPPlayer player = new PPPPlayer(scoreSaberPlayer);
                 return player;
             }
@@ -75,8 +42,8 @@ namespace PPPredictor.Utilities
         {
             try
             {
-                PlayerScoreCollection scoreSaberCollection = await scoreSaberClient.Scores3Async(userId, pageSize, Sort.Recent, page, true);
-                return new PPPScoreCollection(scoreSaberCollection);
+                ScoreSaberPlayerScoreList scoreSaberPlayerScoreList = await scoresaberAPI.GetPlayerScores(userId, pageSize, page);
+                return new PPPScoreCollection(scoreSaberPlayerScoreList);
             }
             catch (Exception ex)
             {
@@ -85,13 +52,18 @@ namespace PPPredictor.Utilities
             }
         }
 
+        protected override Task<PPPScoreCollection> GetAllScores(string userId)
+        {
+            return Task.FromResult(new PPPScoreCollection());
+        }
+
         protected override async Task<List<PPPPlayer>> GetPlayers(double fetchIndexPage)
         {
             try
             {
                 List<PPPPlayer> lsPlayer = new List<PPPPlayer>();
-                PlayerCollection scoreSaberPlayerCollection = await scoreSaberClient.PlayersAsync(null, fetchIndexPage, null, true);
-                foreach (var scoreSaberPlayer in scoreSaberPlayerCollection.Players)
+                ScoreSaberPlayerList scoreSaberPlayerCollection = await scoresaberAPI.GetPlayers(fetchIndexPage);
+                foreach (var scoreSaberPlayer in scoreSaberPlayerCollection.players)
                 {
                     lsPlayer.Add(new PPPPlayer(scoreSaberPlayer));
                 }
@@ -104,86 +76,42 @@ namespace PPPredictor.Utilities
             }
         }
 
-        private double CalculateMultiplierAtPercentage(double percentage)
+        public override Task<PPPBeatMapInfo> GetBeatMapInfoAsync(PPPBeatMapInfo beatMapInfo)
         {
             try
             {
-                for (int i = 0; i < arrPPCurve.GetLength(0); i++)
+                if (beatMapInfo.SelectedCustomBeatmapLevel != null)
                 {
-                    if (arrPPCurve[i, 0] == percentage)
+                    if (SongDetails.songs.FindByHash(Hashing.GetCustomLevelHash(beatMapInfo.SelectedCustomBeatmapLevel), out Song song))
                     {
-                        return arrPPCurve[i, 1];
-                    }
-                    else
-                    {
-                        if (arrPPCurve[i + 1, 0] < percentage)
+                        if (song.GetDifficulty(out SongDifficulty songDiff, (MapDifficulty)beatMapInfo.Beatmap.difficulty))
                         {
-                            return CalculateMultiplierAtPercentageWithLine((arrPPCurve[i + 1, 0], arrPPCurve[i + 1, 1]), (arrPPCurve[i, 0], arrPPCurve[i, 1]), percentage);
+                            return Task.FromResult(new PPPBeatMapInfo(beatMapInfo, new PPPStarRating(songDiff.stars)));
                         }
                     }
+                    return Task.FromResult(new PPPBeatMapInfo (beatMapInfo, new PPPStarRating(0)));
                 }
-                return 0;
-            }
-            catch (Exception ex)
-            {
-                Plugin.Log?.Error($"PPCalculatorScoreSaber CalculateMultiplierAtPercentage Error: {ex.Message}");
-                return -1;
-            }
-        }
-
-        private double CalculateMultiplierAtPercentageWithLine((double x, double y) p1, (double x, double y) p2, double percentage)
-        {
-            try
-            {
-                double m = (p2.y - p1.y) / (p2.x - p1.x);
-                double b = p1.y - (m * p1.x);
-                return m * percentage + b;
-            }
-            catch (Exception ex)
-            {
-                Plugin.Log?.Error($"PPCalculatorScoreSaber CalculateMultiplierAtPercentageWithLine Error: {ex.Message}");
-                return -1;
-            }
-        }
-
-        public override double CalculatePPatPercentage(PPPBeatMapInfo currentBeatMapInfo, double percentage, bool levelFailed, GameplayModifiers gameplayModifiers)
-        {
-            try
-            {
-                percentage /= 100.0;
-                if (levelFailed) percentage /= 2.0; //Halve score if nofail triggered
-                double multiplier = CalculateMultiplierAtPercentage(percentage);
-                return multiplier * currentBeatMapInfo.BaseStarRating.Stars * basePPMultiplier;
-            }
-            catch (Exception ex)
-            {
-                Plugin.Log?.Error($"PPCalculatorScoreSaber CalculatePPatPercentage Error: {ex.Message}");
-                return -1;
-            }
-        }
-
-        public override Task<PPPBeatMapInfo> GetBeatMapInfoAsync(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
-        {
-            try
-            {
-                if (lvlSelectionNavigationCtrl.selectedBeatmapLevel is CustomBeatmapLevel selectedCustomBeatmapLevel)
-                {
-                    if (SongDetails.songs.FindByHash(Hashing.GetCustomLevelHash(selectedCustomBeatmapLevel), out Song song))
-                    {
-                        if (song.GetDifficulty(out SongDifficulty songDiff, (MapDifficulty)beatmap.difficulty))
-                        {
-                            return Task.FromResult(new PPPBeatMapInfo(new PPPStarRating(songDiff.stars), 0));
-                        }
-                    }
-                    return Task.FromResult(new PPPBeatMapInfo());
-                }
-                return Task.FromResult(new PPPBeatMapInfo());
+                return Task.FromResult(new PPPBeatMapInfo(beatMapInfo, new PPPStarRating(0)));
             }
             catch (Exception ex)
             {
                 Plugin.Log?.Error($"PPCalculatorScoreSaber GetStarsForBeatmapAsync Error: {ex.Message}");
-                return Task.FromResult(new PPPBeatMapInfo(new PPPStarRating(-1), -1));
+                return Task.FromResult(new PPPBeatMapInfo(beatMapInfo , new PPPStarRating(-1)));
             }
+        }
+
+        public override PPPBeatMapInfo ApplyModifiersToBeatmapInfo(PPPBeatMapInfo beatMapInfo, GameplayModifiers gameplayModifiers, bool levelFailed)
+        {
+            return beatMapInfo;
+        }
+
+        public override string CreateSeachString(string hash, IDifficultyBeatmap beatmap)
+        {
+            return $"{hash}_{beatmap.difficultyRank}";
+        }
+        override public Task UpdateMapPoolDetails(PPPMapPool mapPool)
+        {
+            return Task.CompletedTask;
         }
     }
 }

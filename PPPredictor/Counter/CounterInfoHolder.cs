@@ -1,6 +1,7 @@
 ﻿using CountersPlus.Custom;
 using CountersPlus.Utils;
 using HMUI;
+using PPPredictor.Data;
 using PPPredictor.Utilities;
 using System;
 using System.Linq;
@@ -22,20 +23,27 @@ namespace PPPredictor.Counter
         private readonly Leaderboard leaderboard;
         private readonly CustomConfigModel settings;
         private readonly CanvasUtility canvasUtility;
-        private GameplayModifiers gameplayModifiers;
-        private float positionScale;
+        private readonly GameplayModifiers gameplayModifiers;
+        private readonly PPPBeatMapInfo modifiedBeatMapInfo;
+        private readonly PPPBeatMapInfo failedBeatMapInfo;
+        private readonly float positionScale;
         private double maxPP = -1;
+        private readonly PPPredictorMgr ppPredictorMgr;
+        private readonly string ppSuffix;
 
-        public CounterInfoHolder(Leaderboard leaderboard, CustomConfigModel settings, string iconPath, Canvas canvas, CanvasUtility canvasUtility, float lineOffset, float positionScale, GameplayModifiers gameplayModifiers) //CHECK WHEN NO C+ is installed??
+        public double MaxPP { get => maxPP; }
+
+        public CounterInfoHolder(Leaderboard leaderboard, CustomConfigModel settings, PPPredictorMgr ppPredictorMgr, Canvas canvas, CanvasUtility canvasUtility, float lineOffset, float offsetByLine, float positionScale, GameplayModifiers gameplayModifiers) //CHECK WHEN NO C+ is installed??
         {
             this.leaderboard = leaderboard;
             this.settings = settings;
+            this.ppPredictorMgr = ppPredictorMgr;
             this.canvasUtility = canvasUtility;
             this.positionScale = positionScale;
             float positionScaleFactor = 10 / positionScale;
-            lineOffset = lineOffset * positionScaleFactor;
+            lineOffset *= positionScaleFactor;
             TextAlignmentOptions gainAlignment = TextAlignmentOptions.BottomLeft;
-            float centerOffset = getCenterOffset();
+            float centerOffset = GetCenterOffset();
             float iconTextOffset = (Plugin.ProfileInfo.CounterUseIcons ? -.9f : 0f);
             float displayTypeOffset = 0;
             if (Plugin.ProfileInfo.CounterDisplayType == CounterDisplayType.PPNoSuffix || Plugin.ProfileInfo.CounterDisplayType == CounterDisplayType.PPAndGainNoSuffix || Plugin.ProfileInfo.CounterDisplayType == CounterDisplayType.PPAndGainNoBracketsNoSuffix || Plugin.ProfileInfo.CounterDisplayType == CounterDisplayType.GainNoBracketsNoSuffix)
@@ -51,7 +59,7 @@ namespace PPPredictor.Counter
                 gainAlignment = TextAlignmentOptions.BottomRight;
             }
             useIcon = (canvas != null && Plugin.ProfileInfo.CounterUseIcons);
-            showInfo = Plugin.pppViewController.ppPredictorMgr.IsRanked(leaderboard) || !Plugin.ProfileInfo.CounterHideWhenUnranked;
+            showInfo = ppPredictorMgr.IsRanked(leaderboard) || !Plugin.ProfileInfo.CounterHideWhenUnranked;
             headerText = canvasUtility.CreateTextFromSettings(settings, new Vector3(((-1f + centerOffset) * positionScaleFactor), lineOffset, 0));
             ppText = canvasUtility.CreateTextFromSettings(settings, new Vector3((0.9f + iconTextOffset + displayTypeOffset + centerOffset) * positionScaleFactor, lineOffset, 0));
             ppGainText = canvasUtility.CreateTextFromSettings(settings, new Vector3((1.2f + iconTextOffset + displayTypeOffset + centerOffset) * positionScaleFactor, lineOffset, 0));
@@ -59,14 +67,19 @@ namespace PPPredictor.Counter
             ppGainText.alignment = gainAlignment;
             ppText.alignment = TextAlignmentOptions.BottomRight;
             headerText.fontSize = ppText.fontSize = ppGainText.fontSize = fontSize;
+            string iconPath = ppPredictorMgr.GetMapPoolIcon(leaderboard);
             if (useIcon)
             {
-                icon = CreateIcon(canvas, iconPath, new Vector3((-1f + centerOffset) * positionScaleFactor, lineOffset, 0), Math.Abs(lineOffset));
+                icon = CreateIcon(canvas, iconPath, new Vector3((-1f + centerOffset) * positionScaleFactor, lineOffset, 0), Math.Abs(offsetByLine));
+                LoadImage(icon, iconPath);
             }
             this.gameplayModifiers = gameplayModifiers;
+            modifiedBeatMapInfo = ppPredictorMgr.GetModifiedBeatMapInfo(leaderboard, gameplayModifiers);
+            failedBeatMapInfo = ppPredictorMgr.GetModifiedBeatMapInfo(leaderboard, gameplayModifiers);
+            ppSuffix = ppPredictorMgr.GetPPSuffixForLeaderboard(leaderboard);
         }
 
-        private float getCenterOffset()
+        private float GetCenterOffset()
         {
             switch (Plugin.ProfileInfo.CounterDisplayType)
             {
@@ -94,7 +107,7 @@ namespace PPPredictor.Counter
         public void UpdateCounterText(double percentage, bool levelFailed)
         {
             string percentageThresholdColor = DisplayHelper.GetDisplayColor(0, false);
-            if (percentage > Plugin.pppViewController.ppPredictorMgr.GetPercentage() && Plugin.ProfileInfo.CounterHighlightTargetPercentage)
+            if (percentage > ppPredictorMgr.GetPercentage() && Plugin.ProfileInfo.CounterHighlightTargetPercentage)
             {
                 percentageThresholdColor = DisplayHelper.GetDisplayColor(1, false);
             }
@@ -103,10 +116,10 @@ namespace PPPredictor.Counter
             if (showInfo)
             {
                 if (Plugin.ProfileInfo.CounterUseIcons) icon.enabled = true;
-                double pp = Plugin.pppViewController.ppPredictorMgr.GetPPAtPercentageForCalculator(leaderboard, percentage, levelFailed, gameplayModifiers);
-                double ppGain = Math.Round(Plugin.pppViewController.ppPredictorMgr.GetPPGainForCalculator(leaderboard, pp), 2);
+                double pp = ppPredictorMgr.GetPPAtPercentageForCalculator(leaderboard, percentage, levelFailed, levelFailed ? failedBeatMapInfo : modifiedBeatMapInfo);
+                double ppGain = Math.Round(ppPredictorMgr.GetPPGainForCalculator(leaderboard, pp), 2);
 
-                if (maxPP == -1) maxPP = Plugin.pppViewController.ppPredictorMgr.GetMaxPPForCalculator(leaderboard, gameplayModifiers);
+                if (maxPP == -1) maxPP = ppPredictorMgr.GetMaxPPForCalculator(leaderboard);
 
                 string maxPPReachedPrefix = string.Empty;
                 string maxPPReachedSuffix = string.Empty;
@@ -116,22 +129,21 @@ namespace PPPredictor.Counter
                     maxPPReachedPrefix = "<color=\"yellow\">";
                     maxPPReachedSuffix = "</color>";
                 }
-
                 switch (Plugin.ProfileInfo.CounterDisplayType)
                 {
                     case CounterDisplayType.PP:
-                        ppText.text = $"{maxPPReachedPrefix}{pp:F2}pp{maxPPReachedSuffix}";
+                        ppText.text = $"{maxPPReachedPrefix}{pp:F2}{ppSuffix}{maxPPReachedSuffix}";
                         break;
                     case CounterDisplayType.PPAndGain:
-                        ppText.text = $"{maxPPReachedPrefix}{pp:F2}pp{maxPPReachedSuffix}";
-                        ppGainText.text = $"[<color=\"{DisplayHelper.GetDisplayColor(ppGain, false, true)}\">{ppGain:F2}pp</color>]";
+                        ppText.text = $"{maxPPReachedPrefix}{pp:F2}{ppSuffix}{maxPPReachedSuffix}";
+                        ppGainText.text = $"[<color=\"{DisplayHelper.GetDisplayColor(ppGain, false, true)}\">{ppGain:F2}{ppSuffix}</color>]";
                         break;
                     case CounterDisplayType.PPAndGainNoBrackets:
                         ppText.text = $"{maxPPReachedPrefix}{pp:F2}pp{maxPPReachedSuffix}";
-                        ppGainText.text = $"<color=\"{DisplayHelper.GetDisplayColor(ppGain, false, true)}\">{ppGain:F2}pp</color>";
+                        ppGainText.text = $"<color=\"{DisplayHelper.GetDisplayColor(ppGain, false, true)}\">{ppGain:F2}{ppSuffix}</color>";
                         break;
                     case CounterDisplayType.GainNoBrackets:
-                        ppGainText.text = $"<color=\"{DisplayHelper.GetDisplayColor(ppGain, false, true)}\">{ppGain:F2}pp</color>";
+                        ppGainText.text = $"<color=\"{DisplayHelper.GetDisplayColor(ppGain, false, true)}\">{ppGain:F2}{ppSuffix}</color>";
                         break;
                     case CounterDisplayType.PPNoSuffix:
                         ppText.text = $"{maxPPReachedPrefix}{pp:F2}{maxPPReachedSuffix}";
@@ -158,7 +170,7 @@ namespace PPPredictor.Counter
             GameObject imageGameObject = new GameObject(imageIdent, typeof(RectTransform));
             ImageView newImage = imageGameObject.AddComponent<ImageView>();
             newImage.rectTransform.SetParent(canvas.transform, false);
-            newImage.rectTransform.anchoredPosition = positionScale * (canvasUtility.GetAnchoredPositionFromConfig(settings) + offset + new Vector3(0, lineOffset / 1.25f, 0));
+            newImage.rectTransform.anchoredPosition = positionScale * (canvasUtility.GetAnchoredPositionFromConfig(settings) + offset + new Vector3(0, (lineOffset / (positionScale * 0.125f)) + (0.15f / positionScale), 0));
             newImage.rectTransform.sizeDelta = new Vector2(2.5f, 2.5f);
             newImage.enabled = false;
             var noGlowMat = new Material(Resources.FindObjectsOfTypeAll<Material>().Where(m => m.name == "UINoGlow").First())
@@ -166,16 +178,35 @@ namespace PPPredictor.Counter
                 name = "UINoGlowCustom"
             };
             newImage.material = noGlowMat;
-            //Load Image
-            var assembly = Assembly.GetExecutingAssembly();
-            System.IO.Stream stream = assembly.GetManifestResourceStream(imageIdent);
-            byte[] data = new byte[stream.Length];
-            stream.Read(data, 0, (int)stream.Length);
+            return newImage;
+        }
+
+        private async void LoadImage(ImageView newImage, string imageIdent)
+        {
+            byte[] data = null;
+            if (Plugin.ProfileInfo.CounterUseCustomMapPoolIcons && imageIdent.Contains("http"))
+            {
+                data = await ppPredictorMgr.GetLeaderboardIconData(leaderboard);
+            }
+            if(data == null)
+            {
+                var assembly = Assembly.GetExecutingAssembly();
+                System.IO.Stream stream = assembly.GetManifestResourceStream(ppPredictorMgr.GetLeaderboardIcon(leaderboard));
+                data = new byte[stream.Length];
+                stream.Read(data, 0, (int)stream.Length);
+            }
             Texture2D texture = new Texture2D(1, 1);
             texture.LoadImage(data);
             texture.Apply();
             newImage.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
-            return newImage;
+        }
+
+        internal void MoveIconForLongMaxPP(int digits)
+        {
+            if(digits > 3)
+            {
+                icon.rectTransform.anchoredPosition -= new Vector2((digits - 3) * 1f, 0);
+            }
         }
     }
 }

@@ -12,10 +12,14 @@ namespace PPPredictor.UI.ViewController
     [ViewDefinition("PPPredictor.UI.Views.SettingsMidView.bsml")]
     class SettingsMidViewController : BSMLAutomaticViewController, INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler PropertyChanged;
+        public new event PropertyChangedEventHandler PropertyChanged;
         private readonly List<object> scoringTypeOptions;
         private readonly List<object> generalPPGainCalculationOptions;
         private readonly List<object> counterDisplayTypeOptions;
+        private readonly List<object> hitbloqMapPoolSortingOptions;
+        private readonly List<object> menuPositionPresetOptions;
+
+        private MenuPositionPreset _selectedMenuPositionPreset;
 
         public SettingsMidViewController()
         {
@@ -34,6 +38,17 @@ namespace PPPredictor.UI.ViewController
             {
                 counterDisplayTypeOptions.Add(EnumHelper.CounterDisplayTypeGetDisplayValue(enumValue));
             }
+            hitbloqMapPoolSortingOptions = new List<object>();
+            foreach (MapPoolSorting enumValue in Enum.GetValues(typeof(MapPoolSorting)))
+            {
+                hitbloqMapPoolSortingOptions.Add(enumValue.ToString());
+            }
+            menuPositionPresetOptions = new List<object>();
+            foreach (MenuPositionPreset enumValue in Enum.GetValues(typeof(MenuPositionPreset)))
+            {
+                menuPositionPresetOptions.Add(enumValue.ToString());
+            }
+            _selectedMenuPositionPreset = Utilities.MenuPositionPreset.UnderScoreboard;
         }
 
         #region settings
@@ -43,23 +58,17 @@ namespace PPPredictor.UI.ViewController
 #pragma warning restore CS0649 // Field is never assigned to, and will always have its default value null
 
 #pragma warning disable IDE0051 // Remove unused private members
-        [UIAction("reset-data")]
-        private void ResetData()
+        [UIAction("reset-settings")]
+        private void ResetSettings()
         {
-            bsmlParserParams.EmitEvent("open-reset-modal");
+            bsmlParserParams.EmitEvent("open-reset-settings-modal");
+        }
+        [UIAction("reset-cache")]
+        private void ResetCache()
+        {
+            bsmlParserParams.EmitEvent("open-reset-cache-modal");
         }
 #pragma warning restore IDE0051 // Remove unused private members
-
-        [UIValue("window-handle-enabled")]
-        public bool WindowHandleEnabled
-        {
-            get => Plugin.ProfileInfo.WindowHandleEnabled;
-            set
-            {
-                Plugin.ProfileInfo.WindowHandleEnabled = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(WindowHandleEnabled)));
-            }
-        }
 
         [UIValue("version-check-enabled")]
         public bool VersionCheckEnabled
@@ -69,6 +78,17 @@ namespace PPPredictor.UI.ViewController
             {
                 Plugin.ProfileInfo.IsVersionCheckEnabled = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(VersionCheckEnabled)));
+            }
+        }
+
+        [UIValue("predictor-switch-syncurl-enabled")]
+        public bool PredictorSwitchSyncUrlEnabled
+        {
+            get => Plugin.ProfileInfo.IsPredictorSwitchBySyncUrlEnabled;
+            set
+            {
+                Plugin.ProfileInfo.IsPredictorSwitchBySyncUrlEnabled = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PredictorSwitchSyncUrlEnabled)));
             }
         }
 
@@ -99,24 +119,19 @@ namespace PPPredictor.UI.ViewController
             }
         }
 
-        [UIValue("scoresaber-enabled")]
-        public bool ScoreSaberEnabled
+        [UIValue("hitbloq-mappool-sorting-options")]
+        public List<object> HitbloqMapPoolSortingOptions
         {
-            get => Plugin.ProfileInfo.IsScoreSaberEnabled;
-            set
-            {
-                Plugin.ProfileInfo.IsScoreSaberEnabled = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ScoreSaberEnabled)));
-            }
+            get => this.hitbloqMapPoolSortingOptions;
         }
-        [UIValue("beatleader-enabled")]
-        public bool BeatLeaderEnabled
+        [UIValue("hitbloq-mappool-sorting")]
+        public string HitbloqMapPoolSorting
         {
-            get => Plugin.ProfileInfo.IsBeatLeaderEnabled;
+            get => Plugin.ProfileInfo.HitbloqMapPoolSorting.ToString();
             set
             {
-                Plugin.ProfileInfo.IsBeatLeaderEnabled = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(BeatLeaderEnabled)));
+                Plugin.ProfileInfo.HitbloqMapPoolSorting = (MapPoolSorting)Enum.Parse(typeof(MapPoolSorting), value);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HitbloqMapPoolSorting)));
             }
         }
 
@@ -167,6 +182,16 @@ namespace PPPredictor.UI.ViewController
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CounterUseIcons)));
             }
         }
+        [UIValue("counter-use-custom-mappool-icons")]
+        public bool CounterUseCustomMapPoolIcons
+        {
+            get => Plugin.ProfileInfo.CounterUseCustomMapPoolIcons;
+            set
+            {
+                Plugin.ProfileInfo.CounterUseCustomMapPoolIcons = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CounterUseCustomMapPoolIcons)));
+            }
+        }
         [UIValue("counter-highlight-target-percentage")]
         public bool CounterHighlightTargetPercentage
         {
@@ -204,31 +229,73 @@ namespace PPPredictor.UI.ViewController
         }
         #endregion
 
+        #region Menu Positioning
+        [UIAction("apply-menu-position-preset")]
+        private void ApplyMenuPositionPreset()
+        {
+            switch (_selectedMenuPositionPreset)
+            {
+                case Utilities.MenuPositionPreset.UnderScoreboard:
+                    Plugin.ProfileInfo.Position = MenuPositionHelper.UnderScoreboardPosition;
+                    Plugin.ProfileInfo.EulerAngles = MenuPositionHelper.UnderScoreboardEulerAngles;
+                    break;
+                case Utilities.MenuPositionPreset.RightOfScoreboard:
+                    Plugin.ProfileInfo.Position = MenuPositionHelper.RightOfScoreboardPosition;
+                    Plugin.ProfileInfo.EulerAngles = MenuPositionHelper.RightOfScoreboardEulerAngles;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        [UIValue("menu-position-preset-options")]
+        public List<object> MenuPositionPresetOptions
+        {
+            get => this.menuPositionPresetOptions;
+        }
+        [UIValue("menu-position-preset")]
+        public string MenuPositionPreset
+        {
+            get => _selectedMenuPositionPreset.ToString();
+            set
+            {
+                _selectedMenuPositionPreset = (MenuPositionPreset)Enum.Parse(typeof(MenuPositionPreset), value);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MenuPositionPreset)));
+            }
+        }
+        #endregion
+
 #pragma warning disable IDE0051 // Remove unused private members
         #region modal actions
-        [UIAction("confirm-reset-modal")]
-        private void ConfirmResetModal()
+        [UIAction("confirm-reset-settings-modal")]
+        private void ConfirmResetSettingsModal()
         {
-            ProfileInfoMgr.ResetProfile();
+            ProfileInfoMgr.ResetSettings();
             RefreshSettingsDisplay();
-            bsmlParserParams.EmitEvent("close-reset-modal");
+            bsmlParserParams.EmitEvent("close-reset-settings-modal");
+        }
+        [UIAction("confirm-reset-cache-modal")]
+        private void ConfirmResetCacheModal()
+        {
+            ProfileInfoMgr.ResetCache();
+            bsmlParserParams.EmitEvent("close-reset-cache-modal");
         }
 #pragma warning restore IDE0051 // Remove unused private members
         #endregion
 
         private void RefreshSettingsDisplay()
         {
-            WindowHandleEnabled = Plugin.ProfileInfo.WindowHandleEnabled;
             DisplaySessionValues = Plugin.ProfileInfo.DisplaySessionValues;
             ResetSessionHours = Plugin.ProfileInfo.ResetSessionHours;
             CounterDisplayType = EnumHelper.CounterDisplayTypeGetDisplayValue(Plugin.ProfileInfo.CounterDisplayType);
             CounterUseIcons = Plugin.ProfileInfo.CounterUseIcons;
+            CounterUseCustomMapPoolIcons = Plugin.ProfileInfo.CounterUseCustomMapPoolIcons;
             CounterHighlightTargetPercentage = Plugin.ProfileInfo.CounterHighlightTargetPercentage;
             CounterHideWhenUnranked = Plugin.ProfileInfo.CounterHideWhenUnranked;
             CounterScoringType = Plugin.ProfileInfo.CounterScoringType.ToString();
             VersionCheckEnabled = Plugin.ProfileInfo.IsVersionCheckEnabled;
-            ScoreSaberEnabled = Plugin.ProfileInfo.IsScoreSaberEnabled;
-            BeatLeaderEnabled = Plugin.ProfileInfo.IsBeatLeaderEnabled;
+            PredictorSwitchSyncUrlEnabled = Plugin.ProfileInfo.IsPredictorSwitchBySyncUrlEnabled;
+            HitbloqMapPoolSorting = Plugin.ProfileInfo.HitbloqMapPoolSorting.ToString();
             GeneralPPGainCalculation = Plugin.ProfileInfo.PpGainCalculationType.ToString();
             GeneralRawPPLossHighlightThreshold = Plugin.ProfileInfo.RawPPLossHighlightThreshold;
         }

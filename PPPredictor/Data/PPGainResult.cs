@@ -1,7 +1,7 @@
 ﻿using PPPredictor.Utilities;
 namespace PPPredictor.Data
 {
-    public class PPGainResult
+    class PPGainResult
     {
         private readonly double _ppTotal;
         private readonly double _ppGainWeighted;
@@ -10,6 +10,8 @@ namespace PPPredictor.Data
         public double PpTotal { get => _ppTotal; }
         public double PpGainWeighted { get => _ppGainWeighted; }
         public double PpGainRaw => _ppGainRaw;
+
+        public PPGainResult() : this(0,0,0) { }
 
         public PPGainResult(double ppTotal, double ppGain, double ppGainRaw)
         {
@@ -33,7 +35,7 @@ namespace PPPredictor.Data
 
         public override string ToString()
         {
-            return $"PPGainResult PpTotal: {PpTotal} PpGainWeighted: {PpGainWeighted} PpGainRaw: {PpGainRaw}";
+            return $"PPGainResult: PpTotal {PpTotal} PpGainWeighted {PpGainWeighted} PpGainRaw {PpGainRaw} GetDisplayPPValue {GetDisplayPPValue()}";
         }
     }
 }
