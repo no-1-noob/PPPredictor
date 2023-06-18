@@ -201,7 +201,7 @@ namespace PPPredictor.Utilities
                         }
                         await FetchPlayerPageAndAddToList(fetchIndexPage);
                         indexOfBetterPlayer = _leaderboardInfo.CurrentMapPool.LsPlayerRankings.FindIndex(x => x.Pp > pp);
-                        if (hasPPToRankFunctionality && indexOfBetterPlayer == -1)
+                        if (hasPPToRankFunctionality && indexOfBetterPlayer == -1 && fetchIndexPage > _leaderboardInfo.LeaderboardFirstPageIndex)
                         {
                             //Fetch one more page, when it is the first rank on the page, since i check for the index of the better player, otherwise endless loop
                             await FetchPlayerPageAndAddToList(fetchIndexPage - 1);
@@ -212,6 +212,7 @@ namespace PPPredictor.Utilities
                         }
                     }
                     fetchIndexPage--;
+                    bestRankFetched = _leaderboardInfo.CurrentMapPool.LsPlayerRankings.Select(x => x.Rank).DefaultIfEmpty(-1).Min();
                     await Task.Delay(250);
                 }
                 double rankAfterPlay = _leaderboardInfo.CurrentMapPool.LsPlayerRankings.Where(x => Math.Round(x.Pp, 2, MidpointRounding.AwayFromZero) <= pp).Select(x => x.Rank).DefaultIfEmpty(-1).Min();
