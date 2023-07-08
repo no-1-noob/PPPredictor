@@ -49,7 +49,7 @@ namespace PPPredictor.Data.Curve
 
         public override string ToString()
         {
-            return $"CurveInfo: curveType {_curveType} - basePPMultiplier {basePPMultiplier} _arrPPCurve {_arrPPCurve} baseline {baseline.GetValueOrDefault()} exponential {exponential.GetValueOrDefault()} cutoff {cutoff.GetValueOrDefault()}";
+            return $"CurveInfo: curveType {_curveType} - basePPMultiplier {basePPMultiplier.GetValueOrDefault()} _arrPPCurve {_arrPPCurve} baseline {baseline.GetValueOrDefault()} exponential {exponential.GetValueOrDefault()} cutoff {cutoff.GetValueOrDefault()}";
         }
     }
 }

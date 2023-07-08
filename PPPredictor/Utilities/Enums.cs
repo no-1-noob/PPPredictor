@@ -47,7 +47,8 @@
         ScoreSaber,
         BeatLeader,
         Linear,
-        Basic
+        Basic,
+        Dummy
     }
     enum PPGainCalculationType
     {

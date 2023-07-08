@@ -7,10 +7,10 @@
         private double _rankGainGlobal;
         private double _rankGainCountry;
 
-        public double RankGlobal { get => _rankGlobal; set => _rankGlobal = value; }
-        public double RankCountry { get => _rankCountry; set => _rankCountry = value; }
-        public double RankGainGlobal { get => _rankGainGlobal; set => _rankGainGlobal = value; }
-        public double RankGainCountry { get => _rankGainCountry; set => _rankGainCountry = value; }
+        public double RankGlobal { get => _rankGlobal; }
+        public double RankCountry { get => _rankCountry; }
+        public double RankGainGlobal { get => _rankGainGlobal; }
+        public double RankGainCountry { get => _rankGainCountry; }
 
         public RankGainResult()
         {

@@ -9,7 +9,7 @@ namespace PPPredictor.Data
 
         public double PpTotal { get => _ppTotal; }
         public double PpGainWeighted { get => _ppGainWeighted; }
-        public double PpGainRaw => _ppGainRaw;
+        public double PpGainRaw { get => _ppGainRaw; }
 
         public PPGainResult() : this(0,0,0) { }
 
@@ -22,15 +22,17 @@ namespace PPPredictor.Data
 
         internal double GetDisplayPPValue()
         {
+            double retValue = 0;
             switch (Plugin.ProfileInfo.PpGainCalculationType)
             {
                 case PPGainCalculationType.Weighted:
-                    return PpGainWeighted;
+                    retValue = PpGainWeighted;
+                    break;
                 case PPGainCalculationType.Raw:
-                    return PpGainRaw;
-                default:
-                    return 0;
+                    retValue = PpGainRaw;
+                    break;
             }
+            return retValue;
         }
 
         public override string ToString()

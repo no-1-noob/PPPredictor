@@ -67,8 +67,6 @@ namespace PPPredictor.Data
                     LeaderboardFirstPageIndex = 0;
                     _lsMapPools.Add(new PPPMapPool(MapPoolType.Default, $"☞ Select a map pool ☜", 0, 0, new CustomPPPCurve(new List<(double, double)>(), CurveType.Linear, 0)));
                     break;
-                default:
-                    break;
             }
 
             //THIS IS DEBUG STUFF FOR NOW

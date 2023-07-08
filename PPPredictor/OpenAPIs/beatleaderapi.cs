@@ -284,7 +284,7 @@ namespace PPPredictor.OpenAPIs
         {
             public string timeset { get; set; }
             public float pp {get; set;}
-            public BeatLeaderLeaderboard leaderboard { get; set; }
+            public BeatLeaderLeaderboard leaderboard { get; set; } = new BeatLeaderLeaderboard();
         }
 
         public class BeatLeaderPlayerScoreListMetaData
@@ -296,8 +296,8 @@ namespace PPPredictor.OpenAPIs
 
         public class BeatLeaderLeaderboard {
             public string hash { get; set; }
-            public BeatLeaderDifficulty difficulty { get; set; }
-            public BeatLeaderSong song { get; set; }
+            public BeatLeaderDifficulty difficulty { get; set; } = new BeatLeaderDifficulty();
+            public BeatLeaderSong song { get; set; } = new BeatLeaderSong();
         }
 
         public class BeatLeaderPlayList
