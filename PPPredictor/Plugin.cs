@@ -4,7 +4,6 @@ using PPPredictor.Installers;
 using PPPredictor.UI.ViewController;
 using PPPredictor.Utilities;
 using SiraUtil.Zenject;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using IPALogger = IPA.Logging.Logger;
 
@@ -20,6 +19,13 @@ namespace PPPredictor
         internal static ProfileInfo ProfileInfo;
 
         internal static PPPredictorViewController pppViewController;
+
+        //Only Used for UnitTests
+        internal Plugin()
+        {
+            Instance = this;
+            ProfileInfo = new ProfileInfo();
+        }
 
         [Init]
         /// <summary>

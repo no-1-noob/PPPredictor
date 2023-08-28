@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static PPPredictor.Data.LeaderBoardDataTypes.BeatLeaderDataTypes;
+using static PPPredictor.Data.LeaderBoardDataTypes.HitBloqDataTypes;
 using static PPPredictor.Data.LeaderBoardDataTypes.ScoreSaberDataTypes;
 
 namespace UnitTests.Data
@@ -45,14 +47,14 @@ namespace UnitTests.Data
         [TestMethod]
         public void BeatLeaderPlayerScoreConstructor()
         {
-            BeatleaderAPI.BeatLeaderPlayerScore playerScore = new BeatleaderAPI.BeatLeaderPlayerScore();
+            BeatLeaderPlayerScore playerScore = new BeatLeaderPlayerScore();
             playerScore.timeset = ((int)dtTest.Subtract(new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds).ToString();
             playerScore.pp = testPP;
-            playerScore.leaderboard = new BeatleaderAPI.BeatLeaderLeaderboard();
-            playerScore.leaderboard.difficulty = new BeatleaderAPI.BeatLeaderDifficulty();
+            playerScore.leaderboard = new BeatLeaderLeaderboard();
+            playerScore.leaderboard.difficulty = new BeatLeaderDifficulty();
             playerScore.leaderboard.difficulty.value = testDifficulty;
             playerScore.leaderboard.difficulty.modeName = testGameModeBeatLeader;
-            playerScore.leaderboard.song = new BeatleaderAPI.BeatLeaderSong();
+            playerScore.leaderboard.song = new BeatLeaderSong();
             playerScore.leaderboard.song.hash = testHash;
             PPPScore score = new PPPScore(playerScore);
 
@@ -70,7 +72,7 @@ namespace UnitTests.Data
         [TestMethod]
         public void HitBloqScoresConstructor()
         {
-            HitbloqAPI.HitBloqScores playerScore = new HitbloqAPI.HitBloqScores();
+            HitBloqScores playerScore = new HitBloqScores();
             playerScore.time = ((long)dtTest.Subtract(new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds);
             playerScore.cr_received = testPP;
             playerScore.song_id = $"{testHash}_{testDifficultyString}_{testGameModeShort}";

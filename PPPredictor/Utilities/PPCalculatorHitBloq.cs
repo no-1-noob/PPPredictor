@@ -1,19 +1,18 @@
 ﻿using PPPredictor.Data;
 using PPPredictor.Data.Curve;
-using PPPredictor.OpenAPIs;
+using PPPredictor.Interfaces;
 using SongCore.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using static PPPredictor.OpenAPIs.HitbloqAPI;
+using static PPPredictor.Data.LeaderBoardDataTypes.HitBloqDataTypes;
 
 namespace PPPredictor.Utilities
 {
-    class PPCalculatorHitBloq : PPCalculator
+    class PPCalculatorHitBloq<HBAPI> : PPCalculator where HBAPI : IHitBloqAPI, new ()
     {
-        private readonly HitbloqAPI hitbloqapi;
+        private readonly HBAPI hitbloqapi;
         private readonly string unserPoolId = "-1";
         //Dctionaries defined like here: https://github.com/DaFluffyPotato/hitbloq/blob/1e7bf18f92f1146bf8da2f24769aea072542b6e5/general.py#L24
         private static readonly Dictionary<string, string> dctDiffShorten = new Dictionary<string, string>{
@@ -43,7 +42,7 @@ namespace PPPredictor.Utilities
             playerPerPages = 10;
             hasGetAllScoresFunctionality = true;
             hasPPToRankFunctionality = true;
-            hitbloqapi = new HitbloqAPI();
+            hitbloqapi = new HBAPI();
             UpdateUserId();
             UpdateAvailableMapPools(); //TODO: implement for all?
         }

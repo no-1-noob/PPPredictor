@@ -1,19 +1,18 @@
 ﻿using PPPredictor.Data;
 using PPPredictor.Data.Curve;
-using PPPredictor.OpenAPIs;
+using PPPredictor.Interfaces;
 using SongCore.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
-using static PPPredictor.OpenAPIs.BeatleaderAPI;
+using static PPPredictor.Data.LeaderBoardDataTypes.BeatLeaderDataTypes;
 
 namespace PPPredictor.Utilities
 {
-    class PPCalculatorBeatLeader : PPCalculator
+    class PPCalculatorBeatLeader<BLAPI> : PPCalculator where BLAPI : IBeatLeaderAPI, new ()
     {
-        private readonly OpenAPIs.BeatleaderAPI beatleaderapi;
+        private readonly BLAPI beatleaderapi;
         internal static float accumulationConstant = 0.965f;
         private const string AccRating = "AccRating";
         private const string PassRating = "PassRating";
@@ -22,7 +21,7 @@ namespace PPPredictor.Utilities
         public PPCalculatorBeatLeader() : base() 
         {
             playerPerPages = 50;
-            beatleaderapi = new OpenAPIs.BeatleaderAPI();
+            beatleaderapi = new BLAPI();
             //UpdateAvailableMapPools();
         }
 

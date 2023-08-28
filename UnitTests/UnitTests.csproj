@@ -48,8 +48,4 @@
     <AdditionalDesignTimeBuildInput Remove="FakesAssemblies\**" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Utilities\" />
-  </ItemGroup>
-
 </Project>
