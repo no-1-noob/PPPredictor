@@ -1,11 +1,6 @@
 ﻿using PPPredictor.Data;
 using PPPredictor.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static PPPredictor.OpenAPIs.BeatleaderAPI;
+using static PPPredictor.Data.LeaderBoardDataTypes.BeatLeaderDataTypes;
 
 namespace UnitTests.Data
 {

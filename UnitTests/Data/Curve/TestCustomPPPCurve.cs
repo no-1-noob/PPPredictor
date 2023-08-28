@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static PPPredictor.Data.LeaderBoardDataTypes.HitBloqDataTypes;
 
 namespace UnitTests.Data.Curve
 {
@@ -88,7 +89,7 @@ namespace UnitTests.Data.Curve
         [TestMethod]
         public void TestConstructorHitBloqCrCurve()
         {
-            HitbloqAPI.HitBloqCrCurve crCurve = new HitbloqAPI.HitBloqCrCurve();
+            HitBloqCrCurve crCurve = new HitBloqCrCurve();
             crCurve.type = "linear";
             var lsTestArray = _testArrPPCurve.Select(x => new double[2] { x.Item1, x.Item2 }).ToList();
             lsTestArray.Reverse();
@@ -100,7 +101,7 @@ namespace UnitTests.Data.Curve
             Assert.AreEqual(50, curve.CalculatePPatPercentage(beatMapInfo, 100, true));
 
 
-            crCurve = new HitbloqAPI.HitBloqCrCurve();
+            crCurve = new HitBloqCrCurve();
             crCurve.type = "basic";
             crCurve.baseline = _testBaseline;
             crCurve.cutoff = _testCutoff;

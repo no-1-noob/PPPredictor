@@ -4,6 +4,7 @@ using PPPredictor.Utilities;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using static PPPredictor.Data.LeaderBoardDataTypes.HitBloqDataTypes;
 
 namespace PPPredictor.Data.Curve
 {
@@ -33,7 +34,7 @@ namespace PPPredictor.Data.Curve
             this.cutoff = cutoff;
         }
 
-        public CustomPPPCurve(HitbloqAPI.HitBloqCrCurve crCurve)
+        public CustomPPPCurve(HitBloqCrCurve crCurve)
         {
             switch (crCurve.type?.ToLower())
             {

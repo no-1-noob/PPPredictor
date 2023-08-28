@@ -2,24 +2,24 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using PPPredictor.Data;
-using PPPredictor.OpenAPIs;
+using PPPredictor.Interfaces;
 using SongCore.Utilities;
 using SongDetailsCache;
 using SongDetailsCache.Structs;
-using static PPPredictor.OpenAPIs.ScoresaberAPI;
+using static PPPredictor.Data.LeaderBoardDataTypes.ScoreSaberDataTypes;
 
 namespace PPPredictor.Utilities
 {
-    class PPCalculatorScoreSaber : PPCalculator
+    class PPCalculatorScoreSaber<SSAPI> : PPCalculator where SSAPI : IScoresaberAPI, new()
     {
         internal static readonly float accumulationConstant = 0.965f;
-        private readonly ScoresaberAPI scoresaberAPI;
+        private readonly SSAPI scoresaberAPI;
 
         private SongDetails SongDetails { get; }
         public PPCalculatorScoreSaber() : base()
         {
             playerPerPages = 50;
-            scoresaberAPI = new ScoresaberAPI();
+            scoresaberAPI = new SSAPI();
             SongDetails = SongDetails.Init().Result;
         }
 

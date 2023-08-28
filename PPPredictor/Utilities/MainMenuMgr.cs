@@ -1,6 +1,7 @@
 ﻿using System;
 using Zenject;
 using BeatSaberPlaylistsLib.Types;
+using PPPredictor.Interfaces;
 
 namespace PPPredictor.Utilities
 {
@@ -9,7 +10,7 @@ namespace PPPredictor.Utilities
 #pragma warning disable CS0649 // Field is never assigned to, and will always have its default value null
         [Inject] private readonly LevelSelectionNavigationController levelSelectionNavigationController;
         [Inject] private readonly GameplaySetupViewController gameplaySetupViewController;
-        [Inject] private readonly PPPredictorMgr ppPredictorMgr;
+        [Inject] private readonly IPPPredictorMgr ppPredictorMgr;
         [Inject] private readonly AnnotatedBeatmapLevelCollectionsViewController annotatedBeatmapLevelCollectionsViewController;
 #pragma warning restore CS0649 // Field is never assigned to, and will always have its default value null
 

@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static PPPredictor.Data.LeaderBoardDataTypes.BeatLeaderDataTypes;
+using static PPPredictor.Data.LeaderBoardDataTypes.HitBloqDataTypes;
 using static PPPredictor.Data.LeaderBoardDataTypes.ScoreSaberDataTypes;
 
 namespace UnitTests.Data
@@ -46,7 +48,7 @@ namespace UnitTests.Data
         [TestMethod]
         public void BeatLeaderPlayerConstuctor()
         {
-            BeatleaderAPI.BeatLeaderPlayer beatLeaderPlayer = new BeatleaderAPI.BeatLeaderPlayer(){ rank = 1, countryRank = 2, pp = 3, country = "TestCountry" };
+            BeatLeaderPlayer beatLeaderPlayer = new BeatLeaderPlayer(){ rank = 1, countryRank = 2, pp = 3, country = "TestCountry" };
             PPPPlayer ppPlayer = new PPPPlayer(beatLeaderPlayer);
             Assert.IsTrue(ppPlayer.Rank == 1, "RankGlobal should be 1");
             Assert.IsTrue(ppPlayer.CountryRank == 2, "CountryRank should be 2");
@@ -57,7 +59,7 @@ namespace UnitTests.Data
         [TestMethod]
         public void BeatLeaderPlayerEventsConstuctor()
         {
-            BeatleaderAPI.BeatLeaderPlayerEvents beatLeaderPlayerEvents = new BeatleaderAPI.BeatLeaderPlayerEvents() { rank = 1, countryRank = 2, pp = 3, country = "TestCountry" };
+            BeatLeaderPlayerEvents beatLeaderPlayerEvents = new BeatLeaderPlayerEvents() { rank = 1, countryRank = 2, pp = 3, country = "TestCountry" };
             PPPPlayer ppPlayer = new PPPPlayer(beatLeaderPlayerEvents);
             Assert.IsTrue(ppPlayer.Rank == 1, "RankGlobal should be 1");
             Assert.IsTrue(ppPlayer.CountryRank == 2, "CountryRank should be 2");
@@ -68,7 +70,7 @@ namespace UnitTests.Data
         [TestMethod]
         public void HitBloqUserConstuctor()
         {
-            HitbloqAPI.HitBloqUser hitBloqUser = new HitbloqAPI.HitBloqUser() { rank = 1, cr = 3 };
+            HitBloqUser hitBloqUser = new HitBloqUser() { rank = 1, cr = 3 };
             PPPPlayer ppPlayer = new PPPPlayer(hitBloqUser);
             Assert.IsTrue(ppPlayer.Rank == 1, "RankGlobal should be 1");
             Assert.IsTrue(ppPlayer.CountryRank == 0, "CountryRank should be 0");

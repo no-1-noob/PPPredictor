@@ -1,4 +1,5 @@
-﻿using PPPredictor.Utilities;
+﻿using PPPredictor.Interfaces;
+using PPPredictor.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace PPPredictor.Counter
 #pragma warning disable CS0649
         [Inject] private readonly ScoreController scoreController;
         [Inject] private readonly GameplayCoreSceneSetupData setupData;
-        [Inject] private readonly PPPredictorMgr ppPredictorMgr;
+        [Inject] private readonly IPPPredictorMgr ppPredictorMgr;
 #pragma warning restore CS0649
         private List<CounterInfoHolder> lsCounterInfoHolder;
         private int maxPossibleScore = 0;

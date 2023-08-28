@@ -176,6 +176,9 @@
     <Compile Include="Data\Curve\CustomPPPCurve.cs" />
     <Compile Include="Data\DisplayInfos\DisplayPPInfo.cs" />
     <Compile Include="Data\DisplayInfos\DisplaySessionInfo.cs" />
+    <Compile Include="Data\LeaderBoardDataTypes\BeatLeaderDataTypes.cs" />
+    <Compile Include="Data\LeaderBoardDataTypes\HitBloqDataTypes.cs" />
+    <Compile Include="Data\LeaderBoardDataTypes\ScoreSaberDataTypes.cs" />
     <Compile Include="Data\PPPMapPoolEntry.cs" />
     <Compile Include="Data\PPPBeatMapInfo.cs" />
     <Compile Include="Data\PPPLeaderboardInfo.cs" />
@@ -189,7 +192,11 @@
     <Compile Include="Installers\PPPPredictorDisplayInstaller.cs" />
     <Compile Include="Events\PPPredictorEventsMgr.cs" />
     <Compile Include="Data\ProfileInfo.cs" />
+    <Compile Include="Interfaces\IBeatLeaderAPI.cs" />
+    <Compile Include="Interfaces\IHitBloqAPI.cs" />
     <Compile Include="Interfaces\IPPPCurve.cs" />
+    <Compile Include="Interfaces\IPPPredictorMgr.cs" />
+    <Compile Include="Interfaces\IScoresaberAPI.cs" />
     <Compile Include="OpenAPIs\beatleaderapi.cs" />
     <Compile Include="OpenAPIs\hitbloqapi.cs" />
     <Compile Include="OpenAPIs\scoresaberapi.cs" />

@@ -1,11 +1,7 @@
-﻿using static PPPredictor.OpenAPIs.BeatleaderAPI;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
+using static PPPredictor.Data.LeaderBoardDataTypes.BeatLeaderDataTypes;
 
 namespace PPPredictor.Data
 {

@@ -6,7 +6,6 @@ using BeatSaberMarkupLanguage.FloatingScreen;
 using BeatSaberMarkupLanguage.Parser;
 using HMUI;
 using PPPredictor.Data.DisplayInfos;
-using PPPredictor.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,6 +15,7 @@ using UnityEngine;
 using Zenject;
 using HarmonyLib;
 using System.Threading.Tasks;
+using PPPredictor.Interfaces;
 
 namespace PPPredictor.UI.ViewController
 {
@@ -26,7 +26,7 @@ namespace PPPredictor.UI.ViewController
         private static readonly string githubUrl = "https://github.com/no-1-noob/PPPredictor/releases/latest";
         private FloatingScreen floatingScreen;
 #pragma warning disable CS0649
-        [Inject] private readonly PPPredictorMgr ppPredictorMgr;
+        [Inject] private readonly IPPPredictorMgr ppPredictorMgr;
 #pragma warning restore CS0649
         public event PropertyChangedEventHandler PropertyChanged;
         private DisplaySessionInfo displaySessionInfo;

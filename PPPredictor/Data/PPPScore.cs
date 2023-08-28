@@ -1,6 +1,9 @@
 ﻿using PPPredictor.OpenAPIs;
 using PPPredictor.Utilities;
 using System;
+using static PPPredictor.Data.LeaderBoardDataTypes.BeatLeaderDataTypes;
+using static PPPredictor.Data.LeaderBoardDataTypes.HitBloqDataTypes;
+using static PPPredictor.Data.LeaderBoardDataTypes.ScoreSaberDataTypes;
 
 namespace PPPredictor.Data
 {
@@ -18,7 +21,7 @@ namespace PPPredictor.Data
         public double Difficulty1 { get => difficulty; }
         public string GameMode { get => gameMode; }
 
-        public PPPScore(ScoresaberAPI.ScoreSaberPlayerScore playerScore)
+        public PPPScore(ScoreSaberPlayerScore playerScore)
         {
             timeSet = playerScore.score.timeSet;
             pp = playerScore.score.pp;
@@ -27,7 +30,7 @@ namespace PPPredictor.Data
             gameMode = playerScore.leaderboard.difficulty.gameMode;
         }
 
-        public PPPScore(BeatleaderAPI.BeatLeaderPlayerScore playerScore)
+        public PPPScore(BeatLeaderPlayerScore playerScore)
         {
             if(long.TryParse(playerScore.timeset, out long timeSetLong)){
                 timeSet = new DateTime(1970, 1, 1).AddSeconds(timeSetLong);
@@ -38,11 +41,11 @@ namespace PPPredictor.Data
             gameMode = "Solo" + playerScore.leaderboard.difficulty.modeName;
         }
 
-        public PPPScore(HitbloqAPI.HitBloqScores playerScore)
+        public PPPScore(HitBloqScores playerScore)
         {
             timeSet = new DateTime(1970, 1, 1).AddSeconds(playerScore.time);
             pp = playerScore.cr_received;
-            var (hash, diff, mode) = PPCalculatorHitBloq.ParseHashDiffAndMode(playerScore.song_id);
+            var (hash, diff, mode) = PPCalculatorHitBloq<HitbloqAPI>.ParseHashDiffAndMode(playerScore.song_id);
             songHash = hash;
             difficulty = ParsingUtil.ParseDifficultyNameToInt(diff);
             gameMode = mode;

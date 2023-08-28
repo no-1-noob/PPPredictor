@@ -1,4 +1,7 @@
 ﻿using PPPredictor.OpenAPIs;
+using static PPPredictor.Data.LeaderBoardDataTypes.BeatLeaderDataTypes;
+using static PPPredictor.Data.LeaderBoardDataTypes.HitBloqDataTypes;
+using static PPPredictor.Data.LeaderBoardDataTypes.ScoreSaberDataTypes;
 
 namespace PPPredictor.Data
 {
@@ -25,7 +28,7 @@ namespace PPPredictor.Data
             this.isErrorUser = isErrorUser;
             rank = countryRank = pp = 0;
         }
-        public PPPPlayer(ScoresaberAPI.ScoreSaberPlayer scoreSaberPlayer)
+        public PPPPlayer(ScoreSaberPlayer scoreSaberPlayer)
         {
             rank = scoreSaberPlayer.rank;
             countryRank = scoreSaberPlayer.countryRank;
@@ -33,7 +36,7 @@ namespace PPPredictor.Data
             country = scoreSaberPlayer.country;
         }
 
-        public PPPPlayer(BeatleaderAPI.BeatLeaderPlayer beatLeaderPlayerEvent)
+        public PPPPlayer(BeatLeaderPlayer beatLeaderPlayerEvent)
         {
             rank = beatLeaderPlayerEvent.rank;
             countryRank = beatLeaderPlayerEvent.countryRank;
@@ -41,7 +44,7 @@ namespace PPPredictor.Data
             country = beatLeaderPlayerEvent.country;
         }
 
-        public PPPPlayer(BeatleaderAPI.BeatLeaderPlayerEvents beatLeaderPlayerEvent)
+        public PPPPlayer(BeatLeaderPlayerEvents beatLeaderPlayerEvent)
         {
             rank = beatLeaderPlayerEvent.rank;
             countryRank = beatLeaderPlayerEvent.countryRank;
@@ -49,7 +52,7 @@ namespace PPPredictor.Data
             country = beatLeaderPlayerEvent.country;
         }
 
-        public PPPPlayer(HitbloqAPI.HitBloqUser hitBloqUser)
+        public PPPPlayer(HitBloqUser hitBloqUser)
         {
             rank = hitBloqUser.rank;
             countryRank = 0;

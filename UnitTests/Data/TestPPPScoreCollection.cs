@@ -1,7 +1,7 @@
 ﻿using PPPredictor.Data;
+using static PPPredictor.Data.LeaderBoardDataTypes.BeatLeaderDataTypes;
+using static PPPredictor.Data.LeaderBoardDataTypes.HitBloqDataTypes;
 using static PPPredictor.Data.LeaderBoardDataTypes.ScoreSaberDataTypes;
-using static PPPredictor.OpenAPIs.BeatleaderAPI;
-using static PPPredictor.OpenAPIs.HitbloqAPI;
 
 namespace UnitTests.Data
 {
