@@ -1,4 +1,5 @@
 ﻿using PPPredictor.Data.Curve;
+using PPPredictor.OpenAPIs;
 using PPPredictor.Utilities;
 using System;
 using System.Collections.Generic;
@@ -50,11 +51,11 @@ namespace PPPredictor.Data
             {
                 case Leaderboard.ScoreSaber:
                     _leaderboardIcon = "PPPredictor.Resources.LeaderBoardLogos.ScoreSaber.png";
-                    _lsMapPools.Add(new PPPMapPool(MapPoolType.Default, $"", PPCalculatorScoreSaber.accumulationConstant, 0, CurveParser.ParseToCurve(new CurveInfo(CurveType.ScoreSaber))));
+                    _lsMapPools.Add(new PPPMapPool(MapPoolType.Default, $"", PPCalculatorScoreSaber<ScoresaberAPI>.accumulationConstant, 0, CurveParser.ParseToCurve(new CurveInfo(CurveType.ScoreSaber))));
                     break;
                 case Leaderboard.BeatLeader:
                     _leaderboardIcon = "PPPredictor.Resources.LeaderBoardLogos.BeatLeader.png";
-                    _lsMapPools.Add(new PPPMapPool(MapPoolType.Default, $"", PPCalculatorBeatLeader.accumulationConstant, 0, new BeatLeaderPPPCurve()));
+                    _lsMapPools.Add(new PPPMapPool(MapPoolType.Default, $"", PPCalculatorBeatLeader<BeatleaderAPI>.accumulationConstant, 0, new BeatLeaderPPPCurve()));
                     break;
                 case Leaderboard.NoLeaderboard:
                     _leaderboardIcon = "";
@@ -66,8 +67,6 @@ namespace PPPredictor.Data
                     IsCountryRankEnabled = false;
                     LeaderboardFirstPageIndex = 0;
                     _lsMapPools.Add(new PPPMapPool(MapPoolType.Default, $"☞ Select a map pool ☜", 0, 0, new CustomPPPCurve(new List<(double, double)>(), CurveType.Linear, 0)));
-                    break;
-                default:
                     break;
             }
 

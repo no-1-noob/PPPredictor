@@ -1,4 +1,5 @@
-﻿using PPPredictor.Utilities;
+﻿using PPPredictor.OpenAPIs;
+using PPPredictor.Utilities;
 using Zenject;
 
 namespace PPPredictor.Installers
@@ -7,7 +8,7 @@ namespace PPPredictor.Installers
     {
         public override void InstallBindings()
         {
-            Container.BindInterfacesAndSelfTo<PPPredictorMgr>().AsSingle();
+            Container.BindInterfacesAndSelfTo<PPPredictorMgr<ScoresaberAPI, BeatleaderAPI, HitbloqAPI>>().AsSingle();
         }
     }
 }

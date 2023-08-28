@@ -1,5 +1,8 @@
 ﻿using PPPredictor.OpenAPIs;
 using System.Collections.Generic;
+using static PPPredictor.Data.LeaderBoardDataTypes.BeatLeaderDataTypes;
+using static PPPredictor.Data.LeaderBoardDataTypes.HitBloqDataTypes;
+using static PPPredictor.Data.LeaderBoardDataTypes.ScoreSaberDataTypes;
 using static PPPredictor.OpenAPIs.BeatleaderAPI;
 
 namespace PPPredictor.Data
@@ -24,7 +27,7 @@ namespace PPPredictor.Data
             total = -1;
         }
 
-        public PPPScoreCollection(ScoresaberAPI.ScoreSaberPlayerScoreList scoreSaberPlayerScoreList)
+        public PPPScoreCollection(ScoreSaberPlayerScoreList scoreSaberPlayerScoreList)
         {
             this.page = scoreSaberPlayerScoreList.metadata.page;
             this.itemsPerPage = scoreSaberPlayerScoreList.metadata.itemsPerPage;
@@ -46,7 +49,7 @@ namespace PPPredictor.Data
             }
         }
 
-        public PPPScoreCollection(List<HitbloqAPI.HitBloqScores> lsHitBloqScores, int page)
+        public PPPScoreCollection(List<HitBloqScores> lsHitBloqScores, int page)
         {
             this.page = page;
             this.itemsPerPage = 10;

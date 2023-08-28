@@ -67,7 +67,7 @@ namespace PPPredictor.Data
             _lsPlayerRankings = new List<PPPPlayer>();
             _dtUtcLastRefresh = new DateTime(2000, 1, 1);
             DtUtcLastSessionReset = new DateTime(2000, 1, 1);
-            _curve = CustomPPPCurve.DummyPPPCurve();
+            _curve = CustomPPPCurve.CreateDummyPPPCurve();
             _id = "-1";
             _playListId = "-1";
             _mapPoolType = MapPoolType.Custom;

@@ -4,6 +4,7 @@ using PPPredictor.Utilities;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using static PPPredictor.Data.LeaderBoardDataTypes.HitBloqDataTypes;
 
 namespace PPPredictor.Data.Curve
 {
@@ -26,14 +27,14 @@ namespace PPPredictor.Data.Curve
             _isDummy = isDummy;
         }
 
-        public CustomPPPCurve(List<(double, double)> arrPPCurve, CurveType curveType, double basePPMultiplier, double? baseline, double? exponential, double? cutoff, bool isDummy = false) : this(arrPPCurve, curveType, basePPMultiplier, isDummy)
+        private CustomPPPCurve(List<(double, double)> arrPPCurve, double basePPMultiplier, double? baseline, double? exponential, double? cutoff, bool isDummy = false) : this(arrPPCurve, CurveType.Basic, basePPMultiplier, isDummy)
         {
             this.exponential = exponential;
             this.baseline = baseline;
             this.cutoff = cutoff;
         }
 
-        public CustomPPPCurve(HitbloqAPI.HitBloqCrCurve crCurve)
+        public CustomPPPCurve(HitBloqCrCurve crCurve)
         {
             switch (crCurve.type?.ToLower())
             {
@@ -52,8 +53,6 @@ namespace PPPredictor.Data.Curve
                     this.baseline = crCurve.baseline;
                     this.cutoff = crCurve.cutoff;
                     this.exponential = crCurve.exponential;
-                    break;
-                default:
                     break;
             }
             basePPMultiplier = 50;
@@ -173,9 +172,14 @@ namespace PPPredictor.Data.Curve
             }            
         }
 
-        public static CustomPPPCurve DummyPPPCurve()
+        public static CustomPPPCurve CreateDummyPPPCurve()
         {
-            return new CustomPPPCurve(new List<(double, double)>(), CurveType.Linear, 0, true);
+            return new CustomPPPCurve(new List<(double, double)>(), CurveType.Dummy, 0, true);
+        }
+
+        public static CustomPPPCurve CreateBasicPPPCurve(double basePPMultiplier, double? baseline, double? exponential, double? cutoff, bool isDummy = false)
+        {
+            return new CustomPPPCurve(new List<(double, double)>(), basePPMultiplier, baseline, exponential, cutoff, isDummy);
         }
 
         public override string ToString()

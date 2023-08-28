@@ -2,6 +2,7 @@
 using CountersPlus.Utils;
 using HMUI;
 using PPPredictor.Data;
+using PPPredictor.Interfaces;
 using PPPredictor.Utilities;
 using System;
 using System.Linq;
@@ -28,12 +29,12 @@ namespace PPPredictor.Counter
         private readonly PPPBeatMapInfo failedBeatMapInfo;
         private readonly float positionScale;
         private double maxPP = -1;
-        private readonly PPPredictorMgr ppPredictorMgr;
+        private readonly IPPPredictorMgr ppPredictorMgr;
         private readonly string ppSuffix;
 
         public double MaxPP { get => maxPP; }
 
-        public CounterInfoHolder(Leaderboard leaderboard, CustomConfigModel settings, PPPredictorMgr ppPredictorMgr, Canvas canvas, CanvasUtility canvasUtility, float lineOffset, float offsetByLine, float positionScale, GameplayModifiers gameplayModifiers) //CHECK WHEN NO C+ is installed??
+        public CounterInfoHolder(Leaderboard leaderboard, CustomConfigModel settings, IPPPredictorMgr ppPredictorMgr, Canvas canvas, CanvasUtility canvasUtility, float lineOffset, float offsetByLine, float positionScale, GameplayModifiers gameplayModifiers) //CHECK WHEN NO C+ is installed??
         {
             this.leaderboard = leaderboard;
             this.settings = settings;

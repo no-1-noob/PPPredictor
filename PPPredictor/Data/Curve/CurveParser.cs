@@ -53,11 +53,11 @@ namespace PPPredictor.Data.Curve
                 case Utilities.CurveType.BeatLeader:
                     return new BeatLeaderPPPCurve();
                 case Utilities.CurveType.Linear:
-                    return new CustomPPPCurve(curveInfo.ArrPPCurve, Utilities.CurveType.Linear, curveInfo.BasePPMultiplier.Value);
+                    return new CustomPPPCurve(curveInfo.ArrPPCurve, Utilities.CurveType.Linear, curveInfo.BasePPMultiplier.GetValueOrDefault());
                 case Utilities.CurveType.Basic:
-                    return new CustomPPPCurve(curveInfo.ArrPPCurve, Utilities.CurveType.Basic, curveInfo.BasePPMultiplier.Value, curveInfo.Baseline, curveInfo.Exponential, curveInfo.Cutoff);
+                    return CustomPPPCurve.CreateBasicPPPCurve(curveInfo.BasePPMultiplier.GetValueOrDefault(), curveInfo.Baseline, curveInfo.Exponential, curveInfo.Cutoff);
                 default:
-                    return CustomPPPCurve.DummyPPPCurve();
+                    return CustomPPPCurve.CreateDummyPPPCurve();
             }
         }
     }
