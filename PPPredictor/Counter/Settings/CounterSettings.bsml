@@ -3,6 +3,7 @@
     <text text='Counter Settings' horizontal-fit='PreferredSize'></text>
     <dropdown-list-setting text='Scoring type' value='counter-scoring-type' choices='counter-scoring-type-options' apply-on-change='true'/>
     <list-setting text='Display type' value='counter-display-type' choices='counter-display-type-options' bind-value='true' apply-on-change='true' rich-text='true' font-align='Left' word-wrapping='false'/>
+    <bool-setting text='Silent PP gain' hover-hint='Hide the PP gain (if scoring type has gain) until you have paused the map, or hit the last note' value='counter-gain-silentmode' apply-on-change='true'></bool-setting>
     <bool-setting text='Use leaderboard icons' value='counter-use-icons' apply-on-change='true'></bool-setting>
     <bool-setting text='Use custom map pool icons (if available)' value='counter-use-custom-mappool-icons' apply-on-change='true'></bool-setting>
     <bool-setting text='Highlight if target % is reached (when icons are not used)' value='counter-highlight-target-percentage' apply-on-change='true'></bool-setting>

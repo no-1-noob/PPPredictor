@@ -14,12 +14,16 @@ namespace PPPredictor.Counter
 #pragma warning disable CS0649
         [Inject] private readonly ScoreController scoreController;
         [Inject] private readonly GameplayCoreSceneSetupData setupData;
+        [Inject] private readonly PauseController pauseController;
+        [Inject] private readonly BeatmapObjectManager beatmapObjectManager;
         [Inject] private readonly IPPPredictorMgr ppPredictorMgr;
 #pragma warning restore CS0649
         private List<CounterInfoHolder> lsCounterInfoHolder;
         private int maxPossibleScore = 0;
         private bool _levelFailed = false;
         private bool _iconMoved = false;
+        private int _noteCount = 0;
+        private int _noteDone = 0;
 #if DEBUG
         private TMP_Text debugPercentage;
 #endif
@@ -56,6 +60,14 @@ namespace PPPredictor.Counter
                 {
                     Plugin.Log.Error($"PPPCounter change selected Map: UpdateCurrentBeatMapInfos failed {ex.Message}");
                 }
+
+                pauseController.didPauseEvent += PauseController_didPauseEvent;
+                pauseController.didResumeEvent += PauseController_didResumeEvent;
+                beatmapObjectManager.noteWasCutEvent += BeatmapObjectManager_noteWasCutEvent;
+                beatmapObjectManager.noteWasMissedEvent += BeatmapObjectManager_noteWasMissedEvent;
+
+                var v = await setupData.difficultyBeatmap.GetBeatmapDataBasicInfoAsync();
+                _noteCount = v.cuttableNotesCount;
 #if DEBUG
                 //Center Helper for development
                 /*float offsetPlus = 0.1f;
@@ -79,20 +91,24 @@ namespace PPPredictor.Counter
                 lsCounterInfoHolder = new List<CounterInfoHolder>();
                 int scoreboardCount = GetActiveScoreboardsCount();
                 float lineOffset = (originalLineOffset * (scoreboardCount / 2)) + (originalLineOffset * (scoreboardCount % 2));
-                if (Plugin.ProfileInfo.IsScoreSaberEnabled && ShowCounter(Leaderboard.ScoreSaber))
+                int id = 0;
+                if (ShowScoreSaber())
                 {
-                    lsCounterInfoHolder.Add(new CounterInfoHolder(Leaderboard.ScoreSaber, Settings, ppPredictorMgr, canvas, CanvasUtility, lineOffset, originalLineOffset, positionScale, setupData.gameplayModifiers));
+                    lsCounterInfoHolder.Add(new CounterInfoHolder(id, Leaderboard.ScoreSaber, Settings, ppPredictorMgr, canvas, CanvasUtility, lineOffset, originalLineOffset, positionScale, setupData.gameplayModifiers));
                     lineOffset -= originalLineOffset * 2;
+                    id++;
                 }
-                if (Plugin.ProfileInfo.IsBeatLeaderEnabled && ShowCounter(Leaderboard.BeatLeader))
+                if (ShowBeatLeader())
                 {
-                    lsCounterInfoHolder.Add(new CounterInfoHolder(Leaderboard.BeatLeader, Settings, ppPredictorMgr, canvas, CanvasUtility, lineOffset, originalLineOffset, positionScale, setupData.gameplayModifiers));
+                    lsCounterInfoHolder.Add(new CounterInfoHolder(id, Leaderboard.BeatLeader, Settings, ppPredictorMgr, canvas, CanvasUtility, lineOffset, originalLineOffset, positionScale, setupData.gameplayModifiers));
                     lineOffset -= originalLineOffset * 2;
+                    id++;
                 }
-                if (Plugin.ProfileInfo.IsHitBloqEnabled && ShowCounter(Leaderboard.HitBloq))
+                if (ShowHitBloq())
                 {
-                    lsCounterInfoHolder.Add(new CounterInfoHolder(Leaderboard.HitBloq, Settings, ppPredictorMgr, canvas, CanvasUtility, lineOffset, originalLineOffset, positionScale, setupData.gameplayModifiers));
+                    lsCounterInfoHolder.Add(new CounterInfoHolder(id, Leaderboard.HitBloq, Settings, ppPredictorMgr, canvas, CanvasUtility, lineOffset, originalLineOffset, positionScale, setupData.gameplayModifiers));
                     lineOffset -= originalLineOffset * 2;
+                    id++;
                 }
 
                 maxPossibleScore = ScoreModel.ComputeMaxMultipliedScoreForBeatmap(setupData.transformedBeatmapData);
@@ -103,6 +119,41 @@ namespace PPPredictor.Counter
             catch (Exception ex)
             {
                 Plugin.Log?.Error($"SetupCounter Error: {ex.Message}");
+            }
+        }
+
+        private void BeatmapObjectManager_noteWasMissedEvent(NoteController obj)
+        {
+            CheckNotesLeft();
+        }
+
+        private void BeatmapObjectManager_noteWasCutEvent(NoteController noteController, in NoteCutInfo noteCutInfo)
+        {
+            CheckNotesLeft();
+        }
+
+        private void PauseController_didResumeEvent()
+        {
+            if (Plugin.ProfileInfo.IsCounterGainSilentModeEnabled)
+            {
+                lsCounterInfoHolder.ForEach(item => item.HidePPGainWithAnimation());
+            }
+        }
+
+        private void PauseController_didPauseEvent()
+        {
+            if (Plugin.ProfileInfo.IsCounterGainSilentModeEnabled)
+            {
+                lsCounterInfoHolder.ForEach(item => item.ShowPPGainWithAnimation());
+            }
+        }
+
+        private void CheckNotesLeft()
+        {
+            _noteDone++;
+            if(_noteDone >= _noteCount && Plugin.ProfileInfo.IsCounterGainSilentModeEnabled)
+            {
+                lsCounterInfoHolder.ForEach(item => item.ShowPPGainWithAnimation());
             }
         }
 
@@ -141,6 +192,10 @@ namespace PPPredictor.Counter
         {
             scoreController.scoreDidChangeEvent -= ScoreController_scoreDidChangeEvent;
             BS_Utils.Utilities.BSEvents.energyReachedZero -= BSEvents_energyReachedZero;
+            pauseController.didPauseEvent -= PauseController_didPauseEvent;
+            pauseController.didResumeEvent -= PauseController_didResumeEvent;
+            beatmapObjectManager.noteWasCutEvent -= BeatmapObjectManager_noteWasCutEvent;
+            beatmapObjectManager.noteWasMissedEvent -= BeatmapObjectManager_noteWasMissedEvent;
         }
 
         private void DisplayCounterText(double percentage)

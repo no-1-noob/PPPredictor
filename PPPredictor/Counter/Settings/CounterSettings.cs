@@ -102,5 +102,15 @@ namespace PPPredictor.Counter.Settings
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CounterScoringType)));
             }
         }
+        [UIValue("counter-gain-silentmode")]
+        public bool CounterGainSilentMode
+        {
+            get => Plugin.ProfileInfo.IsCounterGainSilentModeEnabled;
+            set
+            {
+                Plugin.ProfileInfo.IsCounterGainSilentModeEnabled = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CounterGainSilentMode)));
+            }
+        }
     }
 }

@@ -7,6 +7,7 @@ using PPPredictor.Utilities;
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 
@@ -14,6 +15,7 @@ namespace PPPredictor.Counter
 {
     class CounterInfoHolder
     {
+        private readonly int id = 0;
         private readonly int fontSize = 3;
         private readonly TMP_Text ppText;
         private readonly TMP_Text ppGainText;
@@ -34,8 +36,9 @@ namespace PPPredictor.Counter
 
         public double MaxPP { get => maxPP; }
 
-        public CounterInfoHolder(Leaderboard leaderboard, CustomConfigModel settings, IPPPredictorMgr ppPredictorMgr, Canvas canvas, CanvasUtility canvasUtility, float lineOffset, float offsetByLine, float positionScale, GameplayModifiers gameplayModifiers) //CHECK WHEN NO C+ is installed??
+        public CounterInfoHolder(int id, Leaderboard leaderboard, CustomConfigModel settings, IPPPredictorMgr ppPredictorMgr, Canvas canvas, CanvasUtility canvasUtility, float lineOffset, float offsetByLine, float positionScale, GameplayModifiers gameplayModifiers) //CHECK WHEN NO C+ is installed??
         {
+            this.id = id;
             this.leaderboard = leaderboard;
             this.settings = settings;
             this.ppPredictorMgr = ppPredictorMgr;
@@ -74,6 +77,7 @@ namespace PPPredictor.Counter
                 icon = CreateIcon(canvas, iconPath, new Vector3((-1f + centerOffset) * positionScaleFactor, lineOffset, 0), Math.Abs(offsetByLine));
                 LoadImage(icon, iconPath);
             }
+            ppGainText.enabled = !Plugin.ProfileInfo.IsCounterGainSilentModeEnabled;
             this.gameplayModifiers = gameplayModifiers;
             modifiedBeatMapInfo = ppPredictorMgr.GetModifiedBeatMapInfo(leaderboard, gameplayModifiers);
             failedBeatMapInfo = ppPredictorMgr.GetModifiedBeatMapInfo(leaderboard, gameplayModifiers);
@@ -209,5 +213,40 @@ namespace PPPredictor.Counter
                 icon.rectTransform.anchoredPosition -= new Vector2((digits - 3) * 1f, 0);
             }
         }
+
+        #region animation stuff
+        public async Task ShowPPGainWithAnimation()
+        {
+            Vector3 originalPPGainPosition = ppGainText.transform.position;
+            await Task.Delay((int)(100f * id));
+            ppGainText.enabled = true;
+            int steps = 25;
+            Vector3 offset = new Vector3(0, .3f, 0);
+            ppGainText.transform.position = originalPPGainPosition - offset;
+            for (int i = 0; i < steps; i++)
+            {
+                float t = (float)i / (float)steps;
+                t = Mathf.Sin(t * Mathf.PI * 0.5f); //ease
+                ppGainText.transform.position = originalPPGainPosition - Vector3.Lerp(offset, new Vector3(), t);
+                ppGainText.alpha = t;
+                await Task.Delay(10);
+            }
+            ppGainText.transform.position = originalPPGainPosition;
+        }
+
+        public async Task HidePPGainWithAnimation()
+        {
+            await Task.Delay((int)(100f * id));
+            int steps = 25;
+            for (int i = 0; i < steps; i++)
+            {
+                float t = (float)i / (float)steps;
+                t = Mathf.Sin(t * Mathf.PI * 0.5f); //ease
+                ppGainText.alpha = 1f - t;
+                await Task.Delay(10);
+            }
+            ppGainText.enabled = false;
+        }
+        #endregion
     }
 }
