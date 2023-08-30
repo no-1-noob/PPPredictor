@@ -242,6 +242,16 @@ namespace PPPredictor.Utilities
             _leaderboardInfo.CurrentMapPool.LsPlayerRankings.Sort((score1, score2) => score1.Rank.CompareTo(score2.Rank)); //sort ascending
         }
 
+        internal double? GetPersonalBest(string mapSearchString)
+        {
+            ShortScore score = _leaderboardInfo.CurrentMapPool.LsScores.Find(x => x.Searchstring == mapSearchString);
+            if (score != null)
+            {
+                return score.Pp;
+            }
+            return null;
+        }
+
         internal virtual Task<int> GetPPToRank(string mappoolid, double pp)
         {
             return Task.FromResult(0);

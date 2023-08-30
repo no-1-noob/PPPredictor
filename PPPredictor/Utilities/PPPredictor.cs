@@ -221,6 +221,13 @@ namespace PPPredictor.Utilities
             return _currentBeatMapInfo.BaseStarRating.IsRanked();
         }
 
+        public string GetPersonalBest()
+        {
+            double? pb = _ppCalculator.GetPersonalBest(_currentBeatMapInfo.SelectedMapSearchString);
+            string pbs = pb.HasValue ? pb.Value.ToString("F2") : "---";
+            return $"{pbs} {PPSuffix} PB";
+        }
+
         internal bool IsCurrentMapPoolChanging(object value)
         {
             var currentPool = CurrentMapPool as PPPMapPool;

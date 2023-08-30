@@ -18,6 +18,7 @@ namespace PPPredictor.Counter
         private readonly int id = 0;
         private readonly int fontSize = 3;
         private readonly TMP_Text ppText;
+        private readonly TMP_Text personalBestText;
         private readonly TMP_Text ppGainText;
         private readonly TMP_Text headerText;
         private readonly ImageView icon;
@@ -33,6 +34,8 @@ namespace PPPredictor.Counter
         private double maxPP = -1;
         private readonly IPPPredictorMgr ppPredictorMgr;
         private readonly string ppSuffix;
+
+        private bool _isPersonalBestAnimationFinished = false;
 
         public double MaxPP { get => maxPP; }
 
@@ -67,21 +70,26 @@ namespace PPPredictor.Counter
             headerText = canvasUtility.CreateTextFromSettings(settings, new Vector3(((-1f + centerOffset) * positionScaleFactor), lineOffset, 0));
             ppText = canvasUtility.CreateTextFromSettings(settings, new Vector3((0.9f + iconTextOffset + displayTypeOffset + centerOffset) * positionScaleFactor, lineOffset, 0));
             ppGainText = canvasUtility.CreateTextFromSettings(settings, new Vector3((1.2f + iconTextOffset + displayTypeOffset + centerOffset) * positionScaleFactor, lineOffset, 0));
+            personalBestText = canvasUtility.CreateTextFromSettings(settings, new Vector3((1.2f + iconTextOffset + displayTypeOffset + centerOffset) * positionScaleFactor, lineOffset, 0));
             headerText.alignment = TextAlignmentOptions.BottomLeft;
             ppGainText.alignment = gainAlignment;
-            ppText.alignment = TextAlignmentOptions.BottomRight;
-            headerText.fontSize = ppText.fontSize = ppGainText.fontSize = fontSize;
+            ppText.alignment = personalBestText.alignment = TextAlignmentOptions.BottomRight;
+            headerText.fontSize = ppText.fontSize = ppGainText.fontSize = personalBestText.fontSize = fontSize;
             string iconPath = ppPredictorMgr.GetMapPoolIcon(leaderboard);
             if (useIcon)
             {
                 icon = CreateIcon(canvas, iconPath, new Vector3((-1f + centerOffset) * positionScaleFactor, lineOffset, 0), Math.Abs(offsetByLine));
                 LoadImage(icon, iconPath);
             }
-            ppGainText.enabled = !Plugin.ProfileInfo.IsCounterGainSilentModeEnabled;
             this.gameplayModifiers = gameplayModifiers;
+            personalBestText.text = ppPredictorMgr.GetPersonalBest(leaderboard);
+            ppText.enabled = false;
+            ppGainText.enabled = false;
             modifiedBeatMapInfo = ppPredictorMgr.GetModifiedBeatMapInfo(leaderboard, gameplayModifiers);
             failedBeatMapInfo = ppPredictorMgr.GetModifiedBeatMapInfo(leaderboard, gameplayModifiers);
             ppSuffix = ppPredictorMgr.GetPPSuffixForLeaderboard(leaderboard);
+
+            StartPersonalBestAnimation(5000);
         }
 
         private float GetCenterOffset()
@@ -215,38 +223,68 @@ namespace PPPredictor.Counter
         }
 
         #region animation stuff
-        public async Task ShowPPGainWithAnimation()
+        public async Task StartPersonalBestAnimation(int delay)
         {
-            Vector3 originalPPGainPosition = ppGainText.transform.position;
-            await Task.Delay((int)(100f * id));
-            ppGainText.enabled = true;
-            int steps = 25;
-            Vector3 offset = new Vector3(0, .3f, 0);
-            ppGainText.transform.position = originalPPGainPosition - offset;
-            for (int i = 0; i < steps; i++)
-            {
-                float t = (float)i / (float)steps;
-                t = Mathf.Sin(t * Mathf.PI * 0.5f); //ease
-                ppGainText.transform.position = originalPPGainPosition - Vector3.Lerp(offset, new Vector3(), t);
-                ppGainText.alpha = t;
-                await Task.Delay(10);
-            }
-            ppGainText.transform.position = originalPPGainPosition;
+            Task t1 = MoveTextWithAnimation(AnimateableCounterText.PP, delay, 100f, new Vector3(-.6f, 0, 0), true, true, true, true, IsPersonalBestAnimationDone);
+            Task t2 = MoveTextWithAnimation(AnimateableCounterText.PPGAIN, delay, 100f, new Vector3(-.6f, 0, 0), true, true, !Plugin.ProfileInfo.IsCounterGainSilentModeEnabled, !Plugin.ProfileInfo.IsCounterGainSilentModeEnabled, IsPersonalBestAnimationDone);
+            Task t3 = MoveTextWithAnimation(AnimateableCounterText.PERSONALBEST, delay, 100f, new Vector3(.6f, 0, 0), false, false, true, false, IsPersonalBestAnimationDone);
+            await Task.WhenAll(new[] { t1, t2, t3 });
+            _isPersonalBestAnimationFinished = true;
         }
 
-        public async Task HidePPGainWithAnimation()
+        internal bool IsPersonalBestAnimationDone()
         {
-            await Task.Delay((int)(100f * id));
+            return _isPersonalBestAnimationFinished;
+        }
+        internal bool IsPersonalBestAnimationRunning()
+        {
+            return !_isPersonalBestAnimationFinished;
+        }
+        public async Task MoveTextWithAnimation(AnimateableCounterText animateableCounterText, int startAnimationDelay, float animationDelayById, Vector3 offset, bool isStartOffset, bool isEaseOut, bool isVisibleAtStart, bool isVisibleAtEnd, Func<bool> cancelRunFuncion)
+        {
+            await Task.Delay(startAnimationDelay);
+            if (cancelRunFuncion != null && cancelRunFuncion()) return;
+            TMP_Text tmpText = GetTMPText(animateableCounterText);
+            Vector3 originalPPGainPosition = tmpText.transform.position;
+            await Task.Delay((int)(animationDelayById * id));
+            if (cancelRunFuncion != null && cancelRunFuncion()) return;
+            tmpText.enabled = isVisibleAtStart;
             int steps = 25;
+            tmpText.transform.position = isStartOffset ? originalPPGainPosition - offset : originalPPGainPosition;
             for (int i = 0; i < steps; i++)
             {
                 float t = (float)i / (float)steps;
-                t = Mathf.Sin(t * Mathf.PI * 0.5f); //ease
-                ppGainText.alpha = 1f - t;
+                if(isEaseOut) t = Mathf.Sin(t * Mathf.PI * 0.5f); //ease out
+                if (!isEaseOut) t = 1f - Mathf.Cos(t * Mathf.PI * 0.5f); //ease in
+                if (!isStartOffset) t = 1f - t; //inverseAnimation
+                tmpText.transform.position = originalPPGainPosition - Vector3.Lerp(offset, new Vector3(), t);
+                tmpText.alpha = t;
                 await Task.Delay(10);
             }
-            ppGainText.enabled = false;
+            tmpText.enabled = isVisibleAtEnd;
+            tmpText.transform.position = isStartOffset ? originalPPGainPosition : originalPPGainPosition - offset;
+        }
+
+        private TMP_Text GetTMPText(AnimateableCounterText animateableCounterText)
+        {
+            switch (animateableCounterText)
+            {
+                case AnimateableCounterText.PPGAIN :
+                    return ppGainText;
+                case AnimateableCounterText.PP :
+                    return ppText;
+                case AnimateableCounterText.PERSONALBEST :
+                    return personalBestText;
+                default: return ppText;
+            }
         }
         #endregion
+    }
+
+    enum AnimateableCounterText
+    {
+        PPGAIN,
+        PP,
+        PERSONALBEST
     }
 }

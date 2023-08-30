@@ -24,6 +24,7 @@ namespace PPPredictor.Counter
         private bool _iconMoved = false;
         private int _noteCount = 0;
         private int _noteDone = 0;
+        private bool _isSongFinished = false;
 #if DEBUG
         private TMP_Text debugPercentage;
 #endif
@@ -122,38 +123,49 @@ namespace PPPredictor.Counter
             }
         }
 
-        private void BeatmapObjectManager_noteWasMissedEvent(NoteController obj)
+        private void BeatmapObjectManager_noteWasMissedEvent(NoteController noteController)
         {
-            CheckNotesLeft();
+            CheckNotesLeft(noteController);
         }
 
         private void BeatmapObjectManager_noteWasCutEvent(NoteController noteController, in NoteCutInfo noteCutInfo)
         {
-            CheckNotesLeft();
+                CheckNotesLeft(noteController);   
         }
 
         private void PauseController_didResumeEvent()
         {
-            if (Plugin.ProfileInfo.IsCounterGainSilentModeEnabled)
+            if (Plugin.ProfileInfo.IsCounterGainSilentModeEnabled && !_isSongFinished)
             {
-                lsCounterInfoHolder.ForEach(item => item.HidePPGainWithAnimation());
+                lsCounterInfoHolder.ForEach(item => item.MoveTextWithAnimation(AnimateableCounterText.PPGAIN, 0, 100f, new Vector3(0, 0, 0), false, true, true, true, item.IsPersonalBestAnimationRunning));
             }
         }
 
         private void PauseController_didPauseEvent()
         {
-            if (Plugin.ProfileInfo.IsCounterGainSilentModeEnabled)
+            if (Plugin.ProfileInfo.IsCounterGainSilentModeEnabled && !_isSongFinished)
             {
-                lsCounterInfoHolder.ForEach(item => item.ShowPPGainWithAnimation());
+                lsCounterInfoHolder.ForEach(item => item.MoveTextWithAnimation(AnimateableCounterText.PPGAIN, 0, 100f, new Vector3(0, .3f, 0), true, true, true, true, item.IsPersonalBestAnimationRunning));
             }
         }
 
-        private void CheckNotesLeft()
+        private void CheckNotesLeft(NoteController noteController)
         {
-            _noteDone++;
-            if(_noteDone >= _noteCount && Plugin.ProfileInfo.IsCounterGainSilentModeEnabled)
+            if(noteController.noteData.gameplayType != NoteData.GameplayType.Bomb)
             {
-                lsCounterInfoHolder.ForEach(item => item.ShowPPGainWithAnimation());
+                lsCounterInfoHolder.ForEach(item =>
+                {
+                    if (!item.IsPersonalBestAnimationDone())
+                    {
+                        item.StartPersonalBestAnimation(0);
+                    }
+                });
+                _noteDone++;
+                if (_noteDone >= _noteCount && Plugin.ProfileInfo.IsCounterGainSilentModeEnabled)
+                {
+                    _isSongFinished = true;
+                    lsCounterInfoHolder.ForEach(item => item.MoveTextWithAnimation(AnimateableCounterText.PPGAIN, 0, 100f, new Vector3(0, .3f, 0), true, true, true, true, item.IsPersonalBestAnimationRunning));
+                }
             }
         }
 

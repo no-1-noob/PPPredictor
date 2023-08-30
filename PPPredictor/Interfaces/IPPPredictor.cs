@@ -20,6 +20,8 @@ namespace PPPredictor.Interfaces
         PPPBeatMapInfo GetModifiedBeatMapInfo(GameplayModifiers gameplayModifiers, bool levelFailed = false);
         double CalculatePPGain(double pp);
         bool IsRanked();
+
+        string GetPersonalBest();
         void CalculatePP();
         void SetActive(bool setActive);
         PPPMapPool FindPoolWithSyncURL(string syncUrl);

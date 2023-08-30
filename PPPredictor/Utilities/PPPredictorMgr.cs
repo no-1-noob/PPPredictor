@@ -252,6 +252,16 @@ namespace PPPredictor.Utilities
             return 0;
         }
 
+        public string GetPersonalBest(Leaderboard leaderBoardName)
+        {
+            IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());
+            if (predictor != null)
+            {
+                return predictor.GetPersonalBest();
+            }
+            return string.Empty;
+        }
+
         public string GetLeaderboardIcon(Leaderboard leaderBoardName)
         {
             IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());
