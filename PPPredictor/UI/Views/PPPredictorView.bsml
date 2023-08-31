@@ -65,8 +65,17 @@
           </vertical>
         </horizontal>
         <vertical preferred-width='50'>
-          <slider-setting id='sliderCoarse' text='' preferred-width='100' value='sliderCoarseValue' hover-hint='What percentage to calculate PP at (coarse adjust)' interactable='~isNoDataLoading' mi='0' max='90' increment='10' apply-on-change='true' bind-value='true' show-buttons='true' align='Left' anchor-pos-x='50000' anchor-min-x='5000'/>
-          <slider-setting id='sliderFine' text='' value='sliderFineValue' hover-hint='What percentage to calculate PP at (fine adjust)' interactable='~isNoDataLoading' min='0' max='100' increment='0.1' apply-on-change='true' bind-value='true' show-buttons='true' align='Left' />
+          <vertical vertical-fit='PreferredSize' align='Left' ignore-layout='true' pad-top='22' pad-right='65' spacing='-1'>
+            <increment-setting id='incrementMin' text ='' value='minValue' min='0' max='90' integer-only='true' increment='10' bind-value='true' apply-on-change='true'></increment-setting>
+          </vertical>
+          <vertical vertical-fit='PreferredSize' align='Left' ignore-layout='true' pad-top='22' pad-left='38' spacing='-1'>
+            <increment-setting id='incrementMax' text='' size-delta-x='5' value='maxValue' min='90' max='100' integer-only='true' increment='10' bind-value='true' apply-on-change='true'></increment-setting>
+          </vertical>
+          <vertical preferred-height='14'>
+            <vertical vertical-fit='PreferredSize' align='Left' ignore-layout='true' pad-top='0' pad-right='37' spacing='-1'>
+              <slider-setting id='sliderFine' text='' formatter='sliderFormat' value='sliderFineValue' hover-hint='What percentage to calculate PP at (fine adjust)' interactable='~isNoDataLoading' min='0' max='100' increment='0.1' apply-on-change='true' bind-value='true' show-buttons='true' align='Left' anchor-pos-y='5'/>
+            </vertical>
+          </vertical>
         </vertical>
       </vertical>
     </tab>
