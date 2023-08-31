@@ -125,10 +125,40 @@ namespace PPPredictor.UI.ViewController
             {
                 tabSelector.textSegmentedControl.didSelectCellEvent += OnSelectedCellEventChanged;
             }
+
+            SliderFormatting();
+
+            UpdateMinMaxIncements(sliderFine.slider.value);
+        }
+
+        private void SliderFormatting()
+        {
+            float scaleFactor = 0.3f;
+            incrementMin.Text = string.Empty;
+            incrementMin.transform.Rotate(0, 0, 90);
+            incrementMin.text.transform.Rotate(0, 0, -90);
+            incrementMin.transform.localScale = new Vector3(scaleFactor, 1, 1);
+            incrementMin.text.transform.localScale = new Vector3(1, 1 / scaleFactor, 1);
+            incrementMin.transform.Rotate(0, 0, -7);
+            incrementMin.text.transform.Rotate(0, 0, 7);
+
+            incrementMax.transform.Rotate(0, 0, 90);
+            incrementMax.text.transform.Rotate(0, 0, -95);
+            incrementMax.transform.localScale = new Vector3(scaleFactor, 1, 1);
+            incrementMax.text.transform.localScale = new Vector3(1, 1 / scaleFactor, 1);
+            incrementMax.transform.Rotate(0, 0, -7);
+            incrementMax.text.transform.Rotate(0, 0, 7);
+
+            sliderFine.transform.localScale = new Vector3(.85f, 1, 1);
+            sliderFine.transform.Translate(new Vector3(1, 2, 0));
         }
 
 #pragma warning disable CS0649 // Field is never assigned to, and will always have its default value null
         #region UI Components
+        [UIComponent("incrementMin")]
+        private readonly IncrementSetting incrementMin;
+        [UIComponent("incrementMax")]
+        private readonly IncrementSetting incrementMax;
         [UIComponent("sliderFine")]
         private readonly SliderSetting sliderFine;
         [UIComponent("tabSelector")]
@@ -137,7 +167,11 @@ namespace PPPredictor.UI.ViewController
         private readonly DropDownListSetting dropDownMapPools;
         #endregion
 #pragma warning restore CS0649 // Field is never assigned to, and will always have its default value null
-
+        [UIAction("sliderFormat")]
+        private string SliderFormat(float f)
+        {
+            return $"{f:F2} %";
+        }
 
         #region buttons
 #pragma warning disable IDE0051 // Remove unused private members
@@ -209,19 +243,8 @@ namespace PPPredictor.UI.ViewController
         }
 #pragma warning restore IDE0051 // Remove unused private members
         #endregion
-        [UIValue("sliderCoarseValue")]
-        private float SliderCoarseValue
-        {
-            get => ((float)Math.Floor(ppPredictorMgr.CurrentPPPredictor.Percentage - ppPredictorMgr.CurrentPPPredictor.Percentage % 10));
-            set
-            {
-                sliderFine.slider.minValue = value;
-                sliderFine.slider.maxValue = value + 10;
-                SliderFineValue = (value) + (ppPredictorMgr.CurrentPPPredictor.Percentage % 10);
-                ppPredictorMgr.CurrentPPPredictor.CalculatePP();
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SliderCoarseValue)));
-            }
-        }
+
+        #region slider max min input
         [UIValue("sliderFineValue")]
         private float SliderFineValue
         {
@@ -231,9 +254,45 @@ namespace PPPredictor.UI.ViewController
                 ppPredictorMgr.SetPercentage(value);
                 Plugin.ProfileInfo.LastPercentageSelected = ppPredictorMgr.CurrentPPPredictor.Percentage;
                 ppPredictorMgr.CurrentPPPredictor.CalculatePP();
+                sliderFine.slider.value = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SliderFineValue)));
             }
         }
+
+        [UIValue("minValue")]
+        private float MinValue
+        {
+            get => Plugin.ProfileInfo.LastMinPercentageSelected;
+            set
+            {
+                Plugin.ProfileInfo.LastMinPercentageSelected = value;
+                incrementMax.minValue = Plugin.ProfileInfo.LastMinPercentageSelected + 10;
+                UpdateMinMaxIncements(sliderFine.slider.value);
+            }
+        }
+
+        [UIValue("maxValue")]
+        private float MaxValue
+        {
+            get => Plugin.ProfileInfo.LastMaxPercentageSelected;
+            set
+            {
+                Plugin.ProfileInfo.LastMaxPercentageSelected = value;
+                incrementMin.maxValue = Plugin.ProfileInfo.LastMaxPercentageSelected - 10;
+                UpdateMinMaxIncements(sliderFine.slider.value);
+            }
+        }
+        private void UpdateMinMaxIncements(float oldSliderValue)
+        {
+            sliderFine.slider.minValue = Plugin.ProfileInfo.LastMinPercentageSelected;
+            sliderFine.slider.maxValue = Plugin.ProfileInfo.LastMaxPercentageSelected;
+            SliderFineValue = Math.Max(Math.Min(oldSliderValue, Plugin.ProfileInfo.LastMaxPercentageSelected), Plugin.ProfileInfo.LastMinPercentageSelected);
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MaxValue)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MinValue)));
+        }
+
+        #endregion
+
         [UIValue("ppRaw")]
         private string PPRaw
         {
@@ -464,7 +523,8 @@ namespace PPPredictor.UI.ViewController
         private void DisplayInitialPercentages()
         {
             SliderFineValue = Plugin.ProfileInfo.LastPercentageSelected;
-            SliderCoarseValue = Plugin.ProfileInfo.LastPercentageSelected - Plugin.ProfileInfo.LastPercentageSelected % 10;
+            MinValue = Plugin.ProfileInfo.LastMinPercentageSelected;
+            MaxValue = Plugin.ProfileInfo.LastMaxPercentageSelected;
         }
 
         public void ResetPosition()

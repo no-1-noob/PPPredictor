@@ -32,6 +32,8 @@ namespace PPPredictor.Data
         private MapPoolSorting _hitbloqMapPoolSorting;
         private bool _isPredictorSwitchBySyncUrlEnabled;
         private bool _isCounterGainSilentModeEnabled;
+        private float _lastMinPercentageSelected;
+        private float _lastMaxPercentageSelected;
 
         private bool _isScoreSaberEnabled;
         private bool _isBeatLeaderEnabled;
@@ -68,6 +70,8 @@ namespace PPPredictor.Data
             HitbloqMapPoolSorting = MapPoolSorting.Popularity;
             IsPredictorSwitchBySyncUrlEnabled = true;
             IsCounterGainSilentModeEnabled = false;
+            LastMinPercentageSelected = ((int)(LastPercentageSelected / 10)) * 10;
+            LastMaxPercentageSelected = Math.Min((((int)(LastPercentageSelected / 10)) * 10) + 10, 100);
         }
 
         internal void ResetCachedData()
@@ -113,6 +117,8 @@ namespace PPPredictor.Data
         public MapPoolSorting HitbloqMapPoolSorting { get => _hitbloqMapPoolSorting; set => _hitbloqMapPoolSorting = value; }
         public bool IsPredictorSwitchBySyncUrlEnabled { get => _isPredictorSwitchBySyncUrlEnabled; set => _isPredictorSwitchBySyncUrlEnabled = value; }
         public bool IsCounterGainSilentModeEnabled { get => _isCounterGainSilentModeEnabled; set => _isCounterGainSilentModeEnabled = value; }
+        public float LastMinPercentageSelected { get => _lastMinPercentageSelected; set => _lastMinPercentageSelected = value; }
+        public float LastMaxPercentageSelected { get => _lastMaxPercentageSelected; set => _lastMaxPercentageSelected = value; }
 
         internal void ClearOldMapInfos()
         {
