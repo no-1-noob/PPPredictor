@@ -12,6 +12,7 @@ namespace PPPredictor.Utilities
         protected int playerPerPages = 0; //Cause a null reference if not set ;)
         protected bool hasGetAllScoresFunctionality = false;
         protected bool hasPPToRankFunctionality = false;
+        internal bool hasOldDotRanking = true;
         public event EventHandler OnMapPoolRefreshed;
 
         public PPCalculator()

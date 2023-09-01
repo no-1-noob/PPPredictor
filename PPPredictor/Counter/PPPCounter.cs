@@ -137,7 +137,7 @@ namespace PPPredictor.Counter
         {
             if (Plugin.ProfileInfo.IsCounterGainSilentModeEnabled && !_isSongFinished)
             {
-                lsCounterInfoHolder.ForEach(item => item.MoveTextWithAnimation(AnimateableCounterText.PPGAIN, 0, 100f, new Vector3(0, 0, 0), false, true, true, true, item.IsPersonalBestAnimationRunning));
+                lsCounterInfoHolder.ForEach(item => item.MoveTextWithAnimation(AnimateableCounterText.PPGAIN, 100f, new Vector3(0, 0, 0), false, true, true, true, item.IsPersonalBestAnimationRunning));
             }
         }
 
@@ -145,7 +145,7 @@ namespace PPPredictor.Counter
         {
             if (Plugin.ProfileInfo.IsCounterGainSilentModeEnabled && !_isSongFinished)
             {
-                lsCounterInfoHolder.ForEach(item => item.MoveTextWithAnimation(AnimateableCounterText.PPGAIN, 0, 100f, new Vector3(0, .3f, 0), true, true, true, true, item.IsPersonalBestAnimationRunning));
+                lsCounterInfoHolder.ForEach(item => item.MoveTextWithAnimation(AnimateableCounterText.PPGAIN, 100f, new Vector3(0, .3f, 0), true, true, true, true, item.IsPersonalBestAnimationRunning));
             }
         }
 
@@ -164,7 +164,7 @@ namespace PPPredictor.Counter
                 if (_noteDone >= _noteCount && Plugin.ProfileInfo.IsCounterGainSilentModeEnabled)
                 {
                     _isSongFinished = true;
-                    lsCounterInfoHolder.ForEach(item => item.MoveTextWithAnimation(AnimateableCounterText.PPGAIN, 0, 100f, new Vector3(0, .3f, 0), true, true, true, true, item.IsPersonalBestAnimationRunning));
+                    lsCounterInfoHolder.ForEach(item => item.MoveTextWithAnimation(AnimateableCounterText.PPGAIN, 100f, new Vector3(0, .3f, 0), true, true, true, true, item.IsPersonalBestAnimationRunning));
                 }
             }
         }

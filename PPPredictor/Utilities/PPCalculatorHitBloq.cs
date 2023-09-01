@@ -83,7 +83,7 @@ namespace PPPredictor.Utilities
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"PPCalculatorBeatLeader PPCalculatorHitBloq Error: {ex.Message}");
+                Plugin.Log?.Error($"PPCalculatorHitBloq GetBeatMapInfoAsync Error: {ex.Message}");
                 return new PPPBeatMapInfo(beatMapInfo, new PPPStarRating(-1));
             }
         }
@@ -227,7 +227,7 @@ namespace PPPredictor.Utilities
 
         public override string CreateSeachString(string hash, IDifficultyBeatmap beatmap)
         {
-            return $"{hash}|_{beatmap.difficulty}_Solo{beatmap.parentDifficultyBeatmapSet.beatmapCharacteristic.serializedName}";
+            return $"{hash}|_{beatmap.difficulty}_Solo{beatmap.parentDifficultyBeatmapSet.beatmapCharacteristic.serializedName}".Replace(Constants.OldDots, "");
         }
 
         public static (string, string, string) ParseHashDiffAndMode(string input)

@@ -225,11 +225,12 @@ namespace PPPredictor.Counter
         #region animation stuff
         public async Task StartPersonalBestAnimation(int delay)
         {
-            Task t1 = MoveTextWithAnimation(AnimateableCounterText.PP, delay, 100f, new Vector3(-.6f, 0, 0), true, true, true, true, IsPersonalBestAnimationDone);
-            Task t2 = MoveTextWithAnimation(AnimateableCounterText.PPGAIN, delay, 100f, new Vector3(-.6f, 0, 0), true, true, !Plugin.ProfileInfo.IsCounterGainSilentModeEnabled, !Plugin.ProfileInfo.IsCounterGainSilentModeEnabled, IsPersonalBestAnimationDone);
-            Task t3 = MoveTextWithAnimation(AnimateableCounterText.PERSONALBEST, delay, 100f, new Vector3(.6f, 0, 0), false, false, true, false, IsPersonalBestAnimationDone);
-            await Task.WhenAll(new[] { t1, t2, t3 });
+            await Task.Delay(delay);
+            if (_isPersonalBestAnimationFinished) return;
             _isPersonalBestAnimationFinished = true;
+            Task t1 = MoveTextWithAnimation(AnimateableCounterText.PP, 100f, new Vector3(-.6f, 0, 0), true, true, true, true);
+            Task t2 = MoveTextWithAnimation(AnimateableCounterText.PPGAIN, 100f, new Vector3(-.6f, 0, 0), true, true, !Plugin.ProfileInfo.IsCounterGainSilentModeEnabled, !Plugin.ProfileInfo.IsCounterGainSilentModeEnabled);
+            Task t3 = MoveTextWithAnimation(AnimateableCounterText.PERSONALBEST, 100f, new Vector3(.6f, 0, 0), false, false, true, false);
         }
 
         internal bool IsPersonalBestAnimationDone()
@@ -240,14 +241,12 @@ namespace PPPredictor.Counter
         {
             return !_isPersonalBestAnimationFinished;
         }
-        public async Task MoveTextWithAnimation(AnimateableCounterText animateableCounterText, int startAnimationDelay, float animationDelayById, Vector3 offset, bool isStartOffset, bool isEaseOut, bool isVisibleAtStart, bool isVisibleAtEnd, Func<bool> cancelRunFuncion)
+        public async Task MoveTextWithAnimation(AnimateableCounterText animateableCounterText, float animationDelayById, Vector3 offset, bool isStartOffset, bool isEaseOut, bool isVisibleAtStart, bool isVisibleAtEnd, Func<bool> cancelRunFuncion = null)
         {
-            await Task.Delay(startAnimationDelay);
             if (cancelRunFuncion != null && cancelRunFuncion()) return;
             TMP_Text tmpText = GetTMPText(animateableCounterText);
             Vector3 originalPPGainPosition = tmpText.transform.position;
             await Task.Delay((int)(animationDelayById * id));
-            if (cancelRunFuncion != null && cancelRunFuncion()) return;
             tmpText.enabled = isVisibleAtStart;
             int steps = 25;
             tmpText.transform.position = isStartOffset ? originalPPGainPosition - offset : originalPPGainPosition;

@@ -19,6 +19,7 @@ namespace PPPredictor.Utilities
         public PPCalculatorScoreSaber() : base()
         {
             playerPerPages = 50;
+            hasOldDotRanking = false;
             scoresaberAPI = new SSAPI();
             SongDetails = SongDetails.Init().Result;
         }
@@ -102,6 +103,10 @@ namespace PPPredictor.Utilities
 
         public override PPPBeatMapInfo ApplyModifiersToBeatmapInfo(PPPBeatMapInfo beatMapInfo, GameplayModifiers gameplayModifiers, bool levelFailed)
         {
+            if (beatMapInfo.OldDotsEnabled)
+            {
+                beatMapInfo.ModifiedStarRating = new PPPStarRating();
+            }
             return beatMapInfo;
         }
 

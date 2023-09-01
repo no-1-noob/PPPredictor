@@ -4,10 +4,8 @@ using PPPredictor.Interfaces;
 using SongCore.Utilities;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 
@@ -172,6 +170,7 @@ namespace PPPredictor.Utilities
         {
             _currentBeatMapInfo = await _ppCalculator.GetBeatMapInfoAsync(_currentBeatMapInfo);
             _currentBeatMapInfo.SelectedMapSearchString = _currentBeatMapInfo.SelectedCustomBeatmapLevel != null ? _ppCalculator.CreateSeachString(Hashing.GetCustomLevelHash(_currentBeatMapInfo.SelectedCustomBeatmapLevel), "SOLO" + _currentBeatMapInfo.Beatmap.parentDifficultyBeatmapSet.beatmapCharacteristic.serializedName, _currentBeatMapInfo.Beatmap.difficultyRank) : string.Empty;
+            _currentBeatMapInfo.OldDotsEnabled = IsOldDotsActive(_currentBeatMapInfo.Beatmap);
             _currentBeatMapInfo = GetModifiedBeatMapInfo(_gameplayModifiers);
             _currentBeatMapInfo.MaxPP = -1;
         }
@@ -211,6 +210,11 @@ namespace PPPredictor.Utilities
             return _ppCalculator.ApplyModifiersToBeatmapInfo(_currentBeatMapInfo, gameplayModifiers, levelFailed);
         }
 
+        public bool IsOldDotsActive(IDifficultyBeatmap beatmap)
+        {
+            return beatmap.parentDifficultyBeatmapSet.beatmapCharacteristic.serializedName.Contains(Constants.OldDots);
+        }
+
         public double CalculatePPGain(double pp)
         {
             return _ppCalculator.GetPlayerScorePPGain(_currentBeatMapInfo.SelectedMapSearchString, pp).GetDisplayPPValue();
@@ -218,13 +222,13 @@ namespace PPPredictor.Utilities
 
         public bool IsRanked()
         {
-            return _currentBeatMapInfo.BaseStarRating.IsRanked();
+            return _currentBeatMapInfo.BaseStarRating.IsRanked() && (_ppCalculator.hasOldDotRanking || !_currentBeatMapInfo.OldDotsEnabled);
         }
 
         public string GetPersonalBest()
         {
             double? pb = _ppCalculator.GetPersonalBest(_currentBeatMapInfo.SelectedMapSearchString);
-            string pbs = pb.HasValue ? pb.Value.ToString("F2") : "---";
+            string pbs = pb.HasValue ? pb.Value.ToString("F2") : Constants.NoPBFound;
             return $"{pbs} {PPSuffix} PB";
         }
 
