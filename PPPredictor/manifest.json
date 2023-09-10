@@ -5,7 +5,7 @@
   "author": "No.1 N[][]b",
   "version": "1.0.1",
   "description": "",
-  "gameVersion": "1.22.1",
+  "gameVersion": "1.27.0",
   "dependsOn": {
     "BSIPA": "^4.2.0",
     "BeatSaberMarkupLanguage": "^1.6.1",
@@ -13,7 +13,7 @@
     "LeaderboardCore": "^1.2.2",
     "SongDetailsCache": "^1.1.11",
     "SongCore": "^3.9.4",
-    "BS Utils":  "^1.12.1"
+    "BS Utils": "^1.12.1"
   },
   "features": {
     "CountersPlus.CustomCounter": {
