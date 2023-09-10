@@ -24,90 +24,90 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
-      <HintPath>$(GameDirectory)\Libs\0Harmony.dll</HintPath>
+      <HintPath>$(BeatSaberDir)\Libs\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="BeatmapCore">
-      <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\BeatmapCore.dll</HintPath>
+      <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\BeatmapCore.dll</HintPath>
     </Reference>
     <Reference Include="BeatSaberPlaylistsLib">
-      <HintPath>$(GameDirectory)\Libs\BeatSaberPlaylistsLib.dll</HintPath>
+      <HintPath>$(BeatSaberDir)\Libs\BeatSaberPlaylistsLib.dll</HintPath>
     </Reference>
     <Reference Include="BSML">
-      <HintPath>$(GameDirectory)\Plugins\BSML.dll</HintPath>
+      <HintPath>$(BeatSaberDir)\Plugins\BSML.dll</HintPath>
     </Reference>
     <Reference Include="BS_Utils">
-      <HintPath>$(GameDirectory)\Plugins\BS_Utils.dll</HintPath>
+      <HintPath>$(BeatSaberDir)\Plugins\BS_Utils.dll</HintPath>
     </Reference>
     <Reference Include="Counters+">
-      <HintPath>$(GameDirectory)\Plugins\Counters+.dll</HintPath>
+      <HintPath>$(BeatSaberDir)\Plugins\Counters+.dll</HintPath>
     </Reference>
     <Reference Include="GameplayCore">
-      <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\GameplayCore.dll</HintPath>
+      <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\GameplayCore.dll</HintPath>
     </Reference>
     <Reference Include="LeaderboardCore">
-      <HintPath>$(GameDirectory)\Plugins\LeaderboardCore.dll</HintPath>
+      <HintPath>$(BeatSaberDir)\Plugins\LeaderboardCore.dll</HintPath>
     </Reference>
     <Reference Include="SiraUtil">
-      <HintPath>$(GameDirectory)\Plugins\SiraUtil.dll</HintPath>
+      <HintPath>$(BeatSaberDir)\Plugins\SiraUtil.dll</HintPath>
     </Reference>
     <Reference Include="SongCore">
-      <HintPath>$(GameDirectory)\Plugins\SongCore.dll</HintPath>
+      <HintPath>$(BeatSaberDir)\Plugins\SongCore.dll</HintPath>
     </Reference>
     <Reference Include="SongDetailsCache">
-      <HintPath>$(GameDirectory)\Libs\SongDetailsCache.dll</HintPath>
+      <HintPath>$(BeatSaberDir)\Libs\SongDetailsCache.dll</HintPath>
     </Reference>
     <Reference Include="Main">
-      <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\Main.dll</HintPath>
+      <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\Main.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="HMLib">
-      <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\HMLib.dll</HintPath>
+      <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\HMLib.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="HMUI">
-      <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\HMUI.dll</HintPath>
+      <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\HMUI.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="IPA.Loader">
-      <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\IPA.Loader.dll</HintPath>
+      <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\IPA.Loader.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.TextMeshPro">
-      <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\Unity.TextMeshPro.dll</HintPath>
+      <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\Unity.TextMeshPro.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\UnityEngine.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.ImageConversionModule">
-      <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
+      <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\UnityEngine.UI.dll</HintPath>
+      <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\UnityEngine.UI.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.UIElementsModule">
-      <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\UnityEngine.UIElementsModule.dll</HintPath>
+      <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\UnityEngine.UIElementsModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.UIModule">
-      <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\UnityEngine.UIModule.dll</HintPath>
+      <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\UnityEngine.UIModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.VRModule">
-      <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\UnityEngine.VRModule.dll</HintPath>
+      <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\UnityEngine.VRModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Zenject">
-      <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\Zenject.dll</HintPath>
+      <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\Zenject.dll</HintPath>
     </Reference>
     <Reference Include="Zenject-usage">
-      <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\Zenject-usage.dll</HintPath>
+      <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\Zenject-usage.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
