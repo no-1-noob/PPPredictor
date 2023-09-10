@@ -151,7 +151,10 @@ namespace PPPredictor.Counter
 
         private void CheckNotesLeft(NoteController noteController)
         {
-            if(noteController.noteData.gameplayType != NoteData.GameplayType.Bomb)
+            if(!_isSongFinished
+                && noteController.noteData.gameplayType != NoteData.GameplayType.Bomb
+                && noteController.noteData.gameplayType != NoteData.GameplayType.BurstSliderElementFill
+                && noteController.noteData.gameplayType != NoteData.GameplayType.BurstSliderElement)
             {
                 lsCounterInfoHolder.ForEach(item =>
                 {
