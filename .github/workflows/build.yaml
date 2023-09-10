@@ -1,11 +1,7 @@
 name: Build
 
 on: 
-    push:
-        branches: *
-        tags: v*
-    pull_request:
-        branches: [ master ]
+    [push, tags]
 
 jobs:
     Build:
