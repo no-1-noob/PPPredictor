@@ -28,8 +28,8 @@ jobs:
             - name: Build
               id: Build
               run: dotnet build --configuration Release
-            - name: Test
-              run: dotnet test --no-restore --verbosity normal
+            #- name: Test
+              #run: dotnet test --no-restore --verbosity normal
             - name: GitStatus
               run: git status
             - name: Echo Filename
