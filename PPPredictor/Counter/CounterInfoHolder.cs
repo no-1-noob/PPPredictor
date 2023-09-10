@@ -89,7 +89,7 @@ namespace PPPredictor.Counter
             failedBeatMapInfo = ppPredictorMgr.GetModifiedBeatMapInfo(leaderboard, gameplayModifiers);
             ppSuffix = ppPredictorMgr.GetPPSuffixForLeaderboard(leaderboard);
 
-            StartPersonalBestAnimation(5000);
+            _ = StartPersonalBestAnimation(5000);
         }
 
         private float GetCenterOffset()

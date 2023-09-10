@@ -239,7 +239,7 @@ namespace PPPredictor.Utilities
             return (currentPool != null && newMapPool != null && currentPool.Id != newMapPool.Id);
         }
 
-        public async void CalculatePP()
+        public void CalculatePP()
         {
             if (_currentBeatMapInfo.MaxPP == -1) _currentBeatMapInfo.MaxPP = CalculateMaxPP();
             double pp = CalculatePPatPercentage(_percentage, _currentBeatMapInfo);
