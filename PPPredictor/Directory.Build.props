@@ -5,4 +5,9 @@
 		<ImportBSMTTargets>True</ImportBSMTTargets>
 		<BSMTProjectType>BSIPA</BSMTProjectType>
 	</PropertyGroup>
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    <DisableCopyToGame>true</DisableCopyToGame>
+    <DisableZipRelease>true</DisableZipRelease>
+  </PropertyGroup>
 </Project>
