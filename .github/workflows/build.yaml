@@ -2,7 +2,7 @@ name: Build
 
 on: 
     push:
-        branches: *
+        branches: '*'
         tags: v*
     pull_request:
         branches: [ master ]
@@ -24,7 +24,7 @@ jobs:
             - name: Download Mod Dependencies
               uses: Goobwabber/download-beatmods-deps@1.2
               with:
-                  manifest: ${{ github.workspace }}/ShortNotes/manifest.json
+                  manifest: ${{ github.workspace }}/PPPredictor/manifest.json
             - name: Build
               id: Build
               run: dotnet build --configuration Release
