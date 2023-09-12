@@ -111,6 +111,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="manifest.build.json" />
     <EmbeddedResource Include="manifest.json" />
   </ItemGroup>
   <ItemGroup>
@@ -149,5 +150,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Utilities\PPPredictorEventsMgr.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="manifest.build.json" />
   </ItemGroup>
 </Project>
