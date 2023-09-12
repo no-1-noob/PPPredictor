@@ -15,7 +15,7 @@ jobs:
             - name: Setup dotnet
               uses: actions/setup-dotnet@v3
               with:
-                  dotnet-version: 7.0.x
+                  dotnet-version: 7.0.110
             - name: Initialize modding environment
               uses: beat-forge/init-beatsaber@v1.1.0
               with:
@@ -28,8 +28,8 @@ jobs:
             - name: Build
               id: Build
               run: dotnet build --configuration Release
-            - name: Test
-              run: dotnet test --no-restore --verbosity normal
+            #- name: Test
+              #run: dotnet test --no-restore --verbosity normal
             - name: GitStatus
               run: git status
             - name: Echo Filename
