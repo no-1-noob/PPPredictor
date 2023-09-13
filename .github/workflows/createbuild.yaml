@@ -1,4 +1,4 @@
-name: Build
+name: CreateRelease
 
 on: workflow_dispatch
 jobs:
