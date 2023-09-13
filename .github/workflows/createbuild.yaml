@@ -95,3 +95,10 @@ jobs:
                     files: ./${{ steps.Build.outputs.filename }}.zip
                   env: 
                     GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
+    start:
+        name: Start
+        needs: [Build_SetupCI, Build_1_31_1]
+        runs-on: ubuntu-latest
+        steps:
+          - run: echo "Some step"
