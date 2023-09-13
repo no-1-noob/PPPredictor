@@ -1,6 +1,12 @@
 name: CreateRelease
 
-on: workflow_dispatch
+on: 
+    push:
+        branches: '*'
+        tags: v*
+    pull_request:
+        branches: [ master ]
+        
 jobs:
     BuildMaster:
         runs-on: ubuntu-latest
