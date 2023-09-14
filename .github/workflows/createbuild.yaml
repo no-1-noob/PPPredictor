@@ -101,27 +101,27 @@ jobs:
         needs: [Build_SetupCI, Build_1_31_1]
         runs-on: ubuntu-latest
         env:
-              Build_SetupCI_ArtifactName: ${{needs.Build_SetupCI.outputs.artifactName}}
-              Build_SetupCI_ArtifactPath: ${{needs.Build_SetupCI.outputs.artifactPath}}
-              Build_1_31_1_ArtifactName: ${{needs.Build_1_31_1.outputs.artifactName}}
-              Build_1_31_1_ArtifactPath: ${{needs.Build_1_31_1.outputs.artifactPath}}
+              Build_SetupCI_ArtifactName: ${{ needs.Build_SetupCI.outputs.artifactName }}
+              Build_SetupCI_ArtifactFile: ${{ needs.Build_SetupCI.outputs.artifactPath }}.zip
+              Build_1_31_1_ArtifactName: ${{ needs.Build_1_31_1.outputs.artifactName }}
+              Build_1_31_1_ArtifactFile: ${{ needs.Build_1_31_1.outputs.artifactPath }}.zip
         steps:
-          - run: echo "$Build_SetupCI_ArtifactName $Build_SetupCI_ArtifactPath"
-          - run: echo "$Build_1_31_1_ArtifactName $Build_1_31_1_ArtifactPath"
+          - run: echo $Build_SetupCI_ArtifactName $Build_SetupCI_ArtifactFile
+          - run: echo $Build_1_31_1_ArtifactName $Build_1_31_1_ArtifactFile
           - uses: actions/download-artifact@master
             with:
-             name: $Build_SetupCI_ArtifactName
+             name: $Build_SetupCI_ArtifactFile
              path: ./artifact/Build_SetupCI
           - uses: actions/download-artifact@master
             with:
-             name: $Build_1_31_1_ArtifactName
+             name: $Build_1_31_1_ArtifactFile
              path: ./artifact/Build_1_31_1
           - name: Release
             uses: softprops/action-gh-release@v1
             with:
                 files: |
-                    ./artifact/Build_SetupCI/$Build_SetupCI_ArtifactName
-                    ./artifact/Build_1_31_1/$Build_1_31_1_ArtifactName
+                    ./artifact/Build_SetupCI/$Build_1_31_1_ArtifactFile
+                    ./artifact/Build_1_31_1/$Build_1_31_1_ArtifactFile
                 draft: true
             env: 
                 GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
