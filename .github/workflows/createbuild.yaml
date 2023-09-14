@@ -48,9 +48,9 @@ jobs:
                   name: ${{ steps.Build.outputs.filename }}
                   path: ${{ steps.Build.outputs.artifactpath }}
             - id: outPutName
-              run: echo "${{ steps.Build.outputs.filename }}" >> "$GITHUB_OUTPUT"
+              run: echo ${{ steps.Build.outputs.filename }} >> "$GITHUB_OUTPUT"
             - id: outPutPath
-              run: echo "${{ steps.Build.outputs.artifactpath }}" >> "$GITHUB_OUTPUT"
+              run: echo ${{ steps.Build.outputs.artifactpath }} >> "$GITHUB_OUTPUT"
 
     Build_1_31_1:
             runs-on: ubuntu-latest
@@ -92,9 +92,9 @@ jobs:
                       name: ${{ steps.Build.outputs.filename }}
                       path: ${{ steps.Build.outputs.artifactpath }}
                 - id: outPutName
-                  run: echo "${{ steps.Build.outputs.filename }}" >> "$GITHUB_OUTPUT"
+                  run: echo "Hello" >> "$GITHUB_OUTPUT"
                 - id: outPutPath
-                  run: echo "${{ steps.Build.outputs.artifactpath }}" >> "$GITHUB_OUTPUT"
+                  run: echo "World" >> "$GITHUB_OUTPUT"
 
     start:
         name: Start
@@ -122,5 +122,6 @@ jobs:
                 files: |
                     ./artifact/Build_SetupCI/$Build_SetupCI_ArtifactName
                     ./artifact/Build_1_31_1/$Build_1_31_1_ArtifactName
+                draft: true
             env: 
                 GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
