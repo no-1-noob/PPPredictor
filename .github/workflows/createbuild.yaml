@@ -10,6 +10,9 @@ on:
 jobs:
     Build_SetupCI:
         runs-on: ubuntu-latest
+        outputs:
+          artifactName: ${{ steps.step1.outputs.test }}
+          artifactPath: ${{ steps.step2.outputs.test }}
         steps:
             - uses: actions/checkout@v3
               with:
@@ -44,16 +47,16 @@ jobs:
               with:
                   name: ${{ steps.Build.outputs.filename }}
                   path: ${{ steps.Build.outputs.artifactpath }}
-            - name: Release
-              uses: softprops/action-gh-release@v1
-              if: startsWith(github.ref, 'refs/tags/')
-              with:
-                files: ./${{ steps.Build.outputs.filename }}.zip
-              env: 
-                GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+            - id: outPutName
+              run: echo ${{ steps.Build.outputs.filename }} >> "$GITHUB_OUTPUT"
+            - id: outPutPath
+              run: echo ${{ steps.Build.outputs.artifactpath }} >> "$GITHUB_OUTPUT"
 
     Build_1_31_1:
             runs-on: ubuntu-latest
+            outputs:
+              artifactName: ${{ steps.step1.outputs.test }}
+              artifactPath: ${{ steps.step2.outputs.test }}
             steps:
                 - uses: actions/checkout@v3
                   with:
@@ -88,17 +91,36 @@ jobs:
                   with:
                       name: ${{ steps.Build.outputs.filename }}
                       path: ${{ steps.Build.outputs.artifactpath }}
-                - name: Release
-                  uses: softprops/action-gh-release@v1
-                  if: startsWith(github.ref, 'refs/tags/')
-                  with:
-                    files: ./${{ steps.Build.outputs.filename }}.zip
-                  env: 
-                    GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+                - id: outPutName
+                  run: echo ${{ steps.Build.outputs.filename }} >> "$GITHUB_OUTPUT"
+                - id: outPutPath
+                  run: echo ${{ steps.Build.outputs.artifactpath }} >> "$GITHUB_OUTPUT"
 
     start:
         name: Start
         needs: [Build_SetupCI, Build_1_31_1]
         runs-on: ubuntu-latest
         steps:
-          - run: echo "Some step"
+          - env:
+              Build_SetupCI_ArtifactName: ${{needs.Build_SetupCI.outputs.artifactName}}
+              Build_SetupCI_ArtifactPath: ${{needs.Build_SetupCI.outputs.artifactPath}}
+              Build_1_31_1_ArtifactName: ${{needs.Build_1_31_1.outputs.artifactName}}
+              Build_1_31_1_ArtifactPath: ${{needs.Build_1_31_1.outputs.artifactPath}}
+          - run: echo "$Build_SetupCI_ArtifactName $Build_SetupCI_ArtifactPath"
+          - run: echo "$Build_1_31_1_ArtifactName $Build_1_31_1_ArtifactPath"
+          - uses: actions/download-artifact@master
+            with:
+             name: $Build_SetupCI_ArtifactName
+             path: ./artifact/Build_SetupCI
+          - uses: actions/download-artifact@master
+            with:
+             name: $Build_1_31_1_ArtifactName
+             path: ./artifact/Build_1_31_1
+          - name: Release
+            uses: softprops/action-gh-release@v1
+            with:
+                files: |
+                    ./artifact/Build_SetupCI/$Build_SetupCI_ArtifactName
+                    ./artifact/Build_1_31_1/$Build_1_31_1_ArtifactName
+            env: 
+                GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
