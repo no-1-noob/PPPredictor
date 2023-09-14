@@ -120,8 +120,8 @@ jobs:
             uses: softprops/action-gh-release@v1
             with:
                 files: |
-                    ./artifact/Build_SetupCI/$Build_1_31_1_ArtifactFile
-                    ./artifact/Build_1_31_1/$Build_1_31_1_ArtifactFile
+                    ./artifact/Build_SetupCI/${{env.Build_SetupCI_ArtifactName}}
+                    ./artifact/Build_1_31_1/${{env.Build_1_31_1_ArtifactFile}}
                 draft: true
             env: 
                 GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
