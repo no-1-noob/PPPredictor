@@ -11,8 +11,8 @@ jobs:
     Build_SetupCI:
         runs-on: ubuntu-latest
         outputs:
-          artifactName: ${{ steps.step1.outputs.test }}
-          artifactPath: ${{ steps.step2.outputs.test }}
+          artifactName: ${{ steps.outPutName.outputs.Name }}
+          artifactPath: ${{ steps.outPutPath.outputs.Path }}
         steps:
             - uses: actions/checkout@v3
               with:
@@ -55,8 +55,8 @@ jobs:
     Build_1_31_1:
             runs-on: ubuntu-latest
             outputs:
-              artifactName: ${{ steps.step1.outputs.test }}
-              artifactPath: ${{ steps.step2.outputs.test }}
+              artifactName: ${{ steps.outPutName.outputs.Name }}
+              artifactPath: ${{ steps.outPutPath.outputs.Path }}
             steps:
                 - uses: actions/checkout@v3
                   with:
