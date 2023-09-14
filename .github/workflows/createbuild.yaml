@@ -48,9 +48,9 @@ jobs:
                   name: ${{ steps.Build.outputs.filename }}
                   path: ${{ steps.Build.outputs.artifactpath }}
             - id: outPutName
-              run: echo ${{ steps.Build.outputs.filename }} >> "$GITHUB_OUTPUT"
+              run: echo "Name=${{ steps.Build.outputs.filename }}" >> "$GITHUB_OUTPUT"
             - id: outPutPath
-              run: echo ${{ steps.Build.outputs.artifactpath }} >> "$GITHUB_OUTPUT"
+              run: echo "Path=${{ steps.Build.outputs.artifactpath }}" >> "$GITHUB_OUTPUT"
 
     Build_1_31_1:
             runs-on: ubuntu-latest
@@ -92,9 +92,9 @@ jobs:
                       name: ${{ steps.Build.outputs.filename }}
                       path: ${{ steps.Build.outputs.artifactpath }}
                 - id: outPutName
-                  run: echo "Hello" >> "$GITHUB_OUTPUT"
+                  run: echo "Name=${{ steps.Build.outputs.filename }}" >> "$GITHUB_OUTPUT"
                 - id: outPutPath
-                  run: echo "World" >> "$GITHUB_OUTPUT"
+                  run: echo "Path=${{ steps.Build.outputs.artifactpath }}" >> "$GITHUB_OUTPUT"
 
     start:
         name: Start
