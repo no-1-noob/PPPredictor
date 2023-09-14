@@ -102,19 +102,19 @@ jobs:
         runs-on: ubuntu-latest
         env:
               Build_SetupCI_ArtifactName: ${{ needs.Build_SetupCI.outputs.artifactName }}
-              Build_SetupCI_ArtifactFile: ${{ needs.Build_SetupCI.outputs.artifactPath }}.zip
+              Build_SetupCI_ArtifactFile: ${{ needs.Build_SetupCI.outputs.artifactName }}.zip
               Build_1_31_1_ArtifactName: ${{ needs.Build_1_31_1.outputs.artifactName }}
-              Build_1_31_1_ArtifactFile: ${{ needs.Build_1_31_1.outputs.artifactPath }}.zip
+              Build_1_31_1_ArtifactFile: ${{ needs.Build_1_31_1.outputs.artifactName }}.zip
         steps:
           - run: echo $Build_SetupCI_ArtifactName $Build_SetupCI_ArtifactFile
           - run: echo $Build_1_31_1_ArtifactName $Build_1_31_1_ArtifactFile
           - uses: actions/download-artifact@master
             with:
-             name: $Build_SetupCI_ArtifactFile
+             name: ${{env.Build_SetupCI_ArtifactFile}}
              path: ./artifact/Build_SetupCI
           - uses: actions/download-artifact@master
             with:
-             name: $Build_1_31_1_ArtifactFile
+             name: ${{env.$Build_1_31_1_ArtifactFile}}
              path: ./artifact/Build_1_31_1
           - name: Release
             uses: softprops/action-gh-release@v1
