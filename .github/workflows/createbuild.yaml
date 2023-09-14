@@ -110,11 +110,11 @@ jobs:
           - run: echo $Build_1_31_1_ArtifactName $Build_1_31_1_ArtifactFile
           - uses: actions/download-artifact@master
             with:
-             name: ${{env.Build_SetupCI_ArtifactFile}}
+             name: ${{env.Build_SetupCI_ArtifactName}}
              path: ./artifact/Build_SetupCI
           - uses: actions/download-artifact@master
             with:
-             name: ${{env.Build_1_31_1_ArtifactFile}}
+             name: ${{env.Build_1_31_1_ArtifactName}}
              path: ./artifact/Build_1_31_1
           - name: Release
             uses: softprops/action-gh-release@v1
