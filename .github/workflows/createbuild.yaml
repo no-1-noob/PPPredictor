@@ -112,14 +112,14 @@ jobs:
              path: ${{env.Build_SetupCI_ArtifactName}}
           - uses: montudor/action-zip@v1
             with:
-                args: zip -qq -r ${{env.Build_SetupCI_ArtifactName}}.zip ${{env.Build_SetupCI_ArtifactName}}
+                args: zip -qq -r ${{env.Build_SetupCI_ArtifactName}}.zip ${{env.Build_SetupCI_ArtifactName}}/Plugins
           - uses: actions/download-artifact@master
             with:
              name: ${{env.Build_1_31_1_ArtifactName}}
              path: ${{env.Build_1_31_1_ArtifactName}}
           - uses: montudor/action-zip@v1
             with:
-                args: zip -qq -r ${{env.Build_1_31_1_ArtifactName}}.zip ${{env.Build_1_31_1_ArtifactName}}
+                args: zip -qq -r ${{env.Build_1_31_1_ArtifactName}}.zip ${{env.Build_1_31_1_ArtifactName}}/Plugins
           - id: print
             run: ls -l /home/runner/work/PPPredictor/PPPredictor
           - id: print2
