@@ -109,17 +109,13 @@ jobs:
           - uses: actions/download-artifact@master
             with:
              name: ${{env.Build_SetupCI_ArtifactName}}
-             path: ./artifact/Build_SetupCI
           - uses: actions/download-artifact@master
             with:
              name: ${{env.Build_1_31_1_ArtifactName}}
-             path: ./artifact/Build_1_31_1
           - name: Release
             uses: softprops/action-gh-release@v1
             with:
-                files: |
-                    ${{ github.workspace }}/artifact/Build_SetupCI/${{env.Build_SetupCI_ArtifactName}}
-                    ${{ github.workspace }}/artifact/Build_1_31_1/${{env.Build_1_31_1_ArtifactName}}
+                files: ${{ github.ref_name }}.zip
                 draft: true
             env: 
                 GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
