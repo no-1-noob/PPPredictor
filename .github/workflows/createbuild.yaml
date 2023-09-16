@@ -115,7 +115,7 @@ jobs:
           - name: Release
             uses: softprops/action-gh-release@v1
             with:
-                files: ${{ github.ref_name }}.zip
+                files: ${GITHUB_REF#refs/*/}.zip
                 draft: true
             env: 
                 GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
