@@ -109,14 +109,14 @@ jobs:
           - uses: actions/download-artifact@master
             with:
              name: ${{env.Build_SetupCI_ArtifactName}}
-             path: .${{env.Build_SetupCI_ArtifactName}}
+             path: ${{env.Build_SetupCI_ArtifactName}}
           - uses: montudor/action-zip@v1
             with:
                 args: zip -qq -r ${{env.Build_SetupCI_ArtifactName}}.zip ${{env.Build_SetupCI_ArtifactName}}
           - uses: actions/download-artifact@master
             with:
              name: ${{env.Build_1_31_1_ArtifactName}}
-             path: .${{env.Build_1_31_1_ArtifactName}}
+             path: ${{env.Build_1_31_1_ArtifactName}}
           - uses: montudor/action-zip@v1
             with:
                 args: zip -qq -r ${{env.Build_1_31_1_ArtifactName}}.zip ${{env.Build_1_31_1_ArtifactName}}
