@@ -112,6 +112,10 @@ jobs:
           - uses: actions/download-artifact@master
             with:
              name: ${{env.Build_1_31_1_ArtifactName}}
+          - id: print
+            run: ls -l /home/runner/work/PPPredictor/PPPredictor
+          - id: print2
+            run: ls -l /home/runner/work/PPPredictor/PPPredictor/${{env.Build_SetupCI_ArtifactName}}
           - name: Release
             uses: softprops/action-gh-release@v1
             with:
