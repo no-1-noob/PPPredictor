@@ -12,6 +12,7 @@ namespace PPPredictor.Utilities
         protected int playerPerPages = 0; //Cause a null reference if not set ;)
         protected bool hasGetAllScoresFunctionality = false;
         protected bool hasPPToRankFunctionality = false;
+        protected int taskDelayValue = 250;
         internal bool hasOldDotRanking = true;
         public event EventHandler OnMapPoolRefreshed;
 
@@ -79,7 +80,7 @@ namespace PPPredictor.Utilities
                         dtNewLastScoreSet = scores.TimeSet > dtNewLastScoreSet ? scores.TimeSet : dtNewLastScoreSet;
                     }
                     page++;
-                    await Task.Delay(250);
+                    await Task.Delay(taskDelayValue);
                 }
                 //Update after fetching all data. So when closing while fetching the incomplete data is not saved.
                 foreach (ShortScore newScore in lsNewScores)
@@ -214,7 +215,7 @@ namespace PPPredictor.Utilities
                     }
                     fetchIndexPage--;
                     bestRankFetched = _leaderboardInfo.CurrentMapPool.LsPlayerRankings.Select(x => x.Rank).DefaultIfEmpty(-1).Min();
-                    await Task.Delay(250);
+                    await Task.Delay(taskDelayValue);
                 }
                 double rankAfterPlay = _leaderboardInfo.CurrentMapPool.LsPlayerRankings.Where(x => Math.Round(x.Pp, 2, MidpointRounding.AwayFromZero) <= pp).Select(x => x.Rank).DefaultIfEmpty(-1).Min();
                 double rankCountryAfterPlay = _leaderboardInfo.CurrentMapPool.LsPlayerRankings.Where(x => Math.Round(x.Pp, 2, MidpointRounding.AwayFromZero) <= pp && x.Country == _leaderboardInfo.CurrentMapPool.CurrentPlayer.Country).Select(x => x.CountryRank).DefaultIfEmpty(-1).Min();

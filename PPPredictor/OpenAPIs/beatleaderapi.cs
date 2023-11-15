@@ -106,7 +106,7 @@ namespace PPPredictor.OpenAPIs
         {
             try
             {
-                string requestUrl = $"/player/{userId}/scores?sortBy={sortBy}&order={order}&page={page}&count={count}'";
+                string requestUrl = $"/player/{userId}/scores?sortBy={sortBy}&order={order}&page={page}&count={count}";
                 if (eventId.GetValueOrDefault() > 0)
                 {
                     requestUrl += $"&eventId={eventId}";

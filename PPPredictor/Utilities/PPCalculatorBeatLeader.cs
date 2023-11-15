@@ -21,6 +21,7 @@ namespace PPPredictor.Utilities
         public PPCalculatorBeatLeader() : base() 
         {
             playerPerPages = 50;
+            taskDelayValue = 1100;
             beatleaderapi = new BLAPI();
             //UpdateAvailableMapPools();
         }
