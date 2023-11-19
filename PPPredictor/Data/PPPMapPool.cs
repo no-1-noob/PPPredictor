@@ -30,6 +30,7 @@ namespace PPPredictor.Data
         private string _iconUrl;
         private byte[] _iconData;
         private string _syncUrl;
+        private LeaderboardContext _leaderboardContext;
 
         [UIValue("mapPoolName")]
         public string MapPoolName { get => _mapPoolName; set => _mapPoolName = value; }
@@ -55,6 +56,7 @@ namespace PPPredictor.Data
         public byte[] IconData { get => _iconData; set => _iconData = value; }
         public double Popularity { get => _popularity; set => _popularity = value; }
         public string SyncUrl { get => _syncUrl; set => _syncUrl = value; }
+        public LeaderboardContext LeaderboardContext { get => _leaderboardContext; set => _leaderboardContext = value; }
 
         [JsonConstructor]
 
@@ -77,9 +79,10 @@ namespace PPPredictor.Data
             _dtLastScoreSet = new DateTime(2000, 1, 1);
             _popularity = 0;
             _syncUrl = string.Empty;
+            _leaderboardContext = LeaderboardContext.None;
         }
 
-        public PPPMapPool(string id, string playListId, MapPoolType mapPoolType, string mapPoolName, float accumulationConstant, int sortIndex, IPPPCurve curve, string iconUrl, double popularity = 0, string syncUrl = "") : this()
+        public PPPMapPool(string id, string playListId, MapPoolType mapPoolType, string mapPoolName, float accumulationConstant, int sortIndex, IPPPCurve curve, string iconUrl, double popularity = 0, string syncUrl = "", LeaderboardContext leaderboardContext = LeaderboardContext.None) : this()
         {
             _id = id;
             _playListId = playListId;
@@ -91,9 +94,14 @@ namespace PPPredictor.Data
             _iconUrl= iconUrl;
             _popularity = popularity;
             _syncUrl= syncUrl;
+            _leaderboardContext = leaderboardContext;
         }
 
-        public PPPMapPool(MapPoolType mapPoolType, string mapPoolName, float accumulationConstant, int sortIndex, IPPPCurve curve) : this("-1", "-1", mapPoolType, mapPoolName, accumulationConstant, sortIndex, curve, string.Empty)
+        public PPPMapPool(MapPoolType mapPoolType, string mapPoolName, float accumulationConstant, int sortIndex, IPPPCurve curve, LeaderboardContext leaderboardContext = LeaderboardContext.None) : this("-1", "-1", mapPoolType, mapPoolName, accumulationConstant, sortIndex, curve, string.Empty, 0, "", leaderboardContext)
+        {
+        }
+
+        public PPPMapPool(string id, MapPoolType mapPoolType, string mapPoolName, float accumulationConstant, int sortIndex, IPPPCurve curve, LeaderboardContext leaderboardContext = LeaderboardContext.None) : this(id, "-1", mapPoolType, mapPoolName, accumulationConstant, sortIndex, curve, string.Empty, 0, "", leaderboardContext)
         {
         }
 

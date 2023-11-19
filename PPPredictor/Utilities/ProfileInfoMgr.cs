@@ -16,7 +16,7 @@ namespace PPPredictor.Utilities
         internal static FlowCoordinator ParentFlow { get; private set; }
         private static PPPredictorFlowCoordinator _flow;
         private static readonly string profilePath = Path.Combine(UnityGame.UserDataPath, "PPPredictorProfileInfo.json");
-        private static readonly int _profileInfoVersion = 4;
+        private static readonly int _profileInfoVersion = 5;
         internal static ProfileInfo LoadProfileInfo()
         {
             MenuButtons.instance.RegisterButton(new MenuButton("PPPredictor", "Predict PP gains", ShowSettingsFlow, true));
@@ -58,8 +58,8 @@ namespace PPPredictor.Utilities
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error(ex);
-                Plugin.Log?.Error("Error saving Config");
+                Plugin.ErrorPrint(ex.Message);
+                Plugin.ErrorPrint("Error saving Config");
                 saved = false;
             }
             return saved;

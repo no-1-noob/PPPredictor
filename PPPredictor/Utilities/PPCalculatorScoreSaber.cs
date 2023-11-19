@@ -34,7 +34,7 @@ namespace PPPredictor.Utilities
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"PPCalculatorScoreSaber GetPlayerInfo Error: {ex.Message}");
+                Plugin.ErrorPrint($"PPCalculatorScoreSaber GetPlayerInfo Error: {ex.Message}");
                 return new PPPPlayer(true);
             }
         }
@@ -48,7 +48,7 @@ namespace PPPredictor.Utilities
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"PPCalculatorScoreSaber GetRecentScores Error: {ex.Message}");
+                Plugin.ErrorPrint($"PPCalculatorScoreSaber GetRecentScores Error: {ex.Message}");
                 return new PPPScoreCollection();
             }
         }
@@ -72,7 +72,7 @@ namespace PPPredictor.Utilities
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"PPCalculatorScoreSaber GetPlayers Error: {ex.Message}");
+                Plugin.ErrorPrint($"PPCalculatorScoreSaber GetPlayers Error: {ex.Message}");
                 return new List<PPPPlayer>();
             }
         }
@@ -96,12 +96,12 @@ namespace PPPredictor.Utilities
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"PPCalculatorScoreSaber GetStarsForBeatmapAsync Error: {ex.Message}");
+                Plugin.ErrorPrint($"PPCalculatorScoreSaber GetStarsForBeatmapAsync Error: {ex.Message}");
                 return Task.FromResult(new PPPBeatMapInfo(beatMapInfo , new PPPStarRating(-1)));
             }
         }
 
-        public override PPPBeatMapInfo ApplyModifiersToBeatmapInfo(PPPBeatMapInfo beatMapInfo, GameplayModifiers gameplayModifiers, bool levelFailed)
+        public override PPPBeatMapInfo ApplyModifiersToBeatmapInfo(PPPBeatMapInfo beatMapInfo, GameplayModifiers gameplayModifiers, bool levelFailed, bool levelPaused)
         {
             if (beatMapInfo.OldDotsEnabled)
             {

@@ -6,17 +6,15 @@ namespace PPPredictor.Interfaces
 {
     internal interface IBeatLeaderAPI
     {
-        Task<Dictionary<string, float>> GetModifiers();
-
         Task<BeatLeaderEventList> GetEvents();
 
         Task<BeatLeaderSong> GetSongByHash(string hash);
 
-        Task<BeatLeaderPlayer> GetPlayer(long userId);
+        Task<BeatLeaderPlayer> GetPlayer(long userId, long leaderboardContextId);
 
-        Task<BeatLeaderPlayerScoreList> GetPlayerScores(string userId, string sortBy, string order, int page, int count, long? eventId = null);
+        Task<BeatLeaderPlayerScoreList> GetPlayerScores(string userId, string sortBy, string order, int page, int count, long leaderboardContextId, long? eventId = null);
 
-        Task<BeatLeaderPlayerList> GetPlayersInLeaderboard(string sortBy, int page, int? count, string order);
+        Task<BeatLeaderPlayerList> GetPlayersInLeaderboard(string sortBy, int page, int? count, string order, long leaderboardContextId);
 
         Task<BeatLeaderPlayerList> GetPlayersInEventLeaderboard(long eventId, string sortBy, int page, int? count, string order);
 

@@ -41,7 +41,7 @@ namespace PPPredictor.OpenAPIs
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"Error in GetHitBloqUserIdByUserId: {ex.Message}");
+                Plugin.ErrorPrint($"Error in GetHitBloqUserIdByUserId: {ex.Message}");
             }
             return new HitBloqUserId();
         }
@@ -60,7 +60,7 @@ namespace PPPredictor.OpenAPIs
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"Error in GetHitBloqUserIdByUserId: {ex.Message}");
+                Plugin.ErrorPrint($"Error in GetHitBloqUserIdByUserId: {ex.Message}");
             }
             return new List<HitBloqMapPool>();
         }
@@ -79,7 +79,7 @@ namespace PPPredictor.OpenAPIs
                 }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"Error in GetHitBloqMapPoolDetails: {ex.Message}");
+                Plugin.ErrorPrint($"Error in GetHitBloqMapPoolDetails: {ex.Message}");
             }
             return new HitBloqMapPoolDetails();
         }
@@ -98,7 +98,7 @@ namespace PPPredictor.OpenAPIs
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"Error in GetHitBloqUserIdByUserId: {ex.Message}");
+                Plugin.ErrorPrint($"Error in GetHitBloqUserIdByUserId: {ex.Message}");
             }
             return new HitBloqUser();
         }
@@ -117,7 +117,7 @@ namespace PPPredictor.OpenAPIs
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"Error in GetRecentScores: {ex.Message}");
+                Plugin.ErrorPrint($"Error in GetRecentScores: {ex.Message}");
             }
             return new List<HitBloqScores>();
         }
@@ -136,7 +136,7 @@ namespace PPPredictor.OpenAPIs
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"Error in GetAllScores: {ex.Message}");
+                Plugin.ErrorPrint($"Error in GetAllScores: {ex.Message}");
             }
             return new List<HitBloqScores>();
         }
@@ -155,7 +155,7 @@ namespace PPPredictor.OpenAPIs
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"Error in GetPlayerListForMapPool: {ex.Message}");
+                Plugin.ErrorPrint($"Error in GetPlayerListForMapPool: {ex.Message}");
             }
             return new HitBloqLadder();
         }
@@ -174,7 +174,7 @@ namespace PPPredictor.OpenAPIs
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"Error in GetPlayerRankByCr: {ex.Message}");
+                Plugin.ErrorPrint($"Error in GetPlayerRankByCr: {ex.Message}");
             }
             return new HitBloqRankFromCr();
         }
@@ -193,7 +193,7 @@ namespace PPPredictor.OpenAPIs
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"Error in GetLeaderBoardInfo: {ex.Message}");
+                Plugin.ErrorPrint($"Error in GetLeaderBoardInfo: {ex.Message}");
             }
             return new HitBloqLeaderboardInfo();
         }

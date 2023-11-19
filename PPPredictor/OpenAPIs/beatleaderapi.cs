@@ -26,25 +26,6 @@ namespace PPPredictor.OpenAPIs
             client.BaseAddress = new Uri(baseUrl);
         }
 
-        public async Task<Dictionary<string, float>> GetModifiers()
-        {
-            try
-            {
-                HttpResponseMessage response = await client.GetAsync($"modifiers");
-                DebugPrintBeatLeaderNetwork(response.RequestMessage.RequestUri.ToString());
-                if (response.IsSuccessStatusCode)
-                {
-                    string result = await response.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<Dictionary<string, float>>(result);
-                }
-            }
-            catch (Exception ex)
-            {
-                Plugin.Log?.Error($"Error in beatleaderapi GetModifiers: {ex.Message}");
-            }
-            return new Dictionary<string, float>();
-        }
-
         public async Task<BeatLeaderEventList> GetEvents()
         {
             try
@@ -59,7 +40,7 @@ namespace PPPredictor.OpenAPIs
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"Error in beatleaderapi GetEvents: {ex.Message}");
+                Plugin.ErrorPrint($"Error in beatleaderapi GetEvents: {ex.Message}");
             }
             return new BeatLeaderEventList();
         }
@@ -78,16 +59,16 @@ namespace PPPredictor.OpenAPIs
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"Error in beatleaderapi GetSongByHash: {ex.Message}");
+                Plugin.ErrorPrint($"Error in beatleaderapi GetSongByHash: {ex.Message}");
             }
             return new BeatLeaderSong();
         }
 
-        public async Task<BeatLeaderPlayer> GetPlayer(long userId)
+        public async Task<BeatLeaderPlayer> GetPlayer(long userId, long leaderboardContextId)
         {
             try
             {
-                HttpResponseMessage response = await client.GetAsync($"/player/{userId}?stats=true");
+                HttpResponseMessage response = await client.GetAsync($"/player/{userId}?stats=true&leaderboardContext={leaderboardContextId}");
                 DebugPrintBeatLeaderNetwork(response.RequestMessage.RequestUri.ToString());
                 if (response.IsSuccessStatusCode)
                 {
@@ -97,16 +78,16 @@ namespace PPPredictor.OpenAPIs
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"Error in beatleaderapi GetPlayer: {ex.Message}");
+                Plugin.ErrorPrint($"Error in beatleaderapi GetPlayer: {ex.Message}");
             }
             return new BeatLeaderPlayer();
         }
 
-        public async Task<BeatLeaderPlayerScoreList> GetPlayerScores(string userId, string sortBy, string order, int page, int count, long? eventId = null)
+        public async Task<BeatLeaderPlayerScoreList> GetPlayerScores(string userId, string sortBy, string order, int page, int count, long leaderboardContextId, long? eventId = null)
         {
             try
             {
-                string requestUrl = $"/player/{userId}/scores?sortBy={sortBy}&order={order}&page={page}&count={count}";
+                string requestUrl = $"/player/{userId}/scores?sortBy={sortBy}&order={order}&page={page}&count={count}&leaderboardContext={leaderboardContextId}";
                 if (eventId.GetValueOrDefault() > 0)
                 {
                     requestUrl += $"&eventId={eventId}";
@@ -121,16 +102,16 @@ namespace PPPredictor.OpenAPIs
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"Error in beatleaderapi GetPlayerScores: {ex.Message}");
+                Plugin.ErrorPrint($"Error in beatleaderapi GetPlayerScores: {ex.Message}");
             }
             return new BeatLeaderPlayerScoreList();
         }
 
-        public async Task<BeatLeaderPlayerList> GetPlayersInLeaderboard(string sortBy, int page, int? count, string order)
+        public async Task<BeatLeaderPlayerList> GetPlayersInLeaderboard(string sortBy, int page, int? count, string order, long leaderboardContextId)
         {
             try
             {
-                HttpResponseMessage response = await client.GetAsync($"players?sortBy={sortBy}&page={page}&count={count}&order={order}&mapsType=ranked&friends=false");
+                HttpResponseMessage response = await client.GetAsync($"players?sortBy={sortBy}&page={page}&count={count}&order={order}&mapsType=ranked&friends=false&leaderboardContext={leaderboardContextId}");
                 DebugPrintBeatLeaderNetwork(response.RequestMessage.RequestUri.ToString());
                 if (response.IsSuccessStatusCode)
                 {
@@ -140,7 +121,7 @@ namespace PPPredictor.OpenAPIs
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"Error in beatleaderapi GetPlayersInLeaderboard: {ex.Message}");
+                Plugin.ErrorPrint($"Error in beatleaderapi GetPlayersInLeaderboard: {ex.Message}");
             }
             return new BeatLeaderPlayerList();
         }
@@ -159,7 +140,7 @@ namespace PPPredictor.OpenAPIs
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"Error in beatleaderapi GetPlayersInLeaderboard: {ex.Message}");
+                Plugin.ErrorPrint($"Error in beatleaderapi GetPlayersInLeaderboard: {ex.Message}");
             }
             return new BeatLeaderPlayerList();
         }
@@ -178,7 +159,7 @@ namespace PPPredictor.OpenAPIs
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"Error in beatleaderapi GetPlayList: {ex.Message}");
+                Plugin.ErrorPrint($"Error in beatleaderapi GetPlayList: {ex.Message}");
             }
             return new BeatLeaderPlayList();
         }

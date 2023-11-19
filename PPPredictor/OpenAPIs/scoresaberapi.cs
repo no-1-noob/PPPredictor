@@ -44,7 +44,7 @@ namespace PPPredictor.OpenAPIs
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"Error in scoresaberapi GetPlayers: {ex.Message}");
+                Plugin.ErrorPrint($"Error in scoresaberapi GetPlayers: {ex.Message}");
             }
             return new ScoreSaberPlayerList();
         }
@@ -63,7 +63,7 @@ namespace PPPredictor.OpenAPIs
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"Error in scoresaberapi GetPlayer: {ex.Message}");
+                Plugin.ErrorPrint($"Error in scoresaberapi GetPlayer: {ex.Message}");
             }
             return new ScoreSaberPlayer();
         }
@@ -82,7 +82,7 @@ namespace PPPredictor.OpenAPIs
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"Error in scoresaberapi GetPlayerScores: {ex.Message}");
+                Plugin.ErrorPrint($"Error in scoresaberapi GetPlayerScores: {ex.Message}");
             }
             return new ScoreSaberPlayerScoreList();
         }

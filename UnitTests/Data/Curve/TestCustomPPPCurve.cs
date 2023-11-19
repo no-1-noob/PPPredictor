@@ -34,10 +34,10 @@ namespace UnitTests.Data.Curve
             Assert.IsTrue(curve.IsDummy);
             curve = new CustomPPPCurve(_testArrPPCurve, CurveType.Linear, _testBasePPMulti);
             Assert.IsFalse(curve.IsDummy);
-            Assert.AreEqual(curve.CalculateMaxPP(beatMapInfo), curve.CalculatePPatPercentage(beatMapInfo, 100, false));
-            Assert.AreEqual(curve.CalculateMaxPP(beatMapInfo) * .5, curve.CalculatePPatPercentage(beatMapInfo, 50, false));
-            Assert.AreEqual(0, curve.CalculatePPatPercentage(beatMapInfo, 0f, false));
-            Assert.AreEqual(curve.CalculateMaxPP(beatMapInfo), curve.CalculatePPatPercentage(beatMapInfo, 100, true), "Isfailed should not affect linear");
+            Assert.AreEqual(curve.CalculateMaxPP(beatMapInfo), curve.CalculatePPatPercentage(beatMapInfo, 100, false, false));
+            Assert.AreEqual(curve.CalculateMaxPP(beatMapInfo) * .5, curve.CalculatePPatPercentage(beatMapInfo, 50, false, false));
+            Assert.AreEqual(0, curve.CalculatePPatPercentage(beatMapInfo, 0f, false, false));
+            Assert.AreEqual(curve.CalculateMaxPP(beatMapInfo), curve.CalculatePPatPercentage(beatMapInfo, 100, true, false), "Isfailed should not affect linear");
         }
 
         [TestMethod]
@@ -49,10 +49,10 @@ namespace UnitTests.Data.Curve
             Assert.IsTrue(curve.IsDummy);
             curve = new CustomPPPCurve(_testArrPPCurve, CurveType.ScoreSaber, _testBasePPMulti);
             Assert.IsFalse(curve.IsDummy);
-            Assert.AreEqual(curve.CalculateMaxPP(beatMapInfo), curve.CalculatePPatPercentage(beatMapInfo, 100, false));
-            Assert.AreEqual(curve.CalculateMaxPP(beatMapInfo) * .5, curve.CalculatePPatPercentage(beatMapInfo, 50, false));
-            Assert.AreEqual(0, curve.CalculatePPatPercentage(beatMapInfo, 0f, false));
-            Assert.AreEqual(curve.CalculateMaxPP(beatMapInfo) * .5, curve.CalculatePPatPercentage(beatMapInfo, 100, true), "Isfailed halves score");
+            Assert.AreEqual(curve.CalculateMaxPP(beatMapInfo), curve.CalculatePPatPercentage(beatMapInfo, 100, false, false));
+            Assert.AreEqual(curve.CalculateMaxPP(beatMapInfo) * .5, curve.CalculatePPatPercentage(beatMapInfo, 50, false, false));
+            Assert.AreEqual(0, curve.CalculatePPatPercentage(beatMapInfo, 0f, false, false));
+            Assert.AreEqual(curve.CalculateMaxPP(beatMapInfo) * .5, curve.CalculatePPatPercentage(beatMapInfo, 100, true, false), "Isfailed halves score");
         }
 
         [TestMethod]
@@ -60,30 +60,30 @@ namespace UnitTests.Data.Curve
         {
 
             CustomPPPCurve curve = new CustomPPPCurve(new List<(double, double)>(), CurveType.Linear, _testBasePPMulti, true);
-            Assert.AreEqual(0, curve.CalculatePPatPercentage(beatMapInfo, 100, false));
-            Assert.AreEqual(0, curve.CalculatePPatPercentage(beatMapInfo, 50, false));
-            Assert.AreEqual(0, curve.CalculatePPatPercentage(beatMapInfo, 0f, false));
-            Assert.AreEqual(0, curve.CalculatePPatPercentage(beatMapInfo, 100, true));
+            Assert.AreEqual(0, curve.CalculatePPatPercentage(beatMapInfo, 100, false, false));
+            Assert.AreEqual(0, curve.CalculatePPatPercentage(beatMapInfo, 50, false, false));
+            Assert.AreEqual(0, curve.CalculatePPatPercentage(beatMapInfo, 0f, false, false));
+            Assert.AreEqual(0, curve.CalculatePPatPercentage(beatMapInfo, 100, true, false));
         }
 
         [TestMethod]
         public void TestCreateBasicPPPCurve()
         {
             CustomPPPCurve curve = CustomPPPCurve.CreateBasicPPPCurve(_testBasePPMulti, _testBaseline, _testExponential, _testCutoff);
-            Assert.AreEqual(curve.CalculatePPatPercentage(beatMapInfo, 99, false), 23.905575069868032);
-            Assert.AreEqual(curve.CalculatePPatPercentage(beatMapInfo, 75, false), 18.75);
-            Assert.AreEqual(curve.CalculatePPatPercentage(beatMapInfo, 50, false), 12.5);
-            Assert.AreEqual(curve.CalculatePPatPercentage(beatMapInfo, 25, false), 6.25);
-            Assert.AreEqual(curve.CalculatePPatPercentage(beatMapInfo, 0, false), 0);
-            Assert.AreEqual(curve.CalculatePPatPercentage(beatMapInfo, 99, true), 23.905575069868032);
+            Assert.AreEqual(curve.CalculatePPatPercentage(beatMapInfo, 99, false, false), 23.905575069868032);
+            Assert.AreEqual(curve.CalculatePPatPercentage(beatMapInfo, 75, false, false), 18.75);
+            Assert.AreEqual(curve.CalculatePPatPercentage(beatMapInfo, 50, false, false), 12.5);
+            Assert.AreEqual(curve.CalculatePPatPercentage(beatMapInfo, 25, false, false), 6.25);
+            Assert.AreEqual(curve.CalculatePPatPercentage(beatMapInfo, 0, false, false), 0);
+            Assert.AreEqual(curve.CalculatePPatPercentage(beatMapInfo, 99, true, false), 23.905575069868032);
 
             curve = CustomPPPCurve.CreateBasicPPPCurve(_testBasePPMulti, null, null, null);
-            Assert.AreEqual(curve.CalculatePPatPercentage(beatMapInfo, 99, false), 0.9401040430010454);
-            Assert.AreEqual(curve.CalculatePPatPercentage(beatMapInfo, 75, false), 0.375);
-            Assert.AreEqual(curve.CalculatePPatPercentage(beatMapInfo, 50, false), 0.25);
-            Assert.AreEqual(curve.CalculatePPatPercentage(beatMapInfo, 25, false), 0.125);
-            Assert.AreEqual(curve.CalculatePPatPercentage(beatMapInfo, 0, false), 0);
-            Assert.AreEqual(curve.CalculatePPatPercentage(beatMapInfo, 99, true), 0.9401040430010454);
+            Assert.AreEqual(curve.CalculatePPatPercentage(beatMapInfo, 99, false, false), 0.9401040430010454);
+            Assert.AreEqual(curve.CalculatePPatPercentage(beatMapInfo, 75, false, false), 0.375);
+            Assert.AreEqual(curve.CalculatePPatPercentage(beatMapInfo, 50, false, false), 0.25);
+            Assert.AreEqual(curve.CalculatePPatPercentage(beatMapInfo, 25, false, false), 0.125);
+            Assert.AreEqual(curve.CalculatePPatPercentage(beatMapInfo, 0, false, false), 0);
+            Assert.AreEqual(curve.CalculatePPatPercentage(beatMapInfo, 99, true, false), 0.9401040430010454);
         }
 
         [TestMethod]
@@ -95,10 +95,10 @@ namespace UnitTests.Data.Curve
             lsTestArray.Reverse();
             crCurve.points = lsTestArray;
             CustomPPPCurve curve = new CustomPPPCurve(crCurve);
-            Assert.AreEqual(50, curve.CalculatePPatPercentage(beatMapInfo, 100, false));
-            Assert.AreEqual(25, curve.CalculatePPatPercentage(beatMapInfo, 50, false));
-            Assert.AreEqual(0, curve.CalculatePPatPercentage(beatMapInfo, 0f, false));
-            Assert.AreEqual(50, curve.CalculatePPatPercentage(beatMapInfo, 100, true));
+            Assert.AreEqual(50, curve.CalculatePPatPercentage(beatMapInfo, 100, false, false));
+            Assert.AreEqual(25, curve.CalculatePPatPercentage(beatMapInfo, 50, false, false));
+            Assert.AreEqual(0, curve.CalculatePPatPercentage(beatMapInfo, 0f, false, false));
+            Assert.AreEqual(50, curve.CalculatePPatPercentage(beatMapInfo, 100, true, false));
 
 
             crCurve = new HitBloqCrCurve();
@@ -107,12 +107,12 @@ namespace UnitTests.Data.Curve
             crCurve.cutoff = _testCutoff;
             crCurve.exponential = _testExponential;
             curve = new CustomPPPCurve(crCurve);
-            Assert.AreEqual(curve.CalculatePPatPercentage(beatMapInfo, 99, false), 1195.2787534934016);
-            Assert.AreEqual(curve.CalculatePPatPercentage(beatMapInfo, 75, false), 937.5);
-            Assert.AreEqual(curve.CalculatePPatPercentage(beatMapInfo, 50, false), 625);
-            Assert.AreEqual(curve.CalculatePPatPercentage(beatMapInfo, 25, false), 312.5);
-            Assert.AreEqual(curve.CalculatePPatPercentage(beatMapInfo, 0, false), 0);
-            Assert.AreEqual(curve.CalculatePPatPercentage(beatMapInfo, 99, true), 1195.2787534934016);
+            Assert.AreEqual(curve.CalculatePPatPercentage(beatMapInfo, 99, false, false), 1195.2787534934016);
+            Assert.AreEqual(curve.CalculatePPatPercentage(beatMapInfo, 75, false, false), 937.5);
+            Assert.AreEqual(curve.CalculatePPatPercentage(beatMapInfo, 50, false, false), 625);
+            Assert.AreEqual(curve.CalculatePPatPercentage(beatMapInfo, 25, false, false), 312.5);
+            Assert.AreEqual(curve.CalculatePPatPercentage(beatMapInfo, 0, false, false), 0);
+            Assert.AreEqual(curve.CalculatePPatPercentage(beatMapInfo, 99, true, false), 1195.2787534934016);
         }
 
         [TestMethod]
@@ -138,7 +138,7 @@ namespace UnitTests.Data.Curve
             CustomPPPCurve curve = CustomPPPCurve.CreateDummyPPPCurve();
             Assert.IsNotNull(curve);
             Assert.IsTrue(curve.IsDummy);
-            Assert.AreEqual(0, curve.CalculatePPatPercentage(beatMapInfo, 100, false));
+            Assert.AreEqual(0, curve.CalculatePPatPercentage(beatMapInfo, 100, false, false));
         }
 
         [TestMethod]

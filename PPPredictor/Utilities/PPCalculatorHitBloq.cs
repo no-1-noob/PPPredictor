@@ -13,7 +13,7 @@ namespace PPPredictor.Utilities
     class PPCalculatorHitBloq<HBAPI> : PPCalculator where HBAPI : IHitBloqAPI, new ()
     {
         private readonly HBAPI hitbloqapi;
-        private readonly string unserPoolId = "-1";
+        private readonly string unsetPoolId = "-1";
         //Dctionaries defined like here: https://github.com/DaFluffyPotato/hitbloq/blob/1e7bf18f92f1146bf8da2f24769aea072542b6e5/general.py#L24
         private static readonly Dictionary<string, string> dctDiffShorten = new Dictionary<string, string>{
             { "ExpertPlus", "ep" },
@@ -47,7 +47,7 @@ namespace PPPredictor.Utilities
             UpdateAvailableMapPools(); //TODO: implement for all?
         }
 
-        public override PPPBeatMapInfo ApplyModifiersToBeatmapInfo(PPPBeatMapInfo beatMapInfo, GameplayModifiers gameplayModifiers, bool levelFailed = false)
+        public override PPPBeatMapInfo ApplyModifiersToBeatmapInfo(PPPBeatMapInfo beatMapInfo, GameplayModifiers gameplayModifiers, bool levelFailed = false, bool levelPaused = false)
         {
             beatMapInfo.ModifiedStarRating = new PPPStarRating(levelFailed ? 0 : beatMapInfo.BaseStarRating.Stars);
             return beatMapInfo;
@@ -83,7 +83,7 @@ namespace PPPredictor.Utilities
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"PPCalculatorHitBloq GetBeatMapInfoAsync Error: {ex.Message}");
+                Plugin.ErrorPrint($"PPCalculatorHitBloq GetBeatMapInfoAsync Error: {ex.Message}");
                 return new PPPBeatMapInfo(beatMapInfo, new PPPStarRating(-1));
             }
         }
@@ -92,13 +92,13 @@ namespace PPPredictor.Utilities
         {
             try
             {
-                if (_leaderboardInfo.CurrentMapPool.Id == unserPoolId) return new PPPPlayer(true);
+                if (_leaderboardInfo.CurrentMapPool.Id == unsetPoolId) return new PPPPlayer(true);
                 HitBloqUser player = await hitbloqapi.GetHitBloqUserByPool(userId, _leaderboardInfo.CurrentMapPool.Id);
                 return new PPPPlayer(player);
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"PPCalculatorHitBloq GetPlayerInfo Error: {ex.Message}");
+                Plugin.ErrorPrint($"PPCalculatorHitBloq GetPlayerInfo Error: {ex.Message}");
                 return new PPPPlayer(true);
             }
         }
@@ -117,7 +117,7 @@ namespace PPPredictor.Utilities
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"PPCalculatorHitBloq GetPlayers Error: {ex.Message}");
+                Plugin.ErrorPrint($"PPCalculatorHitBloq GetPlayers Error: {ex.Message}");
                 return new List<PPPPlayer>();
             }
         }
@@ -132,7 +132,7 @@ namespace PPPredictor.Utilities
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"PPCalculatorHitBloq GetPPToRank Error: {ex.Message}");
+                Plugin.ErrorPrint($"PPCalculatorHitBloq GetPPToRank Error: {ex.Message}");
                 return -1;
             }
         }
@@ -146,7 +146,7 @@ namespace PPPredictor.Utilities
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"PPCalculatorHitBloq GetRecentScores Error: {ex.Message}");
+                Plugin.ErrorPrint($"PPCalculatorHitBloq GetRecentScores Error: {ex.Message}");
                 return new PPPScoreCollection();
             }
         }
@@ -155,13 +155,13 @@ namespace PPPredictor.Utilities
         {
             try
             {
-                if(_leaderboardInfo.CurrentMapPool.Id == unserPoolId) return new PPPScoreCollection();
+                if(_leaderboardInfo.CurrentMapPool.Id == unsetPoolId) return new PPPScoreCollection();
                 List<HitBloqScores> lsHitBloqSCores = await hitbloqapi.GetAllScores(userId, _leaderboardInfo.CurrentMapPool.Id);
                 return new PPPScoreCollection(lsHitBloqSCores, 0);
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"PPCalculatorHitBloq GetAllScores Error: {ex.Message}");
+                Plugin.ErrorPrint($"PPCalculatorHitBloq GetAllScores Error: {ex.Message}");
                 return new PPPScoreCollection();
             }
         }
@@ -179,7 +179,7 @@ namespace PPPredictor.Utilities
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"PPCalculatorHitBloq UpdateUserId Error: {ex.Message}");
+                Plugin.ErrorPrint($"PPCalculatorHitBloq UpdateUserId Error: {ex.Message}");
             }
         }
 
@@ -250,7 +250,7 @@ namespace PPPredictor.Utilities
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"PPCalculatorHitBloq ParseHashDiffAndMode '{input}' Error: {ex} ");
+                Plugin.ErrorPrint($"PPCalculatorHitBloq ParseHashDiffAndMode '{input}' Error: {ex} ");
             }
             return (string.Empty, string.Empty, string.Empty);
         }

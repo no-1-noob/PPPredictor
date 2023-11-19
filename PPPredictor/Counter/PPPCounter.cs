@@ -21,9 +21,11 @@ namespace PPPredictor.Counter
         private List<CounterInfoHolder> lsCounterInfoHolder;
         private int maxPossibleScore = 0;
         private bool _levelFailed = false;
+        private bool _levelPause = false;
         private bool _iconMoved = false;
         private int _noteCount = 0;
         private int _noteDone = 0;
+        private bool _isSongStarted = false;
         private bool _isSongFinished = false;
 #if DEBUG
         private TMP_Text debugPercentage;
@@ -41,7 +43,7 @@ namespace PPPredictor.Counter
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"CounterInit Error: {ex.Message}");
+                Plugin.ErrorPrint($"CounterInit Error: {ex.Message}");
             }
             
         }
@@ -59,7 +61,7 @@ namespace PPPredictor.Counter
                 }
                 catch (Exception ex)
                 {
-                    Plugin.Log.Error($"PPPCounter change selected Map: UpdateCurrentBeatMapInfos failed {ex.Message}");
+                    Plugin.ErrorPrint($"PPPCounter change selected Map: UpdateCurrentBeatMapInfos failed {ex.Message}");
                 }
 
                 pauseController.didPauseEvent += PauseController_didPauseEvent;
@@ -119,7 +121,7 @@ namespace PPPredictor.Counter
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"SetupCounter Error: {ex.Message}");
+                Plugin.ErrorPrint($"SetupCounter Error: {ex.Message}");
             }
         }
 
@@ -143,6 +145,11 @@ namespace PPPredictor.Counter
 
         private void PauseController_didPauseEvent()
         {
+            if (!_levelPause && _isSongStarted && !_isSongFinished)
+            {
+                _levelPause = true;
+                CalculatePercentages();
+            }
             if (Plugin.ProfileInfo.IsCounterGainSilentModeEnabled && !_isSongFinished)
             {
                 lsCounterInfoHolder.ForEach(item => item.MoveTextWithAnimation(AnimateableCounterText.PPGAIN, 100f, new Vector3(0, .3f, 0), true, true, true, true, item.IsPersonalBestAnimationRunning));
@@ -164,6 +171,7 @@ namespace PPPredictor.Counter
                     }
                 });
                 _noteDone++;
+                _isSongStarted = true;
                 if (_noteDone >= _noteCount && Plugin.ProfileInfo.IsCounterGainSilentModeEnabled)
                 {
                     _isSongFinished = true;
@@ -199,7 +207,7 @@ namespace PPPredictor.Counter
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"CalculatePercentages Error: {ex.Message}");
+                Plugin.ErrorPrint($"CalculatePercentages Error: {ex.Message}");
             }
         }
 
@@ -215,7 +223,7 @@ namespace PPPredictor.Counter
 
         private void DisplayCounterText(double percentage)
         {
-            lsCounterInfoHolder.ForEach(item => item.UpdateCounterText(percentage, _levelFailed));
+            lsCounterInfoHolder.ForEach(item => item.UpdateCounterText(percentage, _levelFailed, _levelPause));
             if(!_iconMoved && !lsCounterInfoHolder.Where(x => x.MaxPP == -1).Any())
             {
                 _iconMoved = true;

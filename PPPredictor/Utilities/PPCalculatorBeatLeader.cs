@@ -30,7 +30,7 @@ namespace PPPredictor.Utilities
         {
             try
             {
-                BeatLeaderPlayer player = await beatleaderapi.GetPlayer(userId);
+                BeatLeaderPlayer player = await beatleaderapi.GetPlayer(userId, GetLeaderboardContextId(_leaderboardInfo.CurrentMapPool.LeaderboardContext));
                 if(_leaderboardInfo.CurrentMapPool != null && _leaderboardInfo.CurrentMapPool.MapPoolType == MapPoolType.Default)
                 {
                     return new PPPPlayer(player);
@@ -47,7 +47,7 @@ namespace PPPredictor.Utilities
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"PPCalculatorBeatLeader GetPlayerInfo Error: {ex.Message}");
+                Plugin.ErrorPrint($"PPCalculatorBeatLeader GetPlayerInfo Error: {ex.Message}");
                 return new PPPPlayer(true);
             }
         }
@@ -60,7 +60,7 @@ namespace PPPredictor.Utilities
                 List<PPPPlayer> lsPlayer = new List<PPPPlayer>();
                 if(_leaderboardInfo.CurrentMapPool != null && _leaderboardInfo.CurrentMapPool.MapPoolType == MapPoolType.Default)
                 {
-                    scoreSaberPlayerCollection = await beatleaderapi.GetPlayersInLeaderboard("pp", (int)fetchIndexPage, playerPerPages, "desc");
+                    scoreSaberPlayerCollection = await beatleaderapi.GetPlayersInLeaderboard("pp", (int)fetchIndexPage, playerPerPages, "desc", GetLeaderboardContextId(_leaderboardInfo.CurrentMapPool.LeaderboardContext));
                 }
                 else if(_leaderboardInfo.CurrentMapPool != null)
                 {
@@ -74,7 +74,7 @@ namespace PPPredictor.Utilities
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"PPCalculatorBeatLeader GetPlayers Error: {ex.Message}");
+                Plugin.ErrorPrint($"PPCalculatorBeatLeader GetPlayers Error: {ex.Message}");
                 return new List<PPPPlayer>();
             }
         }
@@ -88,12 +88,12 @@ namespace PPPredictor.Utilities
                 {
                     id = long.Parse(_leaderboardInfo.CurrentMapPool.Id);
                 }
-                BeatLeaderPlayerScoreList beatLeaderPlayerScoreList = await beatleaderapi.GetPlayerScores(userId, "date", "desc", page, pageSize, id);
+                BeatLeaderPlayerScoreList beatLeaderPlayerScoreList = await beatleaderapi.GetPlayerScores(userId, "date", "desc", page, pageSize, GetLeaderboardContextId(_leaderboardInfo.CurrentMapPool.LeaderboardContext));
                 return new PPPScoreCollection(beatLeaderPlayerScoreList);
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"PPCalculatorBeatLeader GetRecentScores Error: {ex.Message}");
+                Plugin.ErrorPrint($"PPCalculatorBeatLeader GetRecentScores Error: {ex.Message}");
                 return new PPPScoreCollection();
             }
         }
@@ -143,12 +143,12 @@ namespace PPPredictor.Utilities
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"PPCalculatorBeatLeader GetStarsForBeatmapAsync Error: {ex.Message}");
+                Plugin.ErrorPrint($"PPCalculatorBeatLeader GetStarsForBeatmapAsync Error: {ex.Message}");
                 return new PPPBeatMapInfo(beatMapInfo, new PPPStarRating(-1));
             }
         }
 
-        public override PPPBeatMapInfo ApplyModifiersToBeatmapInfo(PPPBeatMapInfo beatMapInfo, GameplayModifiers gameplayModifiers, bool levelFailed)
+        public override PPPBeatMapInfo ApplyModifiersToBeatmapInfo(PPPBeatMapInfo beatMapInfo, GameplayModifiers gameplayModifiers, bool levelFailed, bool levelPaused)
         {
             List<string> lsModifiers = ParseModifiers(gameplayModifiers);
             double accRating = beatMapInfo.BaseStarRating.AccRating;
@@ -168,7 +168,7 @@ namespace PPPredictor.Utilities
                     }
                 }
             }
-            beatMapInfo.ModifiedStarRating = new PPPStarRating(GenerateModifierMultiplier(lsModifiers, beatMapInfo, levelFailed, beatMapInfo.BaseStarRating.ModifiersRating != null), accRating, passRating, techRating);
+            beatMapInfo.ModifiedStarRating = new PPPStarRating(GenerateModifierMultiplier(lsModifiers, beatMapInfo, levelFailed, levelPaused, beatMapInfo.BaseStarRating.ModifiersRating != null), accRating, passRating, techRating);
             return beatMapInfo;
         }
 
@@ -189,29 +189,31 @@ namespace PPPredictor.Utilities
                 if (gameplayModifiers.proMode) lsModifiers.Add("PM");
                 if (gameplayModifiers.smallCubes) lsModifiers.Add("SC");
                 if (gameplayModifiers.instaFail) lsModifiers.Add("IF");
-                //if (gameplayModifiers.FOURLIFES??) lsModifiers.Add("BE");
+                if (gameplayModifiers.energyType == GameplayModifiers.EnergyType.Battery) lsModifiers.Add("BE");
                 if (gameplayModifiers.strictAngles) lsModifiers.Add("SA");
                 if (gameplayModifiers.zenMode) lsModifiers.Add("ZM");
                 return lsModifiers;
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"PPCalculatorBeatLeader ParseModifiers Error: {ex.Message}");
+                Plugin.ErrorPrint($"PPCalculatorBeatLeader ParseModifiers Error: {ex.Message}");
                 return new List<string>();
             }
         }
 
-        private double GenerateModifierMultiplier(List<string> lsModifier, PPPBeatMapInfo beatMapInfo, bool levelFailed, bool ignoreSpeedMultiplier)
+        private double GenerateModifierMultiplier(List<string> lsModifier, PPPBeatMapInfo beatMapInfo, bool levelFailed, bool levelPaused, bool ignoreSpeedMultiplier)
         {
             try
             {
                 double multiplier = 1;
                 foreach (string modifier in lsModifier)
                 {
+                    if (_leaderboardInfo.CurrentMapPool.LeaderboardContext == LeaderboardContext.BeatLeaderNoModifiers && !(modifier == "BE" || modifier == "IF")) return 0;
                     if (!levelFailed && modifier == "NF") continue; //Ignore nofail until the map is failed in gameplay
                     if (ignoreSpeedMultiplier && (modifier == "SF" || modifier == "SS" || modifier == "FS")) continue; //Ignore speed multies and use the precomputed values from backend
                     if(beatMapInfo.BaseStarRating.ModifierValues.TryGetValue(modifier.ToLower(), out double value))
                     {
+                        if (_leaderboardInfo.CurrentMapPool.LeaderboardContext == LeaderboardContext.BeatLeaderGolf && value < 0) return 0;
                         multiplier += value;
                     }
                 }
@@ -219,7 +221,7 @@ namespace PPPredictor.Utilities
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"PPCalculatorBeatLeader GenerateModifierMultiplier Error: {ex.Message}");
+                Plugin.ErrorPrint($"PPCalculatorBeatLeader GenerateModifierMultiplier Error: {ex.Message}");
                 return -1;
             }
         }
@@ -254,7 +256,7 @@ namespace PPPredictor.Utilities
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"PPCalculatorBeatLeader UpdateAvailableMapPools Error: {ex.Message}");
+                Plugin.ErrorPrint($"PPCalculatorBeatLeader UpdateAvailableMapPools Error: {ex.Message}");
                 throw;
             }
         }
@@ -278,6 +280,18 @@ namespace PPPredictor.Utilities
         public override string CreateSeachString(string hash, IDifficultyBeatmap beatmap)
         {
             return $"{hash}_{beatmap.difficultyRank}";
+        }
+
+        private long GetLeaderboardContextId(LeaderboardContext leaderboardContext)
+        {
+            switch (leaderboardContext)
+            {
+                case LeaderboardContext.BeatLeaderDefault: return 2;
+                case LeaderboardContext.BeatLeaderNoModifiers: return 4;
+                case LeaderboardContext.BeatLeaderNoPauses: return 8;
+                case LeaderboardContext.BeatLeaderGolf: return 16;
+                default: return 0;
+            }
         }
     }
 }

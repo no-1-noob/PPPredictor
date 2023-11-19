@@ -74,7 +74,7 @@ namespace UnitTests.Data
             PPPLeaderboardInfo leaderboardInfo = new PPPLeaderboardInfo(Leaderboard.BeatLeader);
             Assert.AreEqual(leaderboardInfo.LeaderboardName, Leaderboard.BeatLeader.ToString());
             Assert.IsNotNull(leaderboardInfo.LsMapPools);
-            Assert.AreEqual(leaderboardInfo.LsMapPools.Count, 1);
+            Assert.AreEqual(leaderboardInfo.LsMapPools.Count, 4);
             Assert.AreEqual(leaderboardInfo.CustomLeaderboardUserId, string.Empty);
             Assert.AreEqual(leaderboardInfo.PpSuffix, "pp");
             Assert.AreEqual(leaderboardInfo.LeaderboardFirstPageIndex, 1);
