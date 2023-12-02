@@ -14,6 +14,7 @@ namespace PPPredictor.Utilities
         protected bool hasPPToRankFunctionality = false;
         protected int taskDelayValue = 250;
         internal bool hasOldDotRanking = true;
+        private int pageFetchLimit = 5;
         public event EventHandler OnMapPoolRefreshed;
 
         public PPCalculator()
@@ -180,7 +181,8 @@ namespace PPPredictor.Utilities
                 double bestRankFetched = _leaderboardInfo.CurrentMapPool.LsPlayerRankings.Select(x => x.Rank).DefaultIfEmpty(-1).Min();
                 double fetchIndexPage = bestRankFetched > 0 ? Math.Floor((bestRankFetched - 1) / playerPerPages) + _leaderboardInfo.LeaderboardFirstPageIndex : Math.Floor(_leaderboardInfo.CurrentMapPool.CurrentPlayer.Rank / playerPerPages) + _leaderboardInfo.LeaderboardFirstPageIndex;
                 bool needMoreData = true;
-                while (needMoreData)
+                int pageFetchCount = 0;
+                while (needMoreData && pageFetchCount < pageFetchLimit)
                 {
                     int indexOfBetterPlayer = _leaderboardInfo.CurrentMapPool.LsPlayerRankings.FindLastIndex(x => x.Pp > pp);
                     //Check if the rank before is actually the rank before, gaps can be created when using PPToRank
@@ -216,6 +218,7 @@ namespace PPPredictor.Utilities
                         }
                     }
                     fetchIndexPage--;
+                    pageFetchCount++;
                     bestRankFetched = _leaderboardInfo.CurrentMapPool.LsPlayerRankings.Select(x => x.Rank).DefaultIfEmpty(-1).Min();
                     await Task.Delay(taskDelayValue);
                 }
@@ -225,7 +228,7 @@ namespace PPPredictor.Utilities
                 {
                     rankAfterPlay = rankCountryAfterPlay = 0; //Special case for when no leaderboard is active;
                 }
-                return new RankGainResult(rankAfterPlay, rankCountryAfterPlay, _leaderboardInfo.CurrentMapPool.CurrentPlayer);
+                return new RankGainResult(rankAfterPlay, rankCountryAfterPlay, _leaderboardInfo.CurrentMapPool.CurrentPlayer, pageFetchCount >= pageFetchLimit);
             }
             catch (Exception ex)
             {

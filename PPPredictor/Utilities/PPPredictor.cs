@@ -291,12 +291,22 @@ namespace PPPredictor.Utilities
         {
             if (rankGainResult != null)
             {
-                ppDisplay.PredictedRank = $"{rankGainResult.RankGlobal:N0}";
-                ppDisplay.PredictedRankDiff = rankGainResult.RankGainGlobal.ToString("+#;-#;0");
                 ppDisplay.PredictedRankDiffColor = DisplayHelper.GetDisplayColor(rankGainResult.RankGainGlobal, false);
-                ppDisplay.PredictedCountryRank = $"{rankGainResult.RankCountry:N0}";
-                ppDisplay.PredictedCountryRankDiff = rankGainResult.RankGainCountry.ToString("+#;-#;0");
                 ppDisplay.PredictedCountryRankDiffColor = _leaderboardInfo.IsCountryRankEnabled ? DisplayHelper.GetDisplayColor(rankGainResult.RankGainCountry, false) : DisplayHelper.ColorCountryRankDisabled;
+                if (rankGainResult.IsRankGainCanceledByLimit)
+                {
+                    ppDisplay.PredictedRank = $"<{rankGainResult.RankGlobal:N0}";
+                    ppDisplay.PredictedRankDiff = rankGainResult.RankGainGlobal.ToString(">+#;<-#;0");
+                    ppDisplay.PredictedCountryRank = $"<{rankGainResult.RankCountry:N0}";
+                    ppDisplay.PredictedCountryRankDiff = rankGainResult.RankGainCountry.ToString(">+#;<-#;0");
+                }
+                else
+                {
+                    ppDisplay.PredictedRank = $"{rankGainResult.RankGlobal:N0}";
+                    ppDisplay.PredictedRankDiff = rankGainResult.RankGainGlobal.ToString("+#;-#;0");
+                    ppDisplay.PredictedCountryRank = $"{rankGainResult.RankCountry:N0}";
+                    ppDisplay.PredictedCountryRankDiff = rankGainResult.RankGainCountry.ToString("+#;-#;0");
+                }
             }
             else
             {
