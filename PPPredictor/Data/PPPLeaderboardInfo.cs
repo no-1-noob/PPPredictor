@@ -63,6 +63,7 @@ namespace PPPredictor.Data
                     _lsMapPools.Add(new PPPMapPool("-2", MapPoolType.Default, $"No modifiers", PPCalculatorBeatLeader<BeatleaderAPI>.accumulationConstant, 0, new BeatLeaderPPPCurve(), LeaderboardContext.BeatLeaderNoModifiers));
                     _lsMapPools.Add(new PPPMapPool("-3", MapPoolType.Default, $"No pauses", PPCalculatorBeatLeader<BeatleaderAPI>.accumulationConstant, 0, new BeatLeaderPPPCurve(), LeaderboardContext.BeatLeaderNoPauses));
                     _lsMapPools.Add(new PPPMapPool("-4", MapPoolType.Default, $"Golf", PPCalculatorBeatLeader<BeatleaderAPI>.accumulationConstant, 0, new BeatLeaderPPPCurve(), LeaderboardContext.BeatLeaderGolf));
+                    _lsMapPools.Add(new PPPMapPool("-5", MapPoolType.Default, $"SCPM", PPCalculatorBeatLeader<BeatleaderAPI>.accumulationConstant, 0, new BeatLeaderPPPCurve(), LeaderboardContext.BeatLeaderSCPM));
                     this.LargePageSize = 100;
                     break;
                 case Leaderboard.NoLeaderboard:

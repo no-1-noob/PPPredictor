@@ -49,7 +49,6 @@ namespace PPPredictor.Data
         [JsonIgnore]
         public List<PPPPlayer> LsPlayerRankings { get => _lsPlayerRankings; set => _lsPlayerRankings = value; }
         public DateTime DtUtcLastRefresh { get => _dtUtcLastRefresh; set => _dtUtcLastRefresh = value; }
-        public DateTime DtUtcLastSessionReset { get => _dtUtcLastSessionReset; set => _dtUtcLastSessionReset = value; }
         public DateTimeOffset DtLastScoreSet { get => _dtLastScoreSet; set => _dtLastScoreSet = value; }
         public string IconUrl { get => _iconUrl; set => _iconUrl = value; }
         [JsonIgnore]
@@ -68,7 +67,6 @@ namespace PPPredictor.Data
             _lsMapPoolEntries = new List<PPPMapPoolEntry>();
             _lsPlayerRankings = new List<PPPPlayer>();
             _dtUtcLastRefresh = new DateTime(2000, 1, 1);
-            DtUtcLastSessionReset = new DateTime(2000, 1, 1);
             _curve = CustomPPPCurve.CreateDummyPPPCurve();
             _id = "-1";
             _playListId = "-1";

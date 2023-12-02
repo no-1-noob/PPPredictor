@@ -86,7 +86,8 @@
         BeatLeaderDefault,
         BeatLeaderNoModifiers,
         BeatLeaderNoPauses,
-        BeatLeaderGolf
+        BeatLeaderGolf,
+        BeatLeaderSCPM
     }
 
     class EnumHelper

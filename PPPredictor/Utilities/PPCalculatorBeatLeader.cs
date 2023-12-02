@@ -206,6 +206,7 @@ namespace PPPredictor.Utilities
             try
             {
                 double multiplier = 1;
+                if (_leaderboardInfo.CurrentMapPool.LeaderboardContext == LeaderboardContext.BeatLeaderSCPM && !(lsModifier.Contains("SC") && lsModifier.Contains("PM"))) return 0;
                 foreach (string modifier in lsModifier)
                 {
                     if (_leaderboardInfo.CurrentMapPool.LeaderboardContext == LeaderboardContext.BeatLeaderNoModifiers && !(modifier == "BE" || modifier == "IF")) return 0;
@@ -290,6 +291,7 @@ namespace PPPredictor.Utilities
                 case LeaderboardContext.BeatLeaderNoModifiers: return 4;
                 case LeaderboardContext.BeatLeaderNoPauses: return 8;
                 case LeaderboardContext.BeatLeaderGolf: return 16;
+                case LeaderboardContext.BeatLeaderSCPM: return 32;
                 default: return 0;
             }
         }
