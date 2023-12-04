@@ -192,12 +192,12 @@ namespace PPPredictor.Utilities
             }
         }
 
-        public double GetPPAtPercentageForCalculator(Leaderboard leaderBoardName, double percentage, bool levelFailed, PPPBeatMapInfo beatMapInfo)
+        public double GetPPAtPercentageForCalculator(Leaderboard leaderBoardName, double percentage, bool levelFailed, bool levelPaused, PPPBeatMapInfo beatMapInfo)
         {
             IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());
             if (predictor != null)
             {
-                return predictor.CalculatePPatPercentage(percentage, beatMapInfo, levelFailed);
+                return predictor.CalculatePPatPercentage(percentage, beatMapInfo, levelFailed, levelPaused);
             }
             return 0;
         }

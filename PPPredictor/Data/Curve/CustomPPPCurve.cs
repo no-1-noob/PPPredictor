@@ -58,7 +58,7 @@ namespace PPPredictor.Data.Curve
             basePPMultiplier = 50;
         }
 
-        public double CalculatePPatPercentage(PPPBeatMapInfo beatMapInfo, double percentage, bool failed)
+        public double CalculatePPatPercentage(PPPBeatMapInfo beatMapInfo, double percentage, bool failed, bool paused, LeaderboardContext leaderboardContext = LeaderboardContext.None)
         {
             switch (curveType)
             {
@@ -73,7 +73,7 @@ namespace PPPredictor.Data.Curve
             }
         }
 
-        public double CalculateMaxPP(PPPBeatMapInfo beatMapInfo)
+        public double CalculateMaxPP(PPPBeatMapInfo beatMapInfo, LeaderboardContext leaderboardContext = LeaderboardContext.None)
         {
             double percent = 100;
             if(curveType == CurveType.Linear && arrPPCurve.Count > 1)
@@ -81,7 +81,7 @@ namespace PPPredictor.Data.Curve
                 (double, double) peakMultiplier = arrPPCurve.Aggregate((i1, i2) => i1.Item2 > i2.Item2 ? i1 : i2);
                 percent = peakMultiplier.Item1 * 100;
             }
-            return CalculatePPatPercentage(beatMapInfo, percent, false);
+            return CalculatePPatPercentage(beatMapInfo, percent, false, false);
         }
 
         private double LinearCalculatePPatPercentage(PPPBeatMapInfo beatMapInfo, double percentage)
@@ -94,7 +94,7 @@ namespace PPPredictor.Data.Curve
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"CustomPPPCurve linearCalculatePPatPercentage Error: {ex.Message}");
+                Plugin.ErrorPrint($"CustomPPPCurve linearCalculatePPatPercentage Error: {ex.Message}");
                 return -1;
             }
         }
@@ -121,7 +121,7 @@ namespace PPPredictor.Data.Curve
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"CustomPPPCurve CalculateMultiplierAtPercentage Error: {ex.Message}");
+                Plugin.ErrorPrint($"CustomPPPCurve CalculateMultiplierAtPercentage Error: {ex.Message}");
                 return -1;
             }
         }
@@ -136,7 +136,7 @@ namespace PPPredictor.Data.Curve
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"CustomPPPCurve CalculateMultiplierAtPercentageWithLine Error: {ex.Message}");
+                Plugin.ErrorPrint($"CustomPPPCurve CalculateMultiplierAtPercentageWithLine Error: {ex.Message}");
                 return -1;
             }
         }

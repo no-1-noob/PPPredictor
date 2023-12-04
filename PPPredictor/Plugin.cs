@@ -55,6 +55,11 @@ namespace PPPredictor
             ProfileInfoMgr.SaveProfile(ProfileInfo);
         }
 
+        public static void ErrorPrint(string text)
+        {
+            Plugin.Log?.Error(text);
+        }
+
         public static void DebugPrint(string text)
         {
             Plugin.Log?.Error(text);

@@ -42,7 +42,7 @@ namespace PPPredictor.Interfaces
 
         void ResetDisplay(bool resetAll);
 
-        double GetPPAtPercentageForCalculator(Leaderboard leaderBoardName, double percentage, bool levelFailed, PPPBeatMapInfo beatMapInfo);
+        double GetPPAtPercentageForCalculator(Leaderboard leaderBoardName, double percentage, bool levelFailed, bool levelPaused, PPPBeatMapInfo beatMapInfo);
 
         string GetPersonalBest(Leaderboard leaderBoardName);
 

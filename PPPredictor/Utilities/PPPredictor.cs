@@ -195,9 +195,9 @@ namespace PPPredictor.Utilities
             OnMapPoolRefreshed?.Invoke(this, null);
         }
         #endregion
-        public double CalculatePPatPercentage(double percentage, PPPBeatMapInfo beatMapInfo, bool levelFailed = false)
+        public double CalculatePPatPercentage(double percentage, PPPBeatMapInfo beatMapInfo, bool levelFailed = false, bool levelPaused = false)
         {
-            return _ppCalculator.CalculatePPatPercentage(beatMapInfo, percentage, levelFailed);
+            return _ppCalculator.CalculatePPatPercentage(beatMapInfo, percentage, levelFailed, levelPaused);
         }
 
         public double CalculateMaxPP()
@@ -205,9 +205,9 @@ namespace PPPredictor.Utilities
             return _ppCalculator.CalculateMaxPP(_currentBeatMapInfo);
         }
 
-        public PPPBeatMapInfo GetModifiedBeatMapInfo(GameplayModifiers gameplayModifiers, bool levelFailed = false)
+        public PPPBeatMapInfo GetModifiedBeatMapInfo(GameplayModifiers gameplayModifiers, bool levelFailed = false, bool levelPaused = false)
         {
-            return _ppCalculator.ApplyModifiersToBeatmapInfo(_currentBeatMapInfo, gameplayModifiers, levelFailed);
+            return _ppCalculator.ApplyModifiersToBeatmapInfo(_currentBeatMapInfo, gameplayModifiers, levelFailed, levelPaused);
         }
 
         public bool IsOldDotsActive(IDifficultyBeatmap beatmap)
@@ -291,12 +291,22 @@ namespace PPPredictor.Utilities
         {
             if (rankGainResult != null)
             {
-                ppDisplay.PredictedRank = $"{rankGainResult.RankGlobal:N0}";
-                ppDisplay.PredictedRankDiff = rankGainResult.RankGainGlobal.ToString("+#;-#;0");
                 ppDisplay.PredictedRankDiffColor = DisplayHelper.GetDisplayColor(rankGainResult.RankGainGlobal, false);
-                ppDisplay.PredictedCountryRank = $"{rankGainResult.RankCountry:N0}";
-                ppDisplay.PredictedCountryRankDiff = rankGainResult.RankGainCountry.ToString("+#;-#;0");
                 ppDisplay.PredictedCountryRankDiffColor = _leaderboardInfo.IsCountryRankEnabled ? DisplayHelper.GetDisplayColor(rankGainResult.RankGainCountry, false) : DisplayHelper.ColorCountryRankDisabled;
+                if (rankGainResult.IsRankGainCanceledByLimit)
+                {
+                    ppDisplay.PredictedRank = $"<{rankGainResult.RankGlobal:N0}";
+                    ppDisplay.PredictedRankDiff = rankGainResult.RankGainGlobal.ToString(">+#;<-#;0");
+                    ppDisplay.PredictedCountryRank = $"<{rankGainResult.RankCountry:N0}";
+                    ppDisplay.PredictedCountryRankDiff = rankGainResult.RankGainCountry.ToString(">+#;<-#;0");
+                }
+                else
+                {
+                    ppDisplay.PredictedRank = $"{rankGainResult.RankGlobal:N0}";
+                    ppDisplay.PredictedRankDiff = rankGainResult.RankGainGlobal.ToString("+#;-#;0");
+                    ppDisplay.PredictedCountryRank = $"{rankGainResult.RankCountry:N0}";
+                    ppDisplay.PredictedCountryRankDiff = rankGainResult.RankGainCountry.ToString("+#;-#;0");
+                }
             }
             else
             {
@@ -317,14 +327,14 @@ namespace PPPredictor.Utilities
             {
                 if (Plugin.ProfileInfo.DisplaySessionValues)
                 {
-                    sessionDisplay.SessionRank = $"{_leaderboardInfo.CurrentMapPool.SessionPlayer.Rank}";
-                    sessionDisplay.SessionCountryRank = $"{_leaderboardInfo.CurrentMapPool.SessionPlayer.CountryRank}";
+                    sessionDisplay.SessionRank = $"{_leaderboardInfo.CurrentMapPool.SessionPlayer.Rank:N0}";
+                    sessionDisplay.SessionCountryRank = $"{_leaderboardInfo.CurrentMapPool.SessionPlayer.CountryRank:N0}";
                     sessionDisplay.SessionPP = $"{_leaderboardInfo.CurrentMapPool.SessionPlayer.Pp:F2}{PPSuffix}";
                 }
                 else
                 {
-                    sessionDisplay.SessionRank = $"{_leaderboardInfo.CurrentMapPool.CurrentPlayer.Rank}";
-                    sessionDisplay.SessionCountryRank = $"{_leaderboardInfo.CurrentMapPool.CurrentPlayer.CountryRank}";
+                    sessionDisplay.SessionRank = $"{_leaderboardInfo.CurrentMapPool.CurrentPlayer.Rank:N0}";
+                    sessionDisplay.SessionCountryRank = $"{_leaderboardInfo.CurrentMapPool.CurrentPlayer.CountryRank:N0}";
                     sessionDisplay.SessionPP = $"{_leaderboardInfo.CurrentMapPool.CurrentPlayer.Pp:F2}{PPSuffix}";
                 }
                 sessionDisplay.SessionCountryRankDiff = (_leaderboardInfo.CurrentMapPool.CurrentPlayer.CountryRank - _leaderboardInfo.CurrentMapPool.SessionPlayer.CountryRank).ToString("+#;-#;0");
@@ -342,7 +352,7 @@ namespace PPPredictor.Utilities
             await UpdateCurrentAndCheckResetSession(false);
             IsDataLoading(true);
             string userId = await GetUserInfo();
-            await _ppCalculator.GetPlayerScores(userId, fetchLength);
+            await _ppCalculator.GetPlayerScores(userId, fetchLength, _leaderboardInfo.LargePageSize);
             if (refreshStars) //MapPool change to a pool that has never been selected before;
             {
                 await UpdateCurrentBeatMapInfos();
@@ -371,7 +381,7 @@ namespace PPPredictor.Utilities
             await UpdateCurrentAndCheckResetSession(resetAll);
             IsDataLoading(true);
             string userId = await GetUserInfo();
-            await _ppCalculator.GetPlayerScores(userId, 100);
+            await _ppCalculator.GetPlayerScores(userId, 100, 100);
             CalculatePP();
             IsDataLoading(false);
         }
@@ -430,7 +440,7 @@ namespace PPPredictor.Utilities
             }
             catch (Exception ex)
             {
-                Plugin.Log.Error($"GetMapPoolIconData {MapPoolIcon} Error: {ex.Message}");
+                Plugin.ErrorPrint($"GetMapPoolIconData {MapPoolIcon} Error: {ex.Message}");
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿using PPPredictor.Interfaces;
+using PPPredictor.Utilities;
 using System;
 using System.Collections.Generic;
 
@@ -40,14 +41,19 @@ namespace PPPredictor.Data.Curve
                 (0.6, 0.256),
                 (0.0, 0.000), };
         public bool IsDummy { get => false; }
-        public double CalculatePPatPercentage(PPPBeatMapInfo beatMapInfo, double percentage, bool failed)
+        public double CalculatePPatPercentage(PPPBeatMapInfo beatMapInfo, double percentage, bool failed, bool paused, LeaderboardContext leaderboardContext = LeaderboardContext.None)
         {
             try
             {
                 percentage /= 100.0;
-                if (!failed)
+                if (leaderboardContext == LeaderboardContext.BeatLeaderGolf)
                 {
-                    var (passPP, accPP, techPP) = CalculatePP(percentage, beatMapInfo.ModifiedStarRating.AccRating * beatMapInfo.ModifiedStarRating.Multiplier, beatMapInfo.ModifiedStarRating.PassRating * beatMapInfo.ModifiedStarRating.Multiplier, beatMapInfo.ModifiedStarRating.TechRating * beatMapInfo.ModifiedStarRating.Multiplier);
+                    if (percentage > 0.5f) return 0;
+                    percentage = 1f - percentage;
+                }
+                if (!failed && !(leaderboardContext == LeaderboardContext.BeatLeaderNoPauses && paused))
+                {
+                    var (passPP, accPP, techPP) = CalculatePP(percentage, beatMapInfo.ModifiedStarRating.AccRating * beatMapInfo.ModifiedStarRating.Multiplier, beatMapInfo.ModifiedStarRating.PassRating * beatMapInfo.ModifiedStarRating.Multiplier, beatMapInfo.ModifiedStarRating.TechRating * beatMapInfo.ModifiedStarRating.Multiplier, leaderboardContext);
                     var rawPP = Inflate(passPP + accPP + techPP);
                     return rawPP;
                 }
@@ -55,19 +61,19 @@ namespace PPPredictor.Data.Curve
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"BeatLeaderPPPCurve CalculatePPatPercentage Error: {ex.Message}");
+                Plugin.ErrorPrint($"BeatLeaderPPPCurve CalculatePPatPercentage Error: {ex.Message}");
                 return -1;
             }
         }
 
-        private (double, double, double) CalculatePP(double accuracy, double accRating, double passRating, double techRating)
+        private (double, double, double) CalculatePP(double accuracy, double accRating, double passRating, double techRating, LeaderboardContext leaderboardContext = LeaderboardContext.None)
         {
             double passPP = 15.2f * Math.Exp(Math.Pow(passRating, 1 / 2.62f)) - 30f;
             if (double.IsInfinity(passPP) || double.IsNaN(passPP) || double.IsNegativeInfinity(passPP) || passPP < 0)
             {
                 passPP = 0;
             }
-            double accPP = AccCurve(accuracy) * accRating * 34f;
+            double accPP = leaderboardContext == LeaderboardContext.BeatLeaderGolf ? accuracy * accRating * 42f : AccCurve(accuracy) * accRating * 34f;
             double techPP = Math.Exp(1.9f * accuracy) * 1.08f * techRating;
 
             return (passPP, accPP, techPP);
@@ -98,9 +104,9 @@ namespace PPPredictor.Data.Curve
             return (650f * Math.Pow(pp, 1.3f)) / Math.Pow(650f, 1.3f);
         }
 
-        public double CalculateMaxPP(PPPBeatMapInfo beatMapInfo)
+        public double CalculateMaxPP(PPPBeatMapInfo beatMapInfo, LeaderboardContext leaderboardContext = LeaderboardContext.None)
         {
-            return CalculatePPatPercentage(beatMapInfo, 100, false);
+            return CalculatePPatPercentage(beatMapInfo, 100, false, false, leaderboardContext);
         }
 
         public CurveInfo ToCurveInfo()

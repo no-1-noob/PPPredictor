@@ -89,7 +89,7 @@ namespace PPPredictor.Counter
             failedBeatMapInfo = ppPredictorMgr.GetModifiedBeatMapInfo(leaderboard, gameplayModifiers);
             ppSuffix = ppPredictorMgr.GetPPSuffixForLeaderboard(leaderboard);
 
-            StartPersonalBestAnimation(5000);
+            _ = StartPersonalBestAnimation(5000);
         }
 
         private float GetCenterOffset()
@@ -117,7 +117,7 @@ namespace PPPredictor.Counter
             }
         }
 
-        public void UpdateCounterText(double percentage, bool levelFailed)
+        public void UpdateCounterText(double percentage, bool levelFailed, bool levelPaused)
         {
             string percentageThresholdColor = DisplayHelper.GetDisplayColor(0, false);
             if (percentage > ppPredictorMgr.GetPercentage() && Plugin.ProfileInfo.CounterHighlightTargetPercentage)
@@ -129,7 +129,7 @@ namespace PPPredictor.Counter
             if (showInfo)
             {
                 if (Plugin.ProfileInfo.CounterUseIcons) icon.enabled = true;
-                double pp = ppPredictorMgr.GetPPAtPercentageForCalculator(leaderboard, percentage, levelFailed, levelFailed ? failedBeatMapInfo : modifiedBeatMapInfo);
+                double pp = ppPredictorMgr.GetPPAtPercentageForCalculator(leaderboard, percentage, levelFailed, levelPaused, levelFailed ? failedBeatMapInfo : modifiedBeatMapInfo);
                 double ppGain = Math.Round(ppPredictorMgr.GetPPGainForCalculator(leaderboard, pp), 2);
 
                 if (maxPP == -1) maxPP = ppPredictorMgr.GetMaxPPForCalculator(leaderboard);

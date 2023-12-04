@@ -80,6 +80,16 @@
         GainNoBracketsNoSuffix
     }
 
+    enum LeaderboardContext
+    {
+        None,
+        BeatLeaderDefault,
+        BeatLeaderNoModifiers,
+        BeatLeaderNoPauses,
+        BeatLeaderGolf,
+        BeatLeaderSCPM
+    }
+
     class EnumHelper
     {
         private const string CounterDisplayTypePP = "PP: 100pp";

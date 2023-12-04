@@ -23,7 +23,6 @@ namespace UnitTests.Data
             Assert.IsNotNull(mapPool.LsMapPoolEntries);
             Assert.IsNotNull(mapPool.LsPlayerRankings);
             Assert.AreEqual(mapPool.DtUtcLastRefresh, new DateTime(2000, 1, 1), "DtUtcLastRefresh should match");
-            Assert.AreEqual(mapPool.DtUtcLastSessionReset, new DateTime(2000, 1, 1), "DtUtcLastSessionReset should match");
             Assert.IsNotNull(mapPool.Curve);
             Assert.IsNull(mapPool.CurveInfo);
             Assert.AreEqual(mapPool.Id, "-1", "Id should be -1");
@@ -54,7 +53,6 @@ namespace UnitTests.Data
             mapPool.PlayListId = "1";
             mapPool.LsPlayerRankings = null;
             mapPool.DtUtcLastRefresh = DateTime.Now;
-            mapPool.DtUtcLastSessionReset = DateTime.Now;
             mapPool.DtLastScoreSet = DateTime.Now;
             mapPool.IconUrl = "URL";
             mapPool.IconData = new byte[] { };
@@ -67,7 +65,6 @@ namespace UnitTests.Data
             Assert.IsNull(mapPool.LsMapPoolEntries);
             Assert.IsNull(mapPool.LsPlayerRankings);
             Assert.AreNotEqual(mapPool.DtUtcLastRefresh, new DateTime(2000, 1, 1), "DtUtcLastRefresh should not match");
-            Assert.AreNotEqual(mapPool.DtUtcLastSessionReset, new DateTime(2000, 1, 1), "DtUtcLastSessionReset should not match");
             Assert.IsNotNull(mapPool.Curve);
             Assert.IsNotNull(mapPool.CurveInfo);
             Assert.AreNotEqual(mapPool.Id, "-1", "Id should not be -1");

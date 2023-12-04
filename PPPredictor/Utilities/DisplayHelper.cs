@@ -77,7 +77,7 @@ namespace PPPredictor.Utilities
             }
             catch (System.Exception ex)
             {
-                Plugin.Log.Error($"ResizeImage error {ex.Message}");
+                Plugin.ErrorPrint($"ResizeImage error {ex.Message}");
             }
             return output;
         }

@@ -17,6 +17,7 @@ namespace PPPredictor.Data
         private string _ppSuffix;
         private int _leaderboardFirstPageIndex;
         private bool _isCountryRankEnabled;
+        private int _largePageSize;
 
         public string LeaderboardName { get => _leaderboardName; set => _leaderboardName = value; }
         public string LeaderboardIcon { get => _leaderboardIcon; set => _leaderboardIcon = value; }
@@ -33,6 +34,7 @@ namespace PPPredictor.Data
         public string PpSuffix { get => _ppSuffix; set => _ppSuffix = value; }
         public int LeaderboardFirstPageIndex { get => _leaderboardFirstPageIndex; set => _leaderboardFirstPageIndex = value; }
         public bool IsCountryRankEnabled { get => _isCountryRankEnabled; set => _isCountryRankEnabled = value; }
+        public int LargePageSize { get => _largePageSize; set => _largePageSize = value; }
 
         public PPPLeaderboardInfo()
         {
@@ -46,6 +48,7 @@ namespace PPPredictor.Data
             this._ppSuffix = "pp";
             this.LeaderboardFirstPageIndex = 1;
             this.IsCountryRankEnabled = true;
+            this.LargePageSize = 10;
 
             switch (leaderboard)
             {
@@ -55,7 +58,13 @@ namespace PPPredictor.Data
                     break;
                 case Leaderboard.BeatLeader:
                     _leaderboardIcon = "PPPredictor.Resources.LeaderBoardLogos.BeatLeader.png";
-                    _lsMapPools.Add(new PPPMapPool(MapPoolType.Default, $"", PPCalculatorBeatLeader<BeatleaderAPI>.accumulationConstant, 0, new BeatLeaderPPPCurve()));
+                    //Negative ids for distinguishing from possible future event map pools
+                    _lsMapPools.Add(new PPPMapPool("-1", MapPoolType.Default, $"General", PPCalculatorBeatLeader<BeatleaderAPI>.accumulationConstant, 0, new BeatLeaderPPPCurve(), LeaderboardContext.BeatLeaderDefault));
+                    _lsMapPools.Add(new PPPMapPool("-2", MapPoolType.Default, $"No modifiers", PPCalculatorBeatLeader<BeatleaderAPI>.accumulationConstant, 0, new BeatLeaderPPPCurve(), LeaderboardContext.BeatLeaderNoModifiers));
+                    _lsMapPools.Add(new PPPMapPool("-3", MapPoolType.Default, $"No pauses", PPCalculatorBeatLeader<BeatleaderAPI>.accumulationConstant, 0, new BeatLeaderPPPCurve(), LeaderboardContext.BeatLeaderNoPauses));
+                    _lsMapPools.Add(new PPPMapPool("-4", MapPoolType.Default, $"Golf", PPCalculatorBeatLeader<BeatleaderAPI>.accumulationConstant, 0, new BeatLeaderPPPCurve(), LeaderboardContext.BeatLeaderGolf));
+                    _lsMapPools.Add(new PPPMapPool("-5", MapPoolType.Default, $"SCPM", PPCalculatorBeatLeader<BeatleaderAPI>.accumulationConstant, 0, new BeatLeaderPPPCurve(), LeaderboardContext.BeatLeaderSCPM));
+                    this.LargePageSize = 100;
                     break;
                 case Leaderboard.NoLeaderboard:
                     _leaderboardIcon = "";

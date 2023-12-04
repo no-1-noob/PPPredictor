@@ -24,7 +24,7 @@ namespace PPPredictor.Utilities
             }
             catch (Exception ex)
             {
-                Plugin.Log?.Error($"Error in ParseDifficultyNameToInt could not parse {difficulty}, {ex.Message}");
+                Plugin.ErrorPrint($"Error in ParseDifficultyNameToInt could not parse {difficulty}, {ex.Message}");
             }
             return -1;
         }

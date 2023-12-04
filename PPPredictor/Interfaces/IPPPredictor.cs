@@ -15,9 +15,9 @@ namespace PPPredictor.Interfaces
         Task UpdateCurrentAndCheckResetSession(bool doResetSession);
         void RefreshCurrentData(int fetchLength, bool refreshStars = false);
         void ResetDisplay(bool resetAll);
-        double CalculatePPatPercentage(double percentage, PPPBeatMapInfo beatMapInfo, bool levelFailed = false);
+        double CalculatePPatPercentage(double percentage, PPPBeatMapInfo beatMapInfo, bool levelFailed = false, bool levelPaused = false);
         double CalculateMaxPP();
-        PPPBeatMapInfo GetModifiedBeatMapInfo(GameplayModifiers gameplayModifiers, bool levelFailed = false);
+        PPPBeatMapInfo GetModifiedBeatMapInfo(GameplayModifiers gameplayModifiers, bool levelFailed = false, bool levelPaused = false);
         double CalculatePPGain(double pp);
         bool IsRanked();
 

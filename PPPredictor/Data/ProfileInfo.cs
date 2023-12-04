@@ -76,15 +76,7 @@ namespace PPPredictor.Data
 
         internal void ResetCachedData()
         {
-            foreach (PPPLeaderboardInfo leaderBoardInfo in _lsLeaderboardInfo)
-            {
-                foreach (var mapPool in leaderBoardInfo.LsMapPools)
-                {
-                    mapPool.LsScores = new List<ShortScore>();
-                    mapPool.LsLeaderboadInfo = new List<ShortScore>();
-                    mapPool.DtLastScoreSet = new DateTime(2000, 1, 1);
-                }
-            }
+            _lsLeaderboardInfo = new List<PPPLeaderboardInfo>();
         }
 
         public float LastPercentageSelected { get => _lastPercentageSelected; set => _lastPercentageSelected = value; }
