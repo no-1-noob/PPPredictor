@@ -159,6 +159,9 @@
       <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\UnityEngine.VRModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="websocket-sharp">
+      <HintPath>$(GameDirectory)\Libs\websocket-sharp.dll</HintPath>
+    </Reference>
     <Reference Include="Zenject">
       <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\Zenject.dll</HintPath>
     </Reference>
@@ -187,6 +190,7 @@
     <Compile Include="Data\PPPScore.cs" />
     <Compile Include="Data\PPPScoreCollection.cs" />
     <Compile Include="Installers\CoreInstaller.cs" />
+    <Compile Include="Installers\GamePlayInstaller.cs" />
     <Compile Include="Installers\MainMenuInstaller.cs" />
     <Compile Include="Data\PPPStarRating.cs" />
     <Compile Include="Installers\PPPPredictorDisplayInstaller.cs" />
@@ -200,12 +204,14 @@
     <Compile Include="OpenAPIs\beatleaderapi.cs" />
     <Compile Include="OpenAPIs\hitbloqapi.cs" />
     <Compile Include="OpenAPIs\scoresaberapi.cs" />
+    <Compile Include="OverlayServer\WebSocketOverlayServer.cs" />
     <Compile Include="UI\PPPredictorFlowCoordinator.cs" />
     <Compile Include="UI\ViewController\SettingsMidViewController.cs" />
     <Compile Include="Utilities\Constants.cs" />
     <Compile Include="Utilities\DisplayHelper.cs" />
     <Compile Include="Utilities\Enums.cs" />
     <Compile Include="Interfaces\IPPPredictor.cs" />
+    <Compile Include="Utilities\GamePlayMgr.cs" />
     <Compile Include="Utilities\MainMenuMgr.cs" />
     <Compile Include="Utilities\ParsingUtil.cs" />
     <Compile Include="Utilities\PPCalculatorBeatLeader.cs" />

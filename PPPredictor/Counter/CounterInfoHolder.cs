@@ -27,19 +27,13 @@ namespace PPPredictor.Counter
         private readonly Leaderboard leaderboard;
         private readonly CustomConfigModel settings;
         private readonly CanvasUtility canvasUtility;
-        private readonly GameplayModifiers gameplayModifiers;
-        private readonly PPPBeatMapInfo modifiedBeatMapInfo;
-        private readonly PPPBeatMapInfo failedBeatMapInfo;
         private readonly float positionScale;
-        private double maxPP = -1;
         private readonly IPPPredictorMgr ppPredictorMgr;
-        private readonly string ppSuffix;
 
         private bool _isPersonalBestAnimationFinished = false;
+        public Leaderboard Leaderboard { get => leaderboard; }
 
-        public double MaxPP { get => maxPP; }
-
-        public CounterInfoHolder(int id, Leaderboard leaderboard, CustomConfigModel settings, IPPPredictorMgr ppPredictorMgr, Canvas canvas, CanvasUtility canvasUtility, float lineOffset, float offsetByLine, float positionScale, GameplayModifiers gameplayModifiers) //CHECK WHEN NO C+ is installed??
+        public CounterInfoHolder(int id, Leaderboard leaderboard, CustomConfigModel settings, IPPPredictorMgr ppPredictorMgr, Canvas canvas, CanvasUtility canvasUtility, float lineOffset, float offsetByLine, float positionScale, LeaderBoardGameplayInfo leaderBoardGameplayInfo) //CHECK WHEN NO C+ is installed??
         {
             this.id = id;
             this.leaderboard = leaderboard;
@@ -66,7 +60,7 @@ namespace PPPredictor.Counter
                 gainAlignment = TextAlignmentOptions.BottomRight;
             }
             useIcon = (canvas != null && Plugin.ProfileInfo.CounterUseIcons);
-            showInfo = ppPredictorMgr.IsRanked(leaderboard) || !Plugin.ProfileInfo.CounterHideWhenUnranked;
+            showInfo = leaderBoardGameplayInfo.isRanked || !Plugin.ProfileInfo.CounterHideWhenUnranked;
             headerText = canvasUtility.CreateTextFromSettings(settings, new Vector3(((-1f + centerOffset) * positionScaleFactor), lineOffset, 0));
             ppText = canvasUtility.CreateTextFromSettings(settings, new Vector3((0.9f + iconTextOffset + displayTypeOffset + centerOffset) * positionScaleFactor, lineOffset, 0));
             ppGainText = canvasUtility.CreateTextFromSettings(settings, new Vector3((1.2f + iconTextOffset + displayTypeOffset + centerOffset) * positionScaleFactor, lineOffset, 0));
@@ -75,19 +69,15 @@ namespace PPPredictor.Counter
             ppGainText.alignment = gainAlignment;
             ppText.alignment = personalBestText.alignment = TextAlignmentOptions.BottomRight;
             headerText.fontSize = ppText.fontSize = ppGainText.fontSize = personalBestText.fontSize = fontSize;
-            string iconPath = ppPredictorMgr.GetMapPoolIcon(leaderboard);
+            string iconPath = leaderBoardGameplayInfo.iconPath;
             if (useIcon)
             {
                 icon = CreateIcon(canvas, iconPath, new Vector3((-1f + centerOffset) * positionScaleFactor, lineOffset, 0), Math.Abs(offsetByLine));
                 LoadImage(icon, iconPath);
             }
-            this.gameplayModifiers = gameplayModifiers;
-            personalBestText.text = ppPredictorMgr.GetPersonalBest(leaderboard);
+            personalBestText.text = leaderBoardGameplayInfo.personalBest;
             ppText.enabled = false;
             ppGainText.enabled = false;
-            modifiedBeatMapInfo = ppPredictorMgr.GetModifiedBeatMapInfo(leaderboard, gameplayModifiers);
-            failedBeatMapInfo = ppPredictorMgr.GetModifiedBeatMapInfo(leaderboard, gameplayModifiers);
-            ppSuffix = ppPredictorMgr.GetPPSuffixForLeaderboard(leaderboard);
 
             _ = StartPersonalBestAnimation(5000);
         }
@@ -117,10 +107,10 @@ namespace PPPredictor.Counter
             }
         }
 
-        public void UpdateCounterText(double percentage, bool levelFailed, bool levelPaused)
+        public void UpdateCounterText(LeaderBoardGameplayInfo gamePlayInfo)
         {
             string percentageThresholdColor = DisplayHelper.GetDisplayColor(0, false);
-            if (percentage > ppPredictorMgr.GetPercentage() && Plugin.ProfileInfo.CounterHighlightTargetPercentage)
+            if (gamePlayInfo.percentage > gamePlayInfo.targetPercentage && Plugin.ProfileInfo.CounterHighlightTargetPercentage)
             {
                 percentageThresholdColor = DisplayHelper.GetDisplayColor(1, false);
             }
@@ -129,15 +119,11 @@ namespace PPPredictor.Counter
             if (showInfo)
             {
                 if (Plugin.ProfileInfo.CounterUseIcons) icon.enabled = true;
-                double pp = ppPredictorMgr.GetPPAtPercentageForCalculator(leaderboard, percentage, levelFailed, levelPaused, levelFailed ? failedBeatMapInfo : modifiedBeatMapInfo);
-                double ppGain = Math.Round(ppPredictorMgr.GetPPGainForCalculator(leaderboard, pp), 2);
-
-                if (maxPP == -1) maxPP = ppPredictorMgr.GetMaxPPForCalculator(leaderboard);
 
                 string maxPPReachedPrefix = string.Empty;
                 string maxPPReachedSuffix = string.Empty;
 
-                if(maxPP > 0 && pp >= maxPP)
+                if(gamePlayInfo.maxPP > 0 && gamePlayInfo.pp >= gamePlayInfo.maxPP)
                 {
                     maxPPReachedPrefix = "<color=\"yellow\">";
                     maxPPReachedSuffix = "</color>";
@@ -145,32 +131,32 @@ namespace PPPredictor.Counter
                 switch (Plugin.ProfileInfo.CounterDisplayType)
                 {
                     case CounterDisplayType.PP:
-                        ppText.text = $"{maxPPReachedPrefix}{pp:F2}{ppSuffix}{maxPPReachedSuffix}";
+                        ppText.text = $"{maxPPReachedPrefix}{gamePlayInfo.pp:F2}{gamePlayInfo.ppSuffix}{maxPPReachedSuffix}";
                         break;
                     case CounterDisplayType.PPAndGain:
-                        ppText.text = $"{maxPPReachedPrefix}{pp:F2}{ppSuffix}{maxPPReachedSuffix}";
-                        ppGainText.text = $"[<color=\"{DisplayHelper.GetDisplayColor(ppGain, false, true)}\">{ppGain:F2}{ppSuffix}</color>]";
+                        ppText.text = $"{maxPPReachedPrefix}{gamePlayInfo.pp:F2}{gamePlayInfo.ppSuffix}{maxPPReachedSuffix}";
+                        ppGainText.text = $"[<color=\"{DisplayHelper.GetDisplayColor(gamePlayInfo.ppGain, false, true)}\">{gamePlayInfo.ppGain:F2}{gamePlayInfo.ppSuffix}</color>]";
                         break;
                     case CounterDisplayType.PPAndGainNoBrackets:
-                        ppText.text = $"{maxPPReachedPrefix}{pp:F2}pp{maxPPReachedSuffix}";
-                        ppGainText.text = $"<color=\"{DisplayHelper.GetDisplayColor(ppGain, false, true)}\">{ppGain:F2}{ppSuffix}</color>";
+                        ppText.text = $"{maxPPReachedPrefix}{gamePlayInfo.pp:F2}pp{maxPPReachedSuffix}";
+                        ppGainText.text = $"<color=\"{DisplayHelper.GetDisplayColor(gamePlayInfo.ppGain, false, true)}\">{gamePlayInfo.ppGain:F2}{gamePlayInfo.ppSuffix}</color>";
                         break;
                     case CounterDisplayType.GainNoBrackets:
-                        ppGainText.text = $"<color=\"{DisplayHelper.GetDisplayColor(ppGain, false, true)}\">{ppGain:F2}{ppSuffix}</color>";
+                        ppGainText.text = $"<color=\"{DisplayHelper.GetDisplayColor(gamePlayInfo.ppGain, false, true)}\">{gamePlayInfo.ppGain:F2}{gamePlayInfo.ppSuffix}</color>";
                         break;
                     case CounterDisplayType.PPNoSuffix:
-                        ppText.text = $"{maxPPReachedPrefix}{pp:F2}{maxPPReachedSuffix}";
+                        ppText.text = $"{maxPPReachedPrefix}{gamePlayInfo.pp:F2}{maxPPReachedSuffix}";
                         break;
                     case CounterDisplayType.PPAndGainNoSuffix:
-                        ppText.text = $"{maxPPReachedPrefix}{pp:F2}{maxPPReachedSuffix}";
-                        ppGainText.text = $"[<color=\"{DisplayHelper.GetDisplayColor(ppGain, false, true)}\">{ppGain:F2}</color>]";
+                        ppText.text = $"{maxPPReachedPrefix}{gamePlayInfo.pp:F2}{maxPPReachedSuffix}";
+                        ppGainText.text = $"[<color=\"{DisplayHelper.GetDisplayColor(gamePlayInfo.ppGain, false, true)}\">{gamePlayInfo.ppGain:F2}</color>]";
                         break;
                     case CounterDisplayType.PPAndGainNoBracketsNoSuffix:
-                        ppText.text = $"{maxPPReachedPrefix}{pp:F2}{maxPPReachedSuffix}";
-                        ppGainText.text = $"<color=\"{DisplayHelper.GetDisplayColor(ppGain, false, true)}\">{ppGain:F2}</color>";
+                        ppText.text = $"{maxPPReachedPrefix}{gamePlayInfo.pp:F2}{maxPPReachedSuffix}";
+                        ppGainText.text = $"<color=\"{DisplayHelper.GetDisplayColor(gamePlayInfo.ppGain, false, true)}\">{gamePlayInfo.ppGain:F2}</color>";
                         break;
                     case CounterDisplayType.GainNoBracketsNoSuffix:
-                        ppGainText.text = $"<color=\"{DisplayHelper.GetDisplayColor(ppGain, false, true)}\">{ppGain:F2}</color>";
+                        ppGainText.text = $"<color=\"{DisplayHelper.GetDisplayColor(gamePlayInfo.ppGain, false, true)}\">{gamePlayInfo.ppGain:F2}</color>";
                         break;
                     default:
                         break;
