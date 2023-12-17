@@ -58,9 +58,8 @@ namespace PPPredictor.Data
             _modifierValues = beatLeaderDifficulty.modifierValues ?? null;
         }
 
-        internal PPPStarRating(double mulitplier, double accRating, double passRating, double techRating, bool? rankedBeatLeader = null)
+        internal PPPStarRating(double mulitplier, double accRating, double passRating, double techRating)
         {
-            _rankedBeatLeader = rankedBeatLeader;
             _multiplier = mulitplier;
             _accRating = accRating;
             _passRating = passRating;
