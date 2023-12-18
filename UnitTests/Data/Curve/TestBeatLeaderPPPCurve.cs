@@ -12,7 +12,7 @@ namespace UnitTests.Data.Curve
     [TestClass]
     public class TestBeatLeaderPPPCurve
     {
-        PPPBeatMapInfo beatMapInfo = new PPPBeatMapInfo(new PPPBeatMapInfo(), new PPPStarRating(1, 11.82055, 7.9189496, 5.424088));
+        PPPBeatMapInfo beatMapInfo = new PPPBeatMapInfo(new PPPBeatMapInfo(), new PPPStarRating(1, 11.82055, 7.9189496, 5.424088, true));
         BeatLeaderPPPCurve curve = new BeatLeaderPPPCurve();
 
         [TestMethod]
@@ -63,7 +63,7 @@ namespace UnitTests.Data.Curve
         [TestMethod]
         public void TestCalculatePPatPercentageGolf()
         {
-            beatMapInfo = new PPPBeatMapInfo(new PPPBeatMapInfo(), new PPPStarRating(1, 6.9128127, 3.937846, 3.5577383));
+            beatMapInfo = new PPPBeatMapInfo(new PPPBeatMapInfo(), new PPPStarRating(1, 6.9128127, 3.937846, 3.5577383, true));
 
             double result = curve.CalculatePPatPercentage(beatMapInfo, 49.77, false, false, LeaderboardContext.BeatLeaderGolf);
             bool isInRange = result < 148 && result > 147;
@@ -88,7 +88,7 @@ namespace UnitTests.Data.Curve
         [TestMethod]
         public void TestInfintePassPP()
         {
-            PPPBeatMapInfo beatMapInfo = new PPPBeatMapInfo(new PPPBeatMapInfo(), new PPPStarRating(1, 11.82055, -7.9189496, 5.424088));
+            PPPBeatMapInfo beatMapInfo = new PPPBeatMapInfo(new PPPBeatMapInfo(), new PPPStarRating(1, 11.82055, -7.9189496, 5.424088, true));
             double result = curve.CalculatePPatPercentage(beatMapInfo, 96.39, false, false);
             Assert.IsNotNull(result);
             bool isInRange = result < 462 && result > 461;
@@ -98,7 +98,7 @@ namespace UnitTests.Data.Curve
         [TestMethod]
         public void TestExceptionHandling()
         {
-            PPPBeatMapInfo beatMapInfo = new PPPBeatMapInfo(new PPPBeatMapInfo(), new PPPStarRating(1, 0, 0, 0));
+            PPPBeatMapInfo beatMapInfo = new PPPBeatMapInfo(new PPPBeatMapInfo(), new PPPStarRating(1, 1, 1, 1, true));
             double result = curve.CalculatePPatPercentage(beatMapInfo, double.NaN, false, false);
             Assert.IsNotNull(result);
             Assert.AreEqual(result, -1, "Returns -1 if anything goes wrong");

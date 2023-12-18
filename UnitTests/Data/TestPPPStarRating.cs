@@ -122,7 +122,7 @@ namespace UnitTests.Data
             double passRating = 7;
             double accRating = 8;
             double techRating = 9;
-            PPPStarRating starRating = new PPPStarRating(multi, accRating, passRating, techRating);
+            PPPStarRating starRating = new PPPStarRating(multi, accRating, passRating, techRating, true);
             Assert.AreEqual(starRating.Stars, star);
             Assert.AreEqual(starRating.Multiplier, multi);
             Assert.AreEqual(starRating.PassRating, passRating);

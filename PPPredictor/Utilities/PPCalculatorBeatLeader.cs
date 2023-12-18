@@ -168,7 +168,7 @@ namespace PPPredictor.Utilities
                     }
                 }
             }
-            beatMapInfo.ModifiedStarRating = new PPPStarRating(GenerateModifierMultiplier(lsModifiers, beatMapInfo, levelFailed, levelPaused, beatMapInfo.BaseStarRating.ModifiersRating != null), accRating, passRating, techRating);
+            beatMapInfo.ModifiedStarRating = new PPPStarRating(GenerateModifierMultiplier(lsModifiers, beatMapInfo, levelFailed, levelPaused, beatMapInfo.BaseStarRating.ModifiersRating != null), accRating, passRating, techRating, beatMapInfo.BaseStarRating.RankedBeatLeader);
             return beatMapInfo;
         }
 
