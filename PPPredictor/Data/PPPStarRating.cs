@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.ComponentModel;
 using Newtonsoft.Json;
+using PPPredictor.Utilities;
 using static PPPredictor.Data.LeaderBoardDataTypes.BeatLeaderDataTypes;
 
 namespace PPPredictor.Data
@@ -13,9 +14,12 @@ namespace PPPredictor.Data
         private double _passRating = 0;
         private double _accRating = 0;
         private double _techRating = 0;
+        private bool? _rankedBeatLeader = null;
         private Dictionary<string, double> _modifiersRating = new Dictionary<string, double>();
         private Dictionary<string, double> _modifierValues = new Dictionary<string, double>();
-
+        
+        [DefaultValue(null)]
+        public bool? RankedBeatLeader{ get => _rankedBeatLeader; set => _rankedBeatLeader = value; }
         [DefaultValue(0d)]
         public double Stars { get => _stars; set => _stars = value; }
         [DefaultValue(0d)]
@@ -45,6 +49,7 @@ namespace PPPredictor.Data
 
         internal PPPStarRating(BeatLeaderDifficulty beatLeaderDifficulty)
         {
+            _rankedBeatLeader = beatLeaderDifficulty.status == (int)BeatLeaderDifficultyStatus.ranked;
             _predictedAcc = beatLeaderDifficulty.predictedAcc.GetValueOrDefault();
             _passRating = beatLeaderDifficulty.passRating.GetValueOrDefault();
             _accRating = beatLeaderDifficulty.accRating.GetValueOrDefault();
@@ -53,8 +58,9 @@ namespace PPPredictor.Data
             _modifierValues = beatLeaderDifficulty.modifierValues ?? null;
         }
 
-        internal PPPStarRating(double mulitplier, double accRating, double passRating, double techRating)
+        internal PPPStarRating(double mulitplier, double accRating, double passRating, double techRating, bool? rankedBeatLeader)
         {
+            _rankedBeatLeader = rankedBeatLeader;
             _multiplier = mulitplier;
             _accRating = accRating;
             _passRating = passRating;
@@ -63,7 +69,11 @@ namespace PPPredictor.Data
 
         internal bool IsRanked()
         {
-            return _predictedAcc > 0 || _passRating > 0 || _accRating > 0 || _techRating > 0 || _stars > 0;
+            if(_rankedBeatLeader == false){
+                return false;
+            }
+
+            return _predictedAcc > 0 || _passRating > 0 || _accRating > 0 || _techRating > 0 || _stars > 0;      
         }
     }
 }

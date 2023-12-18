@@ -1,4 +1,5 @@
 ﻿using PPPredictor.Data;
+using PPPredictor.Utilities;
 using static PPPredictor.Data.LeaderBoardDataTypes.BeatLeaderDataTypes;
 
 namespace UnitTests.Data
@@ -69,13 +70,15 @@ namespace UnitTests.Data
             Assert.IsNull(starRating.ModifiersRating);
             Assert.IsNull(starRating.ModifierValues);
 
+            //Unranked
             beatLeaderDifficulty = new BeatLeaderDifficulty() {
                 predictedAcc = predictedAcc,
                 passRating = passRating,
                 accRating = accRating,
                 techRating = techRating,
                 modifiersRating = new Dictionary<string, double>(),
-                modifierValues = new Dictionary<string, double>()
+                modifierValues = new Dictionary<string, double>(),
+                status = (int)BeatLeaderDifficultyStatus.unranked
             };
             starRating = new PPPStarRating(beatLeaderDifficulty);
 
@@ -86,6 +89,29 @@ namespace UnitTests.Data
             Assert.AreEqual(starRating.TechRating, techRating);
             Assert.IsNotNull(starRating.ModifiersRating);
             Assert.IsNotNull(starRating.ModifierValues);
+            Assert.IsFalse(starRating.IsRanked()); //Status is unranked, so should be unranked
+
+            //Ranked
+            beatLeaderDifficulty = new BeatLeaderDifficulty()
+            {
+                predictedAcc = predictedAcc,
+                passRating = passRating,
+                accRating = accRating,
+                techRating = techRating,
+                modifiersRating = new Dictionary<string, double>(),
+                modifierValues = new Dictionary<string, double>(),
+                status = (int)BeatLeaderDifficultyStatus.ranked
+            };
+            starRating = new PPPStarRating(beatLeaderDifficulty);
+
+            Assert.AreEqual(starRating.Stars, 0);
+            Assert.AreEqual(starRating.PredictedAcc, predictedAcc);
+            Assert.AreEqual(starRating.PassRating, passRating);
+            Assert.AreEqual(starRating.AccRating, accRating);
+            Assert.AreEqual(starRating.TechRating, techRating);
+            Assert.IsNotNull(starRating.ModifiersRating);
+            Assert.IsNotNull(starRating.ModifierValues);
+            Assert.IsTrue(starRating.IsRanked()); //Status is ranked, so should be ranked
         }
 
         [TestMethod]
@@ -96,7 +122,7 @@ namespace UnitTests.Data
             double passRating = 7;
             double accRating = 8;
             double techRating = 9;
-            PPPStarRating starRating = new PPPStarRating(multi, accRating, passRating, techRating);
+            PPPStarRating starRating = new PPPStarRating(multi, accRating, passRating, techRating, true);
             Assert.AreEqual(starRating.Stars, star);
             Assert.AreEqual(starRating.Multiplier, multi);
             Assert.AreEqual(starRating.PassRating, passRating);

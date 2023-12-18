@@ -45,17 +45,20 @@ namespace PPPredictor.Data.Curve
         {
             try
             {
-                percentage /= 100.0;
-                if (leaderboardContext == LeaderboardContext.BeatLeaderGolf)
+                if (beatMapInfo.ModifiedStarRating.IsRanked())
                 {
-                    if (percentage > 0.5f) return 0;
-                    percentage = 1f - percentage;
-                }
-                if (!failed && !(leaderboardContext == LeaderboardContext.BeatLeaderNoPauses && paused))
-                {
-                    var (passPP, accPP, techPP) = CalculatePP(percentage, beatMapInfo.ModifiedStarRating.AccRating * beatMapInfo.ModifiedStarRating.Multiplier, beatMapInfo.ModifiedStarRating.PassRating * beatMapInfo.ModifiedStarRating.Multiplier, beatMapInfo.ModifiedStarRating.TechRating * beatMapInfo.ModifiedStarRating.Multiplier, leaderboardContext);
-                    var rawPP = Inflate(passPP + accPP + techPP);
-                    return rawPP;
+                    percentage /= 100.0;
+                    if (leaderboardContext == LeaderboardContext.BeatLeaderGolf)
+                    {
+                        if (percentage > 0.5f) return 0;
+                        percentage = 1f - percentage;
+                    }
+                    if (!failed && !(leaderboardContext == LeaderboardContext.BeatLeaderNoPauses && paused))
+                    {
+                        var (passPP, accPP, techPP) = CalculatePP(percentage, beatMapInfo.ModifiedStarRating.AccRating * beatMapInfo.ModifiedStarRating.Multiplier, beatMapInfo.ModifiedStarRating.PassRating * beatMapInfo.ModifiedStarRating.Multiplier, beatMapInfo.ModifiedStarRating.TechRating * beatMapInfo.ModifiedStarRating.Multiplier, leaderboardContext);
+                        var rawPP = Inflate(passPP + accPP + techPP);
+                        return rawPP;
+                    }
                 }
                 return 0;
             }
