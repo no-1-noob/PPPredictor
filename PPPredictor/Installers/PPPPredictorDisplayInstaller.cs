@@ -1,5 +1,4 @@
-﻿using PPPredictor.Events;
-using PPPredictor.UI.ViewController;
+﻿using PPPredictor.UI.ViewController;
 using Zenject;
 
 namespace PPPredictor
@@ -9,7 +8,6 @@ namespace PPPredictor
         public override void InstallBindings()
         {
             Container.BindInterfacesTo<PPPredictorViewController>().AsSingle();
-            Container.BindInterfacesTo<PPPredictorEventsMgr>().AsSingle();
         }
     }
 }

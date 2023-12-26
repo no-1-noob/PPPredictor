@@ -1,7 +1,6 @@
 ﻿using IPA;
 using PPPredictor.Data;
 using PPPredictor.Installers;
-using PPPredictor.OverlayServer;
 using PPPredictor.UI.ViewController;
 using PPPredictor.Utilities;
 using SiraUtil.Zenject;
@@ -20,8 +19,6 @@ namespace PPPredictor
         internal static ProfileInfo ProfileInfo;
 
         internal static PPPredictorViewController pppViewController;
-
-        internal static WebSocketOverlayServer OverlayServer;
 
         //Only Used for UnitTests
         internal Plugin()
@@ -46,8 +43,6 @@ namespace PPPredictor
             zenjector.Install<MainMenuInstaller>(Location.Menu);
             zenjector.Install<CoreInstaller>(Location.App);
             zenjector.Install<GamePlayInstaller>(Location.Player);
-            OverlayServer = new WebSocketOverlayServer();
-            OverlayServer.StartSocket();
         }
 
         [OnStart]

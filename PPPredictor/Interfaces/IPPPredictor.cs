@@ -13,7 +13,8 @@ namespace PPPredictor.Interfaces
         void DetailContentChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, StandardLevelDetailViewController.ContentType contentType);
         void DifficultyChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap);
         Task UpdateCurrentAndCheckResetSession(bool doResetSession);
-        void RefreshCurrentData(int fetchLength, bool refreshStars = false);
+        void ScoreSet(PPPWebSocketData data);
+        void RefreshCurrentData(int fetchLength, bool refreshStars = false, bool fetchOnePage = false);
         void ResetDisplay(bool resetAll);
         double CalculatePPatPercentage(double percentage, PPPBeatMapInfo beatMapInfo, bool levelFailed = false, bool levelPaused = false);
         double CalculateMaxPP();

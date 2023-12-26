@@ -494,10 +494,6 @@ namespace PPPredictor.UI.ViewController
             DisplayInitialPercentages();
             this.ppPredictorMgr.ResetDisplay(v);
         }
-        internal void RefreshCurrentData(int count, bool refreshStars = false)
-        {
-            this.ppPredictorMgr.RefreshCurrentData(count, refreshStars);
-        }
 
         private void PpPredictorMgr_ViewActivated(object sender, bool active)
         {

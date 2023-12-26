@@ -295,14 +295,14 @@ namespace PPPredictor.Utilities
             {
                 lsSimplifiedData.Add(new SimplifiedData(item));
             }
-            MessageContainer message = new MessageContainer() { messageType = "OnGameplayInfoChanged", };
-            Plugin.OverlayServer.SendData(JsonConvert.SerializeObject(message));
+            MessageContainer message = new MessageContainer() { messageType = "OnGameplayInfoChanged", payload= lsSimplifiedData };
+            ppPredictorMgr.WebsocketMgr.OverlayServer.SendData(JsonConvert.SerializeObject(message));
         }
 
         private void SendOverlayEvent(string type)
         {
             MessageContainer message = new MessageContainer() { messageType = type};
-            Plugin.OverlayServer.SendData(JsonConvert.SerializeObject(message));
+            ppPredictorMgr.WebsocketMgr.OverlayServer.SendData(JsonConvert.SerializeObject(message));
         }
         #endregion
     }
@@ -348,7 +348,7 @@ namespace PPPredictor.Utilities
     internal class MessageContainer
     {
         public string messageType;
-        public SimplifiedData payload;
+        public List<SimplifiedData> payload = new List<SimplifiedData>();
     }
 
     internal class SimplifiedData

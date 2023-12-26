@@ -70,6 +70,15 @@
     <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug ALLNETWORK'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug ALLNETWORK\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;BEATLEADERNETWORK; SCORESABERNETWORK; HITBLOQNETWORK</DefineConstants>
+    <DebugType>portable</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
       <HintPath>$(GameDirectory)\Libs\0Harmony.dll</HintPath>
@@ -91,9 +100,6 @@
     </Reference>
     <Reference Include="GameplayCore">
       <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\GameplayCore.dll</HintPath>
-    </Reference>
-    <Reference Include="LeaderboardCore">
-      <HintPath>$(GameDirectory)\Plugins\LeaderboardCore.dll</HintPath>
     </Reference>
     <Reference Include="SiraUtil">
       <HintPath>$(GameDirectory)\Plugins\SiraUtil.dll</HintPath>
@@ -189,21 +195,24 @@
     <Compile Include="Data\PPPPlayer.cs" />
     <Compile Include="Data\PPPScore.cs" />
     <Compile Include="Data\PPPScoreCollection.cs" />
+    <Compile Include="Data\PPPWebSocketData.cs" />
     <Compile Include="Installers\CoreInstaller.cs" />
     <Compile Include="Installers\GamePlayInstaller.cs" />
     <Compile Include="Installers\MainMenuInstaller.cs" />
     <Compile Include="Data\PPPStarRating.cs" />
     <Compile Include="Installers\PPPPredictorDisplayInstaller.cs" />
-    <Compile Include="Events\PPPredictorEventsMgr.cs" />
     <Compile Include="Data\ProfileInfo.cs" />
     <Compile Include="Interfaces\IBeatLeaderAPI.cs" />
     <Compile Include="Interfaces\IHitBloqAPI.cs" />
     <Compile Include="Interfaces\IPPPCurve.cs" />
+    <Compile Include="Interfaces\IPPPRawWebsocketData.cs" />
     <Compile Include="Interfaces\IPPPredictorMgr.cs" />
+    <Compile Include="Interfaces\IPPPWebSocket.cs" />
     <Compile Include="Interfaces\IScoresaberAPI.cs" />
     <Compile Include="OpenAPIs\beatleaderapi.cs" />
     <Compile Include="OpenAPIs\hitbloqapi.cs" />
     <Compile Include="OpenAPIs\scoresaberapi.cs" />
+    <Compile Include="OpenAPIs\PPPWebSocket.cs" />
     <Compile Include="OverlayServer\WebSocketOverlayServer.cs" />
     <Compile Include="UI\PPPredictorFlowCoordinator.cs" />
     <Compile Include="UI\ViewController\SettingsMidViewController.cs" />
@@ -229,6 +238,7 @@
     <Compile Include="Data\PPGainResult.cs" />
     <Compile Include="Data\RankGainResult.cs" />
     <Compile Include="Data\SVector3.cs" />
+    <Compile Include="Utilities\WebSocketMgr.cs" />
     <Compile Include="VersionChecker\VersionChecker.cs" />
     <Compile Include="VersionChecker\VersionInfo.cs" />
   </ItemGroup>

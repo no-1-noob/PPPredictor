@@ -16,6 +16,8 @@ namespace PPPredictor.Interfaces
         bool IsLeaderboardNavigationActive { get; }
         IPPPredictor CurrentPPPredictor { get; }
 
+        WebSocketMgr WebsocketMgr { get; }
+
         event EventHandler<bool> ViewActivated;
         event EventHandler<bool> OnDataLoading;
         event EventHandler<DisplaySessionInfo> OnDisplaySessionInfo;
@@ -33,6 +35,8 @@ namespace PPPredictor.Interfaces
         void DifficultyChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap);
 
         void UpdateCurrentAndCheckResetSession(bool v);
+
+        void ScoreSet(string leaderboardName, PPPWebSocketData data);
 
         void RefreshCurrentData(int v, bool refreshStars = false);
 

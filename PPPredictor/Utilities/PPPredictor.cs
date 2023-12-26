@@ -347,12 +347,19 @@ namespace PPPredictor.Utilities
             sessionDisplay.CountryRankFontColor = _leaderboardInfo.IsCountryRankEnabled ? DisplayHelper.ColorWhite : DisplayHelper.ColorCountryRankDisabled;
             SendDisplaySessionInfo(sessionDisplay);
         }
-        public async void RefreshCurrentData(int fetchLength, bool refreshStars = false)
+
+        public void ScoreSet(PPPWebSocketData data)
+        {
+            if(_ppCalculator.IsScoreSetOnCurrentMapPool(data)) 
+                RefreshCurrentData(1, false, true);
+        }
+
+        public async void RefreshCurrentData(int fetchLength, bool refreshStars = false, bool fetchOnePage = false)
         {
             await UpdateCurrentAndCheckResetSession(false);
             IsDataLoading(true);
             string userId = await GetUserInfo();
-            await _ppCalculator.GetPlayerScores(userId, fetchLength, _leaderboardInfo.LargePageSize);
+            await _ppCalculator.GetPlayerScores(userId, fetchLength, _leaderboardInfo.LargePageSize, fetchOnePage);
             if (refreshStars) //MapPool change to a pool that has never been selected before;
             {
                 await UpdateCurrentBeatMapInfos();

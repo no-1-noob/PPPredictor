@@ -295,5 +295,10 @@ namespace PPPredictor.Utilities
                 default: return 0;
             }
         }
+
+        public override bool IsScoreSetOnCurrentMapPool(PPPWebSocketData score)
+        {
+            return (GetLeaderboardContextId(_leaderboardInfo.CurrentMapPool.LeaderboardContext) & score.context) > 0;
+        }
     }
 }
