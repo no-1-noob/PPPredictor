@@ -20,8 +20,7 @@ namespace PPPredictor.Utilities
         public WebSocketMgr(IPPPredictorMgr ppPredictorMgr)
         {
             this._ppPredictorMgr = ppPredictorMgr;
-            OverlayServer = new WebSocketOverlayServer();
-            OverlayServer.StartSocket();
+            RestartOverlayServer();
         }
 
         public void CreateScoreWebSockets()
@@ -59,9 +58,17 @@ namespace PPPredictor.Utilities
             dctWaitingRefresh.Remove(data.hash);
         }
 
+        internal void RestartOverlayServer()
+        {
+            OverlayServer?.CloseSocket();
+            OverlayServer = new WebSocketOverlayServer();
+            OverlayServer.StartSocket();
+        }
+
         #region init dispose
         public void Dispose()
         {
+            OverlayServer.CloseSocket();
             foreach (var socket in _lsWebSockets)
             {
                 socket.StopWebSocket();

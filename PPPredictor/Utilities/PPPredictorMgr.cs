@@ -88,6 +88,11 @@ namespace PPPredictor.Utilities
             Plugin.ProfileInfo.IsHitBloqEnabled = lsEnabledPlugin.FirstOrDefault(x => x.Name == CultureInfo.CurrentCulture.TextInfo.ToTitleCase(Leaderboard.HitBloq.ToString())) != null;
         }
 
+        public void RestartOverlayServer()
+        {
+            _websocketMgr.RestartOverlayServer();
+        }
+
         private void PPPredictor_OnMapPoolRefreshed(object sender, EventArgs e)
         {
             OnMapPoolRefreshed?.Invoke(this, null);

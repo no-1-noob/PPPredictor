@@ -92,6 +92,7 @@ namespace PPPredictor.UI.ViewController
 
         internal void ApplySettings()
         {
+            this.ppPredictorMgr.RestartOverlayServer();
             this.ppPredictorMgr.ResetPredictors();
             ResetDisplay(false);
         }

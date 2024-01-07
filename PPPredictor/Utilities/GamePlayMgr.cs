@@ -43,6 +43,7 @@ namespace PPPredictor.Utilities
                 {
                     SetupCounter();
                 }
+                OnSongStarted?.Invoke(this, null);
             }
             catch (Exception ex)
             {

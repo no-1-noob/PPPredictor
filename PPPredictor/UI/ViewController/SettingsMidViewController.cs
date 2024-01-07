@@ -275,6 +275,19 @@ namespace PPPredictor.UI.ViewController
         }
         #endregion
 
+        #region stream overlay
+        [UIValue("stream-overlay-port")]
+        public string StreamOverlayPort
+        {
+            get => Plugin.ProfileInfo.StreamOverlayPort;
+            set
+            {
+                Plugin.ProfileInfo.StreamOverlayPort = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(StreamOverlayPort)));
+            }
+        }
+        #endregion
+
 #pragma warning disable IDE0051 // Remove unused private members
         #region modal actions
         [UIAction("confirm-reset-settings-modal")]
@@ -309,6 +322,7 @@ namespace PPPredictor.UI.ViewController
             GeneralPPGainCalculation = Plugin.ProfileInfo.PpGainCalculationType.ToString();
             GeneralRawPPLossHighlightThreshold = Plugin.ProfileInfo.RawPPLossHighlightThreshold;
             CounterGainSilentMode = Plugin.ProfileInfo.IsCounterGainSilentModeEnabled;
+            StreamOverlayPort = Plugin.ProfileInfo.StreamOverlayPort;
         }
     }
 }

@@ -5,13 +5,11 @@ namespace PPPredictor.OverlayServer
 {
     internal class WebSocketOverlayServer
     {
-        private int ServerPort = 6558;
-
         private WebSocketServer server;
 
         public void StartSocket()
         {
-            server = new WebSocketServer($"ws://localhost:{ServerPort}");
+            server = new WebSocketServer($"ws://localhost:{Plugin.ProfileInfo.StreamOverlayPort}");
             server.AddWebSocketService<PPPreditorWS>("/socket");
             server.Start();
         }

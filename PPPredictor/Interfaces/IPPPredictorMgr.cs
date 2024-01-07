@@ -28,6 +28,8 @@ namespace PPPredictor.Interfaces
 
         void CyclePredictors(int offset);
 
+        void RestartOverlayServer();
+
         void ChangeGameplayModifiers(GameplaySetupViewController gameplaySetupViewController);
 
         void DetailContentChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, StandardLevelDetailViewController.ContentType contentType);
