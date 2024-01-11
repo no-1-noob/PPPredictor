@@ -50,21 +50,32 @@ namespace PPPredictor.UI.ViewController
             floatingScreen.gameObject.SetActive(false);
             floatingScreen.transform.eulerAngles = Plugin.ProfileInfo.EulerAngles;
             floatingScreen.transform.localScale = new Vector3(0.03f, 0.03f, 0.03f);
-            floatingScreen.handle.transform.localScale = new Vector2(60, 70);
-            floatingScreen.handle.transform.localPosition = new Vector3(0, 0, .1f);
+            floatingScreen.handle.transform.localScale = new Vector2(25, 25);
+            floatingScreen.handle.transform.localPosition = new Vector3(0, 1, -.1f);
             floatingScreen.handle.transform.localRotation = Quaternion.identity;
             floatingScreen.handle.hideFlags = HideFlags.HideInHierarchy;
             floatingScreen.ShowHandle = _isScreenMoving;
-            MeshRenderer floatingScreenMeshRenderer = floatingScreen.handle.GetComponent<MeshRenderer>();
-            if(floatingScreenMeshRenderer) floatingScreenMeshRenderer.enabled = false; //Make it invisible ;)
+            floatingScreen.HighlightHandle = false;
+            SetupHandleTexture();
 
             floatingScreen.HandleReleased += OnScreenHandleReleased;
+            BSMLParser.instance.Initialize();
             BSMLParser.instance.Parse(BeatSaberMarkupLanguage.Utilities.GetResourceContent(Assembly.GetExecutingAssembly(), "PPPredictor.UI.Views.PPPredictorView.bsml"), floatingScreen.gameObject, this);
             ppPredictorMgr.ViewActivated += PpPredictorMgr_ViewActivated;
             ppPredictorMgr.OnDataLoading += PpPredictorMgr_OnDataLoading;
             ppPredictorMgr.OnDisplayPPInfo += PpPredictorMgr_OnDisplayPPInfo;
             ppPredictorMgr.OnDisplaySessionInfo += PpPredictorMgr_OnDisplaySessionInfo;
             ppPredictorMgr.OnMapPoolRefreshed += PpPredictorMgr_OnMapPoolRefreshed;
+        }
+
+        private async void SetupHandleTexture()
+        {
+            MeshRenderer floatingScreenMeshRenderer = floatingScreen.handle.GetComponent<MeshRenderer>();
+            Shader unlitShader = Shader.Find("Sprites/Default");
+            var material = new Material(unlitShader);
+            floatingScreenMeshRenderer.material = material;
+            Texture2D tex = await BeatSaberMarkupLanguage.Utilities.LoadTextureFromAssemblyAsync("PPPredictor.Resources.moveIcon.png");
+            floatingScreenMeshRenderer.material.SetTexture("_MainTex", tex);
         }
 
         private void PpPredictorMgr_OnMapPoolRefreshed(object sender, EventArgs e)

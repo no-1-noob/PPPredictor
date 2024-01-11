@@ -10,12 +10,12 @@ namespace UnitTests.TestUtils
     {
         public static CustomBeatmapLevel CreateCustomBeatmapLevel()
         {
-            return new CustomBeatmapLevel(new CustomPreviewBeatmapLevel(null, null, null, null, null, null, null, null, null, 0, 0, 0, 0, 0, 0, null, null, null));
+            return new CustomBeatmapLevel(new CustomPreviewBeatmapLevel(null, null, null, null, null, null, null, null, null, 0, 0, 0, 0, 0, 0, null, null, null, null, PlayerSensitivityFlag.Explicit, null));
         }
 
         public static CustomDifficultyBeatmap CreateCustomDifficultyBeatmap()
         {
-            return new CustomDifficultyBeatmap(null, null, 0, 0, 0, 0, 0, null, null);
+            return new CustomDifficultyBeatmap(null, null, 0, 0, 0, 0, 0, 0, 0, null, null);
         }
     }
 }
