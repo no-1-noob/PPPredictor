@@ -70,6 +70,7 @@ namespace PPPredictor.Counter
 
         private void DisplayInfo(GamePlayInfo gameplayInfo)
         {
+            if (gameplayInfo == null) return;
             SetupCounter(gameplayInfo);
             DisplayCounterText(gameplayInfo);
         }
