@@ -3,6 +3,7 @@ using IPA.Loader;
 using PPPredictor.Data;
 using PPPredictor.Data.DisplayInfos;
 using PPPredictor.Interfaces;
+using PPPredictor.OpenAPIs;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -15,6 +16,7 @@ namespace PPPredictor.Utilities
     internal class PPPredictorMgr<SSAPI, BLAPI, HBAPI> : IInitializable, IDisposable, IPPPredictorMgr where SSAPI : IScoresaberAPI, new() where BLAPI : IBeatLeaderAPI, new() where HBAPI : IHitBloqAPI, new()
 
     {
+        private readonly WebSocketMgr _websocketMgr;
         private const string _beatleaderSyncUrlIdentifier = ".beatleader.";
         private const string _customDataSyncUrl = "syncURL";
         private List<IPPPredictor> _lsPPPredictor;
@@ -37,8 +39,11 @@ namespace PPPredictor.Utilities
         public bool IsMapPoolDropDownActive { get => isMapPoolDropDownActive; }
         public bool IsLeaderboardNavigationActive { get => isLeaderboardNavigationActive; }
 
+        public WebSocketMgr WebsocketMgr { get => _websocketMgr; }
+
         internal PPPredictorMgr()
         {
+            this._websocketMgr = new WebSocketMgr(this);
             ResetPredictors();
         }
 
@@ -72,6 +77,7 @@ namespace PPPredictor.Utilities
             }
             CurrentPPPredictor.SetActive(true);
             SetNavigationArrowInteractivity();
+            _websocketMgr.CreateScoreWebSockets();
         }
 
         private void RefreshLeaderboardVisibilityByIPAPluginManager()
@@ -80,6 +86,11 @@ namespace PPPredictor.Utilities
             Plugin.ProfileInfo.IsScoreSaberEnabled = lsEnabledPlugin.FirstOrDefault(x => x.Name == Leaderboard.ScoreSaber.ToString()) != null;
             Plugin.ProfileInfo.IsBeatLeaderEnabled = lsEnabledPlugin.FirstOrDefault(x => x.Name == Leaderboard.BeatLeader.ToString()) != null;
             Plugin.ProfileInfo.IsHitBloqEnabled = lsEnabledPlugin.FirstOrDefault(x => x.Name == CultureInfo.CurrentCulture.TextInfo.ToTitleCase(Leaderboard.HitBloq.ToString())) != null;
+        }
+
+        public void RestartOverlayServer()
+        {
+            _websocketMgr.RestartOverlayServer();
         }
 
         private void PPPredictor_OnMapPoolRefreshed(object sender, EventArgs e)
@@ -329,6 +340,7 @@ namespace PPPredictor.Utilities
                 pPPredictor.OnDisplaySessionInfo -= PPPredictor_OnDisplaySessionInfo;
                 pPPredictor.OnMapPoolRefreshed -= PPPredictor_OnMapPoolRefreshed;
             }
+            _websocketMgr.Dispose();
         }
 
         public void FindPoolWithSyncURL(IPlaylist playlist)
@@ -356,6 +368,15 @@ namespace PPPredictor.Utilities
                         }
                     }
                 }
+            }
+        }
+
+        public void ScoreSet(string leaderboardName, PPPWebSocketData data)
+        {
+            IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderboardName);
+            if (predictor != null)
+            {
+                predictor.ScoreSet(data);
             }
         }
     }

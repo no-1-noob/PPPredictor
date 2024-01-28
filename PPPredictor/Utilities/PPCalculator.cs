@@ -31,7 +31,7 @@ namespace PPPredictor.Utilities
             return new PPPPlayer();
         }
 
-        public async Task GetPlayerScores(string userId, int pageSize, int largePageSize)
+        public async Task GetPlayerScores(string userId, int pageSize, int largePageSize, bool fetchOnePage = false)
         {
             try
             {
@@ -52,7 +52,7 @@ namespace PPPredictor.Utilities
                     }
                     else {
                         playerscores = await GetRecentScores(userId, hasNoScores ? largePageSize: pageSize, page);
-                        if (playerscores.Page * playerscores.ItemsPerPage >= playerscores.Total)
+                        if (playerscores.Page * playerscores.ItemsPerPage >= playerscores.Total || fetchOnePage)
                         {
                             hasMoreData = false;
                         }
@@ -312,5 +312,7 @@ namespace PPPredictor.Utilities
         public abstract string CreateSeachString(string hash, IDifficultyBeatmap beatmap);
 
         public abstract Task UpdateMapPoolDetails(PPPMapPool mapPool);
+
+        public abstract bool IsScoreSetOnCurrentMapPool(PPPWebSocketData score);
     }
 }

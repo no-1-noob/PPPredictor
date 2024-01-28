@@ -47,5 +47,7 @@ namespace PPPredictor.Utilities
         {
             return beatMapInfo;
         }
+
+        public override bool IsScoreSetOnCurrentMapPool(PPPWebSocketData score) { return true; }
     }
 }

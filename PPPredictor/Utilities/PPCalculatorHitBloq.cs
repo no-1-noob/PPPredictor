@@ -254,5 +254,7 @@ namespace PPPredictor.Utilities
             }
             return (string.Empty, string.Empty, string.Empty);
         }
+
+        public override bool IsScoreSetOnCurrentMapPool(PPPWebSocketData score) { return true; }
     }
 }

@@ -39,6 +39,8 @@ namespace PPPredictor.Data
         private bool _isBeatLeaderEnabled;
         private bool _isHitBloqEnabled;
 
+        private string _streamOverlayPort;
+
         internal const int RefetchMapInfoAfterDays = -7;
 
         public ProfileInfo()
@@ -72,7 +74,8 @@ namespace PPPredictor.Data
             IsCounterGainSilentModeEnabled = false;
             LastMinPercentageSelected = ((int)(LastPercentageSelected / 10)) * 10;
             LastMaxPercentageSelected = Math.Min((((int)(LastPercentageSelected / 10)) * 10) + 10, 100);
-        }
+            StreamOverlayPort = "6558";
+    }
 
         internal void ResetCachedData()
         {
@@ -111,6 +114,7 @@ namespace PPPredictor.Data
         public bool IsCounterGainSilentModeEnabled { get => _isCounterGainSilentModeEnabled; set => _isCounterGainSilentModeEnabled = value; }
         public float LastMinPercentageSelected { get => _lastMinPercentageSelected; set => _lastMinPercentageSelected = value; }
         public float LastMaxPercentageSelected { get => _lastMaxPercentageSelected; set => _lastMaxPercentageSelected = value; }
+        public string StreamOverlayPort { get => _streamOverlayPort; set => _streamOverlayPort = value; }
 
         internal void ClearOldMapInfos()
         {

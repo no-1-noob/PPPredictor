@@ -92,6 +92,7 @@ namespace PPPredictor.UI.ViewController
 
         internal void ApplySettings()
         {
+            this.ppPredictorMgr.RestartOverlayServer();
             this.ppPredictorMgr.ResetPredictors();
             ResetDisplay(false);
         }
@@ -493,10 +494,6 @@ namespace PPPredictor.UI.ViewController
             ResetPosition();
             DisplayInitialPercentages();
             this.ppPredictorMgr.ResetDisplay(v);
-        }
-        internal void RefreshCurrentData(int count, bool refreshStars = false)
-        {
-            this.ppPredictorMgr.RefreshCurrentData(count, refreshStars);
         }
 
         private void PpPredictorMgr_ViewActivated(object sender, bool active)
