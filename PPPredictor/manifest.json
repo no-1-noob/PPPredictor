@@ -11,7 +11,8 @@
     "BeatSaberMarkupLanguage": "^1.6.1",
     "SiraUtil": "^3.0.3",
     "SongDetailsCache": "^1.1.11",
-    "SongCore": "^3.9.4"
+    "SongCore": "^3.9.4",
+    "websocket-sharp": "^1.0.4"
   },
   "features": {
     "CountersPlus.CustomCounter": {
