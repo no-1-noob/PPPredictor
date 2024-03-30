@@ -325,7 +325,7 @@ namespace PPPredictor.Utilities
         public PPPBeatMapInfo modifiedBeatMapInfo;
         public PPPBeatMapInfo failedBeatMapInfo;
         public string ppSuffix;
-        public string personalBest;
+        public double? personalBest;
         public string iconPath;
         public bool isRanked;
 
@@ -375,7 +375,7 @@ namespace PPPredictor.Utilities
         public double targetPercentage;
         public double percentage;
         public string ppSuffix;
-        public string personalBest;
+        public double? personalBest;
         public string iconPath;
         public bool isRanked;
     }

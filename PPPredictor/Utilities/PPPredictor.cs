@@ -225,11 +225,9 @@ namespace PPPredictor.Utilities
             return _currentBeatMapInfo.BaseStarRating.IsRanked() && (_ppCalculator.hasOldDotRanking || !_currentBeatMapInfo.OldDotsEnabled);
         }
 
-        public string GetPersonalBest()
+        public double? GetPersonalBest()
         {
-            double? pb = _ppCalculator.GetPersonalBest(_currentBeatMapInfo.SelectedMapSearchString);
-            string pbs = pb.HasValue ? pb.Value.ToString("F2") : Constants.NoPBFound;
-            return $"{pbs} {PPSuffix} PB";
+            return _ppCalculator.GetPersonalBest(_currentBeatMapInfo.SelectedMapSearchString);
         }
 
         internal bool IsCurrentMapPoolChanging(object value)

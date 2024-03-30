@@ -22,7 +22,7 @@ namespace PPPredictor.Interfaces
         double CalculatePPGain(double pp);
         bool IsRanked();
 
-        string GetPersonalBest();
+        double? GetPersonalBest();
         void CalculatePP();
         void SetActive(bool setActive);
         PPPMapPool FindPoolWithSyncURL(string syncUrl);
