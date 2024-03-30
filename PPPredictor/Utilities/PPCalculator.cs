@@ -98,6 +98,7 @@ namespace PPPredictor.Utilities
                         previousScore.Pp = newScore.Pp;
                     }
                 };
+                _leaderboardInfo.CurrentMapPool.LsScores = _leaderboardInfo.CurrentMapPool.LsScores; //Trigger sorting in setter
                 _leaderboardInfo.CurrentMapPool.DtLastScoreSet = dtNewLastScoreSet > _leaderboardInfo.CurrentMapPool.DtLastScoreSet ? dtNewLastScoreSet : _leaderboardInfo.CurrentMapPool.DtLastScoreSet;
             }
             catch (Exception ex)
@@ -119,7 +120,6 @@ namespace PPPredictor.Utilities
                         bool newPPadded = false;
                         bool newPPSkiped = false;
                         double previousPP = 0;
-                        _leaderboardInfo.CurrentMapPool.LsScores.Sort((score1, score2) => score2.Pp.CompareTo(score1.Pp));
                         foreach (ShortScore score in _leaderboardInfo.CurrentMapPool.LsScores)
                         {
                             double weightedPP = WeightPP(score.Pp, index, _leaderboardInfo.CurrentMapPool.AccumulationConstant);

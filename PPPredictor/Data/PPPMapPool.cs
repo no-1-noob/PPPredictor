@@ -5,6 +5,7 @@ using PPPredictor.Interfaces;
 using PPPredictor.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PPPredictor.Data
 {
@@ -36,7 +37,17 @@ namespace PPPredictor.Data
         public string MapPoolName { get => _mapPoolName; set => _mapPoolName = value; }
         public float AccumulationConstant { get => _accumulationConstant; set => _accumulationConstant = value; }
         public int SortIndex { get => _sortIndex; set => _sortIndex = value; }
-        public List<ShortScore> LsScores { get => _lsScores; set => _lsScores = value; }
+        public List<ShortScore> LsScores 
+        { 
+            get => _lsScores; 
+            set
+            {
+                if (value != null)
+                    _lsScores = value.OrderByDescending(x => x.Pp).ToList();
+                else
+                    _lsScores = value;
+            }
+        }
         public List<ShortScore> LsLeaderboadInfo { get => _lsLeaderboardInfo; set => _lsLeaderboardInfo = value; }
         public List<PPPMapPoolEntry> LsMapPoolEntries { get => _lsMapPoolEntries; set => _lsMapPoolEntries = value; }
         public MapPoolType MapPoolType { get => _mapPoolType; set => _mapPoolType = value; }
