@@ -75,7 +75,7 @@ namespace PPPredictor.Counter
                 icon = CreateIcon(canvas, iconPath, new Vector3((-1f + centerOffset) * positionScaleFactor, lineOffset, 0), Math.Abs(offsetByLine));
                 LoadImage(icon, iconPath);
             }
-            personalBestText.text = leaderBoardGameplayInfo.personalBest;
+            personalBestText.text = FormatPBText(leaderBoardGameplayInfo);
             ppText.enabled = false;
             ppGainText.enabled = false;
 
@@ -162,6 +162,22 @@ namespace PPPredictor.Counter
                         break;
                 }
             }
+        }
+
+        private string FormatPBText(LeaderBoardGameplayInfo gamePlayInfo)
+        {
+            string pbs = gamePlayInfo.personalBest.HasValue ? gamePlayInfo.personalBest.Value.ToString("F2") : Constants.NoPBFound;
+            string suffix = string.Empty;
+            if(Plugin.ProfileInfo.CounterDisplayType == CounterDisplayType.PP 
+                || Plugin.ProfileInfo.CounterDisplayType == CounterDisplayType.PPAndGain
+                || Plugin.ProfileInfo.CounterDisplayType == CounterDisplayType.PPAndGainNoBrackets
+                || Plugin.ProfileInfo.CounterDisplayType == CounterDisplayType.GainNoBrackets)
+            {
+                suffix = gamePlayInfo.ppSuffix;
+            }
+            if(string.IsNullOrEmpty(suffix))
+                return $"{pbs} PB";
+            return $"{pbs} {suffix} PB";
         }
 
         private ImageView CreateIcon(Canvas canvas, string imageIdent, Vector3 offset, float lineOffset)
