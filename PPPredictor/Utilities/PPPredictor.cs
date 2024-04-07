@@ -141,27 +141,14 @@ namespace PPPredictor.Utilities
             }
         }
 
-        public async void DifficultyChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
+        public async void DifficultyChanged(BeatmapLevel selectedBeatmapLevel, BeatmapKey beatmapKey)
         {
-            await UpdateCurrentBeatMapInfos(lvlSelectionNavigationCtrl, beatmap);
+            await UpdateCurrentBeatMapInfos(selectedBeatmapLevel, beatmapKey);
         }
 
-        public async void DetailContentChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, StandardLevelDetailViewController.ContentType contentType)
+        public async Task UpdateCurrentBeatMapInfos(BeatmapLevel selectedBeatmapLevel, BeatmapKey beatmapKey)
         {
-            if (contentType == StandardLevelDetailViewController.ContentType.OwnedAndReady)
-            {
-                await UpdateCurrentBeatMapInfos(lvlSelectionNavigationCtrl, lvlSelectionNavigationCtrl.selectedDifficultyBeatmap);
-            }
-        }
-
-        private async Task UpdateCurrentBeatMapInfos(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
-        {
-            await UpdateCurrentBeatMapInfos(lvlSelectionNavigationCtrl.selectedBeatmapLevel as CustomBeatmapLevel, beatmap);
-        }
-
-        public async Task UpdateCurrentBeatMapInfos(CustomBeatmapLevel selectedBeatmapLevel, IDifficultyBeatmap beatmap)
-        {
-            _currentBeatMapInfo = new PPPBeatMapInfo(selectedBeatmapLevel, beatmap);
+            _currentBeatMapInfo = new PPPBeatMapInfo(selectedBeatmapLevel, beatmapKey);
             await UpdateCurrentBeatMapInfos();
             CalculatePP();
         }
@@ -169,8 +156,8 @@ namespace PPPredictor.Utilities
         private async Task UpdateCurrentBeatMapInfos()
         {
             _currentBeatMapInfo = await _ppCalculator.GetBeatMapInfoAsync(_currentBeatMapInfo);
-            _currentBeatMapInfo.SelectedMapSearchString = _currentBeatMapInfo.SelectedCustomBeatmapLevel != null ? _ppCalculator.CreateSeachString(Hashing.GetCustomLevelHash(_currentBeatMapInfo.SelectedCustomBeatmapLevel), "SOLO" + _currentBeatMapInfo.Beatmap.parentDifficultyBeatmapSet.beatmapCharacteristic.serializedName, _currentBeatMapInfo.Beatmap.difficultyRank) : string.Empty;
-            _currentBeatMapInfo.OldDotsEnabled = IsOldDotsActive(_currentBeatMapInfo.Beatmap);
+            _currentBeatMapInfo.SelectedMapSearchString = _currentBeatMapInfo.SelectedCustomBeatmapLevel != null ? _ppCalculator.CreateSeachString(Hashing.GetCustomLevelHash(_currentBeatMapInfo.SelectedCustomBeatmapLevel), "SOLO" + _currentBeatMapInfo.BeatmapKey.beatmapCharacteristic.serializedName, ParsingUtil.ParseDifficultyNameToInt(_currentBeatMapInfo.BeatmapKey.difficulty.ToString())) : string.Empty;
+            _currentBeatMapInfo.OldDotsEnabled = IsOldDotsActive(_currentBeatMapInfo.BeatmapKey);
             _currentBeatMapInfo = GetModifiedBeatMapInfo(_gameplayModifiers);
             _currentBeatMapInfo.MaxPP = -1;
         }
@@ -210,9 +197,9 @@ namespace PPPredictor.Utilities
             return _ppCalculator.ApplyModifiersToBeatmapInfo(_currentBeatMapInfo, gameplayModifiers, levelFailed, levelPaused);
         }
 
-        public bool IsOldDotsActive(IDifficultyBeatmap beatmap)
+        public bool IsOldDotsActive(BeatmapKey beatmapKey)
         {
-            return beatmap.parentDifficultyBeatmapSet.beatmapCharacteristic.serializedName.Contains(Constants.OldDots);
+            return beatmapKey.beatmapCharacteristic.serializedName.Contains(Constants.OldDots);
         }
 
         public double CalculatePPGain(double pp)

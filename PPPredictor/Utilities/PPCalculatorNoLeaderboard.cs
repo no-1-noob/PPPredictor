@@ -33,9 +33,9 @@ namespace PPPredictor.Utilities
             return Task.FromResult(new PPPScoreCollection());
         }
 
-        public override string CreateSeachString(string hash, IDifficultyBeatmap beatmap)
+        public override string CreateSeachString(string hash, BeatmapKey beatmapKey)
         {
-            return $"{hash}_{beatmap.difficultyRank}";
+            return $"{hash}_{beatmapKey.difficulty}";
         }
 
         public override Task UpdateMapPoolDetails(PPPMapPool mapPool)

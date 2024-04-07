@@ -19,7 +19,7 @@ namespace UnitTests.Data
             Assert.IsNotNull(pPPBeatMapInfo.BaseStarRating, "BaseStarRating should be set");
             Assert.IsNotNull(pPPBeatMapInfo.ModifiedStarRating, "ModifiedStarRating should be set");
             Assert.IsNull(pPPBeatMapInfo.SelectedCustomBeatmapLevel, "SelectedCustomBeatmapLevel should not be set");
-            Assert.IsNull(pPPBeatMapInfo.Beatmap, "Beatmap should not be set");
+            Assert.IsNotNull(pPPBeatMapInfo.BeatmapKey, "BeatmapKey should be set");
             Assert.IsNull(pPPBeatMapInfo.SelectedMapSearchString, "SelectedMapSearchString should not be set");
 
             Assert.IsTrue(pPPBeatMapInfo.MaxPP == -1, "MaxPPS should be -1");
@@ -28,15 +28,15 @@ namespace UnitTests.Data
 
             pPPBeatMapInfo.BaseStarRating = new PPPStarRating(1);
             pPPBeatMapInfo.ModifiedStarRating = new PPPStarRating(2);
-            pPPBeatMapInfo.SelectedCustomBeatmapLevel = TestUtils.TestUtils.CreateCustomBeatmapLevel();
-            pPPBeatMapInfo.Beatmap = TestUtils.TestUtils.CreateCustomDifficultyBeatmap();
+            pPPBeatMapInfo.SelectedCustomBeatmapLevel = TestUtils.TestUtils.CreateBeatmapLevel();
+            pPPBeatMapInfo.BeatmapKey = TestUtils.TestUtils.CreateBeatmapKey();
             pPPBeatMapInfo.MaxPP = 123;
             pPPBeatMapInfo.SelectedMapSearchString = "Test";
 
             Assert.IsTrue(pPPBeatMapInfo.BaseStarRating.Stars == 1, "MaxPPS should be 1");
             Assert.IsTrue(pPPBeatMapInfo.ModifiedStarRating.Stars == 2, "MaxPPS should be 2");
             Assert.IsNotNull(pPPBeatMapInfo.SelectedCustomBeatmapLevel, "SelectedCustomBeatmapLevel should not be null");
-            Assert.IsNotNull(pPPBeatMapInfo.Beatmap, "Beatmap should not be null");
+            Assert.IsNotNull(pPPBeatMapInfo.BeatmapKey, "BeatmapKey should not be null");
             Assert.IsTrue(pPPBeatMapInfo.MaxPP == 123, "MaxPPS should be 123");
             Assert.IsTrue(pPPBeatMapInfo.SelectedMapSearchString == "Test", "SelectedMapSearchString should be 'Test'");
         }
@@ -49,7 +49,7 @@ namespace UnitTests.Data
             Assert.IsNotNull(pPPBeatMapInfo.BaseStarRating, "BaseStarRating should be set");
             Assert.IsNotNull(pPPBeatMapInfo.ModifiedStarRating, "ModifiedStarRating should be set");
             Assert.IsNull(pPPBeatMapInfo.SelectedCustomBeatmapLevel, "SelectedCustomBeatmapLevel should not be set");
-            Assert.IsNull(pPPBeatMapInfo.Beatmap, "Beatmap should not be set");
+            Assert.IsNotNull(pPPBeatMapInfo.BeatmapKey, "BeatmapKey should not be set");
             Assert.IsNull(pPPBeatMapInfo.SelectedMapSearchString, "SelectedMapSearchString should not be set");
 
             Assert.IsTrue(pPPBeatMapInfo.MaxPP == -1, "MaxPPS should be -1");
@@ -60,11 +60,11 @@ namespace UnitTests.Data
         [TestMethod]
         public void BeatmapConstructor()
         {
-            PPPBeatMapInfo pPPBeatMapInfo = new PPPBeatMapInfo(TestUtils.TestUtils.CreateCustomBeatmapLevel(), TestUtils.TestUtils.CreateCustomDifficultyBeatmap());
+            PPPBeatMapInfo pPPBeatMapInfo = new PPPBeatMapInfo(TestUtils.TestUtils.CreateBeatmapLevel(), TestUtils.TestUtils.CreateBeatmapKey());
             Assert.IsNotNull(pPPBeatMapInfo.BaseStarRating, "BaseStarRating should be set");
             Assert.IsNotNull(pPPBeatMapInfo.ModifiedStarRating, "ModifiedStarRating should be set");
             Assert.IsNotNull(pPPBeatMapInfo.SelectedCustomBeatmapLevel, "SelectedCustomBeatmapLevel should be set");
-            Assert.IsNotNull(pPPBeatMapInfo.Beatmap, "Beatmap should be set");
+            Assert.IsNotNull(pPPBeatMapInfo.BeatmapKey, "BeatmapKey should be set");
             Assert.IsNull(pPPBeatMapInfo.SelectedMapSearchString, "SelectedMapSearchString should not be set");
 
             Assert.IsTrue(pPPBeatMapInfo.MaxPP == -1, "MaxPPS should be -1");

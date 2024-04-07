@@ -1,4 +1,4 @@
-﻿using BeatSaberPlaylistsLib.Types;
+﻿//using BeatSaberPlaylistsLib.Types;
 using PPPredictor.Data.DisplayInfos;
 using PPPredictor.Data;
 using PPPredictor.Utilities;
@@ -32,9 +32,7 @@ namespace PPPredictor.Interfaces
 
         void ChangeGameplayModifiers(GameplaySetupViewController gameplaySetupViewController);
 
-        void DetailContentChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, StandardLevelDetailViewController.ContentType contentType);
-
-        void DifficultyChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap);
+        void DifficultyChanged(BeatmapLevel selectedBeatmapLevel, BeatmapKey beatmapKey);
 
         void UpdateCurrentAndCheckResetSession(bool v);
 
@@ -71,8 +69,8 @@ namespace PPPredictor.Interfaces
 
         List<object> GetMapPoolsFromLeaderboard(Leaderboard leaderBoardName);
 
-        Task UpdateCurrentBeatMapInfos(CustomBeatmapLevel selectedBeatmapLevel, IDifficultyBeatmap beatmap);
+        Task UpdateCurrentBeatMapInfos(BeatmapLevel selectedBeatmapLevel, BeatmapKey beatmap);
 
-        void FindPoolWithSyncURL(IPlaylist playlist);
+        //void FindPoolWithSyncURL(IPlaylist playlist);
     }
 }

@@ -10,8 +10,7 @@ namespace PPPredictor.Interfaces
     interface IPPPredictor
     {
         void ChangeGameplayModifiers(GameplaySetupViewController gameplaySetupViewController);
-        void DetailContentChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, StandardLevelDetailViewController.ContentType contentType);
-        void DifficultyChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap);
+        void DifficultyChanged(BeatmapLevel selectedBeatmapLevel, BeatmapKey beatmapKey);
         Task UpdateCurrentAndCheckResetSession(bool doResetSession);
         void ScoreSet(PPPWebSocketData data);
         void RefreshCurrentData(int fetchLength, bool refreshStars = false, bool fetchOnePage = false);
@@ -27,7 +26,7 @@ namespace PPPredictor.Interfaces
         void SetActive(bool setActive);
         PPPMapPool FindPoolWithSyncURL(string syncUrl);
         Task GetMapPoolIconData();
-        Task UpdateCurrentBeatMapInfos(CustomBeatmapLevel selectedBeatmapLevel, IDifficultyBeatmap beatmap);
+        Task UpdateCurrentBeatMapInfos(BeatmapLevel selectedBeatmapLevel, BeatmapKey beatmapKey);
         event EventHandler<bool> OnDataLoading;
         event EventHandler<DisplaySessionInfo> OnDisplaySessionInfo;
         event EventHandler<DisplayPPInfo> OnDisplayPPInfo;

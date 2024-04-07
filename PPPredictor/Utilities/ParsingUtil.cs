@@ -8,7 +8,7 @@ namespace PPPredictor.Utilities
 {
     class ParsingUtil
     {
-        static readonly Dictionary<string, double> dctDifficultyNameToInt = new Dictionary<string, double>{
+        static readonly Dictionary<string, int> dctDifficultyNameToInt = new Dictionary<string, int>{
             { "ExpertPlus", 9 },
             { "Expert", 7 },
             { "Hard", 5 },
@@ -16,7 +16,7 @@ namespace PPPredictor.Utilities
             { "Easy", 1 }
         };
 
-        public static double ParseDifficultyNameToInt(string difficulty)
+        public static int ParseDifficultyNameToInt(string difficulty)
         {
             try
             {

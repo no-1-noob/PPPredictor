@@ -8,14 +8,14 @@ namespace UnitTests.TestUtils
 {
     public class TestUtils
     {
-        public static CustomBeatmapLevel CreateCustomBeatmapLevel()
+        public static BeatmapLevel CreateBeatmapLevel()
         {
-            return new CustomBeatmapLevel(new CustomPreviewBeatmapLevel(null, null, null, null, null, null, null, null, null, 0, 0, 0, 0, 0, 0, null, null, null, null, PlayerSensitivityFlag.Explicit, null));
+            return new BeatmapLevel(false, string.Empty, string.Empty, string.Empty, string.Empty, new string[0], new string[0], 1, 1, 1, 1, 1, 1, PlayerSensitivityFlag.Explicit, null, null);
         }
 
-        public static CustomDifficultyBeatmap CreateCustomDifficultyBeatmap()
+        public static BeatmapKey CreateBeatmapKey()
         {
-            return new CustomDifficultyBeatmap(null, null, 0, 0, 0, 0, 0, 0, 0, null, null);
+            return new BeatmapKey();
         }
     }
 }

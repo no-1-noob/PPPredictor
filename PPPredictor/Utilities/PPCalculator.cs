@@ -309,7 +309,7 @@ namespace PPPredictor.Utilities
 
         public abstract PPPBeatMapInfo ApplyModifiersToBeatmapInfo(PPPBeatMapInfo beatMapInfo, GameplayModifiers gameplayModifiers, bool levelFailed = false, bool levelPaused = false);
 
-        public abstract string CreateSeachString(string hash, IDifficultyBeatmap beatmap);
+        public abstract string CreateSeachString(string hash, BeatmapKey beatmapKey);
 
         public abstract Task UpdateMapPoolDetails(PPPMapPool mapPool);
 

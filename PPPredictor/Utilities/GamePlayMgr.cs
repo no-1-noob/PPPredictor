@@ -69,9 +69,9 @@ namespace PPPredictor.Utilities
             {
                 try
                 {
-                    if (setupData.previewBeatmapLevel is CustomBeatmapLevel)
+                    if (setupData.beatmapLevel is BeatmapLevel)
                     {
-                        await ppPredictorMgr.UpdateCurrentBeatMapInfos(setupData.previewBeatmapLevel as CustomBeatmapLevel, setupData.difficultyBeatmap);
+                        await ppPredictorMgr.UpdateCurrentBeatMapInfos(setupData.beatmapLevel, setupData.beatmapKey);
                     }
                 }
                 catch (Exception ex)
@@ -84,8 +84,7 @@ namespace PPPredictor.Utilities
                 beatmapObjectManager.noteWasCutEvent += BeatmapObjectManager_noteWasCutEvent;
                 beatmapObjectManager.noteWasMissedEvent += BeatmapObjectManager_noteWasMissedEvent;
 
-                var v = await setupData.difficultyBeatmap.GetBeatmapDataBasicInfoAsync();
-                _noteCount = v.cuttableNotesCount;
+                _noteCount = setupData.transformedBeatmapData.cuttableNotesCount;
 
                 gamePlayInfo = new GamePlayInfo();
                 gamePlayInfo.scoreboardCount = GetActiveScoreboardsCount();
@@ -124,7 +123,6 @@ namespace PPPredictor.Utilities
         {
             if (!_isSongFinished
                 && noteController.noteData.gameplayType != NoteData.GameplayType.Bomb
-                && noteController.noteData.gameplayType != NoteData.GameplayType.BurstSliderElementFill
                 && noteController.noteData.gameplayType != NoteData.GameplayType.BurstSliderElement)
             {
                 if(!_isSongStarted)

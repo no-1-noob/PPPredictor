@@ -1,4 +1,4 @@
-﻿using BeatSaberPlaylistsLib.Types;
+﻿//using BeatSaberPlaylistsLib.Types;
 using IPA.Loader;
 using PPPredictor.Data;
 using PPPredictor.Data.DisplayInfos;
@@ -146,19 +146,11 @@ namespace PPPredictor.Utilities
             }
         }
 
-        public void DetailContentChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, StandardLevelDetailViewController.ContentType contentType)
+        public void DifficultyChanged(BeatmapLevel selectedBeatmapLevel, BeatmapKey beatmapKey)
         {
             foreach (var item in _lsPPPredictor)
             {
-                item.DetailContentChanged(lvlSelectionNavigationCtrl, contentType);
-            }
-        }
-
-        public void DifficultyChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
-        {
-            foreach (var item in _lsPPPredictor)
-            {
-                item.DifficultyChanged(lvlSelectionNavigationCtrl, beatmap);
+                item.DifficultyChanged(selectedBeatmapLevel, beatmapKey);
             }
         }
 
@@ -321,9 +313,9 @@ namespace PPPredictor.Utilities
             return new List<object>();
         }
 
-        public async Task UpdateCurrentBeatMapInfos(CustomBeatmapLevel selectedBeatmapLevel, IDifficultyBeatmap beatmap)
+        public async Task UpdateCurrentBeatMapInfos(BeatmapLevel selectedBeatmapLevel, BeatmapKey beatmapKey)
         {
-            await Task.WhenAll(_lsPPPredictor.Select(predictor => predictor.UpdateCurrentBeatMapInfos(selectedBeatmapLevel, beatmap)));
+            await Task.WhenAll(_lsPPPredictor.Select(predictor => predictor.UpdateCurrentBeatMapInfos(selectedBeatmapLevel, beatmapKey)));
         }
 
         public void Initialize()
@@ -343,7 +335,7 @@ namespace PPPredictor.Utilities
             _websocketMgr.Dispose();
         }
 
-        public void FindPoolWithSyncURL(IPlaylist playlist)
+        /*public void FindPoolWithSyncURL(IPlaylist playlist)
         {
             if (playlist != null && Plugin.ProfileInfo.IsPredictorSwitchBySyncUrlEnabled)
             {
@@ -369,7 +361,7 @@ namespace PPPredictor.Utilities
                     }
                 }
             }
-        }
+        }*/
 
         public void ScoreSet(string leaderboardName, PPPWebSocketData data)
         {

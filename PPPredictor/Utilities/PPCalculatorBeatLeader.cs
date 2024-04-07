@@ -110,7 +110,7 @@ namespace PPPredictor.Utilities
                 if (beatMapInfo.SelectedCustomBeatmapLevel != null)
                 {
                     string songHash = Hashing.GetCustomLevelHash(beatMapInfo.SelectedCustomBeatmapLevel);
-                    string searchString = CreateSeachString(songHash, "SOLO" + beatMapInfo.Beatmap.parentDifficultyBeatmapSet.beatmapCharacteristic.serializedName, beatMapInfo.Beatmap.difficultyRank);
+                    string searchString = CreateSeachString(songHash, "SOLO" + beatMapInfo.BeatmapKey.beatmapCharacteristic.serializedName, ParsingUtil.ParseDifficultyNameToInt(beatMapInfo.BeatmapKey.difficulty.ToString()));
                     if(_leaderboardInfo.CurrentMapPool.MapPoolType == MapPoolType.Custom && !_leaderboardInfo.CurrentMapPool.LsMapPoolEntries.Where(x => x.Searchstring == searchString).Any())
                     {
                         return new PPPBeatMapInfo(beatMapInfo, new PPPStarRating(0)); //Currently selected map is not contained in selected MapPool
@@ -123,7 +123,7 @@ namespace PPPredictor.Utilities
                         BeatLeaderSong song = await beatleaderapi.GetSongByHash(songHash);
                         if (song != null)
                         {
-                            BeatLeaderDifficulty diff = song.difficulties.FirstOrDefault(x => x.value == beatMapInfo.Beatmap.difficultyRank);
+                            BeatLeaderDifficulty diff = song.difficulties.FirstOrDefault(x => x.value == ParsingUtil.ParseDifficultyNameToInt(beatMapInfo.BeatmapKey.difficulty.ToString()));
                             if (diff != null)
                             {
                                 _leaderboardInfo.CurrentMapPool.LsLeaderboadInfo.Add(new ShortScore(searchString, new PPPStarRating(diff), DateTime.Now));
@@ -278,9 +278,9 @@ namespace PPPredictor.Utilities
             }
         }
 
-        public override string CreateSeachString(string hash, IDifficultyBeatmap beatmap)
+        public override string CreateSeachString(string hash, BeatmapKey beatmapKey)
         {
-            return $"{hash}_{beatmap.difficultyRank}";
+            return $"{hash}_{ParsingUtil.ParseDifficultyNameToInt(beatmapKey.difficulty.ToString())}";
         }
 
         private long GetLeaderboardContextId(LeaderboardContext leaderboardContext)

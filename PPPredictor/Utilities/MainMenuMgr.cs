@@ -1,7 +1,8 @@
 ﻿using System;
 using Zenject;
-using BeatSaberPlaylistsLib.Types;
+//using BeatSaberPlaylistsLib.Types;
 using PPPredictor.Interfaces;
+using SongCore.Utilities;
 
 namespace PPPredictor.Utilities
 {
@@ -25,7 +26,7 @@ namespace PPPredictor.Utilities
             levelSelectionNavigationController.didActivateEvent -= OnLevelSelectionActivated;
             levelSelectionNavigationController.didDeactivateEvent -= OnLevelSelectionDeactivated;
             gameplaySetupViewController.didChangeGameplayModifiersEvent -= DidChangeGameplayModifiersEvent;
-            annotatedBeatmapLevelCollectionsViewController.didSelectAnnotatedBeatmapLevelCollectionEvent -= AnnotatedBeatmapLevelCollectionsViewController_didSelectAnnotatedBeatmapLevelCollectionEvent;
+            //annotatedBeatmapLevelCollectionsViewController.didSelectAnnotatedBeatmapLevelCollectionEvent -= AnnotatedBeatmapLevelCollectionsViewController_didSelectAnnotatedBeatmapLevelCollectionEvent;
         }
 
         public void Initialize()
@@ -35,7 +36,7 @@ namespace PPPredictor.Utilities
             levelSelectionNavigationController.didActivateEvent += OnLevelSelectionActivated;
             levelSelectionNavigationController.didDeactivateEvent += OnLevelSelectionDeactivated;
             gameplaySetupViewController.didChangeGameplayModifiersEvent += DidChangeGameplayModifiersEvent;
-            annotatedBeatmapLevelCollectionsViewController.didSelectAnnotatedBeatmapLevelCollectionEvent += AnnotatedBeatmapLevelCollectionsViewController_didSelectAnnotatedBeatmapLevelCollectionEvent;
+            //annotatedBeatmapLevelCollectionsViewController.didSelectAnnotatedBeatmapLevelCollectionEvent += AnnotatedBeatmapLevelCollectionsViewController_didSelectAnnotatedBeatmapLevelCollectionEvent;
         }
 
         private void DidChangeGameplayModifiersEvent()
@@ -43,14 +44,30 @@ namespace PPPredictor.Utilities
             this.ppPredictorMgr.ChangeGameplayModifiers(this.gameplaySetupViewController);
         }
 
-        private void OnDifficultyChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
+        private void OnDifficultyChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl)
         {
-            this.ppPredictorMgr.DifficultyChanged(lvlSelectionNavigationCtrl, beatmap);
+            DiffultyChangedDecideCustomMap(lvlSelectionNavigationCtrl);
         }
 
         private void OnDetailContentChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, StandardLevelDetailViewController.ContentType contentType)
         {
-            this.ppPredictorMgr.DetailContentChanged(lvlSelectionNavigationCtrl, contentType);
+            if(contentType == StandardLevelDetailViewController.ContentType.OwnedAndReady)
+            {
+                DiffultyChangedDecideCustomMap(lvlSelectionNavigationCtrl);
+            }
+        }
+
+        private void DiffultyChangedDecideCustomMap(LevelSelectionNavigationController lvlSelectionNavigationCtrl)
+        {
+            if (!string.IsNullOrEmpty(Hashing.GetCustomLevelHash(lvlSelectionNavigationCtrl.beatmapLevel))) //Checking if it is a custom map
+            {
+                this.ppPredictorMgr.DifficultyChanged(lvlSelectionNavigationCtrl.beatmapLevel, lvlSelectionNavigationCtrl.beatmapKey);
+            }
+            else
+            {
+                this.ppPredictorMgr.DifficultyChanged(null, lvlSelectionNavigationCtrl.beatmapKey);
+            }
+                
         }
 
         private void OnLevelSelectionActivated(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
@@ -62,9 +79,9 @@ namespace PPPredictor.Utilities
             this.ppPredictorMgr.ActivateView(false);
         }
 
-        private void AnnotatedBeatmapLevelCollectionsViewController_didSelectAnnotatedBeatmapLevelCollectionEvent(IAnnotatedBeatmapLevelCollection annotatedBeatmapLevelCollection)
-        {
-            this.ppPredictorMgr.FindPoolWithSyncURL(annotatedBeatmapLevelCollection as IPlaylist);
-        }
+        //private void AnnotatedBeatmapLevelCollectionsViewController_didSelectAnnotatedBeatmapLevelCollectionEvent(IAnnotatedBeatmapLevelCollection annotatedBeatmapLevelCollection)
+        //{
+        //    this.ppPredictorMgr.FindPoolWithSyncURL(annotatedBeatmapLevelCollection as IPlaylist);
+        //}
     }
 }

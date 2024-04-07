@@ -99,6 +99,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(GameDirectory)\Plugins\Counters+.dll</HintPath>
     </Reference>
+    <Reference Include="DataModels">
+      <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\DataModels.dll</HintPath>
+    </Reference>
     <Reference Include="GameplayCore">
       <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\GameplayCore.dll</HintPath>
     </Reference>

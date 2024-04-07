@@ -60,7 +60,7 @@ namespace PPPredictor.Utilities
                 if (beatMapInfo.SelectedCustomBeatmapLevel != null)
                 {
                     string songHash = Hashing.GetCustomLevelHash(beatMapInfo.SelectedCustomBeatmapLevel);
-                    string searchString = CreateSeachString(songHash, beatMapInfo.Beatmap);
+                    string searchString = CreateSeachString(songHash, beatMapInfo.BeatmapKey);
                     ShortScore cachedInfo = _leaderboardInfo.CurrentMapPool.LsLeaderboadInfo?.FirstOrDefault(x => x.Searchstring.ToUpper() == searchString.ToUpper());
                     bool refetchInfo = cachedInfo != null && cachedInfo.FetchTime < DateTime.Now.AddDays(ProfileInfo.RefetchMapInfoAfterDays);
                     if (cachedInfo == null || refetchInfo)
@@ -225,9 +225,9 @@ namespace PPPredictor.Utilities
             }
         }
 
-        public override string CreateSeachString(string hash, IDifficultyBeatmap beatmap)
+        public override string CreateSeachString(string hash, BeatmapKey beatmapKey)
         {
-            return $"{hash}|_{beatmap.difficulty}_Solo{beatmap.parentDifficultyBeatmapSet.beatmapCharacteristic.serializedName}".Replace(Constants.OldDots, "");
+            return $"{hash}|_{beatmapKey.difficulty}_Solo{beatmapKey.beatmapCharacteristic.serializedName}".Replace(Constants.OldDots, "");
         }
 
         public static (string, string, string) ParseHashDiffAndMode(string input)

@@ -85,7 +85,7 @@ namespace PPPredictor.Utilities
                 {
                     if (SongDetails.songs.FindByHash(Hashing.GetCustomLevelHash(beatMapInfo.SelectedCustomBeatmapLevel), out Song song))
                     {
-                        if (song.GetDifficulty(out SongDifficulty songDiff, (MapDifficulty)beatMapInfo.Beatmap.difficulty))
+                        if (song.GetDifficulty(out SongDifficulty songDiff, (MapDifficulty)beatMapInfo.BeatmapKey.difficulty))
                         {
                             return Task.FromResult(new PPPBeatMapInfo(beatMapInfo, new PPPStarRating(songDiff.stars)));
                         }
@@ -110,9 +110,9 @@ namespace PPPredictor.Utilities
             return beatMapInfo;
         }
 
-        public override string CreateSeachString(string hash, IDifficultyBeatmap beatmap)
+        public override string CreateSeachString(string hash, BeatmapKey beatmapKey)
         {
-            return $"{hash}_{beatmap.difficultyRank}";
+            return $"{hash}_{ParsingUtil.ParseDifficultyNameToInt(beatmapKey.difficulty.ToString())}";
         }
         override public Task UpdateMapPoolDetails(PPPMapPool mapPool)
         {
