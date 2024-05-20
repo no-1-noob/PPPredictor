@@ -69,10 +69,7 @@ namespace PPPredictor.Utilities
             {
                 try
                 {
-                    if (setupData.previewBeatmapLevel is CustomBeatmapLevel)
-                    {
-                        await ppPredictorMgr.UpdateCurrentBeatMapInfos(setupData.previewBeatmapLevel as CustomBeatmapLevel, setupData.difficultyBeatmap);
-                    }
+                    await ppPredictorMgr.UpdateCurrentBeatMapInfos(setupData.previewBeatmapLevel as CustomBeatmapLevel, setupData.difficultyBeatmap);
                 }
                 catch (Exception ex)
                 {
