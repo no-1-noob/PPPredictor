@@ -42,7 +42,7 @@ namespace PPPredictor
             zenjector.Install<PPPPredictorDisplayInstaller>(Location.Menu);
             zenjector.Install<MainMenuInstaller>(Location.Menu);
             zenjector.Install<CoreInstaller>(Location.App);
-            zenjector.Install<GamePlayInstaller>(Location.Player);
+            zenjector.Install<GamePlayInstaller>(Location.StandardPlayer | Location.CampaignPlayer);
         }
 
         [OnStart]
