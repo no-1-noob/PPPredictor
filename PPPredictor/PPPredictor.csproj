@@ -89,6 +89,9 @@
     <Reference Include="BeatSaberPlaylistsLib">
       <HintPath>$(GameDirectory)\Libs\BeatSaberPlaylistsLib.dll</HintPath>
     </Reference>
+    <Reference Include="BGNetCore">
+      <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\BGNetCore.dll</HintPath>
+    </Reference>
     <Reference Include="BSML">
       <HintPath>$(GameDirectory)\Plugins\BSML.dll</HintPath>
     </Reference>

@@ -13,6 +13,7 @@ namespace PPPredictor.Utilities
         [Inject] private readonly GameplaySetupViewController gameplaySetupViewController;
         [Inject] private readonly IPPPredictorMgr ppPredictorMgr;
         [Inject] private readonly AnnotatedBeatmapLevelCollectionsViewController annotatedBeatmapLevelCollectionsViewController;
+        [Inject] private readonly LobbyGameStateController lobbyGameStateController;
 #pragma warning restore CS0649 // Field is never assigned to, and will always have its default value null
 
         public MainMenuMgr()
@@ -41,17 +42,17 @@ namespace PPPredictor.Utilities
 
         private void DidChangeGameplayModifiersEvent()
         {
-            this.ppPredictorMgr.ChangeGameplayModifiers(this.gameplaySetupViewController);
+            if(IsNormalMainMenu()) this.ppPredictorMgr.ChangeGameplayModifiers(this.gameplaySetupViewController);
         }
 
         private void OnDifficultyChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl)
         {
-            DiffultyChangedDecideCustomMap(lvlSelectionNavigationCtrl);
+            if (IsNormalMainMenu()) DiffultyChangedDecideCustomMap(lvlSelectionNavigationCtrl);
         }
 
         private void OnDetailContentChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, StandardLevelDetailViewController.ContentType contentType)
         {
-            if(contentType == StandardLevelDetailViewController.ContentType.OwnedAndReady)
+            if(contentType == StandardLevelDetailViewController.ContentType.OwnedAndReady && IsNormalMainMenu())
             {
                 DiffultyChangedDecideCustomMap(lvlSelectionNavigationCtrl);
             }
@@ -59,7 +60,7 @@ namespace PPPredictor.Utilities
 
         private void DiffultyChangedDecideCustomMap(LevelSelectionNavigationController lvlSelectionNavigationCtrl)
         {
-            if (!string.IsNullOrEmpty(Hashing.GetCustomLevelHash(lvlSelectionNavigationCtrl.beatmapLevel))) //Checking if it is a custom map
+            if (!string.IsNullOrEmpty(Hashing.GetCustomLevelHash(lvlSelectionNavigationCtrl.beatmapLevel)) && IsNormalMainMenu()) //Checking if it is a custom map
             {
                 this.ppPredictorMgr.DifficultyChanged(lvlSelectionNavigationCtrl.beatmapLevel, lvlSelectionNavigationCtrl.beatmapKey);
             }
@@ -72,7 +73,7 @@ namespace PPPredictor.Utilities
 
         private void OnLevelSelectionActivated(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
         {
-            this.ppPredictorMgr.ActivateView(true);
+            this.ppPredictorMgr.ActivateView(IsNormalMainMenu());
         }
         private void OnLevelSelectionDeactivated(bool removedFromHierarchy, bool screenSystemDisabling)
         {
@@ -83,5 +84,14 @@ namespace PPPredictor.Utilities
         //{
         //    this.ppPredictorMgr.FindPoolWithSyncURL(annotatedBeatmapLevelCollection as IPlaylist);
         //}
+
+        /// <summary>
+        /// Check if we are NOT in a lobby
+        /// </summary>
+        /// <returns></returns>
+        private bool IsNormalMainMenu()
+        {
+            return lobbyGameStateController.state == MultiplayerLobbyState.None;
+        }
     }
 }
