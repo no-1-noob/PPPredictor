@@ -69,10 +69,7 @@ namespace PPPredictor.Utilities
             {
                 try
                 {
-                    if (setupData.beatmapLevel is BeatmapLevel)
-                    {
-                        await ppPredictorMgr.UpdateCurrentBeatMapInfos(setupData.beatmapLevel, setupData.beatmapKey);
-                    }
+                    await ppPredictorMgr.UpdateCurrentBeatMapInfos(setupData.beatmapLevel, setupData.beatmapKey);
                 }
                 catch (Exception ex)
                 {
