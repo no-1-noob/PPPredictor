@@ -1,4 +1,5 @@
 ﻿using PPPredictor.Data.DisplayInfos;
+using PPPredictor.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,13 +17,13 @@ namespace UnitTests.Data.DisplayInfo
             DisplayPPInfo info = new DisplayPPInfo();
             Assert.AreEqual(info.PPRaw, string.Empty);
             Assert.AreEqual(info.PPGain, string.Empty);
-            Assert.AreEqual(info.PPGainDiffColor, string.Empty);
+            Assert.AreEqual(info.PPGainDiffColor, DisplayHelper.ColorWhite);
             Assert.AreEqual(info.PredictedRank, string.Empty);
             Assert.AreEqual(info.PredictedRankDiff, string.Empty);
-            Assert.AreEqual(info.PredictedRankDiffColor, string.Empty);
+            Assert.AreEqual(info.PredictedRankDiffColor, DisplayHelper.ColorWhite);
             Assert.AreEqual(info.PredictedCountryRank, string.Empty);
             Assert.AreEqual(info.PredictedCountryRankDiff, string.Empty);
-            Assert.AreEqual(info.PredictedCountryRankDiffColor, string.Empty);
+            Assert.AreEqual(info.PredictedCountryRankDiffColor, DisplayHelper.ColorWhite);
         }
 
         [TestMethod]
