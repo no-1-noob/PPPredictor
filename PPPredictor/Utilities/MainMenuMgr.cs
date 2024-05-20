@@ -12,6 +12,7 @@ namespace PPPredictor.Utilities
         [Inject] private readonly GameplaySetupViewController gameplaySetupViewController;
         [Inject] private readonly IPPPredictorMgr ppPredictorMgr;
         [Inject] private readonly AnnotatedBeatmapLevelCollectionsViewController annotatedBeatmapLevelCollectionsViewController;
+        [Inject] private readonly LobbyGameStateController lobbyGameStateController;
 #pragma warning restore CS0649 // Field is never assigned to, and will always have its default value null
 
         public MainMenuMgr()
@@ -40,22 +41,22 @@ namespace PPPredictor.Utilities
 
         private void DidChangeGameplayModifiersEvent()
         {
-            this.ppPredictorMgr.ChangeGameplayModifiers(this.gameplaySetupViewController);
+            if(IsNormalMainMenu()) this.ppPredictorMgr.ChangeGameplayModifiers(this.gameplaySetupViewController);
         }
 
         private void OnDifficultyChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
         {
-            this.ppPredictorMgr.DifficultyChanged(lvlSelectionNavigationCtrl, beatmap);
+            if (IsNormalMainMenu()) this.ppPredictorMgr.DifficultyChanged(lvlSelectionNavigationCtrl, beatmap);
         }
 
         private void OnDetailContentChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, StandardLevelDetailViewController.ContentType contentType)
         {
-            this.ppPredictorMgr.DetailContentChanged(lvlSelectionNavigationCtrl, contentType);
+            if (IsNormalMainMenu()) this.ppPredictorMgr.DetailContentChanged(lvlSelectionNavigationCtrl, contentType);
         }
 
         private void OnLevelSelectionActivated(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
         {
-            this.ppPredictorMgr.ActivateView(true);
+            this.ppPredictorMgr.ActivateView(IsNormalMainMenu());
         }
         private void OnLevelSelectionDeactivated(bool removedFromHierarchy, bool screenSystemDisabling)
         {
@@ -64,7 +65,16 @@ namespace PPPredictor.Utilities
 
         private void AnnotatedBeatmapLevelCollectionsViewController_didSelectAnnotatedBeatmapLevelCollectionEvent(IAnnotatedBeatmapLevelCollection annotatedBeatmapLevelCollection)
         {
-            this.ppPredictorMgr.FindPoolWithSyncURL(annotatedBeatmapLevelCollection as IPlaylist);
+            if (IsNormalMainMenu()) this.ppPredictorMgr.FindPoolWithSyncURL(annotatedBeatmapLevelCollection as IPlaylist);
+        }
+
+        /// <summary>
+        /// Check if we are NOT in a lobby
+        /// </summary>
+        /// <returns></returns>
+        private bool IsNormalMainMenu()
+        {
+            return lobbyGameStateController.state == MultiplayerLobbyState.None;
         }
     }
 }
