@@ -59,12 +59,17 @@ namespace PPPredictor.Counter
                 displayTypeOffset = -0.4f;
                 gainAlignment = TextAlignmentOptions.BottomRight;
             }
+            //Ugh this shit is so ugly
             useIcon = (canvas != null && Plugin.ProfileInfo.CounterUseIcons);
             showInfo = leaderBoardGameplayInfo.isRanked || !Plugin.ProfileInfo.CounterHideWhenUnranked;
-            headerText = canvasUtility.CreateTextFromSettings(settings, new Vector3(((-1f + centerOffset) * positionScaleFactor), lineOffset, 0));
-            ppText = canvasUtility.CreateTextFromSettings(settings, new Vector3((0.9f + iconTextOffset + displayTypeOffset + centerOffset) * positionScaleFactor, lineOffset, 0));
-            ppGainText = canvasUtility.CreateTextFromSettings(settings, new Vector3((1.2f + iconTextOffset + displayTypeOffset + centerOffset) * positionScaleFactor, lineOffset, 0));
-            personalBestText = canvasUtility.CreateTextFromSettings(settings, new Vector3((1.2f + iconTextOffset + displayTypeOffset + centerOffset) * positionScaleFactor, lineOffset, 0));
+            headerText = canvasUtility.CreateTextFromSettings(settings);
+            headerText.rectTransform.anchoredPosition += new Vector2(((-1f + centerOffset) * positionScaleFactor), lineOffset) * positionScale;
+            ppText = canvasUtility.CreateTextFromSettings(settings);
+            ppText.rectTransform.anchoredPosition += new Vector2((0.9f + iconTextOffset + displayTypeOffset + centerOffset) * positionScaleFactor, lineOffset) * positionScale;
+            ppGainText = canvasUtility.CreateTextFromSettings(settings);
+            ppGainText.rectTransform.anchoredPosition += new Vector2((1.2f + iconTextOffset + displayTypeOffset + centerOffset) * positionScaleFactor, lineOffset) * positionScale;
+            personalBestText = canvasUtility.CreateTextFromSettings(settings);
+            personalBestText.rectTransform.anchoredPosition += new Vector2((1.2f + iconTextOffset + displayTypeOffset + centerOffset) * positionScaleFactor, lineOffset) * positionScale;
             headerText.alignment = TextAlignmentOptions.BottomLeft;
             ppGainText.alignment = gainAlignment;
             ppText.alignment = personalBestText.alignment = TextAlignmentOptions.BottomRight;
