@@ -138,11 +138,11 @@ namespace PPPredictor.Utilities
             OnMapPoolRefreshed?.Invoke(this, null);
         }
 
-        public void ChangeGameplayModifiers(GameplaySetupViewController gameplaySetupViewController)
+        public void ChangeGameplayModifiers(GameplayModifiers gameplayModifiers)
         {
             foreach (var item in _lsPPPredictor)
             {
-                item.ChangeGameplayModifiers(gameplaySetupViewController);
+                item.ChangeGameplayModifiers(gameplayModifiers);
             }
         }
 
@@ -321,7 +321,7 @@ namespace PPPredictor.Utilities
             return new List<object>();
         }
 
-        public async Task UpdateCurrentBeatMapInfos(CustomBeatmapLevel selectedBeatmapLevel, IDifficultyBeatmap beatmap)
+        public async Task UpdateCurrentBeatMapInfos(CustomPreviewBeatmapLevel selectedBeatmapLevel, IDifficultyBeatmap beatmap)
         {
             await Task.WhenAll(_lsPPPredictor.Select(predictor => predictor.UpdateCurrentBeatMapInfos(selectedBeatmapLevel, beatmap)));
         }

@@ -12,7 +12,7 @@ namespace PPPredictor.Utilities
 #pragma warning disable CS0649
         [Inject] private readonly ScoreController scoreController;
         [Inject] private readonly GameplayCoreSceneSetupData setupData;
-        [Inject] private readonly PauseController pauseController;
+        [InjectOptional] private readonly PauseController pauseController;
         [Inject] private readonly BeatmapObjectManager beatmapObjectManager;
         [Inject] private readonly IPPPredictorMgr ppPredictorMgr;
 #pragma warning restore CS0649
@@ -56,8 +56,11 @@ namespace PPPredictor.Utilities
             OnSongFinished?.Invoke(this, null);
             scoreController.scoreDidChangeEvent -= ScoreController_scoreDidChangeEvent;
             BS_Utils.Utilities.BSEvents.energyReachedZero -= BSEvents_energyReachedZero;
-            pauseController.didPauseEvent -= PauseController_didPauseEvent;
-            pauseController.didResumeEvent -= PauseController_didResumeEvent;
+            if (pauseController != null)
+            {
+                pauseController.didPauseEvent -= PauseController_didPauseEvent;
+                pauseController.didResumeEvent -= PauseController_didResumeEvent;
+            }
             beatmapObjectManager.noteWasCutEvent -= BeatmapObjectManager_noteWasCutEvent;
             beatmapObjectManager.noteWasMissedEvent -= BeatmapObjectManager_noteWasMissedEvent;
             OverlayDataUnsubscribe();
@@ -67,17 +70,20 @@ namespace PPPredictor.Utilities
         {
             try
             {
+                this.ppPredictorMgr.ChangeGameplayModifiers(setupData.gameplayModifiers);
                 try
                 {
-                    await ppPredictorMgr.UpdateCurrentBeatMapInfos(setupData.previewBeatmapLevel as CustomBeatmapLevel, setupData.difficultyBeatmap);
+                    await ppPredictorMgr.UpdateCurrentBeatMapInfos(setupData.previewBeatmapLevel as CustomPreviewBeatmapLevel, setupData.difficultyBeatmap);
                 }
                 catch (Exception ex)
                 {
                     Plugin.ErrorPrint($"PPPCounter change selected Map: UpdateCurrentBeatMapInfos failed {ex.Message}");
                 }
-
-                pauseController.didPauseEvent += PauseController_didPauseEvent;
-                pauseController.didResumeEvent += PauseController_didResumeEvent;
+                if (pauseController != null)
+                {
+                    pauseController.didPauseEvent += PauseController_didPauseEvent;
+                    pauseController.didResumeEvent += PauseController_didResumeEvent;
+                }
                 beatmapObjectManager.noteWasCutEvent += BeatmapObjectManager_noteWasCutEvent;
                 beatmapObjectManager.noteWasMissedEvent += BeatmapObjectManager_noteWasMissedEvent;
 

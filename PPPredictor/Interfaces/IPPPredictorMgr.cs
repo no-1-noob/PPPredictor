@@ -30,7 +30,7 @@ namespace PPPredictor.Interfaces
 
         void RestartOverlayServer();
 
-        void ChangeGameplayModifiers(GameplaySetupViewController gameplaySetupViewController);
+        void ChangeGameplayModifiers(GameplayModifiers gameplayModifiers);
 
         void DetailContentChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, StandardLevelDetailViewController.ContentType contentType);
 
@@ -71,7 +71,7 @@ namespace PPPredictor.Interfaces
 
         List<object> GetMapPoolsFromLeaderboard(Leaderboard leaderBoardName);
 
-        Task UpdateCurrentBeatMapInfos(CustomBeatmapLevel selectedBeatmapLevel, IDifficultyBeatmap beatmap);
+        Task UpdateCurrentBeatMapInfos(CustomPreviewBeatmapLevel selectedBeatmapLevel, IDifficultyBeatmap beatmap);
 
         void FindPoolWithSyncURL(IPlaylist playlist);
     }

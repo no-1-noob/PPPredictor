@@ -130,11 +130,11 @@ namespace PPPredictor.Utilities
 
         #region eventHandling
 
-        public void ChangeGameplayModifiers(GameplaySetupViewController gameplaySetupViewController)
+        public void ChangeGameplayModifiers(GameplayModifiers gameplayModifiers)
         {
-            if (gameplaySetupViewController != null && gameplaySetupViewController.gameplayModifiers != null)
+            if (gameplayModifiers != null)
             {
-                _gameplayModifiers = gameplaySetupViewController.gameplayModifiers;
+                _gameplayModifiers = gameplayModifiers;
                 _currentBeatMapInfo = _ppCalculator.ApplyModifiersToBeatmapInfo(_currentBeatMapInfo, _gameplayModifiers);
                 _currentBeatMapInfo.MaxPP = -1;
                 CalculatePP();
@@ -159,7 +159,7 @@ namespace PPPredictor.Utilities
             await UpdateCurrentBeatMapInfos(lvlSelectionNavigationCtrl.selectedBeatmapLevel as CustomBeatmapLevel, beatmap);
         }
 
-        public async Task UpdateCurrentBeatMapInfos(CustomBeatmapLevel selectedBeatmapLevel, IDifficultyBeatmap beatmap)
+        public async Task UpdateCurrentBeatMapInfos(CustomPreviewBeatmapLevel selectedBeatmapLevel, IDifficultyBeatmap beatmap)
         {
             _currentBeatMapInfo = new PPPBeatMapInfo(selectedBeatmapLevel, beatmap);
             await UpdateCurrentBeatMapInfos();

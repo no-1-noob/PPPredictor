@@ -41,7 +41,7 @@ namespace PPPredictor.Utilities
 
         private void DidChangeGameplayModifiersEvent()
         {
-            if(IsNormalMainMenu()) this.ppPredictorMgr.ChangeGameplayModifiers(this.gameplaySetupViewController);
+            if(IsNormalMainMenu()) this.ppPredictorMgr.ChangeGameplayModifiers(this.gameplaySetupViewController?.gameplayModifiers);
         }
 
         private void OnDifficultyChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, IDifficultyBeatmap beatmap)
