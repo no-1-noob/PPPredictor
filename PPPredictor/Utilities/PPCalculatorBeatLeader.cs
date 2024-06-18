@@ -123,7 +123,7 @@ namespace PPPredictor.Utilities
                         BeatLeaderSong song = await beatleaderapi.GetSongByHash(songHash);
                         if (song != null)
                         {
-                            BeatLeaderDifficulty diff = song.difficulties.FirstOrDefault(x => x.value == ParsingUtil.ParseDifficultyNameToInt(beatMapInfo.BeatmapKey.difficulty.ToString()));
+                            BeatLeaderDifficulty diff = song.difficulties.FirstOrDefault(x => x.value == ParsingUtil.ParseDifficultyNameToInt(beatMapInfo.BeatmapKey.difficulty.ToString()) && x.modeName.ToUpper() == beatMapInfo.BeatmapKey.beatmapCharacteristic.serializedName);
                             if (diff != null)
                             {
                                 _leaderboardInfo.CurrentMapPool.LsLeaderboadInfo.Add(new ShortScore(searchString, new PPPStarRating(diff), DateTime.Now));
