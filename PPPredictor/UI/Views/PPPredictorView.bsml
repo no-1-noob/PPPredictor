@@ -37,6 +37,9 @@
       </horizontal>
       <!-- /Buttons -->
       <vertical horizontal-fit='PreferredSize' preferred-width='60' vertical-fit='PreferredSize' anchor-pos-y='-1'>
+        <macro.as-host host="pp-graph">
+          <!--<macro.reparent transform="ui-component"/>-->
+        </macro.as-host>
         <horizontal horizontal-fit='PreferredSize' pad-left='0' align='Center' child-align='MiddleLeft'>
           <vertical vertical-fit='PreferredSize' child-align='MiddleLeft'>
             <text text='Global' align='Left' font-size='4' />

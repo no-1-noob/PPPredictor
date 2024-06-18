@@ -1,4 +1,6 @@
 ﻿using PPPredictor.Data;
+using PPPredictor.Data.Curve;
+using PPPredictor.Data.DisplayInfos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -272,6 +274,11 @@ namespace PPPredictor.Utilities
         internal double CalculateMaxPP(PPPBeatMapInfo _currentBeatMapInfo)
         {
             return _leaderboardInfo.CurrentMapPool.Curve.CalculateMaxPP(_currentBeatMapInfo, _leaderboardInfo.CurrentMapPool.LeaderboardContext);
+        }
+
+        internal DisplayGraphData CalculateDisplayGraph(PPPBeatMapInfo _currentBeatMapInfo, DisplayGraphSettings displayGraphSettings)
+        {
+            return _leaderboardInfo.CurrentMapPool.Curve.DisplayGraphData(_currentBeatMapInfo, displayGraphSettings, _leaderboardInfo.CurrentMapPool.LeaderboardContext);
         }
 
         public double WeightPP(double rawPP, int index, float accumulationConstant)

@@ -232,6 +232,16 @@ namespace PPPredictor.Utilities
             return 0;
         }
 
+        public DisplayGraphData CalculateDisplayGraph(Leaderboard leaderBoardName, DisplayGraphSettings displayGraphSettings)
+        {
+            IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());
+            if (predictor != null)
+            {
+                return predictor.CalculateDisplayGraph(displayGraphSettings);
+            }
+            return new DisplayGraphData(displayGraphSettings);
+        }
+
         public PPPBeatMapInfo GetModifiedBeatMapInfo(Leaderboard leaderBoardName, GameplayModifiers gameplayModifiers)
         {
             IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace PPPredictor.Data.Curve
 {
-    class BeatLeaderPPPCurve : IPPPCurve
+    class BeatLeaderPPPCurve : BaseCurve
     {
         private readonly List<(double, double)> accPointList = new List<(double, double)> {
                 (1.0, 7.424),
@@ -40,8 +40,8 @@ namespace PPPredictor.Data.Curve
                 (0.65, 0.296),
                 (0.6, 0.256),
                 (0.0, 0.000), };
-        public bool IsDummy { get => false; }
-        public double CalculatePPatPercentage(PPPBeatMapInfo beatMapInfo, double percentage, bool failed, bool paused, LeaderboardContext leaderboardContext = LeaderboardContext.None)
+        public override bool IsDummy { get => false; }
+        public override double CalculatePPatPercentage(PPPBeatMapInfo beatMapInfo, double percentage, bool failed, bool paused, LeaderboardContext leaderboardContext = LeaderboardContext.None)
         {
             try
             {
@@ -107,12 +107,12 @@ namespace PPPredictor.Data.Curve
             return (650f * Math.Pow(pp, 1.3f)) / Math.Pow(650f, 1.3f);
         }
 
-        public double CalculateMaxPP(PPPBeatMapInfo beatMapInfo, LeaderboardContext leaderboardContext = LeaderboardContext.None)
+        public override double CalculateMaxPP(PPPBeatMapInfo beatMapInfo, LeaderboardContext leaderboardContext = LeaderboardContext.None)
         {
             return CalculatePPatPercentage(beatMapInfo, 100, false, false, leaderboardContext);
         }
 
-        public CurveInfo ToCurveInfo()
+        public override CurveInfo ToCurveInfo()
         {
             CurveInfo retCurve = new CurveInfo
             {

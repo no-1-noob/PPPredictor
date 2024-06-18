@@ -1,4 +1,5 @@
 ﻿using PPPredictor.Data;
+using PPPredictor.Data.Curve;
 using PPPredictor.Data.DisplayInfos;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,7 @@ namespace PPPredictor.Interfaces
         void ResetDisplay(bool resetAll);
         double CalculatePPatPercentage(double percentage, PPPBeatMapInfo beatMapInfo, bool levelFailed = false, bool levelPaused = false);
         double CalculateMaxPP();
+        DisplayGraphData CalculateDisplayGraph(DisplayGraphSettings displayGraphSettings);
         PPPBeatMapInfo GetModifiedBeatMapInfo(GameplayModifiers gameplayModifiers, bool levelFailed = false, bool levelPaused = false);
         double CalculatePPGain(double pp);
         bool IsRanked();

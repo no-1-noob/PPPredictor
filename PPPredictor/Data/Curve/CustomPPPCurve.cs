@@ -8,7 +8,7 @@ using static PPPredictor.Data.LeaderBoardDataTypes.HitBloqDataTypes;
 
 namespace PPPredictor.Data.Curve
 {
-    class CustomPPPCurve : IPPPCurve
+    class CustomPPPCurve : BaseCurve
     {
         private readonly List<(double, double)> arrPPCurve;
         private readonly CurveType curveType;
@@ -17,7 +17,7 @@ namespace PPPredictor.Data.Curve
         private readonly double? exponential;
         private readonly double? cutoff;
         private readonly bool _isDummy;
-        public bool IsDummy { get => _isDummy; }
+        public override bool IsDummy { get => _isDummy; }
 
         public CustomPPPCurve(List<(double, double)> arrPPCurve, CurveType curveType, double basePPMultiplier, bool isDummy = false)
         {
@@ -58,7 +58,7 @@ namespace PPPredictor.Data.Curve
             basePPMultiplier = 50;
         }
 
-        public double CalculatePPatPercentage(PPPBeatMapInfo beatMapInfo, double percentage, bool failed, bool paused, LeaderboardContext leaderboardContext = LeaderboardContext.None)
+        public override double CalculatePPatPercentage(PPPBeatMapInfo beatMapInfo, double percentage, bool failed, bool paused, LeaderboardContext leaderboardContext = LeaderboardContext.None)
         {
             switch (curveType)
             {
@@ -73,7 +73,7 @@ namespace PPPredictor.Data.Curve
             }
         }
 
-        public double CalculateMaxPP(PPPBeatMapInfo beatMapInfo, LeaderboardContext leaderboardContext = LeaderboardContext.None)
+        public override double CalculateMaxPP(PPPBeatMapInfo beatMapInfo, LeaderboardContext leaderboardContext = LeaderboardContext.None)
         {
             double percent = 100;
             if(curveType == CurveType.Linear && arrPPCurve.Count > 1)
@@ -159,7 +159,7 @@ namespace PPPredictor.Data.Curve
             return beatMapInfo.ModifiedStarRating.Stars * basePPMultiplier * multiplier;
         }
 
-        public CurveInfo ToCurveInfo()
+        public override CurveInfo ToCurveInfo()
         {
             switch (curveType)
             {

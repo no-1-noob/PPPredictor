@@ -1,8 +1,10 @@
-﻿using CountersPlus.Custom;
+﻿using BeatSaberMarkupLanguage.FloatingScreen;
+using CountersPlus.Custom;
 using CountersPlus.Utils;
 using HMUI;
 using PPPredictor.Data;
 using PPPredictor.Interfaces;
+using PPPredictor.UI.Test;
 using PPPredictor.Utilities;
 using System;
 using System.Linq;
@@ -83,6 +85,20 @@ namespace PPPredictor.Counter
             personalBestText.text = FormatPBText(leaderBoardGameplayInfo);
             ppText.enabled = false;
             ppGainText.enabled = false;
+
+            GameObject customGraphicGameObject = new GameObject("TestGraph");
+            var PpGraph = customGraphicGameObject.AddComponent<TestGraph>();
+            var noGlowMat = new Material(Resources.FindObjectsOfTypeAll<Material>().Where(m => m.name == "UINoGlow").First());
+            noGlowMat.name = "UINoGlowCustom";
+            PpGraph.material = noGlowMat;
+            PpGraph.transform.SetParent(ppText.gameObject.transform, false);
+
+            // Optionally, set the size and position of the RectTransform
+            //RectTransform rectTransform = PpGraph.gameObject.GetComponent<RectTransform>();
+            //Plugin.Log.Error($"rectTransform exists? {rectTransform}");
+            RectTransform rectTransform = customGraphicGameObject.GetComponent<RectTransform>();
+            rectTransform.sizeDelta = new Vector2(10, 10); // Width and height of the rectangle
+            rectTransform.anchoredPosition = new Vector2(0, 0); // Position in the canvas
 
             _ = StartPersonalBestAnimation(5000);
         }

@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using PPPredictor.Data;
+using PPPredictor.Data.DisplayInfos;
 using PPPredictor.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -321,6 +322,7 @@ namespace PPPredictor.Utilities
         public double percentage;
         public PPPBeatMapInfo modifiedBeatMapInfo;
         public PPPBeatMapInfo failedBeatMapInfo;
+        public DisplayGraphData displayGraphData;
         public string ppSuffix;
         public double? personalBest;
         public string iconPath;
@@ -337,6 +339,7 @@ namespace PPPredictor.Utilities
             this.percentage = 0;
             this.targetPercentage = ppPredictorMgr.GetPercentage();
             this.maxPP = ppPredictorMgr.GetMaxPPForCalculator(leaderboard);
+            this.displayGraphData = ppPredictorMgr.CalculateDisplayGraph(leaderboard, new Data.DisplayInfos.DisplayGraphSettings(85, 100, 0, 500, 0.1));
             this.personalBest = ppPredictorMgr.GetPersonalBest(leaderboard);
             this.iconPath = ppPredictorMgr.GetMapPoolIcon(leaderboard);
             this.isRanked = ppPredictorMgr.IsRanked(leaderboard);
@@ -363,6 +366,7 @@ namespace PPPredictor.Utilities
             personalBest = info.personalBest;
             iconPath = info.iconPath;
             isRanked = info.isRanked;
+            displayGraphData = info.displayGraphData;
         }
 
         public string leaderboardName;
@@ -375,5 +379,6 @@ namespace PPPredictor.Utilities
         public double? personalBest;
         public string iconPath;
         public bool isRanked;
+        public DisplayGraphData displayGraphData;
     }
 }

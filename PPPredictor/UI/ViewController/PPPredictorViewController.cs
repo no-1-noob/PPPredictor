@@ -16,6 +16,11 @@ using Zenject;
 using HarmonyLib;
 using System.Threading.Tasks;
 using PPPredictor.Interfaces;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
+using JetBrains.Annotations;
+using PPPredictor.UI.Test;
+using UnityEngine.UI;
+using System.Linq;
 
 namespace PPPredictor.UI.ViewController
 {
@@ -58,6 +63,8 @@ namespace PPPredictor.UI.ViewController
             MeshRenderer floatingScreenMeshRenderer = floatingScreen.handle.GetComponent<MeshRenderer>();
             if(floatingScreenMeshRenderer) floatingScreenMeshRenderer.enabled = false; //Make it invisible ;)
 
+            //Transform = floatingScreen.gameObject.transform;
+
             floatingScreen.HandleReleased += OnScreenHandleReleased;
             BSMLParser.instance.Parse(BeatSaberMarkupLanguage.Utilities.GetResourceContent(Assembly.GetExecutingAssembly(), "PPPredictor.UI.Views.PPPredictorView.bsml"), floatingScreen.gameObject, this);
             ppPredictorMgr.ViewActivated += PpPredictorMgr_ViewActivated;
@@ -65,6 +72,37 @@ namespace PPPredictor.UI.ViewController
             ppPredictorMgr.OnDisplayPPInfo += PpPredictorMgr_OnDisplayPPInfo;
             ppPredictorMgr.OnDisplaySessionInfo += PpPredictorMgr_OnDisplaySessionInfo;
             ppPredictorMgr.OnMapPoolRefreshed += PpPredictorMgr_OnMapPoolRefreshed;
+
+            //floatingScreen.gameObject.can
+            //var component = new GameObject(typeof(T).Name).AddComponent<T>();
+            //component.transform.SetParent(floatingScreen.transform, false);
+
+            //// Create a new Canvas
+            //GameObject canvasGameObject = new GameObject("CustomCanvas");
+            //Canvas canvas = canvasGameObject.AddComponent<Canvas>();
+            //canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            //CanvasScaler canvasScaler = canvasGameObject.AddComponent<CanvasScaler>();
+            //canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            //canvasGameObject.AddComponent<GraphicRaycaster>();
+
+            //// Create a new GameObject for the custom graphic
+            //GameObject customGraphicGameObject = new GameObject("CustomGraphic");
+            //customGraphicGameObject.transform.SetParent(canvasGameObject.transform, false);
+
+            // Add the CustomGraphic component
+            GameObject customGraphicGameObject = new GameObject("TestGraph");
+            PpGraph = customGraphicGameObject.AddComponent<TestGraph>();
+            var noGlowMat = new Material(Resources.FindObjectsOfTypeAll<Material>().Where(m => m.name == "UINoGlow").First());
+            noGlowMat.name = "UINoGlowCustom";
+            PpGraph.material = noGlowMat;
+            PpGraph.transform.SetParent(floatingScreen.gameObject.transform, false);
+
+            // Optionally, set the size and position of the RectTransform
+            //RectTransform rectTransform = PpGraph.gameObject.GetComponent<RectTransform>();
+            //Plugin.Log.Error($"rectTransform exists? {rectTransform}");
+            RectTransform rectTransform = customGraphicGameObject.GetComponent<RectTransform>();
+            rectTransform.sizeDelta = new Vector2(10, 10); // Width and height of the rectangle
+            rectTransform.anchoredPosition = new Vector2(0, 0); // Position in the canvas
         }
 
         private void PpPredictorMgr_OnMapPoolRefreshed(object sender, EventArgs e)
@@ -437,6 +475,11 @@ namespace PPPredictor.UI.ViewController
         {
             get => this.ppPredictorMgr.IsLeaderboardNavigationActive;
         }
+        [UIValue("pp-graph")]
+        private TestGraph PpGraph = null;
+
+        [UIValue("ui-component"), UsedImplicitly]
+        private Transform Transform { get; set; }
         #region update UI data
         [UIValue("newVersion")]
         private string NewVersion { get; set; }

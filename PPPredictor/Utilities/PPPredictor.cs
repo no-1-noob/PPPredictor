@@ -1,4 +1,5 @@
 ﻿using PPPredictor.Data;
+using PPPredictor.Data.Curve;
 using PPPredictor.Data.DisplayInfos;
 using PPPredictor.Interfaces;
 using SongCore.Utilities;
@@ -203,6 +204,11 @@ namespace PPPredictor.Utilities
         public double CalculateMaxPP()
         {
             return _ppCalculator.CalculateMaxPP(_currentBeatMapInfo);
+        }
+
+        public DisplayGraphData CalculateDisplayGraph(DisplayGraphSettings displayGraphSettings)
+        {
+            return _ppCalculator.CalculateDisplayGraph(_currentBeatMapInfo, displayGraphSettings);
         }
 
         public PPPBeatMapInfo GetModifiedBeatMapInfo(GameplayModifiers gameplayModifiers, bool levelFailed = false, bool levelPaused = false)

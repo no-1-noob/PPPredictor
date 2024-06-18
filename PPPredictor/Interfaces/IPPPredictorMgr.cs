@@ -55,6 +55,7 @@ namespace PPPredictor.Interfaces
         string GetPPSuffixForLeaderboard(Leaderboard leaderBoardName);
 
         double GetMaxPPForCalculator(Leaderboard leaderBoardName);
+        DisplayGraphData CalculateDisplayGraph(Leaderboard leaderBoardName, DisplayGraphSettings displayGraphSettings);
 
         PPPBeatMapInfo GetModifiedBeatMapInfo(Leaderboard leaderBoardName, GameplayModifiers gameplayModifiers);
 
