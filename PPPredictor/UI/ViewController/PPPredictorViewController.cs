@@ -95,7 +95,7 @@ namespace PPPredictor.UI.ViewController
             RectTransform panelRectTransform = panelGameObject.AddComponent<RectTransform>();
             panelGameObject.AddComponent<Canvas>();
             panelRectTransform.sizeDelta = new Vector2(25, 15); // Size of the panel
-            panelRectTransform.anchoredPosition = new Vector2(0, 0);
+            panelRectTransform.anchoredPosition = new Vector2(0, -30);
             panelGameObject.AddComponent<Image>().color = Color.white; // Background color to see the bounds
             panelGameObject.AddComponent<Mask>().showMaskGraphic = false; // Add mask to clip content
 

@@ -1,7 +1,9 @@
 ﻿using BeatSaberMarkupLanguage;
 using IPA.Config.Data;
+using IPA.Utilities.Async;
 using PPPredictor.Data.DisplayInfos;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,25 +25,25 @@ namespace PPPredictor.UI.Graph
         private DisplayGraphInfo _displayGraphInfo;
         private DisplayPPInfo _displayPPInfo;
 
+        private IEnumerator coroutine;
+
         private List<UIVertex> graphVertices = new List<UIVertex>();
         private List<UIVertex> positionVertices = new List<UIVertex>();
 
-        Mesh mesh;
-        MeshFilter meshFilter;
+        private bool isDirty = true;
 
         public DisplayGraphInfo DisplayGraphInfo
         {
             set
             {
-                Plugin.DebugPrint("DisplayGraphInfo");
+                //Plugin.DebugPrint("DisplayGraphInfo");
                 _displayGraphInfo = value;
-                SetAllDirty();
+                RefreshGraph();
             }
         }
 
         internal DisplayPPInfo DisplayPPInfo { set
             {
-                Plugin.DebugPrint("DisplayPPInfo");
                 _displayPPInfo = value;
                 RefreshPosition();
             }
@@ -50,54 +52,47 @@ namespace PPPredictor.UI.Graph
         protected override void Start()
         {
             base.Start();
-            InitMesh();
-            //CreateLabel();
-        }
-
-        private void InitMesh()
-        {
-            mesh = new Mesh();
-            meshFilter = gameObject.AddComponent<MeshFilter>();
-            meshFilter.mesh = mesh;
-            var noGlowMat = new Material(Resources.FindObjectsOfTypeAll<Material>().Where(m => m.name == "UINoGlow").First());
-            noGlowMat.name = "UINoGlowCustom";
-            gameObject.AddComponent<MeshRenderer>().material = noGlowMat;
+            Plugin.DebugPrint("protected override void Start");
+            coroutine = RefreshCheck();
+            StartCoroutine(coroutine);
         }
 
         protected override void OnPopulateMesh(VertexHelper vh)
-        {
-
-            Plugin.DebugPrint($"OnPopulateMesh {_displayGraphInfo?.LsPoints?.Count} {_displayGraphInfo?.LsPoints.Select(x => x.Y).Max()}");
-
+        {   
             vh.Clear();
-            graphVertices.Clear();
-            
+            List<UIVertex> lsCombined = new List<UIVertex>(graphVertices);
+            lsCombined.AddRange(positionVertices);
+            vh.AddUIVertexTriangleStream(lsCombined);
+            isDirty = false;
+        }
+
+        private void RefreshGraph()
+        {
             DrawGraph();
-            DrawPositionAndAddVertex(vh);
+            RefreshPosition();
         }
 
         private void RefreshPosition()
         {
-            using (VertexHelper vh = new VertexHelper())
-            {
-                DrawPositionAndAddVertex(vh);
-            }
+            DrawPosition();
+            isDirty = true;
         }
 
-        private void DrawPositionAndAddVertex(VertexHelper vh)
+        private IEnumerator RefreshCheck()
         {
-            positionVertices.Clear();
-            DrawPosition();
-
-            Plugin.DebugPrint($"graphVertices count: {graphVertices.Count}");
-            List<UIVertex> lsCombined = new List<UIVertex>(graphVertices);
-            lsCombined.AddRange(positionVertices);
-            vh.AddUIVertexTriangleStream(lsCombined);
-            SetVerticesDirty();
+            while (true)
+            {
+                yield return new WaitForSeconds(0.2f);
+                if (isDirty)
+                {
+                    SetVerticesDirty();
+                }
+            }
         }
 
         private void DrawGraph()
         {
+            graphVertices.Clear();
             Rect rect = GetPixelAdjustedRect();
             Plugin.DebugPrint($"OnPopulateMesh rect x{rect.xMin} {rect.xMax} rect y {rect.yMin} {rect.yMax}");
 
@@ -149,7 +144,8 @@ namespace PPPredictor.UI.Graph
 
         private void DrawPosition()
         {
-            if(_displayGraphInfo != null)
+            positionVertices.Clear();
+            if (_displayGraphInfo != null)
             {
                 Rect rect = GetPixelAdjustedRect();
                 double xMin, xMax, yMin, yMax;

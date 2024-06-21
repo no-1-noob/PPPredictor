@@ -320,7 +320,6 @@ namespace PPPredictor.Utilities
                     ppDisplay.PredictedCountryRank = $"{rankGainResult.RankCountry:N0}";
                     ppDisplay.PredictedCountryRankDiff = rankGainResult.RankGainCountry.ToString("+#;-#;0");
                 }
-                SendDisplayPPInfo(ppDisplay);
             }
             else
             {
@@ -331,6 +330,7 @@ namespace PPPredictor.Utilities
                 ppDisplay.PredictedCountryRankDiff = "?";
                 ppDisplay.PredictedCountryRankDiffColor = _leaderboardInfo.IsCountryRankEnabled ? DisplayHelper.GetDisplayColor(0, false) : DisplayHelper.ColorCountryRankDisabled;
             }
+            SendDisplayPPInfo(ppDisplay);
         }
 
         private void DisplaySession()
