@@ -58,6 +58,7 @@ namespace PPPredictor.Utilities
 
         public event EventHandler<bool> OnDataLoading;
         public event EventHandler<DisplaySessionInfo> OnDisplaySessionInfo;
+        public event EventHandler<DisplayGraphInfo> OnDisplayGraphInfo;
         public event EventHandler<DisplayPPInfo> OnDisplayPPInfo;
         public event EventHandler OnMapPoolRefreshed;
 
@@ -138,6 +139,7 @@ namespace PPPredictor.Utilities
                 _gameplayModifiers = gameplaySetupViewController.gameplayModifiers;
                 _currentBeatMapInfo = _ppCalculator.ApplyModifiersToBeatmapInfo(_currentBeatMapInfo, _gameplayModifiers);
                 _currentBeatMapInfo.MaxPP = -1;
+                SendDisplayCurveInfo(_ppCalculator.CalculateDisplayGraph(_currentBeatMapInfo, new DisplayGraphSettings(90, 100, 0, 500, 0.001f)));
                 CalculatePP();
             }
         }
@@ -173,6 +175,7 @@ namespace PPPredictor.Utilities
             _currentBeatMapInfo.SelectedMapSearchString = _currentBeatMapInfo.SelectedCustomBeatmapLevel != null ? _ppCalculator.CreateSeachString(Hashing.GetCustomLevelHash(_currentBeatMapInfo.SelectedCustomBeatmapLevel), "SOLO" + _currentBeatMapInfo.Beatmap.parentDifficultyBeatmapSet.beatmapCharacteristic.serializedName, _currentBeatMapInfo.Beatmap.difficultyRank) : string.Empty;
             _currentBeatMapInfo.OldDotsEnabled = IsOldDotsActive(_currentBeatMapInfo.Beatmap);
             _currentBeatMapInfo = GetModifiedBeatMapInfo(_gameplayModifiers);
+            SendDisplayCurveInfo(_ppCalculator.CalculateDisplayGraph(_currentBeatMapInfo, new DisplayGraphSettings(90, 100, 0, 500, 0.001f)));
             _currentBeatMapInfo.MaxPP = -1;
         }
         #endregion
@@ -191,6 +194,10 @@ namespace PPPredictor.Utilities
         {
             if (_isActive) OnDisplaySessionInfo?.Invoke(this, displaySessionInfo);
         }
+        private void SendDisplayCurveInfo(DisplayGraphInfo displayCurveInfo)
+        {
+            if (_isActive) OnDisplayGraphInfo?.Invoke(this, displayCurveInfo);
+        }
         private void PPCalculator_OnMapPoolRefreshed(object sender, EventArgs e)
         {
             OnMapPoolRefreshed?.Invoke(this, null);
@@ -206,7 +213,7 @@ namespace PPPredictor.Utilities
             return _ppCalculator.CalculateMaxPP(_currentBeatMapInfo);
         }
 
-        public DisplayGraphData CalculateDisplayGraph(DisplayGraphSettings displayGraphSettings)
+        public DisplayGraphInfo CalculateDisplayGraph(DisplayGraphSettings displayGraphSettings)
         {
             return _ppCalculator.CalculateDisplayGraph(_currentBeatMapInfo, displayGraphSettings);
         }
@@ -250,6 +257,8 @@ namespace PPPredictor.Utilities
             _ppGainResult = _ppCalculator.GetPlayerScorePPGain(_currentBeatMapInfo.SelectedMapSearchString, pp);
             double ppGains = _ppCalculator.Zeroizer(_ppGainResult.GetDisplayPPValue());
             _ppDisplay = new DisplayPPInfo();
+            _ppDisplay.PPRawValue = pp;
+            _ppDisplay.PercentValue = _percentage;
             if (_currentBeatMapInfo.MaxPP > 0 && pp >= _currentBeatMapInfo.MaxPP)
             {
                 _ppDisplay.PPRaw = $"<color=\"yellow\">{pp:F2}{PPSuffix}</color>";
@@ -262,7 +271,6 @@ namespace PPPredictor.Utilities
             _ppDisplay.PPGainDiffColor = DisplayHelper.GetDisplayColor(ppGains, false, true);
 
             DisplayRankGain(null, _ppDisplay);
-            _ppDisplay.DisplayGraphData = _ppCalculator.CalculateDisplayGraph(_currentBeatMapInfo, new DisplayGraphSettings(85, 100, 0, 500, 0.01));
             //Restart rank calculation timer
             _rankTimer.Stop();
             _rankTimer.Start();
@@ -312,6 +320,7 @@ namespace PPPredictor.Utilities
                     ppDisplay.PredictedCountryRank = $"{rankGainResult.RankCountry:N0}";
                     ppDisplay.PredictedCountryRankDiff = rankGainResult.RankGainCountry.ToString("+#;-#;0");
                 }
+                SendDisplayPPInfo(ppDisplay);
             }
             else
             {
@@ -322,7 +331,6 @@ namespace PPPredictor.Utilities
                 ppDisplay.PredictedCountryRankDiff = "?";
                 ppDisplay.PredictedCountryRankDiffColor = _leaderboardInfo.IsCountryRankEnabled ? DisplayHelper.GetDisplayColor(0, false) : DisplayHelper.ColorCountryRankDisabled;
             }
-            SendDisplayPPInfo(ppDisplay);
         }
 
         private void DisplaySession()

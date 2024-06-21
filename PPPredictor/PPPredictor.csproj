@@ -187,7 +187,7 @@
     <Compile Include="Counter\Settings\CounterSettings.cs" />
     <Compile Include="Data\Curve\BeatLeaderPPPCurve.cs" />
     <Compile Include="Data\Curve\BaseCurve.cs" />
-    <Compile Include="Data\DisplayInfos\DisplayGraphData.cs" />
+    <Compile Include="Data\DisplayInfos\DisplayGraphInfo.cs" />
     <Compile Include="Data\Curve\CurveInfo.cs" />
     <Compile Include="Data\Curve\CurveParser.cs" />
     <Compile Include="Data\Curve\CustomPPPCurve.cs" />
@@ -224,7 +224,7 @@
     <Compile Include="OpenAPIs\PPPWebSocket.cs" />
     <Compile Include="OverlayServer\WebSocketOverlayServer.cs" />
     <Compile Include="UI\PPPredictorFlowCoordinator.cs" />
-    <Compile Include="UI\Test\TestGraph.cs" />
+    <Compile Include="UI\Graph\PPGraph.cs" />
     <Compile Include="UI\ViewController\SettingsMidViewController.cs" />
     <Compile Include="Utilities\Constants.cs" />
     <Compile Include="Utilities\DisplayHelper.cs" />

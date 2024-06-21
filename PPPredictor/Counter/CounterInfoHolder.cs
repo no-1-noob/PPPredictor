@@ -4,7 +4,7 @@ using CountersPlus.Utils;
 using HMUI;
 using PPPredictor.Data;
 using PPPredictor.Interfaces;
-using PPPredictor.UI.Test;
+using PPPredictor.UI.Graph;
 using PPPredictor.Utilities;
 using System;
 using System.Linq;
@@ -87,7 +87,7 @@ namespace PPPredictor.Counter
             ppGainText.enabled = false;
 
             GameObject customGraphicGameObject = new GameObject("TestGraph");
-            var PpGraph = customGraphicGameObject.AddComponent<TestGraph>();
+            var PpGraph = customGraphicGameObject.AddComponent<PPGraph>();
             var noGlowMat = new Material(Resources.FindObjectsOfTypeAll<Material>().Where(m => m.name == "UINoGlow").First());
             noGlowMat.name = "UINoGlowCustom";
             PpGraph.material = noGlowMat;

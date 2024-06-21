@@ -31,6 +31,7 @@ namespace PPPredictor.Utilities
         public event EventHandler<bool> OnDataLoading;
         public event EventHandler<DisplaySessionInfo> OnDisplaySessionInfo;
         public event EventHandler<DisplayPPInfo> OnDisplayPPInfo;
+        public event EventHandler<DisplayGraphInfo> OnDisplayGraphInfo;
         public event EventHandler OnMapPoolRefreshed;
 
         public IPPPredictor CurrentPPPredictor { get => _currentPPPredictor; }
@@ -74,6 +75,7 @@ namespace PPPredictor.Utilities
                 pPPredictor.OnDisplayPPInfo += PPPredictor_OnDisplayPPInfo;
                 pPPredictor.OnDisplaySessionInfo += PPPredictor_OnDisplaySessionInfo;
                 pPPredictor.OnMapPoolRefreshed += PPPredictor_OnMapPoolRefreshed;
+                pPPredictor.OnDisplayGraphInfo += PPPredictor_OnDisplayGraphInfo;
             }
             CurrentPPPredictor.SetActive(true);
             SetNavigationArrowInteractivity();
@@ -107,6 +109,11 @@ namespace PPPredictor.Utilities
         private void PPPredictor_OnDisplayPPInfo(object sender, DisplayPPInfo displayPPInfo)
         {
             OnDisplayPPInfo?.Invoke(this, displayPPInfo);
+        }
+
+        private void PPPredictor_OnDisplayGraphInfo(object sender, DisplayGraphInfo displayGraphInfo)
+        {
+            OnDisplayGraphInfo?.Invoke(this, displayGraphInfo);
         }
 
         private void PPPredictor_OnDataLoading(object sender, bool isDataLoading)
@@ -232,14 +239,14 @@ namespace PPPredictor.Utilities
             return 0;
         }
 
-        public DisplayGraphData CalculateDisplayGraph(Leaderboard leaderBoardName, DisplayGraphSettings displayGraphSettings)
+        public DisplayGraphInfo CalculateDisplayGraph(Leaderboard leaderBoardName, DisplayGraphSettings displayGraphSettings)
         {
             IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());
             if (predictor != null)
             {
                 return predictor.CalculateDisplayGraph(displayGraphSettings);
             }
-            return new DisplayGraphData(displayGraphSettings);
+            return new DisplayGraphInfo(displayGraphSettings);
         }
 
         public PPPBeatMapInfo GetModifiedBeatMapInfo(Leaderboard leaderBoardName, GameplayModifiers gameplayModifiers)
@@ -349,6 +356,7 @@ namespace PPPredictor.Utilities
                 pPPredictor.OnDisplayPPInfo -= PPPredictor_OnDisplayPPInfo;
                 pPPredictor.OnDisplaySessionInfo -= PPPredictor_OnDisplaySessionInfo;
                 pPPredictor.OnMapPoolRefreshed -= PPPredictor_OnMapPoolRefreshed;
+                pPPredictor.OnDisplayGraphInfo -= PPPredictor_OnDisplayGraphInfo;
             }
             _websocketMgr.Dispose();
         }

@@ -22,6 +22,7 @@ namespace PPPredictor.Interfaces
         event EventHandler<bool> OnDataLoading;
         event EventHandler<DisplaySessionInfo> OnDisplaySessionInfo;
         event EventHandler<DisplayPPInfo> OnDisplayPPInfo;
+        event EventHandler<DisplayGraphInfo> OnDisplayGraphInfo;
         event EventHandler OnMapPoolRefreshed;
 
         void ResetPredictors();
@@ -55,7 +56,7 @@ namespace PPPredictor.Interfaces
         string GetPPSuffixForLeaderboard(Leaderboard leaderBoardName);
 
         double GetMaxPPForCalculator(Leaderboard leaderBoardName);
-        DisplayGraphData CalculateDisplayGraph(Leaderboard leaderBoardName, DisplayGraphSettings displayGraphSettings);
+        DisplayGraphInfo CalculateDisplayGraph(Leaderboard leaderBoardName, DisplayGraphSettings displayGraphSettings);
 
         PPPBeatMapInfo GetModifiedBeatMapInfo(Leaderboard leaderBoardName, GameplayModifiers gameplayModifiers);
 

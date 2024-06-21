@@ -2,7 +2,7 @@
 
 namespace PPPredictor.Data.DisplayInfos
 {
-    internal class DisplayGraphData
+    internal class DisplayGraphInfo
     {
         private List<GraphPoint> _lsPoints = new List<GraphPoint>();
         private DisplayGraphSettings displayGraphSettings;
@@ -10,7 +10,7 @@ namespace PPPredictor.Data.DisplayInfos
         public List<GraphPoint> LsPoints { get => _lsPoints; set => _lsPoints = value; }
         public DisplayGraphSettings DisplayGraphSettings { get => displayGraphSettings; set => displayGraphSettings = value; }
 
-        public DisplayGraphData(DisplayGraphSettings displayGraphSettings)
+        public DisplayGraphInfo(DisplayGraphSettings displayGraphSettings)
         {
             this.displayGraphSettings = displayGraphSettings;
         }

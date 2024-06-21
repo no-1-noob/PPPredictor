@@ -276,7 +276,7 @@ namespace PPPredictor.Utilities
             return _leaderboardInfo.CurrentMapPool.Curve.CalculateMaxPP(_currentBeatMapInfo, _leaderboardInfo.CurrentMapPool.LeaderboardContext);
         }
 
-        internal DisplayGraphData CalculateDisplayGraph(PPPBeatMapInfo _currentBeatMapInfo, DisplayGraphSettings displayGraphSettings)
+        internal DisplayGraphInfo CalculateDisplayGraph(PPPBeatMapInfo _currentBeatMapInfo, DisplayGraphSettings displayGraphSettings)
         {
             return _leaderboardInfo.CurrentMapPool.Curve.DisplayGraphData(_currentBeatMapInfo, displayGraphSettings, _leaderboardInfo.CurrentMapPool.LeaderboardContext);
         }

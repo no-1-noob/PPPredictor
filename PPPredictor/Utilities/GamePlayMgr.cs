@@ -322,7 +322,7 @@ namespace PPPredictor.Utilities
         public double percentage;
         public PPPBeatMapInfo modifiedBeatMapInfo;
         public PPPBeatMapInfo failedBeatMapInfo;
-        public DisplayGraphData displayGraphData;
+        public DisplayGraphInfo displayGraphData;
         public string ppSuffix;
         public double? personalBest;
         public string iconPath;
@@ -339,7 +339,7 @@ namespace PPPredictor.Utilities
             this.percentage = 0;
             this.targetPercentage = ppPredictorMgr.GetPercentage();
             this.maxPP = ppPredictorMgr.GetMaxPPForCalculator(leaderboard);
-            this.displayGraphData = ppPredictorMgr.CalculateDisplayGraph(leaderboard, new Data.DisplayInfos.DisplayGraphSettings(85, 100, 0, 500, 0.01));
+            this.displayGraphData = ppPredictorMgr.CalculateDisplayGraph(leaderboard, new Data.DisplayInfos.DisplayGraphSettings(90, 100, 0, 500, 0.01));
             this.personalBest = ppPredictorMgr.GetPersonalBest(leaderboard);
             this.iconPath = ppPredictorMgr.GetMapPoolIcon(leaderboard);
             this.isRanked = ppPredictorMgr.IsRanked(leaderboard);
@@ -379,6 +379,6 @@ namespace PPPredictor.Utilities
         public double? personalBest;
         public string iconPath;
         public bool isRanked;
-        public DisplayGraphData displayGraphData;
+        public DisplayGraphInfo displayGraphData;
     }
 }

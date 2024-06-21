@@ -16,11 +16,10 @@ using Zenject;
 using HarmonyLib;
 using System.Threading.Tasks;
 using PPPredictor.Interfaces;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 using JetBrains.Annotations;
-using PPPredictor.UI.Test;
 using UnityEngine.UI;
 using System.Linq;
+using PPPredictor.UI.Graph;
 
 namespace PPPredictor.UI.ViewController
 {
@@ -72,6 +71,7 @@ namespace PPPredictor.UI.ViewController
             ppPredictorMgr.OnDisplayPPInfo += PpPredictorMgr_OnDisplayPPInfo;
             ppPredictorMgr.OnDisplaySessionInfo += PpPredictorMgr_OnDisplaySessionInfo;
             ppPredictorMgr.OnMapPoolRefreshed += PpPredictorMgr_OnMapPoolRefreshed;
+            ppPredictorMgr.OnDisplayGraphInfo += PpPredictorMgr_OnDisplayGraphInfo;
 
             //floatingScreen.gameObject.can
             //var component = new GameObject(typeof(T).Name).AddComponent<T>();
@@ -93,6 +93,7 @@ namespace PPPredictor.UI.ViewController
             GameObject panelGameObject = new GameObject("Panel");
             panelGameObject.transform.SetParent(floatingScreen.gameObject.transform, false);
             RectTransform panelRectTransform = panelGameObject.AddComponent<RectTransform>();
+            panelGameObject.AddComponent<Canvas>();
             panelRectTransform.sizeDelta = new Vector2(25, 15); // Size of the panel
             panelRectTransform.anchoredPosition = new Vector2(0, 0);
             panelGameObject.AddComponent<Image>().color = Color.white; // Background color to see the bounds
@@ -100,7 +101,8 @@ namespace PPPredictor.UI.ViewController
 
             // Add the CustomGraphic component
             GameObject customGraphicGameObject = new GameObject("TestGraph");
-            PpGraph = customGraphicGameObject.AddComponent<TestGraph>();
+            customGraphicGameObject.AddComponent<Canvas>();
+            PpGraph = customGraphicGameObject.AddComponent<PPGraph>();
             var noGlowMat = new Material(Resources.FindObjectsOfTypeAll<Material>().Where(m => m.name == "UINoGlow").First());
             noGlowMat.name = "UINoGlowCustom";
             PpGraph.material = noGlowMat;
@@ -132,8 +134,12 @@ namespace PPPredictor.UI.ViewController
         private void PpPredictorMgr_OnDisplayPPInfo(object sender, DisplayPPInfo displayPPInfo)
         {
             this.displayPPInfo = displayPPInfo;
-            PpGraph.displayGraphData = displayPPInfo.DisplayGraphData;
+            PpGraph.DisplayPPInfo = displayPPInfo;
             UpdatePPDisplay();
+        }
+        private void PpPredictorMgr_OnDisplayGraphInfo(object sender, DisplayGraphInfo displayGraphInfo)
+        {
+            PpGraph.DisplayGraphInfo = displayGraphInfo;
         }
 
         private void PpPredictorMgr_OnDataLoading(object sender, bool isDataLoading)
@@ -159,6 +165,7 @@ namespace PPPredictor.UI.ViewController
         {
             floatingScreen.HandleReleased -= OnScreenHandleReleased;
             ppPredictorMgr.ViewActivated -= PpPredictorMgr_ViewActivated;
+            ppPredictorMgr.OnDisplayGraphInfo -= PpPredictorMgr_OnDisplayGraphInfo;
             if (tabSelector) tabSelector.textSegmentedControl.didSelectCellEvent -= OnSelectedCellEventChanged;
             Plugin.pppViewController = null;
         }
@@ -490,7 +497,7 @@ namespace PPPredictor.UI.ViewController
             get => this.ppPredictorMgr.IsLeaderboardNavigationActive;
         }
         [UIValue("pp-graph")]
-        private TestGraph PpGraph = null;
+        private PPGraph PpGraph = null;
 
         [UIValue("ui-component"), UsedImplicitly]
         private Transform Transform { get; set; }

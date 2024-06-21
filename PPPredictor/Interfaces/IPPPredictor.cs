@@ -19,7 +19,7 @@ namespace PPPredictor.Interfaces
         void ResetDisplay(bool resetAll);
         double CalculatePPatPercentage(double percentage, PPPBeatMapInfo beatMapInfo, bool levelFailed = false, bool levelPaused = false);
         double CalculateMaxPP();
-        DisplayGraphData CalculateDisplayGraph(DisplayGraphSettings displayGraphSettings);
+        DisplayGraphInfo CalculateDisplayGraph(DisplayGraphSettings displayGraphSettings);
         PPPBeatMapInfo GetModifiedBeatMapInfo(GameplayModifiers gameplayModifiers, bool levelFailed = false, bool levelPaused = false);
         double CalculatePPGain(double pp);
         bool IsRanked();
@@ -33,6 +33,7 @@ namespace PPPredictor.Interfaces
         event EventHandler<bool> OnDataLoading;
         event EventHandler<DisplaySessionInfo> OnDisplaySessionInfo;
         event EventHandler<DisplayPPInfo> OnDisplayPPInfo;
+        event EventHandler<DisplayGraphInfo> OnDisplayGraphInfo;
         event EventHandler OnMapPoolRefreshed;
         float Percentage { get; set; }
         string LeaderBoardName { get; }

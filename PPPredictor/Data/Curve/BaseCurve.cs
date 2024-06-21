@@ -17,10 +17,10 @@ namespace PPPredictor.Data.Curve
         public abstract double CalculatePPatPercentage(PPPBeatMapInfo _currentBeatMapInfo, double percentage, bool failed, bool paused, LeaderboardContext leaderboardContext = LeaderboardContext.None);
         public abstract CurveInfo ToCurveInfo();
 
-        public DisplayGraphData DisplayGraphData(PPPBeatMapInfo _currentBeatMapInfo, DisplayGraphSettings displayGraphSettings, LeaderboardContext leaderboardContext = LeaderboardContext.None)
+        public DisplayGraphInfo DisplayGraphData(PPPBeatMapInfo _currentBeatMapInfo, DisplayGraphSettings displayGraphSettings, LeaderboardContext leaderboardContext = LeaderboardContext.None)
         {
             Plugin.DebugPrint("Calculate DisplayGraphData");
-            DisplayGraphData displayGraphData = new DisplayGraphData(displayGraphSettings);
+            DisplayGraphInfo displayGraphData = new DisplayGraphInfo(displayGraphSettings);
             double xPos = displayGraphSettings.MinX;
             while(xPos <= displayGraphSettings.MaxX)
             {
