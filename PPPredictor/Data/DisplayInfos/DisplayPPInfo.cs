@@ -11,5 +11,6 @@
         internal string PredictedCountryRank { get; set; } = string.Empty;
         internal string PredictedCountryRankDiff { get; set; } = string.Empty;
         internal string PredictedCountryRankDiffColor { get; set; } = string.Empty;
+        internal DisplayGraphData DisplayGraphData { get; set; }
     }
 }

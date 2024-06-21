@@ -262,6 +262,7 @@ namespace PPPredictor.Utilities
             _ppDisplay.PPGainDiffColor = DisplayHelper.GetDisplayColor(ppGains, false, true);
 
             DisplayRankGain(null, _ppDisplay);
+            _ppDisplay.DisplayGraphData = _ppCalculator.CalculateDisplayGraph(_currentBeatMapInfo, new DisplayGraphSettings(85, 100, 0, 500, 0.01));
             //Restart rank calculation timer
             _rankTimer.Stop();
             _rankTimer.Start();

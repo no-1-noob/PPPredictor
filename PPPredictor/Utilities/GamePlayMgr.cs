@@ -339,7 +339,7 @@ namespace PPPredictor.Utilities
             this.percentage = 0;
             this.targetPercentage = ppPredictorMgr.GetPercentage();
             this.maxPP = ppPredictorMgr.GetMaxPPForCalculator(leaderboard);
-            this.displayGraphData = ppPredictorMgr.CalculateDisplayGraph(leaderboard, new Data.DisplayInfos.DisplayGraphSettings(85, 100, 0, 500, 0.1));
+            this.displayGraphData = ppPredictorMgr.CalculateDisplayGraph(leaderboard, new Data.DisplayInfos.DisplayGraphSettings(85, 100, 0, 500, 0.01));
             this.personalBest = ppPredictorMgr.GetPersonalBest(leaderboard);
             this.iconPath = ppPredictorMgr.GetMapPoolIcon(leaderboard);
             this.isRanked = ppPredictorMgr.IsRanked(leaderboard);

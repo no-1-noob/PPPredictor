@@ -19,6 +19,7 @@ namespace PPPredictor.Data.Curve
 
         public DisplayGraphData DisplayGraphData(PPPBeatMapInfo _currentBeatMapInfo, DisplayGraphSettings displayGraphSettings, LeaderboardContext leaderboardContext = LeaderboardContext.None)
         {
+            Plugin.DebugPrint("Calculate DisplayGraphData");
             DisplayGraphData displayGraphData = new DisplayGraphData(displayGraphSettings);
             double xPos = displayGraphSettings.MinX;
             while(xPos <= displayGraphSettings.MaxX)

@@ -89,20 +89,33 @@ namespace PPPredictor.UI.ViewController
             //GameObject customGraphicGameObject = new GameObject("CustomGraphic");
             //customGraphicGameObject.transform.SetParent(canvasGameObject.transform, false);
 
+            // Create a new GameObject for the panel to hold the graphic
+            GameObject panelGameObject = new GameObject("Panel");
+            panelGameObject.transform.SetParent(floatingScreen.gameObject.transform, false);
+            RectTransform panelRectTransform = panelGameObject.AddComponent<RectTransform>();
+            panelRectTransform.sizeDelta = new Vector2(25, 15); // Size of the panel
+            panelRectTransform.anchoredPosition = new Vector2(0, 0);
+            panelGameObject.AddComponent<Image>().color = Color.white; // Background color to see the bounds
+            panelGameObject.AddComponent<Mask>().showMaskGraphic = false; // Add mask to clip content
+
             // Add the CustomGraphic component
             GameObject customGraphicGameObject = new GameObject("TestGraph");
             PpGraph = customGraphicGameObject.AddComponent<TestGraph>();
             var noGlowMat = new Material(Resources.FindObjectsOfTypeAll<Material>().Where(m => m.name == "UINoGlow").First());
             noGlowMat.name = "UINoGlowCustom";
             PpGraph.material = noGlowMat;
-            PpGraph.transform.SetParent(floatingScreen.gameObject.transform, false);
+            PpGraph.transform.SetParent(panelGameObject.transform, false);
+            //PpGraph.transform.SetParent(floatingScreen.gameObject.transform, false);
 
             // Optionally, set the size and position of the RectTransform
             //RectTransform rectTransform = PpGraph.gameObject.GetComponent<RectTransform>();
             //Plugin.Log.Error($"rectTransform exists? {rectTransform}");
             RectTransform rectTransform = customGraphicGameObject.GetComponent<RectTransform>();
-            rectTransform.sizeDelta = new Vector2(10, 10); // Width and height of the rectangle
-            rectTransform.anchoredPosition = new Vector2(0, 0); // Position in the canvas
+            rectTransform.sizeDelta = panelRectTransform.sizeDelta; // Match the panel size
+            rectTransform.anchoredPosition = new Vector2(0, 0);
+            //RectTransform rectTransform = customGraphicGameObject.GetComponent<RectTransform>();
+            //rectTransform.sizeDelta = new Vector2(10, 10); // Width and height of the rectangle
+            //rectTransform.anchoredPosition = new Vector2(0, 0); // Position in the canvas
         }
 
         private void PpPredictorMgr_OnMapPoolRefreshed(object sender, EventArgs e)
@@ -119,6 +132,7 @@ namespace PPPredictor.UI.ViewController
         private void PpPredictorMgr_OnDisplayPPInfo(object sender, DisplayPPInfo displayPPInfo)
         {
             this.displayPPInfo = displayPPInfo;
+            PpGraph.displayGraphData = displayPPInfo.DisplayGraphData;
             UpdatePPDisplay();
         }
 
