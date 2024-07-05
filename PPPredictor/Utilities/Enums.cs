@@ -90,6 +90,13 @@
         BeatLeaderSCPM
     }
 
+    enum MultiViewType
+    {
+        Global,
+        Local,
+        PP
+    }
+
     class EnumHelper
     {
         private const string CounterDisplayTypePP = "PP: 100pp";

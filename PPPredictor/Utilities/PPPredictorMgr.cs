@@ -195,6 +195,14 @@ namespace PPPredictor.Utilities
             return 0;
         }
 
+        public void CalculatePP()
+        {
+            foreach (var predictor in _lsPPPredictor)
+            {
+                predictor.CalculatePP();
+            }
+        }
+
         public void ResetDisplay(bool resetAll)
         {
             foreach (var item in _lsPPPredictor)

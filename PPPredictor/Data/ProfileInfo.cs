@@ -34,6 +34,8 @@ namespace PPPredictor.Data
         private bool _isCounterGainSilentModeEnabled;
         private float _lastMinPercentageSelected;
         private float _lastMaxPercentageSelected;
+        private bool _isMultiViewEnabled;
+        private MultiViewType _multiViewType;
 
         private bool _isScoreSaberEnabled;
         private bool _isBeatLeaderEnabled;
@@ -75,6 +77,8 @@ namespace PPPredictor.Data
             LastMinPercentageSelected = ((int)(LastPercentageSelected / 10)) * 10;
             LastMaxPercentageSelected = Math.Min((((int)(LastPercentageSelected / 10)) * 10) + 10, 100);
             StreamOverlayPort = "6558";
+            IsMultiViewEnabled = false;
+            MultiViewType = MultiViewType.PP;
     }
 
         internal void ResetCachedData()
@@ -115,6 +119,8 @@ namespace PPPredictor.Data
         public float LastMinPercentageSelected { get => _lastMinPercentageSelected; set => _lastMinPercentageSelected = value; }
         public float LastMaxPercentageSelected { get => _lastMaxPercentageSelected; set => _lastMaxPercentageSelected = value; }
         public string StreamOverlayPort { get => _streamOverlayPort; set => _streamOverlayPort = value; }
+        public bool IsMultiViewEnabled { get => _isMultiViewEnabled; set => _isMultiViewEnabled = value; }
+        internal MultiViewType MultiViewType { get => _multiViewType; set => _multiViewType = value; }
 
         internal void ClearOldMapInfos()
         {

@@ -186,6 +186,7 @@
     <Compile Include="Data\Curve\CurveInfo.cs" />
     <Compile Include="Data\Curve\CurveParser.cs" />
     <Compile Include="Data\Curve\CustomPPPCurve.cs" />
+    <Compile Include="Data\DisplayInfos\DisplayInfoTypeSelector.cs" />
     <Compile Include="Data\DisplayInfos\DisplayPPInfo.cs" />
     <Compile Include="Data\DisplayInfos\DisplaySessionInfo.cs" />
     <Compile Include="Data\LeaderBoardDataTypes\BeatLeaderDataTypes.cs" />
@@ -218,7 +219,10 @@
     <Compile Include="OpenAPIs\PPPWebSocket.cs" />
     <Compile Include="OverlayServer\WebSocketOverlayServer.cs" />
     <Compile Include="UI\PPPredictorFlowCoordinator.cs" />
+    <Compile Include="UI\ViewController\PPPredictorViewMultiController.cs" />
+    <Compile Include="UI\ViewController\PPPredictorViewQuickSettingsController.cs" />
     <Compile Include="UI\ViewController\SettingsMidViewController.cs" />
+    <Compile Include="Utilities\ActionQueue.cs" />
     <Compile Include="Utilities\Constants.cs" />
     <Compile Include="Utilities\DisplayHelper.cs" />
     <Compile Include="Utilities\Enums.cs" />

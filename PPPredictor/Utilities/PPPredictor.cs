@@ -184,11 +184,11 @@ namespace PPPredictor.Utilities
         }
         private void SendDisplayPPInfo(DisplayPPInfo displayPPInfo)
         {
-            if(_isActive) OnDisplayPPInfo?.Invoke(this, displayPPInfo);
+            OnDisplayPPInfo?.Invoke(this, displayPPInfo);
         }
         private void SendDisplaySessionInfo(DisplaySessionInfo displaySessionInfo)
         {
-            if (_isActive) OnDisplaySessionInfo?.Invoke(this, displaySessionInfo);
+            OnDisplaySessionInfo?.Invoke(this, displaySessionInfo);
         }
         private void PPCalculator_OnMapPoolRefreshed(object sender, EventArgs e)
         {
@@ -244,6 +244,8 @@ namespace PPPredictor.Utilities
             _ppGainResult = _ppCalculator.GetPlayerScorePPGain(_currentBeatMapInfo.SelectedMapSearchString, pp);
             double ppGains = _ppCalculator.Zeroizer(_ppGainResult.GetDisplayPPValue());
             _ppDisplay = new DisplayPPInfo();
+            _ppDisplay.LeaderboardIcon = _leaderboardInfo.LeaderboardIcon;
+            _ppDisplay.LeaderboardName = _leaderboardInfo.LeaderboardName;
             if (_currentBeatMapInfo.MaxPP > 0 && pp >= _currentBeatMapInfo.MaxPP)
             {
                 _ppDisplay.PPRaw = $"<color=\"yellow\">{pp:F2}{PPSuffix}</color>";
@@ -289,6 +291,7 @@ namespace PPPredictor.Utilities
         {
             if (rankGainResult != null)
             {
+                ppDisplay.CountryRankFontColor = _leaderboardInfo.IsCountryRankEnabled ? DisplayHelper.ColorWhite : DisplayHelper.ColorCountryRankDisabled;
                 ppDisplay.PredictedRankDiffColor = DisplayHelper.GetDisplayColor(rankGainResult.RankGainGlobal, false);
                 ppDisplay.PredictedCountryRankDiffColor = _leaderboardInfo.IsCountryRankEnabled ? DisplayHelper.GetDisplayColor(rankGainResult.RankGainCountry, false) : DisplayHelper.ColorCountryRankDisabled;
                 if (rankGainResult.IsRankGainCanceledByLimit)
@@ -321,6 +324,9 @@ namespace PPPredictor.Utilities
         private void DisplaySession()
         {
             DisplaySessionInfo sessionDisplay = new DisplaySessionInfo();
+            sessionDisplay.LeaderboardIcon = _leaderboardInfo.LeaderboardIcon;
+            sessionDisplay.LeaderboardName = _leaderboardInfo.LeaderboardName;
+            sessionDisplay.CountryRankFontColor = _leaderboardInfo.IsCountryRankEnabled ? DisplayHelper.ColorWhite : DisplayHelper.ColorCountryRankDisabled;
             if (_leaderboardInfo.CurrentMapPool.SessionPlayer != null && _leaderboardInfo.CurrentMapPool.CurrentPlayer != null)
             {
                 if (Plugin.ProfileInfo.DisplaySessionValues)

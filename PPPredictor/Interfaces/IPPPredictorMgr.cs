@@ -43,6 +43,7 @@ namespace PPPredictor.Interfaces
         void RefreshCurrentData(int v, bool refreshStars = false);
 
         void SetPercentage(float percentage);
+        void CalculatePP();
 
         double GetPercentage();
 

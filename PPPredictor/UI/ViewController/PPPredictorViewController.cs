@@ -16,12 +16,13 @@ using Zenject;
 using HarmonyLib;
 using System.Threading.Tasks;
 using PPPredictor.Interfaces;
+using PPPredictor.Utilities;
 
 namespace PPPredictor.UI.ViewController
 {
     [ViewDefinition("PPPredictor.UI.Views.PPPredictorView.bsml")]
     [HotReload(RelativePathToLayout = @"..\Views\PPPredictorView.bsml")]
-    class PPPredictorViewController : IInitializable, IDisposable, INotifyPropertyChanged
+    public partial class PPPredictorViewController : IInitializable, IDisposable, INotifyPropertyChanged
     {
         private static readonly string githubUrl = "https://github.com/no-1-noob/PPPredictor/releases/latest";
         private FloatingScreen floatingScreen;
@@ -29,10 +30,11 @@ namespace PPPredictor.UI.ViewController
         [Inject] private readonly IPPPredictorMgr ppPredictorMgr;
 #pragma warning restore CS0649
         public event PropertyChangedEventHandler PropertyChanged;
-        private DisplaySessionInfo displaySessionInfo;
-        private DisplayPPInfo displayPPInfo;
+        private DisplaySessionInfo currentDisplaySessionInfo;
+        private DisplayPPInfo currentDisplayPPInfo;
         private bool _isDataLoading;
         private bool _isScreenMoving = false;
+        private ActionQueue actionQueue;
 
         public PPPredictorViewController() {}
 
@@ -42,10 +44,12 @@ namespace PPPredictor.UI.ViewController
         }
         public void Initialize()
         {
+            QuickSettingsSetup();
+
             Plugin.pppViewController = this;
-            displaySessionInfo = new DisplaySessionInfo();
-            displayPPInfo= new DisplayPPInfo();
-            floatingScreen = FloatingScreen.CreateFloatingScreen(new Vector2(75, 100), true, Plugin.ProfileInfo.Position, new Quaternion(0, 0, 0, 0));
+            currentDisplaySessionInfo = new DisplaySessionInfo();
+            currentDisplayPPInfo= new DisplayPPInfo();
+            floatingScreen = FloatingScreen.CreateFloatingScreen(new Vector2(75, 200), true, Plugin.ProfileInfo.Position, new Quaternion(0, 0, 0, 0));
             floatingScreen.gameObject.name = "BSMLFloatingScreen_PPPredictor";
             floatingScreen.gameObject.SetActive(false);
             floatingScreen.transform.eulerAngles = Plugin.ProfileInfo.EulerAngles;
@@ -60,6 +64,10 @@ namespace PPPredictor.UI.ViewController
 
             floatingScreen.HandleReleased += OnScreenHandleReleased;
             BSMLParser.instance.Parse(BeatSaberMarkupLanguage.Utilities.GetResourceContent(Assembly.GetExecutingAssembly(), "PPPredictor.UI.Views.PPPredictorView.bsml"), floatingScreen.gameObject, this);
+
+            actionQueue = new ActionQueue(50, floatingScreen);
+            actionQueue.Start();
+
             ppPredictorMgr.ViewActivated += PpPredictorMgr_ViewActivated;
             ppPredictorMgr.OnDataLoading += PpPredictorMgr_OnDataLoading;
             ppPredictorMgr.OnDisplayPPInfo += PpPredictorMgr_OnDisplayPPInfo;
@@ -74,18 +82,29 @@ namespace PPPredictor.UI.ViewController
 
         private void PpPredictorMgr_OnDisplaySessionInfo(object sender, DisplaySessionInfo displaySessionInfo)
         {
-            this.displaySessionInfo = displaySessionInfo;
+            dctDisplaySessionInfo[displaySessionInfo.LeaderboardName] = displaySessionInfo;
+            if (ppPredictorMgr.CurrentPPPredictor.LeaderBoardName == displaySessionInfo.LeaderboardName)
+            {
+                this.currentDisplaySessionInfo = displaySessionInfo;
+            }
+            if (Plugin.ProfileInfo.IsMultiViewEnabled) actionQueue.Enqueue(RefreshMultiView(listDisplaySessionInfo, dctDisplaySessionInfo));
             UpdateSessionDisplay();
         }
 
         private void PpPredictorMgr_OnDisplayPPInfo(object sender, DisplayPPInfo displayPPInfo)
         {
-            this.displayPPInfo = displayPPInfo;
+            dctDisplayPPInfo[displayPPInfo.LeaderboardName] = displayPPInfo;
+            if (ppPredictorMgr.CurrentPPPredictor.LeaderBoardName == displayPPInfo.LeaderboardName)
+            {
+                this.currentDisplayPPInfo = displayPPInfo;
+            }
+            if (Plugin.ProfileInfo.IsMultiViewEnabled) actionQueue.Enqueue(RefreshMultiView(listDisplayPPInfo, dctDisplayPPInfo));
             UpdatePPDisplay();
         }
 
         private void PpPredictorMgr_OnDataLoading(object sender, bool isDataLoading)
         {
+            //Do smth here?
             this._isDataLoading = isDataLoading;
             UpdateLoadingDisplay();
         }
@@ -108,6 +127,7 @@ namespace PPPredictor.UI.ViewController
             floatingScreen.HandleReleased -= OnScreenHandleReleased;
             ppPredictorMgr.ViewActivated -= PpPredictorMgr_ViewActivated;
             if (tabSelector) tabSelector.textSegmentedControl.didSelectCellEvent -= OnSelectedCellEventChanged;
+            actionQueue.Stop();
             Plugin.pppViewController = null;
         }
 #pragma warning disable CS0649
@@ -176,21 +196,6 @@ namespace PPPredictor.UI.ViewController
 
         #region buttons
 #pragma warning disable IDE0051 // Remove unused private members
-        [UIAction("refresh-profile-clicked")]
-        private void RefreshProfileClicked()
-        {
-            this.ppPredictorMgr.RefreshCurrentData(10);
-        }
-#pragma warning restore IDE0051 // Remove unused private members
-
-#pragma warning disable IDE0051 // Remove unused private members
-        [UIAction("reset-session-clicked")]
-        private void ResetSessionClicked()
-        {
-            this.ppPredictorMgr.UpdateCurrentAndCheckResetSession(true);
-        }
-#pragma warning restore IDE0051 // Remove unused private members
-#pragma warning disable IDE0051 // Remove unused private members
         [UIAction("show-update-clicked")]
         private void ShowUpdateClicked()
         {
@@ -254,7 +259,15 @@ namespace PPPredictor.UI.ViewController
             {
                 ppPredictorMgr.SetPercentage(value);
                 Plugin.ProfileInfo.LastPercentageSelected = ppPredictorMgr.CurrentPPPredictor.Percentage;
-                ppPredictorMgr.CurrentPPPredictor.CalculatePP();
+
+                if (!Plugin.ProfileInfo.IsMultiViewEnabled)
+                {
+                    ppPredictorMgr.CurrentPPPredictor.CalculatePP();
+                }
+                else
+                {
+                    ppPredictorMgr.CalculatePP();
+                }
                 sliderFine.slider.value = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SliderFineValue)));
             }
@@ -297,100 +310,100 @@ namespace PPPredictor.UI.ViewController
         [UIValue("ppRaw")]
         private string PPRaw
         {
-            get => displayPPInfo.PPRaw;
+            get => currentDisplayPPInfo.PPRaw;
         }
         [UIValue("ppGain")]
         private string PPGain
         {
-            get => displayPPInfo.PPGain;
+            get => currentDisplayPPInfo.PPGain;
         }
         [UIValue("ppGainDiffColor")]
         private string PPGainDiffColor
         {
-            get => displayPPInfo.PPGainDiffColor;
+            get => currentDisplayPPInfo.PPGainDiffColor;
         }
         #region UI Values session
         [UIValue("sessionRank")]
         private string SessionRank
         {
-            get => displaySessionInfo.SessionRank;
+            get => currentDisplaySessionInfo.SessionRank;
         }
         [UIValue("sessionRankDiff")]
         private string SessionRankDiff
         {
-            get => displaySessionInfo.SessionRankDiff;
+            get => currentDisplaySessionInfo.SessionRankDiff;
         }
         [UIValue("sessionRankDiffColor")]
         private string SessionRankDiffColor
         {
-            get => displaySessionInfo.SessionRankDiffColor;
+            get => currentDisplaySessionInfo.SessionRankDiffColor;
         }
         [UIValue("sessionCountryRank")]
         private string SessionCountryRank
         {
-            get => displaySessionInfo.SessionCountryRank;
+            get => currentDisplaySessionInfo.SessionCountryRank;
         }
         [UIValue("sessionCountryRankDiff")]
         private string SessionCountryRankDiff
         {
-            get => displaySessionInfo.SessionCountryRankDiff;
+            get => currentDisplaySessionInfo.SessionCountryRankDiff;
         }
         [UIValue("sessionCountryRankDiffColor")]
         private string SessionCountryRankDiffColor
         {
-            get => displaySessionInfo.SessionCountryRankDiffColor;
+            get => currentDisplaySessionInfo.SessionCountryRankDiffColor;
         }
         [UIValue("countryRankFontColor")]
         private string CountryRankFontColor
         {
-            get => displaySessionInfo.CountryRankFontColor;
+            get => currentDisplaySessionInfo.CountryRankFontColor;
         }
         [UIValue("sessionPP")]
         private string SessionPP
         {
-            get => displaySessionInfo.SessionPP;
+            get => currentDisplaySessionInfo.SessionPP;
         }
         [UIValue("sessionPPDiff")]
         private string SessionPPDiff
         {
-            get => displaySessionInfo.SessionPPDiff;
+            get => currentDisplaySessionInfo.SessionPPDiff;
         }
         [UIValue("sessionPPDiffColor")]
         private string SessionPPDiffColor
         {
-            get => displaySessionInfo.SessionPPDiffColor;
+            get => currentDisplaySessionInfo.SessionPPDiffColor;
         }
         #endregion
         #region UI Values Predicted Rank
         [UIValue("predictedRank")]
         private string PredictedRank
         {
-            get => displayPPInfo.PredictedRank;
+            get => currentDisplayPPInfo.PredictedRank;
         }
         [UIValue("predictedRankDiff")]
         private string PredictedRankDiff
         {
-            get => displayPPInfo.PredictedRankDiff;
+            get => currentDisplayPPInfo.PredictedRankDiff;
         }
         [UIValue("predictedRankDiffColor")]
         private string PredictedRankDiffColor
         {
-            get => displayPPInfo.PredictedRankDiffColor;
+            get => currentDisplayPPInfo.PredictedRankDiffColor;
         }
         [UIValue("predictedCountryRank")]
         private string PredictedCountryRank
         {
-            get => displayPPInfo.PredictedCountryRank;
+            get => currentDisplayPPInfo.PredictedCountryRank;
         }
         [UIValue("predictedCountryRankDiff")]
         private string PredictedCountryRankDiff
         {
-            get => displayPPInfo.PredictedCountryRankDiff;
+            get => currentDisplayPPInfo.PredictedCountryRankDiff;
         }
         [UIValue("predictedCountryRankDiffColor")]
         private string PredictedCountryRankDiffColor
         {
-            get => displayPPInfo.PredictedCountryRankDiffColor;
+            get => currentDisplayPPInfo.PredictedCountryRankDiffColor;
         }
         #endregion
         [UIValue("isDataLoading")]
