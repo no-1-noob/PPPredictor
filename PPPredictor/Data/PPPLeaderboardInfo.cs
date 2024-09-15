@@ -21,6 +21,7 @@ namespace PPPredictor.Data
 
         public string LeaderboardName { get => _leaderboardName; set => _leaderboardName = value; }
         public string LeaderboardIcon { get => _leaderboardIcon; set => _leaderboardIcon = value; }
+        public int SortIndex { get => GetSortIndex(); }
         public List<PPPMapPool> LsMapPools { get => _lsMapPools; set => _lsMapPools = value; }
         public string LastSelectedMapPoolId { get => _lastSelectedMapPoolId; set => _lastSelectedMapPoolId = value; }
         internal PPPMapPool CurrentMapPool { get => _currentMapPool; set
@@ -42,6 +43,7 @@ namespace PPPredictor.Data
 
         public PPPLeaderboardInfo(Leaderboard leaderboard)
         {
+            Plugin.DebugPrint($"PPPLeaderboardInfo ctor {leaderboard}");
             this._leaderboardName = leaderboard.ToString();
             this._lsMapPools = new List<PPPMapPool>();
             this._customLeaderboardUserId = string.Empty;
@@ -90,6 +92,11 @@ namespace PPPredictor.Data
                 int index = Math.Max(_lsMapPools.FindIndex(x => x.Id == LastSelectedMapPoolId), 0); //Set the last used map pool
                 this._currentMapPool = _lsMapPools[index];
             }
+        }
+
+        private int GetSortIndex()
+        {
+            return (int) (Leaderboard)Enum.Parse(typeof(Leaderboard), _leaderboardName);
         }
     }
 }

@@ -38,5 +38,6 @@ namespace PPPredictor.Data.DisplayInfos
         internal string LeaderboardIcon { get; set; } = string.Empty;
         [UIValue("displayInfoTypeSelector_LeaderboardName")]
         internal string LeaderboardName { get; set; } = string.Empty;
+        internal int SortIndex { get; set; } = 0;
     }
 }

@@ -27,7 +27,7 @@
       <!--BG length-->
       <horizontal horizontal-fit='PreferredSize' pad-left='0' align='Left' child-align='MiddleLeft' preferred-height='0' anchor-pos-y='7'>
         <vertical vertical-fit='PreferredSize' align='Left' ignore-layout='true' pad-left='47' spacing='-1'>
-          <button text='⚙️' hover-hint='Quick Settings' on-click='click-quick-settings-modal-show' min-width='6' pref-height='8' interactable='~isNoDataLoading' />
+          <button text='🔧' hover-hint='Quick Settings' on-click='click-quick-settings-modal-show' min-width='6' pref-height='8' interactable='~isNoDataLoading' />
           <action-button text='?' id='update-info-button' active='~isNewVersionAvailable' hover-hint='Update available' on-click='show-update-clicked' min-width='6' pref-height='8' interactable='~isNoDataLoading' />
         </vertical>
         <horizontal horizontal-fit='PreferredSize' align='Left' ignore-layout='true' pad-left='56' pad-top='-17'>
@@ -90,31 +90,43 @@
       <!-- /Buttons -->
       <vertical horizontal-fit='PreferredSize' preferred-width='60' vertical-fit='PreferredSize' anchor-pos-y='6'>
         <horizontal horizontal-fit='PreferredSize' pad-left='0' align='Center' child-align='MiddleLeft' preferred-width='40'>
-          <vertical vertical-fit='PreferredSize' child-align='MiddleLeft'>
-            <text text='Global' align='Left' font-size='4' />
-            <text text='Country ' align='Left' font-size='4' font-color='~countryRankFontColor'/>
-            <text text='PP ' align='Left' font-size='4' />
-          </vertical>
-          <vertical vertical-fit='PreferredSize' preferred-width='30' child-align='MiddleLeft'>
-            <horizontal horizontal-fit='PreferredSize' align='Left' child-align='MiddleLeft'>
-              <text text='~sessionRank' italics='true' align='Left' font-size='4' />
-              <text text='[' italics='true' align='Left' font-size='4' />
-              <text text='~sessionRankDiff' font-color='~sessionRankDiffColor' italics='true' align='Left' font-size='4' />
-              <text text=']' italics='true' align='Left' font-size='4' />
-            </horizontal>
-            <horizontal horizontal-fit='PreferredSize' align='Left' child-align='MiddleLeft'>
-              <text text='~sessionCountryRank' italics='true' align='Left' font-size='4' font-color='~countryRankFontColor'/>
-              <text text='[' italics='true' align='Left' font-size='4' font-color='~countryRankFontColor'/>
-              <text text='~sessionCountryRankDiff' font-color='~sessionCountryRankDiffColor' italics='true' align='Left' font-size='4' />
-              <text text=']' italics='true' align='Left' font-size='4' font-color='~countryRankFontColor'/>
-            </horizontal>
-            <horizontal horizontal-fit='PreferredSize' align='Left' child-align='MiddleLeft'>
-              <text text='~sessionPP' italics='true' align='Center' font-size='4' />
-              <text text='[' italics='true' align='Center' font-size='4' />
-              <text text='~sessionPPDiff' font-color='~sessionPPDiffColor' italics='true' align='Center' font-size='4' />
-              <text text=']' italics='true' align='Center' font-size='4' />
-            </horizontal>
-          </vertical>
+          <!--<macro.if value="isMultiViewEnabled" bind-value='true'>-->
+            <!--<vertical enabled='!isMultiViewEnabled'>-->
+
+
+            <!--<vertical vertical-fit='PreferredSize' child-align='MiddleLeft'>
+              <text text='Global' align='Left' font-size='4' />
+              <text text='Country ' align='Left' font-size='4' font-color='~countryRankFontColor'/>
+              <text text='PP ' align='Left' font-size='4' />
+            </vertical>
+            <vertical vertical-fit='PreferredSize' preferred-width='30' child-align='MiddleLeft'>
+              <horizontal horizontal-fit='PreferredSize' align='Left' child-align='MiddleLeft'>
+                <text text='~sessionRank' italics='true' align='Left' font-size='4' />
+                <text text='[' italics='true' align='Left' font-size='4' />
+                <text text='~sessionRankDiff' font-color='~sessionRankDiffColor' italics='true' align='Left' font-size='4' />
+                <text text=']' italics='true' align='Left' font-size='4' />
+              </horizontal>
+              <horizontal horizontal-fit='PreferredSize' align='Left' child-align='MiddleLeft'>
+                <text text='~sessionCountryRank' italics='true' align='Left' font-size='4' font-color='~countryRankFontColor'/>
+                <text text='[' italics='true' align='Left' font-size='4' font-color='~countryRankFontColor'/>
+                <text text='~sessionCountryRankDiff' font-color='~sessionCountryRankDiffColor' italics='true' align='Left' font-size='4' />
+                <text text=']' italics='true' align='Left' font-size='4' font-color='~countryRankFontColor'/>
+              </horizontal>
+              <horizontal horizontal-fit='PreferredSize' align='Left' child-align='MiddleLeft'>
+                <text text='~sessionPP' italics='true' align='Center' font-size='4' />
+                <text text='[' italics='true' align='Center' font-size='4' />
+                <text text='~sessionPPDiff' font-color='~sessionPPDiffColor' italics='true' align='Center' font-size='4' />
+                <text text=']' italics='true' align='Center' font-size='4' />
+              </horizontal>
+            </vertical>-->
+            <!--<text text="stuff"></text>-->
+            <vertical active='~isMultiViewEnabled'>
+              <text text='Enabled'></text>
+            </vertical>
+
+            <vertical active='~isMultiViewDisabled'>
+              <text text='Disabled'></text>
+            </vertical>
         </horizontal>
       </vertical>
     </tab>    
@@ -154,31 +166,65 @@
 
   <horizontal horizontal-fit='PreferredSize' preferred-width='60' preferred-height='44' align='Left' bg='panel-top' child-align='MiddleLeft'>
     <vertical horizontal-fit='PreferredSize' preferred-width='60' vertical-fit='PreferredSize'>
+      <vertical active='~isMultiViewEnabled'>
+        <text text='Enabled'></text>
+      </vertical>
+
+      <vertical active='~isMultiViewDisabled'>
+        <text text='Disabled'></text>
+      </vertical>
       <custom-list id="listDisplaySessionInfo" contents="MultiViewSessionInfoData" expand-cell="true" visible-cells="3" cell-size="9" clickable-cells="false" show-scrollbar="true" stick-scrolling="true">
         <vertical>
-          <horizontal horizontal-fit='PreferredSize' align='Center' child-align='MiddleLeft'>
-            <image src='~displayInfoTypeSelector_LeaderboardIcon' preserve-aspect='true' preferred-width='4' min-width='4' preferred-height='3' min-height='3' pad-right='10'></image>
-            <macro.if value="displayInfoTypeSelector_showGlobal">
-              <text text='~displayPPInfo_SessionRank' italics='true' align='Left' font-size='4' />
-              <text text='[' italics='true' align='Left' font-size='4' />
-              <text text='~displayPPInfo_SessionRankDiff' font-color='~displayPPInfo_SessionRankDiffColor' italics='true' align='Left' font-size='4' />
-              <text text=']' italics='true' align='Left' font-size='4' />
+          <horizontal horizontal-fit='PreferredSize' align='Left' child-align='MiddleLeft' preferred-width='60'>
+            <image src='~displayInfoTypeSelector_LeaderboardIcon' preserve-aspect='true' preferred-width='4' min-width='4' preferred-height='3' min-height='3' pad-right='11'></image>
+            <horizontal horizontal-fit='PreferredSize' align='Right' child-align='MiddleCenter' preferred-width='40'>
+              <horizontal horizontal-fit='PreferredSize' child-align='MiddleRight'>
+                <!--<text text='PP' align='Right'></text>-->
+                <!--<text text='1' align='Right'></text>-->
+                <text text='~displayPPInfo_SessionRank' italics='true' align='Left' font-size='4' />
+              </horizontal>
+              <horizontal horizontal-fit='PreferredSize' child-align='MiddleLeft'>
+                <!--<text text='Gain' align='Left'></text>-->
+                <!--<text text='2' align='Left'></text>-->
+                <text text='[' italics='true' align='Left' font-size='4' />
+                <text text='~displayPPInfo_SessionRankDiff' font-color='~displayPPInfo_SessionRankDiffColor' italics='true' align='Left' font-size='4' />
+                <text text=']' italics='true' align='Left' font-size='4' />
+              </horizontal>
+            </horizontal>
+            <!--<macro.if value="displayInfoTypeSelector_showGlobal">
+              <horizontal horizontal-fit='PreferredSize' align='Left' child-align='MiddleLeft'>
+                <text text='~displayPPInfo_SessionRank' italics='true' align='Left' font-size='4' />
+              </horizontal>
+              <horizontal horizontal-fit='PreferredSize' align='Center' child-align='MiddleLeft'>
+                <text text='[' italics='true' align='Left' font-size='4' />
+                <text text='~displayPPInfo_SessionRankDiff' font-color='~displayPPInfo_SessionRankDiffColor' italics='true' align='Left' font-size='4' />
+                <text text=']' italics='true' align='Left' font-size='4' />
+              </horizontal>
             </macro.if>
             <macro.if value="displayInfoTypeSelector_showLocal">
-              <text text='~displayPPInfo_SessionCountryRank' italics='true' align='Left' font-size='4' font-color='~countryRankFontColor'/>
-              <text text='[' italics='true' align='Left' font-size='4' font-color='~countryRankFontColor'/>
-              <text text='~displayPPInfo_SessionCountryRankDiff' font-color='~displayPPInfo_SessionCountryRankDiffColor' italics='true' align='Left' font-size='4' />
-              <text text=']' italics='true' align='Left' font-size='4' font-color='~countryRankFontColor'/>
+              <horizontal horizontal-fit='PreferredSize' align='Left' child-align='MiddleLeft'>
+                <text text='~displayPPInfo_SessionCountryRank' italics='true' align='Left' font-size='4' font-color='~countryRankFontColor'/>
+              </horizontal>
+              <horizontal horizontal-fit='PreferredSize' align='Center' child-align='MiddleLeft'>
+                <text text='[' italics='true' align='Left' font-size='4' font-color='~countryRankFontColor'/>
+                <text text='~displayPPInfo_SessionCountryRankDiff' font-color='~displayPPInfo_SessionCountryRankDiffColor' italics='true' align='Left' font-size='4' />
+                <text text=']' italics='true' align='Left' font-size='4' font-color='~countryRankFontColor'/>
+              </horizontal>
             </macro.if>
             <macro.if value="displayInfoTypeSelector_showPP">
-              <text text='~displayPPInfo_SessionPP' italics='true' align='Center' font-size='4' />
-              <text text='[' italics='true' align='Center' font-size='4' />
-              <text text='~displayPPInfo_SessionPPDiff' font-color='~displayPPInfo_SessionPPDiffColor' italics='true' align='Center' font-size='4' />
-              <text text=']' italics='true' align='Center' font-size='4' />
-            </macro.if>
+              <horizontal horizontal-fit='PreferredSize' align='Left' child-align='MiddleLeft'>
+                <text text='~displayPPInfo_SessionPP' italics='true' align='Center' font-size='4' />
+              </horizontal>
+              <horizontal horizontal-fit='PreferredSize' align='Center' child-align='MiddleLeft'>
+                <text text='[' italics='true' align='Center' font-size='4' />
+                <text text='~displayPPInfo_SessionPPDiff' font-color='~displayPPInfo_SessionPPDiffColor' italics='true' align='Center' font-size='4' />
+                <text text=']' italics='true' align='Center' font-size='4' />
+              </horizontal>
+            </macro.if>-->
           </horizontal>
         </vertical>
       </custom-list>
+      
       <horizontal horizontal-fit='PreferredSize' align='Center' child-align='MiddleLeft'>
       </horizontal>
     </vertical>

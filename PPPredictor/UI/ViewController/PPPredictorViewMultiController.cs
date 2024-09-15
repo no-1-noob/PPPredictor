@@ -13,8 +13,8 @@ namespace PPPredictor.UI.ViewController
 {
     public partial class PPPredictorViewController : IInitializable, IDisposable, INotifyPropertyChanged
     {
-        private Dictionary<string, object> dctDisplayPPInfo = new Dictionary<string, object>();
-        private Dictionary<string, object> dctDisplaySessionInfo = new Dictionary<string, object>();
+        private Dictionary<string, DisplayInfoTypeSelector> dctDisplayPPInfo = new Dictionary<string, DisplayInfoTypeSelector>();
+        private Dictionary<string, DisplayInfoTypeSelector> dctDisplaySessionInfo = new Dictionary<string, DisplayInfoTypeSelector>();
 
         #region UI Components
         [UIComponent("listDisplayPPInfo")]
@@ -29,27 +29,32 @@ namespace PPPredictor.UI.ViewController
         [UIValue("MultiViewPPInfoData")]
         public List<object> MultiViewPPInfoData
         {
-            get => dctDisplayPPInfo.Values.ToList();
+            get => dctDisplayPPInfo.Values.OrderBy(x => x.SortIndex).ToList<object>();
         }
         [UIValue("MultiViewSessionInfoData")]
         public List<object> MultiViewSessionInfoData
         {
-            get => dctDisplaySessionInfo.Values.ToList();
+            get => dctDisplaySessionInfo.Values.OrderBy(x => x.SortIndex).ToList<object>();
         }
         #endregion
 
         #region logic
-        private void UpdateMultiViewType<T>(CustomCellListTableData customCellListTable, Dictionary<string, object> dct, MultiViewType multiViewType) where T : DisplayInfoTypeSelector
+        private void UpdateMultiViews()
+        {
+            UpdateMultiViewType(listDisplayPPInfo, dctDisplayPPInfo);
+            UpdateMultiViewType(listDisplaySessionInfo, dctDisplaySessionInfo);
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsMultiViewEnabled)));
+        }
+        private void UpdateMultiViewType(CustomCellListTableData customCellListTable, Dictionary<string, DisplayInfoTypeSelector> dct)
         {
             dct.Values.ToList().ForEach((x) =>
             {
-                var xy = x as T;
-                xy.multiViewType = multiViewType;
+                x.multiViewType = Plugin.ProfileInfo.MultiViewType;
             });
             if(Plugin.ProfileInfo.IsMultiViewEnabled) floatingScreen.StartCoroutine(RefreshMultiView(customCellListTable, dct));
         }
 
-        private IEnumerator RefreshMultiView(CustomCellListTableData customCellListTable, Dictionary<string, object> dctObjects)
+        private IEnumerator RefreshMultiView(CustomCellListTableData customCellListTable, Dictionary<string, DisplayInfoTypeSelector> dctObjects)
         {
             yield return null; // Wait until the next frame
             if (customCellListTable != null && customCellListTable.isActiveAndEnabled && dctObjects.Values.ToList().Count > 0)
@@ -57,7 +62,7 @@ namespace PPPredictor.UI.ViewController
                 try
                 {
                     //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MultiViewPPInfoData)));
-                    customCellListTable.data = dctObjects.Values.ToList();
+                    customCellListTable.data = dctObjects.Values.OrderBy(x => x.SortIndex).ToList<object>();
                     customCellListTable?.tableView?.ReloadData();
                 }
                 catch (Exception ex)

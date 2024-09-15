@@ -22,11 +22,11 @@
 
     enum Leaderboard
     {
+        NoLeaderboard,
         ScoreSaber,
         BeatLeader,
+        HitBloq,
         AccSaber,
-        NoLeaderboard,
-        HitBloq
     }
 
     enum CounterScoringType

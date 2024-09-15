@@ -24,11 +24,24 @@ namespace PPPredictor.UI.ViewController
         [UIValue("isMultiViewEnabled")]
         private bool IsMultiViewEnabled
         {
-            get => Plugin.ProfileInfo.IsMultiViewEnabled;
+            get
+            {
+                return Plugin.ProfileInfo.IsMultiViewEnabled;
+            }
             set
             {
+                Plugin.DebugPrint($"Set IsMultiViewEnabled: {value}");
                 Plugin.ProfileInfo.IsMultiViewEnabled = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsMultiViewEnabled)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsMultiViewDisabled)));
+            }
+        }
+        [UIValue("isMultiViewDisabled")]
+        private bool IsMultiViewDisabled
+        {
+            get
+            {
+                return !Plugin.ProfileInfo.IsMultiViewEnabled;
             }
         }
         [UIValue("multi-view-type-options")]
@@ -60,8 +73,7 @@ namespace PPPredictor.UI.ViewController
         [UIAction("click-quick-settings-modal-close")]
         private void ClickQuickSettingsModalClose()
         {
-            UpdateMultiViewType<DisplayPPInfo>(listDisplayPPInfo, dctDisplayPPInfo, Plugin.ProfileInfo.MultiViewType);
-            UpdateMultiViewType<DisplaySessionInfo>(listDisplaySessionInfo, dctDisplaySessionInfo, Plugin.ProfileInfo.MultiViewType);
+            UpdateMultiViews();
             bsmlParserParams.EmitEvent("close-quick-settings-modal");
         }
 #pragma warning restore IDE0051 // Remove unused private members

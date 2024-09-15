@@ -246,6 +246,8 @@ namespace PPPredictor.Utilities
             _ppDisplay = new DisplayPPInfo();
             _ppDisplay.LeaderboardIcon = _leaderboardInfo.LeaderboardIcon;
             _ppDisplay.LeaderboardName = _leaderboardInfo.LeaderboardName;
+            _ppDisplay.SortIndex = _leaderboardInfo.SortIndex;
+            _ppDisplay.multiViewType = Plugin.ProfileInfo.MultiViewType;
             if (_currentBeatMapInfo.MaxPP > 0 && pp >= _currentBeatMapInfo.MaxPP)
             {
                 _ppDisplay.PPRaw = $"<color=\"yellow\">{pp:F2}{PPSuffix}</color>";
@@ -326,6 +328,8 @@ namespace PPPredictor.Utilities
             DisplaySessionInfo sessionDisplay = new DisplaySessionInfo();
             sessionDisplay.LeaderboardIcon = _leaderboardInfo.LeaderboardIcon;
             sessionDisplay.LeaderboardName = _leaderboardInfo.LeaderboardName;
+            sessionDisplay.SortIndex = _leaderboardInfo.SortIndex;
+            sessionDisplay.multiViewType = Plugin.ProfileInfo.MultiViewType;
             sessionDisplay.CountryRankFontColor = _leaderboardInfo.IsCountryRankEnabled ? DisplayHelper.ColorWhite : DisplayHelper.ColorCountryRankDisabled;
             if (_leaderboardInfo.CurrentMapPool.SessionPlayer != null && _leaderboardInfo.CurrentMapPool.CurrentPlayer != null)
             {

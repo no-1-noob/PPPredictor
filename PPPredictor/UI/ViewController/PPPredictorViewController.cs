@@ -150,6 +150,7 @@ namespace PPPredictor.UI.ViewController
             SliderFormatting();
 
             UpdateMinMaxIncements(sliderFine.slider.value);
+            if(Plugin.ProfileInfo.IsMultiViewEnabled) UpdateMultiViews();
         }
 
         private void SliderFormatting()
