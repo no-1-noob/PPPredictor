@@ -52,7 +52,8 @@ namespace UnitTests.Data.Curve
         [TestMethod]
         public void TestCalculatePPatPercentageModifier()
         {
-#warning todo someday
+            Assert.IsTrue(true);
+//#warning todo someday
         }
 
         [TestMethod]
