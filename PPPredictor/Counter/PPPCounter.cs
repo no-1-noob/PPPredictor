@@ -10,8 +10,10 @@ namespace PPPredictor.Counter
 {
     class PPPCounter : CountersPlus.Counters.Custom.BasicCustomCounter
     {
+#pragma warning disable CS0649
         [Inject] private readonly IPPPredictorMgr ppPredictorMgr;
         [Inject] private readonly GamePlayMgr gamePlayMgr;
+#pragma warning restore CS0649
         private List<CounterInfoHolder> lsCounterInfoHolder = new List<CounterInfoHolder>();
         private bool _iconMoved = false;
         private bool _isCounterCreated = false;
@@ -80,22 +82,22 @@ namespace PPPredictor.Counter
         {
             if (_isCounterCreated) return;
 #if DEBUG
-                //Center Helper for development
-                /*float offsetPlus = 0.1f;
-                for (int i = 0; i < 5; i++)
-                {
-                    TMP_Text testPlus = CanvasUtility.CreateTextFromSettings(Settings, new Vector3(offsetPlus * -(i + 1), ((i % 2) + 1) * offsetPlus, 0));
-                    testPlus.alignment = TextAlignmentOptions.Center;
-                    testPlus.text = "+";
-                }
-                for (int i = 0; i < 5; i++)
-                {
-                    TMP_Text testPlus = CanvasUtility.CreateTextFromSettings(Settings, new Vector3(offsetPlus * (i + 1), ((i % 2) + 1) * offsetPlus, 0));
-                    testPlus.alignment = TextAlignmentOptions.Center;
-                    testPlus.text = "+";
-                }*/
-                //debugPercentage = CanvasUtility.CreateTextFromSettings(Settings, new Vector3(0, 0, 0));
-                //debugPercentage.alignment = TextAlignmentOptions.Center;
+            //Center Helper for development
+            /*float offsetPlus = 0.1f;
+            for (int i = 0; i < 5; i++)
+            {
+                TMP_Text testPlus = CanvasUtility.CreateTextFromSettings(Settings, new Vector3(offsetPlus * -(i + 1), ((i % 2) + 1) * offsetPlus, 0));
+                testPlus.alignment = TextAlignmentOptions.Center;
+                testPlus.text = "+";
+            }
+            for (int i = 0; i < 5; i++)
+            {
+                TMP_Text testPlus = CanvasUtility.CreateTextFromSettings(Settings, new Vector3(offsetPlus * (i + 1), ((i % 2) + 1) * offsetPlus, 0));
+                testPlus.alignment = TextAlignmentOptions.Center;
+                testPlus.text = "+";
+            }*/
+            //debugPercentage = CanvasUtility.CreateTextFromSettings(Settings, new Vector3(0, 0, 0));
+            //debugPercentage.alignment = TextAlignmentOptions.Center;
 #endif
 
 
@@ -105,28 +107,22 @@ namespace PPPredictor.Counter
             int scoreboardCount = gamePlayInfo.scoreboardCount;
             float lineOffset = (originalLineOffset * (scoreboardCount / 2)) + (originalLineOffset * (scoreboardCount % 2));
             int id = 0;
-            LeaderBoardGameplayInfo infoScoreSaber = gamePlayInfo.lsInfo.FirstOrDefault(x => x.leaderboard == Leaderboard.ScoreSaber);
-            LeaderBoardGameplayInfo infoBeatLeader = gamePlayInfo.lsInfo.FirstOrDefault(x => x.leaderboard == Leaderboard.BeatLeader);
-            LeaderBoardGameplayInfo infoHitBloq = gamePlayInfo.lsInfo.FirstOrDefault(x => x.leaderboard == Leaderboard.HitBloq);
-            if (infoScoreSaber != null)
-            {
-                lsCounterInfoHolder.Add(new CounterInfoHolder(id, Leaderboard.ScoreSaber, Settings, ppPredictorMgr, canvas, CanvasUtility, lineOffset, originalLineOffset, positionScale, infoScoreSaber));
-                lineOffset -= originalLineOffset * 2;
-                id++;
-            }
-            if (infoBeatLeader != null)
-            {
-                lsCounterInfoHolder.Add(new CounterInfoHolder(id, Leaderboard.BeatLeader, Settings, ppPredictorMgr, canvas, CanvasUtility, lineOffset, originalLineOffset, positionScale, infoBeatLeader));
-                lineOffset -= originalLineOffset * 2;
-                id++;
-            }
-            if (infoHitBloq != null)
-            {
-                lsCounterInfoHolder.Add(new CounterInfoHolder(id, Leaderboard.HitBloq, Settings, ppPredictorMgr, canvas, CanvasUtility, lineOffset, originalLineOffset, positionScale, infoHitBloq));
-                lineOffset -= originalLineOffset * 2;
-                id++;
-            }
+            CreateCounterInfoHolder(Leaderboard.ScoreSaber, gamePlayInfo, canvas, positionScale, ref lineOffset, ref id);
+            CreateCounterInfoHolder(Leaderboard.BeatLeader, gamePlayInfo, canvas, positionScale, ref lineOffset, ref id);
+            CreateCounterInfoHolder(Leaderboard.HitBloq, gamePlayInfo, canvas, positionScale, ref lineOffset, ref id);
+            CreateCounterInfoHolder(Leaderboard.AccSaber, gamePlayInfo, canvas, positionScale, ref lineOffset, ref id);
             _isCounterCreated = true;
+        }
+
+        private void CreateCounterInfoHolder(Leaderboard leaderboard, GamePlayInfo gamePlayInfo, Canvas canvas, float positionScale, ref float lineOffset, ref int id)
+        {
+            LeaderBoardGameplayInfo leaderBoardInfo = gamePlayInfo.lsInfo.FirstOrDefault(x => x.leaderboard == leaderboard);
+            if (leaderBoardInfo != null)
+            {
+                lsCounterInfoHolder.Add(new CounterInfoHolder(id, leaderboard, Settings, ppPredictorMgr, canvas, CanvasUtility, lineOffset, originalLineOffset, positionScale, leaderBoardInfo));
+                lineOffset -= originalLineOffset * 2;
+                id++;
+            }
         }
 
         private void DisplayCounterText(GamePlayInfo gameplayInfo)

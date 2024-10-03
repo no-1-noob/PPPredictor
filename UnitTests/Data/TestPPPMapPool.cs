@@ -2,11 +2,6 @@
 using PPPredictor.Data.Curve;
 using PPPredictor.Interfaces;
 using PPPredictor.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace UnitTests.Data
 {

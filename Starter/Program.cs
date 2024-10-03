@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Starter
+﻿namespace Starter
 {
     class Program
     {

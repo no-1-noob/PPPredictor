@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using static PPPredictor.Data.LeaderBoardDataTypes.BeatLeaderDataTypes;
 
 namespace PPPredictor.Interfaces

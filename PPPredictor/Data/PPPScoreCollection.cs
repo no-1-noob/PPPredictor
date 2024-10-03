@@ -1,9 +1,8 @@
-﻿using PPPredictor.OpenAPIs;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using static PPPredictor.Data.LeaderBoardDataTypes.BeatLeaderDataTypes;
 using static PPPredictor.Data.LeaderBoardDataTypes.HitBloqDataTypes;
 using static PPPredictor.Data.LeaderBoardDataTypes.ScoreSaberDataTypes;
-using static PPPredictor.OpenAPIs.BeatleaderAPI;
+using static PPPredictor.Data.LeaderBoardDataTypes.AccSaberDataTypes;
 
 namespace PPPredictor.Data
 {
@@ -60,6 +59,17 @@ namespace PPPredictor.Data
             }
         }
 
-        
+        public PPPScoreCollection(List<AccSaberScores> lsHitBloqScores, int page)
+        {
+            this.page = page;
+            this.itemsPerPage = 10;
+            this.total = (lsHitBloqScores.Count > 0) ? page * itemsPerPage + 1 : 0;
+            foreach (var playerScore in lsHitBloqScores)
+            {
+                lsPPPScore.Add(new PPPScore(playerScore));
+            }
+        }
+
+
     }
 }

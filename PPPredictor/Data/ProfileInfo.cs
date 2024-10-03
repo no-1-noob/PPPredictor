@@ -38,6 +38,8 @@ namespace PPPredictor.Data
         private bool _isScoreSaberEnabled;
         private bool _isBeatLeaderEnabled;
         private bool _isHitBloqEnabled;
+        private bool _isAccSaberEnabled;
+        private bool _isAccSaberEnabledManual;
 
         private string _streamOverlayPort;
 
@@ -65,6 +67,8 @@ namespace PPPredictor.Data
             IsScoreSaberEnabled = true;
             IsBeatLeaderEnabled = true;
             IsHitBloqEnabled = true;
+            IsAccSaberEnabled = true;
+            IsAccSaberEnabledManual = false;
             PpGainCalculationType = PPGainCalculationType.Weighted;
             RawPPLossHighlightThreshold = -10;
             ProfileInfoVersion = 0;
@@ -104,6 +108,8 @@ namespace PPPredictor.Data
         public bool IsBeatLeaderEnabled { get => _isBeatLeaderEnabled; set => _isBeatLeaderEnabled = value; }
         [JsonIgnore]
         public bool IsHitBloqEnabled { get => _isHitBloqEnabled; set => _isHitBloqEnabled = value; }
+        [JsonIgnore]
+        public bool IsAccSaberEnabled { get => _isAccSaberEnabled; set => _isAccSaberEnabled = value; }
         public PPGainCalculationType PpGainCalculationType { get => _ppGainCalculationType; set => _ppGainCalculationType = value; }
         public int RawPPLossHighlightThreshold { get => _rawPPLossHighlightThreshold; set => _rawPPLossHighlightThreshold = value; }
         public CounterDisplayType CounterDisplayType { get => _counterDisplayType; set => _counterDisplayType = value; }
@@ -115,6 +121,7 @@ namespace PPPredictor.Data
         public float LastMinPercentageSelected { get => _lastMinPercentageSelected; set => _lastMinPercentageSelected = value; }
         public float LastMaxPercentageSelected { get => _lastMaxPercentageSelected; set => _lastMaxPercentageSelected = value; }
         public string StreamOverlayPort { get => _streamOverlayPort; set => _streamOverlayPort = value; }
+        public bool IsAccSaberEnabledManual { get => _isAccSaberEnabledManual; set => _isAccSaberEnabledManual = value; }
 
         internal void ClearOldMapInfos()
         {
