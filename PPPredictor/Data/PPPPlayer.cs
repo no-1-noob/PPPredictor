@@ -1,4 +1,4 @@
-﻿using PPPredictor.OpenAPIs;
+﻿using static PPPredictor.Data.LeaderBoardDataTypes.AccSaberDataTypes;
 using static PPPredictor.Data.LeaderBoardDataTypes.BeatLeaderDataTypes;
 using static PPPredictor.Data.LeaderBoardDataTypes.HitBloqDataTypes;
 using static PPPredictor.Data.LeaderBoardDataTypes.ScoreSaberDataTypes;
@@ -57,6 +57,14 @@ namespace PPPredictor.Data
             rank = hitBloqUser.rank;
             countryRank = 0;
             pp = hitBloqUser.cr;
+            country = string.Empty;
+        }
+
+        public PPPPlayer(AccSaberPlayer accSaberPlayer)
+        {
+            rank = accSaberPlayer.rank;
+            countryRank = 0;
+            pp = accSaberPlayer.ap;
             country = string.Empty;
         }
 
