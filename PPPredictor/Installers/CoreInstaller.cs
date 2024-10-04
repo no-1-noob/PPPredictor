@@ -8,7 +8,7 @@ namespace PPPredictor.Installers
     {
         public override void InstallBindings()
         {
-            Container.BindInterfacesAndSelfTo<PPPredictorMgr<ScoresaberAPI, BeatleaderAPI, HitbloqAPI>>().AsSingle();
+            Container.BindInterfacesAndSelfTo<PPPredictorMgr<ScoresaberAPI, BeatleaderAPI, HitbloqAPI, AccSaberApi>>().AsSingle();
         }
     }
 }

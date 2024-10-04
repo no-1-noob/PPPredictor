@@ -73,7 +73,16 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Debug ALLNETWORK'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Debug ALLNETWORK\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;BEATLEADERNETWORK; SCORESABERNETWORK; HITBLOQNETWORK</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;BEATLEADERNETWORK; SCORESABERNETWORK; HITBLOQNETWORK; ACCSABERNETWORK</DefineConstants>
+    <DebugType>portable</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug ACCSABERNETWORK'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug ACCSABERNETWORK\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;ACCSABERNETWORK</DefineConstants>
     <DebugType>portable</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <LangVersion>7.3</LangVersion>
@@ -188,6 +197,7 @@
     <Compile Include="Data\Curve\CustomPPPCurve.cs" />
     <Compile Include="Data\DisplayInfos\DisplayPPInfo.cs" />
     <Compile Include="Data\DisplayInfos\DisplaySessionInfo.cs" />
+    <Compile Include="Data\LeaderBoardDataTypes\AccSaberDataTypes.cs" />
     <Compile Include="Data\LeaderBoardDataTypes\BeatLeaderDataTypes.cs" />
     <Compile Include="Data\LeaderBoardDataTypes\HitBloqDataTypes.cs" />
     <Compile Include="Data\LeaderBoardDataTypes\ScoreSaberDataTypes.cs" />
@@ -205,6 +215,7 @@
     <Compile Include="Data\PPPStarRating.cs" />
     <Compile Include="Installers\PPPPredictorDisplayInstaller.cs" />
     <Compile Include="Data\ProfileInfo.cs" />
+    <Compile Include="Interfaces\IAccSaberAPI.cs" />
     <Compile Include="Interfaces\IBeatLeaderAPI.cs" />
     <Compile Include="Interfaces\IHitBloqAPI.cs" />
     <Compile Include="Interfaces\IPPPCurve.cs" />
@@ -212,6 +223,7 @@
     <Compile Include="Interfaces\IPPPredictorMgr.cs" />
     <Compile Include="Interfaces\IPPPWebSocket.cs" />
     <Compile Include="Interfaces\IScoresaberAPI.cs" />
+    <Compile Include="OpenAPIs\accsaberapi.cs" />
     <Compile Include="OpenAPIs\beatleaderapi.cs" />
     <Compile Include="OpenAPIs\hitbloqapi.cs" />
     <Compile Include="OpenAPIs\scoresaberapi.cs" />
@@ -228,6 +240,7 @@
     <Compile Include="Utilities\ParsingUtil.cs" />
     <Compile Include="Utilities\PPCalculatorBeatLeader.cs" />
     <Compile Include="Utilities\PPCalculatorHitBloq.cs" />
+    <Compile Include="Utilities\PPCalculatorAccSaber.cs" />
     <Compile Include="Utilities\PPCalculatorNoLeaderboard.cs" />
     <Compile Include="Utilities\PPCalculatorScoreSaber.cs" />
     <Compile Include="Utilities\PPPredictor.cs" />
@@ -279,6 +292,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\LeaderBoardLogos\HitBloq.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\LeaderBoardLogos\AccSaber.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

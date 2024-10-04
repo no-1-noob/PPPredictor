@@ -1,6 +1,7 @@
 ﻿using PPPredictor.OpenAPIs;
 using PPPredictor.Utilities;
 using System;
+using static PPPredictor.Data.LeaderBoardDataTypes.AccSaberDataTypes;
 using static PPPredictor.Data.LeaderBoardDataTypes.BeatLeaderDataTypes;
 using static PPPredictor.Data.LeaderBoardDataTypes.HitBloqDataTypes;
 using static PPPredictor.Data.LeaderBoardDataTypes.ScoreSaberDataTypes;
@@ -49,6 +50,15 @@ namespace PPPredictor.Data
             songHash = hash;
             difficulty = ParsingUtil.ParseDifficultyNameToInt(diff);
             gameMode = mode;
+        }
+
+        public PPPScore(AccSaberScores playerScore)
+        {
+            timeSet = playerScore.timeSet;
+            pp = playerScore.ap;
+            songHash = playerScore.songHash?.ToUpper();
+            difficulty = ParsingUtil.ParseDifficultyNameToInt(playerScore.difficulty);
+            gameMode = "SoloStandard";
         }
     }
 }

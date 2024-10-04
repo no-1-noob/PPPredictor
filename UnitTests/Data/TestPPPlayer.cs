@@ -1,10 +1,4 @@
 ﻿using PPPredictor.Data;
-using PPPredictor.OpenAPIs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static PPPredictor.Data.LeaderBoardDataTypes.BeatLeaderDataTypes;
 using static PPPredictor.Data.LeaderBoardDataTypes.HitBloqDataTypes;
 using static PPPredictor.Data.LeaderBoardDataTypes.ScoreSaberDataTypes;

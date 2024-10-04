@@ -13,10 +13,10 @@ namespace PPPredictor.Data
 
         public PPGainResult() : this(0,0,0) { }
 
-        public PPGainResult(double ppTotal, double ppGain, double ppGainRaw)
+        public PPGainResult(double ppTotal, double ppGainWeighted, double ppGainRaw)
         {
             _ppTotal = ppTotal;
-            _ppGainWeighted = ppGain;
+            _ppGainWeighted = ppGainWeighted;
             _ppGainRaw = ppGainRaw;
         }
 
