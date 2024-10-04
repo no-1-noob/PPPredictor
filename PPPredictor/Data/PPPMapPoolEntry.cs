@@ -1,5 +1,4 @@
 ﻿using static PPPredictor.Data.LeaderBoardDataTypes.BeatLeaderDataTypes;
-using static PPPredictor.OpenAPIs.BeatleaderAPI;
 
 namespace PPPredictor.Data
 {

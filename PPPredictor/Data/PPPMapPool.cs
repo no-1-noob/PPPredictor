@@ -25,13 +25,14 @@ namespace PPPredictor.Data
         private List<PPPMapPoolEntry> _lsMapPoolEntries;
         private List<PPPPlayer> _lsPlayerRankings;
         private DateTime _dtUtcLastRefresh;
-        private DateTime _dtUtcLastSessionReset;
         private DateTimeOffset _dtLastScoreSet;
         private double _popularity;
         private string _iconUrl;
         private byte[] _iconData;
         private string _syncUrl;
         private LeaderboardContext _leaderboardContext;
+        private bool isPlayerFound;
+        private Dictionary<int, double> dctWeightLookup;
 
         [UIValue("mapPoolName")]
         public string MapPoolName { get => _mapPoolName; set => _mapPoolName = value; }
@@ -67,6 +68,8 @@ namespace PPPredictor.Data
         public double Popularity { get => _popularity; set => _popularity = value; }
         public string SyncUrl { get => _syncUrl; set => _syncUrl = value; }
         public LeaderboardContext LeaderboardContext { get => _leaderboardContext; set => _leaderboardContext = value; }
+        public bool IsPlayerFound { get => isPlayerFound; set => isPlayerFound = value; }
+        public Dictionary<int, double> DctWeightLookup { get => dctWeightLookup; set => dctWeightLookup = value; }
 
         [JsonConstructor]
 
@@ -89,6 +92,8 @@ namespace PPPredictor.Data
             _popularity = 0;
             _syncUrl = string.Empty;
             _leaderboardContext = LeaderboardContext.None;
+            isPlayerFound = true;
+            dctWeightLookup = new Dictionary<int, double>();
         }
 
         public PPPMapPool(string id, string playListId, MapPoolType mapPoolType, string mapPoolName, float accumulationConstant, int sortIndex, IPPPCurve curve, string iconUrl, double popularity = 0, string syncUrl = "", LeaderboardContext leaderboardContext = LeaderboardContext.None) : this()

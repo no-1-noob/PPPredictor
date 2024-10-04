@@ -1,7 +1,6 @@
 ﻿using CountersPlus.Custom;
 using CountersPlus.Utils;
 using HMUI;
-using PPPredictor.Data;
 using PPPredictor.Interfaces;
 using PPPredictor.Utilities;
 using System;
