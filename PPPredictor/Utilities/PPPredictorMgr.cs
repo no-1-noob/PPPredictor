@@ -3,7 +3,6 @@ using IPA.Loader;
 using PPPredictor.Data;
 using PPPredictor.Data.DisplayInfos;
 using PPPredictor.Interfaces;
-using PPPredictor.OpenAPIs;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -13,7 +12,7 @@ using Zenject;
 
 namespace PPPredictor.Utilities
 {
-    internal class PPPredictorMgr<SSAPI, BLAPI, HBAPI> : IInitializable, IDisposable, IPPPredictorMgr where SSAPI : IScoresaberAPI, new() where BLAPI : IBeatLeaderAPI, new() where HBAPI : IHitBloqAPI, new()
+    internal class PPPredictorMgr<SSAPI, BLAPI, HBAPI, ASAPI> : IInitializable, IDisposable, IPPPredictorMgr where SSAPI : IScoresaberAPI, new() where BLAPI : IBeatLeaderAPI, new() where HBAPI : IHitBloqAPI, new() where ASAPI : IAccSaberAPI, new()
 
     {
         private readonly WebSocketMgr _websocketMgr;
@@ -55,6 +54,7 @@ namespace PPPredictor.Utilities
             if (Plugin.ProfileInfo.IsScoreSaberEnabled) _lsPPPredictor.Add(new PPPredictor<PPCalculatorScoreSaber<SSAPI>>(Leaderboard.ScoreSaber));
             if (Plugin.ProfileInfo.IsBeatLeaderEnabled) _lsPPPredictor.Add(new PPPredictor<PPCalculatorBeatLeader<BLAPI>>(Leaderboard.BeatLeader));
             if (Plugin.ProfileInfo.IsHitBloqEnabled) _lsPPPredictor.Add(new PPPredictor<PPCalculatorHitBloq<HBAPI>>(Leaderboard.HitBloq));
+            if (Plugin.ProfileInfo.IsAccSaberEnabled) _lsPPPredictor.Add(new PPPredictor<PPCalculatorAccSaber<ASAPI>>(Leaderboard.AccSaber));
             if (_lsPPPredictor.Count == 0)
             {
                 _lsPPPredictor.Add(new PPPredictor<PPCalculatorNoLeaderboard>(Leaderboard.NoLeaderboard));
@@ -86,6 +86,7 @@ namespace PPPredictor.Utilities
             Plugin.ProfileInfo.IsScoreSaberEnabled = lsEnabledPlugin.FirstOrDefault(x => x.Name == Leaderboard.ScoreSaber.ToString()) != null;
             Plugin.ProfileInfo.IsBeatLeaderEnabled = lsEnabledPlugin.FirstOrDefault(x => x.Name == Leaderboard.BeatLeader.ToString()) != null;
             Plugin.ProfileInfo.IsHitBloqEnabled = lsEnabledPlugin.FirstOrDefault(x => x.Name == CultureInfo.CurrentCulture.TextInfo.ToTitleCase(Leaderboard.HitBloq.ToString())) != null;
+            Plugin.ProfileInfo.IsAccSaberEnabled = Plugin.ProfileInfo.IsScoreSaberEnabled && Plugin.ProfileInfo.IsAccSaberEnabledManual;
         }
 
         public void RestartOverlayServer()

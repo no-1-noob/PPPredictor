@@ -1,5 +1,4 @@
 ﻿using PPPredictor.Interfaces;
-using PPPredictor.OpenAPIs;
 using PPPredictor.Utilities;
 using System;
 using System.Linq;
@@ -13,18 +12,20 @@ namespace PPPredictor.Data.Curve
         private readonly List<(double, double)> arrPPCurve;
         private readonly CurveType curveType;
         private readonly double basePPMultiplier;
+        private readonly double starOffest = 0;
         private readonly double? baseline;
         private readonly double? exponential;
         private readonly double? cutoff;
         private readonly bool _isDummy;
         public bool IsDummy { get => _isDummy; }
 
-        public CustomPPPCurve(List<(double, double)> arrPPCurve, CurveType curveType, double basePPMultiplier, bool isDummy = false)
+        public CustomPPPCurve(List<(double, double)> arrPPCurve, CurveType curveType, double basePPMultiplier, bool isDummy = false, double starOffest = 0)
         {
             this.arrPPCurve = arrPPCurve;
             this.curveType = curveType;
             this.basePPMultiplier = basePPMultiplier;
             _isDummy = isDummy;
+            this.starOffest = starOffest;
         }
 
         private CustomPPPCurve(List<(double, double)> arrPPCurve, double basePPMultiplier, double? baseline, double? exponential, double? cutoff, bool isDummy = false) : this(arrPPCurve, CurveType.Basic, basePPMultiplier, isDummy)
@@ -68,6 +69,8 @@ namespace PPPredictor.Data.Curve
                     return BasicCurveCalculatePPatPercentage(beatMapInfo, percentage);
                 case CurveType.ScoreSaber:
                     return LinearCalculatePPatPercentage(beatMapInfo, failed ? percentage / 2.0f : percentage);
+                case CurveType.AccSaber:
+                    return LinearCalculatePPatPercentage(beatMapInfo, failed ? percentage / 2.0f : percentage);
                 default:
                     return 0;
             }
@@ -88,9 +91,10 @@ namespace PPPredictor.Data.Curve
         {
             try
             {
+                if (!beatMapInfo.ModifiedStarRating.IsRanked()) return 0; //Needed because of starOffset in AccSaber
                 percentage /= 100.0;
                 double multiplier = CalculateMultiplierAtPercentage(percentage);
-                return multiplier * beatMapInfo.ModifiedStarRating.Stars * basePPMultiplier;
+                return multiplier * (beatMapInfo.ModifiedStarRating.Stars + starOffest) * basePPMultiplier;
             }
             catch (Exception ex)
             {
@@ -167,6 +171,8 @@ namespace PPPredictor.Data.Curve
                     return new CurveInfo(CurveType.ScoreSaber);
                 case CurveType.Basic:
                     return new CurveInfo(CurveType.Basic, this.arrPPCurve, this.basePPMultiplier, this.baseline, this.exponential, this.cutoff);
+                case CurveType.AccSaber:
+                    return new CurveInfo(CurveType.AccSaber);
                 default:
                     return new CurveInfo(CurveType.Linear, this.arrPPCurve, this.basePPMultiplier);
             }            

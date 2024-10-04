@@ -3,6 +3,7 @@ using PPPredictor.Data;
 using PPPredictor.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Zenject;
 
 namespace PPPredictor.Utilities
@@ -88,6 +89,7 @@ namespace PPPredictor.Utilities
                 if (ShowScoreSaber()) gamePlayInfo.lsInfo.Add(new LeaderBoardGameplayInfo(Leaderboard.ScoreSaber, ppPredictorMgr, setupData.gameplayModifiers));
                 if (ShowBeatLeader()) gamePlayInfo.lsInfo.Add(new LeaderBoardGameplayInfo(Leaderboard.BeatLeader, ppPredictorMgr, setupData.gameplayModifiers));
                 if (ShowHitBloq()) gamePlayInfo.lsInfo.Add(new LeaderBoardGameplayInfo(Leaderboard.HitBloq, ppPredictorMgr, setupData.gameplayModifiers));
+                if (ShowAccSaber()) gamePlayInfo.lsInfo.Add(new LeaderBoardGameplayInfo(Leaderboard.AccSaber, ppPredictorMgr, setupData.gameplayModifiers));
 
                 maxPossibleScore = ScoreModel.ComputeMaxMultipliedScoreForBeatmap(setupData.transformedBeatmapData);
                 scoreController.scoreDidChangeEvent += ScoreController_scoreDidChangeEvent;
@@ -201,14 +203,9 @@ namespace PPPredictor.Utilities
         }
 
         #region calculations
-        //Stupid way to do it but works
         private int GetActiveScoreboardsCount()
         {
-            int reVal = 0;
-            if (ShowScoreSaber()) reVal++;
-            if (ShowBeatLeader()) reVal++;
-            if (ShowHitBloq()) reVal++;
-            return reVal;
+            return new[] { ShowScoreSaber(), ShowBeatLeader(), ShowHitBloq(), ShowAccSaber() }.Count(func => func);
         }
 
         private bool ShowCounter(Leaderboard leaderboard)
@@ -229,6 +226,11 @@ namespace PPPredictor.Utilities
         private bool ShowHitBloq()
         {
             return Plugin.ProfileInfo.IsHitBloqEnabled && ShowCounter(Leaderboard.HitBloq);
+        }
+
+        private bool ShowAccSaber()
+        {
+            return Plugin.ProfileInfo.IsAccSaberEnabled && ShowCounter(Leaderboard.AccSaber);
         }
         #endregion
 

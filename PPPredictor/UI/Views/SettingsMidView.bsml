@@ -11,6 +11,8 @@
     <text text='Leaderboard Specific Settings' italics='true' align='Center' font-size='4' />
     <text text='HitBloq' italics='true' align='Center' font-size='3' />
     <dropdown-list-setting text='Map pool sorting' value='hitbloq-mappool-sorting' choices='hitbloq-mappool-sorting-options' bind-value='true' apply-on-change='true'/>
+    <text text='AccSaber' italics='true' align='Center' font-size='3' />
+    <bool-setting text='AccSaber enabled (*)' hover-hint='ScoreSaber has to be installed additionally for this Predictor to be enabled' value='accsaber-enabled' interactable='~scoresaber-enabled' bind-value='true' apply-on-change='true'></bool-setting>
     <text text='Main menu position presets' italics='true' align='Center' font-size='4' />
     <dropdown-list-setting text='Position Presets' value='menu-position-preset' choices='menu-position-preset-options' bind-value='true' apply-on-change='true'/>
     <button text='Apply selected menu position preset' on-click='apply-menu-position-preset' min-width='16' pref-height='8' interactable='true'/>

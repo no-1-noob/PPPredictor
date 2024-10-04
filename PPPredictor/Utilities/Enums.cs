@@ -48,7 +48,8 @@
         BeatLeader,
         Linear,
         Basic,
-        Dummy
+        Dummy,
+        AccSaber
     }
     enum PPGainCalculationType
     {

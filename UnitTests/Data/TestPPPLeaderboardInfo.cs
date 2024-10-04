@@ -1,11 +1,6 @@
 ﻿using PPPredictor.Data;
 using PPPredictor.Data.Curve;
 using PPPredictor.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace UnitTests.Data
 {
@@ -107,6 +102,21 @@ namespace UnitTests.Data
             Assert.AreEqual(leaderboardInfo.LsMapPools.Count, 1);
             Assert.AreEqual(leaderboardInfo.CustomLeaderboardUserId, string.Empty);
             Assert.AreEqual(leaderboardInfo.PpSuffix, "cr");
+            Assert.AreEqual(leaderboardInfo.LeaderboardFirstPageIndex, 0);
+            Assert.IsFalse(leaderboardInfo.IsCountryRankEnabled);
+            Assert.IsNotNull(leaderboardInfo.LeaderboardIcon);
+            Assert.IsNotNull(leaderboardInfo.CurrentMapPool);
+        }
+
+        [TestMethod]
+        public void AccSaberConstructor()
+        {
+            PPPLeaderboardInfo leaderboardInfo = new PPPLeaderboardInfo(Leaderboard.AccSaber);
+            Assert.AreEqual(leaderboardInfo.LeaderboardName, Leaderboard.AccSaber.ToString());
+            Assert.IsNotNull(leaderboardInfo.LsMapPools);
+            Assert.AreEqual(leaderboardInfo.LsMapPools.Count, 1);
+            Assert.AreEqual(leaderboardInfo.CustomLeaderboardUserId, string.Empty);
+            Assert.AreEqual(leaderboardInfo.PpSuffix, "ap");
             Assert.AreEqual(leaderboardInfo.LeaderboardFirstPageIndex, 0);
             Assert.IsFalse(leaderboardInfo.IsCountryRankEnabled);
             Assert.IsNotNull(leaderboardInfo.LeaderboardIcon);

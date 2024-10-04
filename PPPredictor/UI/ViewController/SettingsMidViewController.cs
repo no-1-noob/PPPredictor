@@ -124,6 +124,23 @@ namespace PPPredictor.UI.ViewController
         {
             get => this.hitbloqMapPoolSortingOptions;
         }
+        [UIValue("accsaber-enabled")]
+        public bool AccSaberEnabled
+        {
+            get => Plugin.ProfileInfo.IsAccSaberEnabledManual && Plugin.ProfileInfo.IsScoreSaberEnabled;
+            set
+            {
+                Plugin.ProfileInfo.IsAccSaberEnabledManual = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AccSaberEnabled)));
+            }
+        }
+
+        [UIValue("scoresaber-enabled")]
+        public bool ScoreSaberEnabled
+        {
+            get => Plugin.ProfileInfo.IsScoreSaberEnabled;
+        }
+
         [UIValue("hitbloq-mappool-sorting")]
         public string HitbloqMapPoolSorting
         {
@@ -323,6 +340,7 @@ namespace PPPredictor.UI.ViewController
             GeneralRawPPLossHighlightThreshold = Plugin.ProfileInfo.RawPPLossHighlightThreshold;
             CounterGainSilentMode = Plugin.ProfileInfo.IsCounterGainSilentModeEnabled;
             StreamOverlayPort = Plugin.ProfileInfo.StreamOverlayPort;
+            AccSaberEnabled = Plugin.ProfileInfo.IsAccSaberEnabledManual && Plugin.ProfileInfo.IsScoreSaberEnabled;
         }
     }
 }

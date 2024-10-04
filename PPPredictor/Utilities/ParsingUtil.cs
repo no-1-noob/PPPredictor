@@ -1,26 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PPPredictor.Utilities
 {
     class ParsingUtil
     {
         static readonly Dictionary<string, int> dctDifficultyNameToInt = new Dictionary<string, int>{
-            { "ExpertPlus", 9 },
-            { "Expert", 7 },
-            { "Hard", 5 },
-            { "Normal", 3 },
-            { "Easy", 1 }
+            { "EXPERTPLUS", 9 },
+            { "EXPERT", 7 },
+            { "HARD", 5 },
+            { "NORMAL", 3 },
+            { "EASY", 1 }
         };
 
         public static int ParseDifficultyNameToInt(string difficulty)
         {
             try
             {
-                return dctDifficultyNameToInt[difficulty];
+                return dctDifficultyNameToInt[difficulty.ToUpper()];
             }
             catch (Exception ex)
             {
