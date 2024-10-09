@@ -10,15 +10,16 @@ A list/explanation of all options is available [here](https://github.com/no-1-no
   Features
   -----
 
-### Supports
+### Leaderboards
 (The mod for the leaderboard has to be installed for PPPredictor to show it in its selection)
-- ScoreSaber
-- BeatLeader
-- HitBloq
+|Leaderboard|Requsiste|Note|
+|--|--|--|
+|ScoreSaber|Scoresaber mod installed||
+|BeatLeader|Beatleader mod installed||
+|HitBloq|HitBloq mod installed||
+|AccSaber|Scoresaber mod installed and AccSaber activated in PPPredictor options|No automatic reload of scores|
 
-### Counters+
-Optional Counters+ implementation
-Custom MapPool icons for HitBloq MapPools
+### Counters+ (Optional)
 
 ![grafik](https://github.com/no-1-noob/PPPredictor/assets/91905916/e3e008a0-965e-438d-986c-10dabe81ec9d)
 
@@ -36,11 +37,11 @@ Custom MapPool icons for HitBloq MapPools
    - Raw PP: The value of the play at the given percentage 
   - Weighted PP: The PP value this play would add to your Profile
 
+### Stream Overlay
+
+You can use [this](https://mods.no1noob.net/PPPOverlay) website to have a stream overlay.
+More infos on how to use it at the GitHub repo [PPPOverlay](https://github.com/no-1-noob/PPPOverlay)
+
 Dependencies
 -----
- - BSIPA 4.2.0+
- - BeatSaberMarkupLanguage 1.6.1+
- - SiraUtil 3.0.3+
- - LeaderboardCore 1.2.2+
- - SongDetailsCache 1.1.11+
- - SongCore 3.9.4+
+ - CHeck the release page for your BeatSaber version
