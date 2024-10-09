@@ -4,20 +4,17 @@ A mod that allows you to see how many PP (and rank) you could earn for a specifi
 
 A list/explanation of all options is available [here](https://github.com/no-1-noob/PPPredictor/wiki/Settings).
 
+### Leaderboards
+|Leaderboard|Prerequisite|Note|
+|--|--|--|
+|[ScoreSaber](https://scoresaber.com/)|ScorSsaber mod installed||
+|[BeatLeader](https://beatleader.xyz)|Beatleader mod installed||
+|[HitBloq](https://hitbloq.com)|HitBloq mod installed||
+|[AccSaber](https://accsaber.com)|Scoresaber mod installed and AccSaber activated in PPPredictor options|No automatic reload of scores|
+
+
 ![grafik](https://github.com/no-1-noob/PPPredictor/assets/91905916/414f0405-d50c-4262-bde7-bb83e6392560)
 ![grafik](https://github.com/no-1-noob/PPPredictor/assets/91905916/5be3a90e-eba7-4c66-a873-acca5e1aa61a)
-
-  Features
-  -----
-
-### Leaderboards
-(The mod for the leaderboard has to be installed for PPPredictor to show it in its selection)
-|Leaderboard|Requsiste|Note|
-|--|--|--|
-|ScoreSaber|Scoresaber mod installed||
-|BeatLeader|Beatleader mod installed||
-|HitBloq|HitBloq mod installed||
-|AccSaber|Scoresaber mod installed and AccSaber activated in PPPredictor options|No automatic reload of scores|
 
 ### Counters+ (Optional)
 
