@@ -1,4 +1,5 @@
 ﻿using PPPredictor.Data.DisplayInfos;
+using PPPredictor.Utilities;
 
 namespace UnitTests.Data.DisplayInfo
 {
