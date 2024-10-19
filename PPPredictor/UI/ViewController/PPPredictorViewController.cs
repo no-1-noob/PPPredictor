@@ -11,10 +11,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Reflection;
+using TMPro;
 using UnityEngine;
 using Zenject;
 using HarmonyLib;
 using System.Threading.Tasks;
+using System.Reflection;
 using PPPredictor.Interfaces;
 
 namespace PPPredictor.UI.ViewController
@@ -34,7 +36,7 @@ namespace PPPredictor.UI.ViewController
         private bool _isDataLoading;
         private bool _isScreenMoving = false;
 
-        public PPPredictorViewController() {}
+        public PPPredictorViewController() { }
 
         [Inject]
         public void Construct()
@@ -44,23 +46,23 @@ namespace PPPredictor.UI.ViewController
         {
             Plugin.pppViewController = this;
             displaySessionInfo = new DisplaySessionInfo();
-            displayPPInfo= new DisplayPPInfo();
+            displayPPInfo = new DisplayPPInfo();
             floatingScreen = FloatingScreen.CreateFloatingScreen(new Vector2(75, 100), true, Plugin.ProfileInfo.Position, new Quaternion(0, 0, 0, 0));
             floatingScreen.gameObject.name = "BSMLFloatingScreen_PPPredictor";
             floatingScreen.gameObject.SetActive(false);
             floatingScreen.transform.eulerAngles = Plugin.ProfileInfo.EulerAngles;
             floatingScreen.transform.localScale = new Vector3(0.03f, 0.03f, 0.03f);
-            floatingScreen.handle.transform.localScale = new Vector2(25, 25);
-            floatingScreen.handle.transform.localPosition = new Vector3(0, 1, -.1f);
-            floatingScreen.handle.transform.localRotation = Quaternion.identity;
-            floatingScreen.handle.hideFlags = HideFlags.HideInHierarchy;
+            floatingScreen.Handle.transform.localScale = new Vector2(25, 25);
+            floatingScreen.Handle.transform.localPosition = new Vector3(0, 1, -.1f);
+            floatingScreen.Handle.transform.localRotation = Quaternion.identity;
+            floatingScreen.Handle.hideFlags = HideFlags.HideInHierarchy;
             floatingScreen.ShowHandle = _isScreenMoving;
             floatingScreen.HighlightHandle = false;
             SetupHandleTexture();
 
             floatingScreen.HandleReleased += OnScreenHandleReleased;
-            BSMLParser.instance.Initialize();
-            BSMLParser.instance.Parse(BeatSaberMarkupLanguage.Utilities.GetResourceContent(Assembly.GetExecutingAssembly(), "PPPredictor.UI.Views.PPPredictorView.bsml"), floatingScreen.gameObject, this);
+            BSMLParser.Instance.Initialize();
+            BSMLParser.Instance.Parse(BeatSaberMarkupLanguage.Utilities.GetResourceContent(Assembly.GetExecutingAssembly(), "PPPredictor.UI.Views.PPPredictorView.bsml"), floatingScreen.gameObject, this);
             ppPredictorMgr.ViewActivated += PpPredictorMgr_ViewActivated;
             ppPredictorMgr.OnDataLoading += PpPredictorMgr_OnDataLoading;
             ppPredictorMgr.OnDisplayPPInfo += PpPredictorMgr_OnDisplayPPInfo;
@@ -70,7 +72,7 @@ namespace PPPredictor.UI.ViewController
 
         private async void SetupHandleTexture()
         {
-            MeshRenderer floatingScreenMeshRenderer = floatingScreen.handle.GetComponent<MeshRenderer>();
+            MeshRenderer floatingScreenMeshRenderer = floatingScreen.Handle.GetComponent<MeshRenderer>();
             Shader unlitShader = Shader.Find("Sprites/Default");
             var material = new Material(unlitShader);
             floatingScreenMeshRenderer.material = material;
@@ -118,7 +120,7 @@ namespace PPPredictor.UI.ViewController
         {
             floatingScreen.HandleReleased -= OnScreenHandleReleased;
             ppPredictorMgr.ViewActivated -= PpPredictorMgr_ViewActivated;
-            if (tabSelector) tabSelector.textSegmentedControl.didSelectCellEvent -= OnSelectedCellEventChanged;
+            if (tabSelector) tabSelector.TextSegmentedControl.didSelectCellEvent -= OnSelectedCellEventChanged;
             Plugin.pppViewController = null;
         }
 #pragma warning disable CS0649
@@ -135,31 +137,36 @@ namespace PPPredictor.UI.ViewController
             CheckVersion();
             if (tabSelector)
             {
-                tabSelector.textSegmentedControl.didSelectCellEvent += OnSelectedCellEventChanged;
+                tabSelector.TextSegmentedControl.didSelectCellEvent += OnSelectedCellEventChanged;
             }
 
             SliderFormatting();
 
-            UpdateMinMaxIncements(sliderFine.slider.value);
+            UpdateMinMaxIncements(sliderFine.Slider.value);
         }
 
         private void SliderFormatting()
         {
             float scaleFactor = 0.3f;
+
+            FieldInfo textMeshField = incrementMin.GetType().GetField("textMesh", BindingFlags.NonPublic | BindingFlags.Instance);
+            TextMeshProUGUI textMeshMin = (TextMeshProUGUI)textMeshField.GetValue(incrementMin);
+            TextMeshProUGUI textMeshMax = (TextMeshProUGUI)textMeshField.GetValue(incrementMax);
+
             incrementMin.Text = string.Empty;
             incrementMin.transform.Rotate(0, 0, 90);
-            incrementMin.text.transform.Rotate(0, 0, -90);
+            textMeshMin.transform.Rotate(0, 0, -90);
             incrementMin.transform.localScale = new Vector3(scaleFactor, 1, 1);
-            incrementMin.text.transform.localScale = new Vector3(1, 1 / scaleFactor, 1);
+            textMeshMin.transform.localScale = new Vector3(1, 1 / scaleFactor, 1);
             incrementMin.transform.Rotate(0, 0, -7);
-            incrementMin.text.transform.Rotate(0, 0, 7);
+            textMeshMin.transform.Rotate(0, 0, 7);
 
             incrementMax.transform.Rotate(0, 0, 90);
-            incrementMax.text.transform.Rotate(0, 0, -95);
+            textMeshMax.transform.Rotate(0, 0, -95);
             incrementMax.transform.localScale = new Vector3(scaleFactor, 1, 1);
-            incrementMax.text.transform.localScale = new Vector3(1, 1 / scaleFactor, 1);
+            textMeshMax.transform.localScale = new Vector3(1, 1 / scaleFactor, 1);
             incrementMax.transform.Rotate(0, 0, -7);
-            incrementMax.text.transform.Rotate(0, 0, 7);
+            textMeshMax.transform.Rotate(0, 0, 7);
 
             sliderFine.transform.localScale = new Vector3(.85f, 1, 1);
             sliderFine.transform.Translate(new Vector3(1, 2, 0));
@@ -266,7 +273,7 @@ namespace PPPredictor.UI.ViewController
                 ppPredictorMgr.SetPercentage(value);
                 Plugin.ProfileInfo.LastPercentageSelected = ppPredictorMgr.CurrentPPPredictor.Percentage;
                 ppPredictorMgr.CurrentPPPredictor.CalculatePP();
-                sliderFine.slider.value = value;
+                sliderFine.Slider.value = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SliderFineValue)));
             }
         }
@@ -278,8 +285,8 @@ namespace PPPredictor.UI.ViewController
             set
             {
                 Plugin.ProfileInfo.LastMinPercentageSelected = value;
-                incrementMax.minValue = Plugin.ProfileInfo.LastMinPercentageSelected + 10;
-                UpdateMinMaxIncements(sliderFine.slider.value);
+                incrementMax.MinValue = Plugin.ProfileInfo.LastMinPercentageSelected + 10;
+                UpdateMinMaxIncements(sliderFine.Slider.value);
             }
         }
 
@@ -290,14 +297,14 @@ namespace PPPredictor.UI.ViewController
             set
             {
                 Plugin.ProfileInfo.LastMaxPercentageSelected = value;
-                incrementMin.maxValue = Plugin.ProfileInfo.LastMaxPercentageSelected - 10;
-                UpdateMinMaxIncements(sliderFine.slider.value);
+                incrementMin.MaxValue = Plugin.ProfileInfo.LastMaxPercentageSelected - 10;
+                UpdateMinMaxIncements(sliderFine.Slider.value);
             }
         }
         private void UpdateMinMaxIncements(float oldSliderValue)
         {
-            sliderFine.slider.minValue = Plugin.ProfileInfo.LastMinPercentageSelected;
-            sliderFine.slider.maxValue = Plugin.ProfileInfo.LastMaxPercentageSelected;
+            sliderFine.Slider.minValue = Plugin.ProfileInfo.LastMinPercentageSelected;
+            sliderFine.Slider.maxValue = Plugin.ProfileInfo.LastMaxPercentageSelected;
             SliderFineValue = Math.Max(Math.Min(oldSliderValue, Plugin.ProfileInfo.LastMaxPercentageSelected), Plugin.ProfileInfo.LastMinPercentageSelected);
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MaxValue)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MinValue)));
@@ -463,11 +470,11 @@ namespace PPPredictor.UI.ViewController
         [UIValue("map-pool-options")]
         public List<object> MapPoolOptions
         {
-            get 
+            get
             {
                 return this.ppPredictorMgr.CurrentPPPredictor.MapPoolOptions;
             }
-            set 
+            set
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MapPoolOptions)));
             }
@@ -516,10 +523,10 @@ namespace PPPredictor.UI.ViewController
         private async void RefreshTabSelection()
         {
             await Task.Delay(100);
-            if(tabSelector != null)
+            if (tabSelector != null)
             {
-                tabSelector.textSegmentedControl.SelectCellWithNumber(Plugin.ProfileInfo.SelectedTab);
-                AccessTools.Method(typeof(TabSelector), "TabSelected").Invoke(tabSelector, new object[] { tabSelector.textSegmentedControl, Plugin.ProfileInfo.SelectedTab });
+                tabSelector.TextSegmentedControl.SelectCellWithNumber(Plugin.ProfileInfo.SelectedTab);
+                AccessTools.Method(typeof(TabSelector), "TabSelected").Invoke(tabSelector, new object[] { tabSelector.TextSegmentedControl, Plugin.ProfileInfo.SelectedTab });
             }
         }
 
@@ -543,7 +550,7 @@ namespace PPPredictor.UI.ViewController
 
         private async void CheckVersion()
         {
-            if(Plugin.ProfileInfo.IsVersionCheckEnabled && (DateTime.Now - Plugin.ProfileInfo.DtLastVersionCheck).TotalHours >= 12)
+            if (Plugin.ProfileInfo.IsVersionCheckEnabled && (DateTime.Now - Plugin.ProfileInfo.DtLastVersionCheck).TotalHours >= 12)
             {
                 CurrentVersion = typeof(Plugin).Assembly.GetName().Version.ToString();
                 CurrentVersion = $"{CurrentVersion.Substring(0, CurrentVersion.Length - 2)}{Plugin.Beta}";
@@ -562,7 +569,7 @@ namespace PPPredictor.UI.ViewController
 
         private void UpdateMapPoolChoices()
         {
-            dropDownMapPools.values = this.ppPredictorMgr.CurrentPPPredictor.MapPoolOptions;
+            dropDownMapPools.Values = this.ppPredictorMgr.CurrentPPPredictor.MapPoolOptions;
             dropDownMapPools.Value = this.ppPredictorMgr.CurrentPPPredictor.CurrentMapPool;
             dropDownMapPools.ApplyValue();
             dropDownMapPools?.UpdateChoices(); //Refresh map pools here...
@@ -619,7 +626,7 @@ namespace PPPredictor.UI.ViewController
             UpdateLeaderBoardDisplay();
             UpdateSessionDisplay();
             UpdatePPDisplay();
-            
+
         }
     }
 }

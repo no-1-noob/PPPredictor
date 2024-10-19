@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="../netfx.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -11,6 +12,7 @@
     <RootNamespace>PPPredictor</RootNamespace>
     <AssemblyName>PPPredictor</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <RuntimeIdentifier>win</RuntimeIdentifier>
     <FileAlignment>512</FileAlignment>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>portable</DebugType>
@@ -88,6 +90,18 @@
     </Reference>
     <Reference Include="BeatSaberPlaylistsLib">
       <HintPath>$(GameDirectory)\Libs\BeatSaberPlaylistsLib.dll</HintPath>
+    </Reference>
+    <Reference Include="BeatSaber.ViewSystem">
+      <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\BeatSaber.ViewSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="DataModels">
+      <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\DataModels.dll</HintPath>
+    </Reference>
+    <Reference Include="PlatformUserModel">
+      <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\PlatformUserModel.dll</HintPath>
+    </Reference>
+    <Reference Include="SegmentedControl">
+      <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\SegmentedControl.dll</HintPath>
     </Reference>
     <Reference Include="BGNetCore">
       <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\BGNetCore.dll</HintPath>
