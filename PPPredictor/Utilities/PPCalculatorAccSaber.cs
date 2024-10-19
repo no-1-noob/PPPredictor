@@ -34,7 +34,7 @@ namespace PPPredictor.Utilities
                 if (beatMapInfo.SelectedCustomBeatmapLevel != null)
                 {
                     string songHash = Hashing.GetCustomLevelHash(beatMapInfo.SelectedCustomBeatmapLevel);
-                    string searchString = CreateSeachString(songHash, "SOLO" + beatMapInfo.Beatmap.parentDifficultyBeatmapSet.beatmapCharacteristic.serializedName, beatMapInfo.Beatmap.difficultyRank);
+                    string searchString = CreateSeachString(songHash, beatMapInfo.BeatmapKey);
                     var cachedInfo = _leaderboardInfo.CurrentMapPool.LsLeaderboadInfo.FirstOrDefault(x => x.Searchstring == searchString);
                     if(cachedInfo != null)
                     {
@@ -186,7 +186,7 @@ namespace PPPredictor.Utilities
                     }
                     if (oldPool == null)
                     {
-                        int sortindex = new object[3] { "standard", "tech", "true" }.IndexOf(newMapPool.categoryName) + 1;
+                        int sortindex = Array.IndexOf(new object[3] { "standard", "tech", "true" }, newMapPool.categoryName) + 1;
                         oldPool = new PPPMapPool(newMapPool.categoryName, newMapPool.categoryName, MapPoolType.Custom, newMapPool.categoryDisplayName, 0, sortindex, CurveParser.ParseToCurve(new CurveInfo(CurveType.AccSaber)), string.Empty);
                         _leaderboardInfo.LsMapPools.Add(oldPool);
                     }
@@ -205,11 +205,6 @@ namespace PPPredictor.Utilities
         public override bool IsScoreSetOnCurrentMapPool(PPPWebSocketData score) 
         {
             return _leaderboardInfo.CurrentMapPool.LsLeaderboadInfo.Exists(x => x.Searchstring.Contains(score.hash.ToUpper()));
-        }
-
-        public override string CreateSeachString(string hash, IDifficultyBeatmap beatmap)
-        {
-            return $"{hash}_{beatmap.difficultyRank}";
         }
 
         protected override double CalculateWeightMulitplier(int index, float accumulationConstant)
@@ -255,6 +250,11 @@ namespace PPPredictor.Utilities
                 }
                 return new PPGainResult(_leaderboardInfo.CurrentMapPool.CurrentPlayer.Pp, pp, pp);
             }
+        }
+
+        public override string CreateSeachString(string hash, BeatmapKey beatmapKey)
+        {
+            return $"{hash}_SOLO{beatmapKey.beatmapCharacteristic.serializedName}_{ParsingUtil.ParseDifficultyNameToInt(beatmapKey.difficulty.ToString())}".ToUpper();
         }
     }
 }
