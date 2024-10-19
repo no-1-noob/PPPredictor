@@ -1,5 +1,4 @@
 ﻿using BeatSaberMarkupLanguage;
-using BeatSaberMarkupLanguage.MenuButtons;
 using HMUI;
 using IPA.Utilities;
 using Newtonsoft.Json;
@@ -19,7 +18,6 @@ namespace PPPredictor.Utilities
         private static readonly int _profileInfoVersion = 5;
         internal static ProfileInfo LoadProfileInfo()
         {
-            MenuButtons.instance.RegisterButton(new MenuButton("PPPredictor", "Predict PP gains", ShowSettingsFlow, true));
             ProfileInfo info;
             if (File.Exists(profilePath))
             {
@@ -67,7 +65,7 @@ namespace PPPredictor.Utilities
 
         internal static void ResetSettings()
         {
-            List<PPPLeaderboardInfo> lsCachedData =  Plugin.ProfileInfo.LsLeaderboardInfo;
+            List<PPPLeaderboardInfo> lsCachedData = Plugin.ProfileInfo.LsLeaderboardInfo;
             Plugin.ProfileInfo = new ProfileInfo();
             Plugin.ProfileInfo.LsLeaderboardInfo = lsCachedData;
         }

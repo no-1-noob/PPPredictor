@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Reflection;
 using Zenject;
+using BeatSaberMarkupLanguage.MenuButtons;
 //using BeatSaberPlaylistsLib.Types;
 using PPPredictor.Interfaces;
 using SongCore.Utilities;
@@ -16,33 +18,45 @@ namespace PPPredictor.Utilities
         [Inject] private readonly LobbyGameStateController lobbyGameStateController;
 #pragma warning restore CS0649 // Field is never assigned to, and will always have its default value null
 
+        private readonly MenuButton menuButton;
+
         public MainMenuMgr()
         {
+            menuButton = new MenuButton("PPPredictor", "Predict PP gains", ProfileInfoMgr.ShowSettingsFlow, true);
+        }
+
+        private GameplayModifiersPanelController ReflectGameplayModifiersPanelController(GameplaySetupViewController c)
+        {
+            Type GSVC = c.GetType();
+            FieldInfo GMPC = GSVC.GetField("_gameplayModifiersPanelController", BindingFlags.NonPublic | BindingFlags.Instance);
+            return (GameplayModifiersPanelController)GMPC.GetValue(c);
         }
 
         public void Dispose()
         {
+            MenuButtons.Instance.UnregisterButton(menuButton);
             levelSelectionNavigationController.didChangeDifficultyBeatmapEvent -= OnDifficultyChanged;
             levelSelectionNavigationController.didChangeLevelDetailContentEvent -= OnDetailContentChanged;
             levelSelectionNavigationController.didActivateEvent -= OnLevelSelectionActivated;
             levelSelectionNavigationController.didDeactivateEvent -= OnLevelSelectionDeactivated;
-            gameplaySetupViewController.didChangeGameplayModifiersEvent -= DidChangeGameplayModifiersEvent;
+            ReflectGameplayModifiersPanelController(gameplaySetupViewController).didChangeGameplayModifiersEvent -= DidChangeGameplayModifiersEvent;
             //annotatedBeatmapLevelCollectionsViewController.didSelectAnnotatedBeatmapLevelCollectionEvent -= AnnotatedBeatmapLevelCollectionsViewController_didSelectAnnotatedBeatmapLevelCollectionEvent;
         }
 
         public void Initialize()
         {
+            MenuButtons.Instance.RegisterButton(menuButton);
             levelSelectionNavigationController.didChangeDifficultyBeatmapEvent += OnDifficultyChanged;
             levelSelectionNavigationController.didChangeLevelDetailContentEvent += OnDetailContentChanged;
             levelSelectionNavigationController.didActivateEvent += OnLevelSelectionActivated;
             levelSelectionNavigationController.didDeactivateEvent += OnLevelSelectionDeactivated;
-            gameplaySetupViewController.didChangeGameplayModifiersEvent += DidChangeGameplayModifiersEvent;
+            ReflectGameplayModifiersPanelController(gameplaySetupViewController).didChangeGameplayModifiersEvent += DidChangeGameplayModifiersEvent;
             //annotatedBeatmapLevelCollectionsViewController.didSelectAnnotatedBeatmapLevelCollectionEvent += AnnotatedBeatmapLevelCollectionsViewController_didSelectAnnotatedBeatmapLevelCollectionEvent;
         }
 
         private void DidChangeGameplayModifiersEvent()
         {
-            if(IsNormalMainMenu()) this.ppPredictorMgr.ChangeGameplayModifiers(this.gameplaySetupViewController);
+            if (IsNormalMainMenu()) this.ppPredictorMgr.ChangeGameplayModifiers(this.gameplaySetupViewController);
         }
 
         private void OnDifficultyChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl)
@@ -52,7 +66,7 @@ namespace PPPredictor.Utilities
 
         private void OnDetailContentChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl, StandardLevelDetailViewController.ContentType contentType)
         {
-            if(contentType == StandardLevelDetailViewController.ContentType.OwnedAndReady && IsNormalMainMenu())
+            if (contentType == StandardLevelDetailViewController.ContentType.OwnedAndReady && IsNormalMainMenu())
             {
                 DiffultyChangedDecideCustomMap(lvlSelectionNavigationCtrl);
             }
@@ -68,7 +82,7 @@ namespace PPPredictor.Utilities
             {
                 this.ppPredictorMgr.DifficultyChanged(null, lvlSelectionNavigationCtrl.beatmapKey);
             }
-                
+
         }
 
         private void OnLevelSelectionActivated(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
