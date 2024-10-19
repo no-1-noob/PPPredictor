@@ -44,17 +44,23 @@ namespace PPPredictor.Utilities
             _ppPredictorMgr.ScoreSet(data.leaderboardName, data);
             if (Plugin.ProfileInfo.IsHitBloqEnabled)
             {
-                if (!dctWaitingRefresh.ContainsKey(data.hash))
-                {
-                    dctWaitingRefresh.Add(data.hash, Task.Run(async () => await WaitHitloqRefresh(data)));
-                }
+                AddDelayedRefresh(Leaderboard.HitBloq ,data);
             }
         }
 
-        private async Task WaitHitloqRefresh(PPPWebSocketData data)
+        private void AddDelayedRefresh(Leaderboard leaderboard, PPPWebSocketData data)
+        {
+            string key = $"{leaderboard}_{data.hash}";
+            if (!dctWaitingRefresh.ContainsKey(key))
+            {
+                dctWaitingRefresh.Add(key, Task.Run(async () => await WaitForRefresh(leaderboard, data)));
+            }
+        }
+
+        private async Task WaitForRefresh(Leaderboard leaderboard, PPPWebSocketData data)
         {
             await Task.Delay(5000);
-            _ppPredictorMgr.ScoreSet(Leaderboard.HitBloq.ToString(), data);
+            _ppPredictorMgr.ScoreSet(leaderboard.ToString(), data);
             dctWaitingRefresh.Remove(data.hash);
         }
 

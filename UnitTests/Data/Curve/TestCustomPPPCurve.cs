@@ -1,12 +1,6 @@
 ﻿using PPPredictor.Data;
 using PPPredictor.Data.Curve;
-using PPPredictor.OpenAPIs;
 using PPPredictor.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static PPPredictor.Data.LeaderBoardDataTypes.HitBloqDataTypes;
 
 namespace UnitTests.Data.Curve
@@ -53,6 +47,24 @@ namespace UnitTests.Data.Curve
             Assert.AreEqual(curve.CalculateMaxPP(beatMapInfo) * .5, curve.CalculatePPatPercentage(beatMapInfo, 50, false, false));
             Assert.AreEqual(0, curve.CalculatePPatPercentage(beatMapInfo, 0f, false, false));
             Assert.AreEqual(curve.CalculateMaxPP(beatMapInfo) * .5, curve.CalculatePPatPercentage(beatMapInfo, 100, true, false), "Isfailed halves score");
+        }
+
+        [TestMethod]
+        public void TestConstructorOneAccSaber()
+        {
+
+            CustomPPPCurve curve = new CustomPPPCurve(_testArrPPCurve, CurveType.AccSaber, _testBasePPMulti, true);
+            Assert.IsNotNull(curve);
+            Assert.IsTrue(curve.IsDummy);
+            curve = new CustomPPPCurve(_testArrPPCurve, CurveType.AccSaber, _testBasePPMulti, false, 18);
+            Assert.IsFalse(curve.IsDummy);
+            Assert.AreEqual(curve.CalculateMaxPP(beatMapInfo), curve.CalculatePPatPercentage(beatMapInfo, 100, false, false));
+            Assert.AreEqual(curve.CalculateMaxPP(beatMapInfo) * .5, curve.CalculatePPatPercentage(beatMapInfo, 50, false, false));
+            Assert.AreEqual(0, curve.CalculatePPatPercentage(beatMapInfo, 0f, false, false));
+            Assert.AreEqual(curve.CalculateMaxPP(beatMapInfo) * .5, curve.CalculatePPatPercentage(beatMapInfo, 100, true, false), "Isfailed halves score");
+
+            PPPBeatMapInfo unrankedBeatMapInfo = new PPPBeatMapInfo(new PPPBeatMapInfo(), new PPPStarRating(0));
+            Assert.AreEqual(0, curve.CalculatePPatPercentage(unrankedBeatMapInfo, 100, false, false));
         }
 
         [TestMethod]
@@ -130,6 +142,10 @@ namespace UnitTests.Data.Curve
             info = curve.ToCurveInfo();
             Assert.IsNotNull(info);
             Assert.AreEqual(info.CurveType, CurveType.Linear);
+            curve = new CustomPPPCurve(_testArrPPCurve, CurveType.AccSaber, _testBasePPMulti);
+            info = curve.ToCurveInfo();
+            Assert.IsNotNull(info);
+            Assert.AreEqual(info.CurveType, CurveType.AccSaber);
         }
 
         [TestMethod]
