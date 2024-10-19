@@ -186,7 +186,7 @@ namespace PPPredictor.Utilities
                     }
                     if (oldPool == null)
                     {
-                        int sortindex = new object[3] { "standard", "tech", "true" }.IndexOf(newMapPool.categoryName) + 1;
+                        int sortindex = Array.IndexOf(new object[3] { "standard", "tech", "true" }, newMapPool.categoryName) + 1;
                         oldPool = new PPPMapPool(newMapPool.categoryName, newMapPool.categoryName, MapPoolType.Custom, newMapPool.categoryDisplayName, 0, sortindex, CurveParser.ParseToCurve(new CurveInfo(CurveType.AccSaber)), string.Empty);
                         _leaderboardInfo.LsMapPools.Add(oldPool);
                     }
