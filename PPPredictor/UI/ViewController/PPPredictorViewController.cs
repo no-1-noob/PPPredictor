@@ -11,12 +11,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Reflection;
-using TMPro;
 using UnityEngine;
 using Zenject;
 using HarmonyLib;
 using System.Threading.Tasks;
-using System.Reflection;
 using PPPredictor.Interfaces;
 
 namespace PPPredictor.UI.ViewController
@@ -148,25 +146,20 @@ namespace PPPredictor.UI.ViewController
         private void SliderFormatting()
         {
             float scaleFactor = 0.3f;
-
-            FieldInfo textMeshField = incrementMin.GetType().GetField("textMesh", BindingFlags.NonPublic | BindingFlags.Instance);
-            TextMeshProUGUI textMeshMin = (TextMeshProUGUI)textMeshField.GetValue(incrementMin);
-            TextMeshProUGUI textMeshMax = (TextMeshProUGUI)textMeshField.GetValue(incrementMax);
-
             incrementMin.Text = string.Empty;
             incrementMin.transform.Rotate(0, 0, 90);
-            textMeshMin.transform.Rotate(0, 0, -90);
+            incrementMin.TextMesh.transform.Rotate(0, 0, -90);
             incrementMin.transform.localScale = new Vector3(scaleFactor, 1, 1);
-            textMeshMin.transform.localScale = new Vector3(1, 1 / scaleFactor, 1);
+            incrementMin.TextMesh.transform.localScale = new Vector3(1, 1 / scaleFactor, 1);
             incrementMin.transform.Rotate(0, 0, -7);
-            textMeshMin.transform.Rotate(0, 0, 7);
+            incrementMin.TextMesh.transform.Rotate(0, 0, 7);
 
             incrementMax.transform.Rotate(0, 0, 90);
-            textMeshMax.transform.Rotate(0, 0, -95);
+            incrementMax.TextMesh.transform.Rotate(0, 0, -95);
             incrementMax.transform.localScale = new Vector3(scaleFactor, 1, 1);
-            textMeshMax.transform.localScale = new Vector3(1, 1 / scaleFactor, 1);
+            incrementMax.TextMesh.transform.localScale = new Vector3(1, 1 / scaleFactor, 1);
             incrementMax.transform.Rotate(0, 0, -7);
-            textMeshMax.transform.Rotate(0, 0, 7);
+            incrementMax.TextMesh.transform.Rotate(0, 0, 7);
 
             sliderFine.transform.localScale = new Vector3(.85f, 1, 1);
             sliderFine.transform.Translate(new Vector3(1, 2, 0));

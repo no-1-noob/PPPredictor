@@ -25,13 +25,6 @@ namespace PPPredictor.Utilities
             menuButton = new MenuButton("PPPredictor", "Predict PP gains", ProfileInfoMgr.ShowSettingsFlow, true);
         }
 
-        private GameplayModifiersPanelController ReflectGameplayModifiersPanelController(GameplaySetupViewController c)
-        {
-            Type GSVC = c.GetType();
-            FieldInfo GMPC = GSVC.GetField("_gameplayModifiersPanelController", BindingFlags.NonPublic | BindingFlags.Instance);
-            return (GameplayModifiersPanelController)GMPC.GetValue(c);
-        }
-
         public void Dispose()
         {
             MenuButtons.Instance.UnregisterButton(menuButton);
@@ -39,7 +32,7 @@ namespace PPPredictor.Utilities
             levelSelectionNavigationController.didChangeLevelDetailContentEvent -= OnDetailContentChanged;
             levelSelectionNavigationController.didActivateEvent -= OnLevelSelectionActivated;
             levelSelectionNavigationController.didDeactivateEvent -= OnLevelSelectionDeactivated;
-            ReflectGameplayModifiersPanelController(gameplaySetupViewController).didChangeGameplayModifiersEvent -= DidChangeGameplayModifiersEvent;
+            gameplaySetupViewController._gameplayModifiersPanelController.didChangeGameplayModifiersEvent -= DidChangeGameplayModifiersEvent;
             //annotatedBeatmapLevelCollectionsViewController.didSelectAnnotatedBeatmapLevelCollectionEvent -= AnnotatedBeatmapLevelCollectionsViewController_didSelectAnnotatedBeatmapLevelCollectionEvent;
         }
 
@@ -50,7 +43,7 @@ namespace PPPredictor.Utilities
             levelSelectionNavigationController.didChangeLevelDetailContentEvent += OnDetailContentChanged;
             levelSelectionNavigationController.didActivateEvent += OnLevelSelectionActivated;
             levelSelectionNavigationController.didDeactivateEvent += OnLevelSelectionDeactivated;
-            ReflectGameplayModifiersPanelController(gameplaySetupViewController).didChangeGameplayModifiersEvent += DidChangeGameplayModifiersEvent;
+            gameplaySetupViewController._gameplayModifiersPanelController.didChangeGameplayModifiersEvent += DidChangeGameplayModifiersEvent;
             //annotatedBeatmapLevelCollectionsViewController.didSelectAnnotatedBeatmapLevelCollectionEvent += AnnotatedBeatmapLevelCollectionsViewController_didSelectAnnotatedBeatmapLevelCollectionEvent;
         }
 
