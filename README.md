@@ -13,8 +13,8 @@ A list/explanation of all options is available [here](https://github.com/no-1-no
 |[AccSaber](https://accsaber.com)|Scoresaber mod installed and AccSaber activated in PPPredictor options|No automatic reload of scores|
 
 
-![grafik](https://github.com/no-1-noob/PPPredictor/assets/91905916/414f0405-d50c-4262-bde7-bb83e6392560)
-![grafik](https://github.com/no-1-noob/PPPredictor/assets/91905916/5be3a90e-eba7-4c66-a873-acca5e1aa61a)
+![image](https://github.com/user-attachments/assets/37aa8b9c-2617-4db5-a54a-66b5ee46a065)
+
 
 ### Counters+ (Optional)
 
@@ -41,4 +41,4 @@ More infos on how to use it at the GitHub repo [PPPOverlay](https://github.com/n
 
 Dependencies
 -----
- - CHeck the release page for your BeatSaber version
+ - Check the release page for your BeatSaber version
