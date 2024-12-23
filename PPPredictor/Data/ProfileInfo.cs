@@ -20,7 +20,7 @@ namespace PPPredictor.Data
         private bool _counterUseIcons;
         private bool _counterUseCustomMapPoolIcons;
         private CounterScoringType _counterScoringType;
-        private PPGainCalculationType _ppGainCalculationType;
+        //private PPGainCalculationType _ppGainCalculationType;
         private CounterDisplayType _counterDisplayType;
         private int _rawPPLossHighlightThreshold;
         private bool _counterHideWhenUnranked;
@@ -69,7 +69,7 @@ namespace PPPredictor.Data
             IsHitBloqEnabled = true;
             IsAccSaberEnabled = true;
             IsAccSaberEnabledManual = false;
-            PpGainCalculationType = PPGainCalculationType.Weighted;
+            //PpGainCalculationType = PPGainCalculationType.Weighted;
             RawPPLossHighlightThreshold = -10;
             ProfileInfoVersion = 0;
             SelectedTab = 0;

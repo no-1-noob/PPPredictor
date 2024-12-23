@@ -1,66 +1,9 @@
 ﻿namespace PPPredictor.Utilities
 {
-    enum BeatLeaderDifficultyStatus
-    {
-        unranked = 0,
-        nominated = 1,
-        qualified = 2,
-        ranked = 3,
-        unrankable = 4,
-        outdated = 5,
-        inevent = 6
-    }
-
-    enum PPPBeatMapDifficulty
-    {
-        Easy = 1,
-        Normal = 3,
-        Hard = 5,
-        Expert = 7,
-        ExpertPlus = 9
-    }
-
-    enum Leaderboard
-    {
-        ScoreSaber,
-        BeatLeader,
-        AccSaber,
-        NoLeaderboard,
-        HitBloq
-    }
-
     enum CounterScoringType
     {
         Global,
         Local
-    }
-
-    enum MapPoolType
-    {
-        None,
-        Default,
-        Custom
-    }
-
-    enum CurveType
-    {
-        ScoreSaber,
-        BeatLeader,
-        Linear,
-        Basic,
-        Dummy,
-        AccSaber
-    }
-    enum PPGainCalculationType
-    {
-        Weighted,
-        Raw
-    }
-
-    enum MapPoolSorting
-    {
-        Alphabetical,
-        Popularity
     }
 
     enum MenuPositionPreset
@@ -79,16 +22,6 @@
         PPAndGainNoBracketsNoSuffix,
         GainNoBrackets,
         GainNoBracketsNoSuffix
-    }
-
-    enum LeaderboardContext
-    {
-        None,
-        BeatLeaderDefault,
-        BeatLeaderNoModifiers,
-        BeatLeaderNoPauses,
-        BeatLeaderGolf,
-        BeatLeaderSCPM
     }
 
     class EnumHelper

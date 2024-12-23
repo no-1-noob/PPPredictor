@@ -1,16 +1,10 @@
-﻿//using BeatSaberPlaylistsLib.Types;
-using IPA.Loader;
-using PPPredictor.Data;
-using PPPredictor.Data.DisplayInfos;
-using PPPredictor.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Zenject;
 
-namespace PPPredictor.Utilities
+namespace PPPredictor.Core.Calculator
 {
     internal class PPPredictorMgr<SSAPI, BLAPI, HBAPI, ASAPI> : IInitializable, IDisposable, IPPPredictorMgr where SSAPI : IScoresaberAPI, new() where BLAPI : IBeatLeaderAPI, new() where HBAPI : IHitBloqAPI, new() where ASAPI : IAccSaberAPI, new()
 
@@ -143,6 +137,7 @@ namespace PPPredictor.Utilities
         {
             foreach (var item in _lsPPPredictor)
             {
+                item.ChangeGameplayModifiers(gameplaySetupViewController);
             }
         }
 
