@@ -5,7 +5,7 @@ using static PPPredictor.Core.DataType.LeaderBoard.ScoreSaberDataTypes;
 
 namespace PPPredictor.Core.DataType
 {
-    class PPPPlayer
+    public class PPPPlayer
     {
         private double rank;
         private double countryRank;
@@ -28,7 +28,7 @@ namespace PPPredictor.Core.DataType
             this.isErrorUser = isErrorUser;
             rank = countryRank = pp = 0;
         }
-        public PPPPlayer(ScoreSaberPlayer scoreSaberPlayer)
+        internal PPPPlayer(ScoreSaberPlayer scoreSaberPlayer)
         {
             rank = scoreSaberPlayer.rank;
             countryRank = scoreSaberPlayer.countryRank;
@@ -36,7 +36,7 @@ namespace PPPredictor.Core.DataType
             country = scoreSaberPlayer.country;
         }
 
-        public PPPPlayer(BeatLeaderPlayer beatLeaderPlayerEvent)
+        internal PPPPlayer(BeatLeaderPlayer beatLeaderPlayerEvent)
         {
             rank = beatLeaderPlayerEvent.rank;
             countryRank = beatLeaderPlayerEvent.countryRank;
@@ -44,7 +44,7 @@ namespace PPPredictor.Core.DataType
             country = beatLeaderPlayerEvent.country;
         }
 
-        public PPPPlayer(BeatLeaderPlayerEvents beatLeaderPlayerEvent)
+        internal PPPPlayer(BeatLeaderPlayerEvents beatLeaderPlayerEvent)
         {
             rank = beatLeaderPlayerEvent.rank;
             countryRank = beatLeaderPlayerEvent.countryRank;
@@ -52,7 +52,7 @@ namespace PPPredictor.Core.DataType
             country = beatLeaderPlayerEvent.country;
         }
 
-        public PPPPlayer(HitBloqUser hitBloqUser)
+        internal PPPPlayer(HitBloqUser hitBloqUser)
         {
             rank = hitBloqUser.rank;
             countryRank = 0;
@@ -60,7 +60,7 @@ namespace PPPredictor.Core.DataType
             country = string.Empty;
         }
 
-        public PPPPlayer(AccSaberPlayer accSaberPlayer)
+        internal PPPPlayer(AccSaberPlayer accSaberPlayer)
         {
             rank = accSaberPlayer.rank;
             countryRank = 0;

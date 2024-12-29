@@ -1,4 +1,6 @@
-﻿using System;
+﻿using PPPredictor.Core.API;
+using PPPredictor.Core.Calculator;
+using System;
 using static PPPredictor.Core.DataType.Enums;
 using static PPPredictor.Core.DataType.LeaderBoard.AccSaberDataTypes;
 using static PPPredictor.Core.DataType.LeaderBoard.BeatLeaderDataTypes;
@@ -46,11 +48,10 @@ namespace PPPredictor.Core.DataType.Score
         {
             timeSet = new DateTime(1970, 1, 1).AddSeconds(playerScore.time);
             pp = playerScore.cr_received;
-#warning PPPScore ParseHashDiffAndMode
-            //var (hash, diff, mode) = PPCalculatorHitBloq<HitbloqAPI>.ParseHashDiffAndMode(playerScore.song_id);
-            //songHash = hash;
-            //difficulty = ParsingUtil.ParseDifficultyNameToInt(diff);
-            //gameMode = mode;
+            var (hash, diff, mode) = PPCalculatorHitBloq<HitbloqAPI>.ParseHashDiffAndMode(playerScore.song_id);
+            songHash = hash;
+            difficulty = ParsingUtil.ParseDifficultyNameToInt(diff);
+            gameMode = mode;
         }
 
         public PPPScore(AccSaberScores playerScore)

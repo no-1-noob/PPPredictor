@@ -1,9 +1,9 @@
-﻿using PPPredictor.Data;
+﻿using PPPredictor.Core.DataType;
 
 namespace PPPredictor.Interfaces
 {
     internal interface IPPPRawWebsocketData
     {
-        PPPWebSocketData ConvertToPPPWebSocketData(string leaderboardName);
+        PPPScoreSetData ConvertToPPPWebSocketData(string leaderboardName);
     }
 }

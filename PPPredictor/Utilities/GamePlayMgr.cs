@@ -1,10 +1,12 @@
 ﻿using Newtonsoft.Json;
+using PPPredictor.Core.DataType;
 using PPPredictor.Data;
 using PPPredictor.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Zenject;
+using static PPPredictor.Core.DataType.Enums;
 
 namespace PPPredictor.Utilities
 {

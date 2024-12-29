@@ -3,7 +3,7 @@ using System;
 
 namespace PPPredictor.Core.DataType.Score
 {
-    class ShortScore
+    public class ShortScore
     {
         private readonly string _searchstring;
         private double _pp;

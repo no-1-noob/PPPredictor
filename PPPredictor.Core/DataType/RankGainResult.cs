@@ -1,6 +1,6 @@
 ﻿namespace PPPredictor.Core.DataType
 {
-    class RankGainResult
+    public class RankGainResult
     {
         private double _rankGlobal;
         private double _rankCountry;

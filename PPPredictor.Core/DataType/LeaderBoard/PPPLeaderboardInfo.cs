@@ -6,9 +6,8 @@ using static PPPredictor.Core.DataType.Enums;
 
 namespace PPPredictor.Core.DataType.LeaderBoard
 {
-    class PPPLeaderboardInfo
+    public class PPPLeaderboardInfo
     {
-        private List<PPPMapPool> _lsMapPools;
         private string _leaderboardName;
         private string _leaderboardIcon;
         private string _lastSelectedMapPoolId;
@@ -20,9 +19,8 @@ namespace PPPredictor.Core.DataType.LeaderBoard
 
         public string LeaderboardName { get => _leaderboardName; set => _leaderboardName = value; }
         public string LeaderboardIcon { get => _leaderboardIcon; set => _leaderboardIcon = value; }
-        public List<PPPMapPool> LsMapPools { get => _lsMapPools; set => _lsMapPools = value; }
         public string LastSelectedMapPoolId { get => _lastSelectedMapPoolId; set => _lastSelectedMapPoolId = value; }
-        internal PPPMapPool DefaultMapPool { get => _lsMapPools.Find(x => x.MapPoolType == MapPoolType.Default); }
+        //internal PPPMapPool DefaultMapPool { get => _dctMapPool.Find(x => x.MapPoolType == MapPoolType.Default); }
         public string CustomLeaderboardUserId { get => _customLeaderboardUserId; set => _customLeaderboardUserId = value; }
         public string PpSuffix { get => _ppSuffix; set => _ppSuffix = value; }
         public int LeaderboardFirstPageIndex { get => _leaderboardFirstPageIndex; set => _leaderboardFirstPageIndex = value; }
@@ -36,12 +34,12 @@ namespace PPPredictor.Core.DataType.LeaderBoard
         public PPPLeaderboardInfo(Leaderboard leaderboard)
         {
             this._leaderboardName = leaderboard.ToString();
-            this._lsMapPools = new List<PPPMapPool>();
             this._customLeaderboardUserId = string.Empty;
             this._ppSuffix = "pp";
             this.LeaderboardFirstPageIndex = 1;
             this.IsCountryRankEnabled = true;
             this.LargePageSize = 10;
+            PPPMapPool mapPool = null;
 
             switch (leaderboard)
             {
@@ -52,32 +50,22 @@ namespace PPPredictor.Core.DataType.LeaderBoard
                     break;
                 case Leaderboard.BeatLeader:
                     _leaderboardIcon = "PPPredictor.Resources.LeaderBoardLogos.BeatLeader.png";
-                    //Negative ids for distinguishing from possible future event map pools
-#warning re add
-                    //_lsMapPools.Add(new PPPMapPool("-1", MapPoolType.Default, $"General", PPCalculatorBeatLeader<BeatleaderAPI>.accumulationConstant, 0, new BeatLeaderPPPCurve(), LeaderboardContext.BeatLeaderDefault));
-                    //_lsMapPools.Add(new PPPMapPool("-2", MapPoolType.Default, $"No modifiers", PPCalculatorBeatLeader<BeatleaderAPI>.accumulationConstant, 0, new BeatLeaderPPPCurve(), LeaderboardContext.BeatLeaderNoModifiers));
-                    //_lsMapPools.Add(new PPPMapPool("-3", MapPoolType.Default, $"No pauses", PPCalculatorBeatLeader<BeatleaderAPI>.accumulationConstant, 0, new BeatLeaderPPPCurve(), LeaderboardContext.BeatLeaderNoPauses));
-                    //_lsMapPools.Add(new PPPMapPool("-4", MapPoolType.Default, $"Golf", PPCalculatorBeatLeader<BeatleaderAPI>.accumulationConstant, 0, new BeatLeaderPPPCurve(), LeaderboardContext.BeatLeaderGolf));
-                    //_lsMapPools.Add(new PPPMapPool("-5", MapPoolType.Default, $"SCPM", PPCalculatorBeatLeader<BeatleaderAPI>.accumulationConstant, 0, new BeatLeaderPPPCurve(), LeaderboardContext.BeatLeaderSCPM));
                     this.LargePageSize = 100;
                     break;
                 case Leaderboard.NoLeaderboard:
                     _leaderboardIcon = "";
-                    _lsMapPools.Add(new PPPMapPool(MapPoolType.Default, $"", 0, 0, new CustomPPPCurve(new List<(double, double)>(), CurveType.Linear, 0)));
                     break;
                 case Leaderboard.HitBloq:
                     _leaderboardIcon = "PPPredictor.Resources.LeaderBoardLogos.HitBloq.png";
                     _ppSuffix = "cr";
                     IsCountryRankEnabled = false;
                     LeaderboardFirstPageIndex = 0;
-                    _lsMapPools.Add(new PPPMapPool(MapPoolType.Default, $"☞ Select a map pool ☜", 0, 0, new CustomPPPCurve(new List<(double, double)>(), CurveType.Linear, 0)));
                     break;
                 case Leaderboard.AccSaber:
                     _leaderboardIcon = "PPPredictor.Resources.LeaderBoardLogos.AccSaber.png";
                     _ppSuffix = "ap";
                     IsCountryRankEnabled = false;
                     LeaderboardFirstPageIndex = 0;
-                    _lsMapPools.Add(new PPPMapPool(MapPoolType.Default, $"☞ Select a map pool ☜", 0, 0, CurveParser.ParseToCurve(new CurveInfo(CurveType.AccSaber)), 0));
                     break;
             }
 

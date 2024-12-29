@@ -1,4 +1,5 @@
-﻿using PPPredictor.Data;
+﻿using PPPredictor.Core.DataType;
+using PPPredictor.Data;
 using PPPredictor.Interfaces;
 using PPPredictor.OpenAPIs;
 using PPPredictor.OverlayServer;
@@ -6,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Zenject;
+using static PPPredictor.Core.DataType.Enums;
 
 namespace PPPredictor.Utilities
 {
@@ -39,7 +41,7 @@ namespace PPPredictor.Utilities
             }
         }
 
-        private void PPPWebsocket_OnScoreSet(object sender, PPPWebSocketData data)
+        private void PPPWebsocket_OnScoreSet(object sender, PPPScoreSetData data)
         {
             _ppPredictorMgr.ScoreSet(data.leaderboardName, data);
             if (Plugin.ProfileInfo.IsHitBloqEnabled)
@@ -48,7 +50,7 @@ namespace PPPredictor.Utilities
             }
         }
 
-        private void AddDelayedRefresh(Leaderboard leaderboard, PPPWebSocketData data)
+        private void AddDelayedRefresh(Leaderboard leaderboard, PPPScoreSetData data)
         {
             string key = $"{leaderboard}_{data.hash}";
             if (!dctWaitingRefresh.ContainsKey(key))
@@ -57,7 +59,7 @@ namespace PPPredictor.Utilities
             }
         }
 
-        private async Task WaitForRefresh(Leaderboard leaderboard, PPPWebSocketData data)
+        private async Task WaitForRefresh(Leaderboard leaderboard, PPPScoreSetData data)
         {
             await Task.Delay(5000);
             _ppPredictorMgr.ScoreSet(leaderboard.ToString(), data);

@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
+using static PPPredictor.Core.DataType.Enums;
 
 namespace PPPredictor.Counter
 {

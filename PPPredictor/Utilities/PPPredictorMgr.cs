@@ -1,5 +1,7 @@
-﻿//using BeatSaberPlaylistsLib.Types;
+﻿using BeatSaberPlaylistsLib.Types;
 using IPA.Loader;
+using PPPredictor.Core;
+using PPPredictor.Core.DataType;
 using PPPredictor.Data;
 using PPPredictor.Data.DisplayInfos;
 using PPPredictor.Interfaces;
@@ -9,10 +11,11 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Zenject;
+using static PPPredictor.Core.DataType.Enums;
 
 namespace PPPredictor.Utilities
 {
-    internal class PPPredictorMgr<SSAPI, BLAPI, HBAPI, ASAPI> : IInitializable, IDisposable, IPPPredictorMgr where SSAPI : IScoresaberAPI, new() where BLAPI : IBeatLeaderAPI, new() where HBAPI : IHitBloqAPI, new() where ASAPI : IAccSaberAPI, new()
+    internal class PPPredictorMgr : IInitializable, IDisposable, IPPPredictorMgr
 
     {
         private readonly WebSocketMgr _websocketMgr;
@@ -46,19 +49,31 @@ namespace PPPredictor.Utilities
             ResetPredictors();
         }
 
-        public void ResetPredictors()
+        public async void ResetPredictors()
         {
             RefreshLeaderboardVisibilityByIPAPluginManager();
+            Instance instance = await Instance.CreateAsync(new Settings(
+                Plugin.ProfileInfo.IsScoreSaberEnabled,
+                Plugin.ProfileInfo.IsBeatLeaderEnabled,
+                Plugin.ProfileInfo.IsHitBloqEnabled,
+                Plugin.ProfileInfo.IsAccSaberEnabled,
+                (await Plugin.GetUserInfoBS()).platformUserId
+                )
+            );
+#warning not really clean i think
+            Logging.OnMessage += Logging_OnMessage;
             _lsPPPredictor = new List<IPPPredictor>();
             _currentPPPredictor = null;
-            if (Plugin.ProfileInfo.IsScoreSaberEnabled) _lsPPPredictor.Add(new PPPredictor<PPCalculatorScoreSaber<SSAPI>>(Leaderboard.ScoreSaber));
-            if (Plugin.ProfileInfo.IsBeatLeaderEnabled) _lsPPPredictor.Add(new PPPredictor<PPCalculatorBeatLeader<BLAPI>>(Leaderboard.BeatLeader));
-            if (Plugin.ProfileInfo.IsHitBloqEnabled) _lsPPPredictor.Add(new PPPredictor<PPCalculatorHitBloq<HBAPI>>(Leaderboard.HitBloq));
-            if (Plugin.ProfileInfo.IsAccSaberEnabled) _lsPPPredictor.Add(new PPPredictor<PPCalculatorAccSaber<ASAPI>>(Leaderboard.AccSaber));
+            if (Plugin.ProfileInfo.IsScoreSaberEnabled) _lsPPPredictor.Add(new PPPredictor(Leaderboard.ScoreSaber, instance));
+            if (Plugin.ProfileInfo.IsBeatLeaderEnabled) _lsPPPredictor.Add(new PPPredictor(Leaderboard.BeatLeader, instance));
+            if (Plugin.ProfileInfo.IsHitBloqEnabled) _lsPPPredictor.Add(new PPPredictor(Leaderboard.HitBloq, instance));
+            if (Plugin.ProfileInfo.IsAccSaberEnabled) _lsPPPredictor.Add(new PPPredictor(Leaderboard.AccSaber, instance));
             if (_lsPPPredictor.Count == 0)
             {
-                _lsPPPredictor.Add(new PPPredictor<PPCalculatorNoLeaderboard>(Leaderboard.NoLeaderboard));
+                _lsPPPredictor.Add(new PPPredictor(Leaderboard.NoLeaderboard, instance));
             }
+
+
             index = _lsPPPredictor.FindIndex(x => x.LeaderBoardName == Plugin.ProfileInfo.LastLeaderBoardSelected);
             if (index >= 0)
             {
@@ -78,6 +93,21 @@ namespace PPPredictor.Utilities
             CurrentPPPredictor.SetActive(true);
             SetNavigationArrowInteractivity();
             _websocketMgr.CreateScoreWebSockets();
+        }
+
+        private void Logging_OnMessage(object sender, LoggingMessage e)
+        {
+            switch (e.loggingType)
+            {
+                case LoggingMessage.LoggingType.Error:
+                    Plugin.ErrorPrint(e.message);
+                    break;
+                case LoggingMessage.LoggingType.DebugNetworkPrint:
+                    Plugin.DebugNetworkPrint(e.message);
+                    break;
+                default:
+                    return;
+            }
         }
 
         private void RefreshLeaderboardVisibilityByIPAPluginManager()
@@ -143,6 +173,7 @@ namespace PPPredictor.Utilities
         {
             foreach (var item in _lsPPPredictor)
             {
+                item.ChangeGameplayModifiers(gameplaySetupViewController);
             }
         }
 
@@ -200,7 +231,7 @@ namespace PPPredictor.Utilities
             IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());
             if (predictor != null)
             {
-                return predictor.CalculatePPatPercentage(percentage, beatMapInfo, levelFailed, levelPaused);
+                return predictor.CalculatePPatPercentage(percentage, beatMapInfo, levelFailed, levelPaused).GetAwaiter().GetResult(); ;
             }
             return 0;
         }
@@ -219,7 +250,7 @@ namespace PPPredictor.Utilities
             IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());
             if (predictor != null)
             {
-                return predictor.CalculateMaxPP();
+                return predictor.CalculateMaxPP().GetAwaiter().GetResult(); ;
             }
             return 0;
         }
@@ -229,7 +260,7 @@ namespace PPPredictor.Utilities
             IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());
             if (predictor != null)
             {
-                return predictor.GetModifiedBeatMapInfo(gameplayModifiers);
+                return predictor.GetModifiedBeatMapInfo(gameplayModifiers).GetAwaiter().GetResult(); ;
 
             }
             return new PPPBeatMapInfo();
@@ -240,7 +271,7 @@ namespace PPPredictor.Utilities
             IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());
             if (predictor != null)
             {
-                return predictor.IsRanked();
+                return predictor.IsRanked().GetAwaiter().GetResult(); ;
             }
             return false;
         }
@@ -250,7 +281,7 @@ namespace PPPredictor.Utilities
             IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());
             if (predictor != null)
             {
-                return predictor.CalculatePPGain(pp);
+                return predictor.CalculatePPGain(pp).GetAwaiter().GetResult(); ;
             }
             return 0;
         }
@@ -260,7 +291,7 @@ namespace PPPredictor.Utilities
             IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());
             if (predictor != null)
             {
-                return predictor.GetPersonalBest();
+                return predictor.GetPersonalBest().GetAwaiter().GetResult(); ;
             }
             return null;
         }
@@ -335,7 +366,7 @@ namespace PPPredictor.Utilities
             _websocketMgr.Dispose();
         }
 
-        /*public void FindPoolWithSyncURL(IPlaylist playlist)
+        public async Task FindPoolWithSyncURL(IPlaylist playlist)
         {
             if (playlist != null && Plugin.ProfileInfo.IsPredictorSwitchBySyncUrlEnabled)
             {
@@ -350,7 +381,7 @@ namespace PPPredictor.Utilities
                             CyclePredictors(0);
                             break;
                         }
-                        PPPMapPool mapPool = predictor.FindPoolWithSyncURL(outSyncURL as string);
+                        PPPMapPoolShort mapPool = await predictor.FindPoolWithSyncURL(outSyncURL as string);
                         if(mapPool != null)
                         {
                             predictor.CurrentMapPool = mapPool;
@@ -361,14 +392,14 @@ namespace PPPredictor.Utilities
                     }
                 }
             }
-        }*/
+        }
 
-        public void ScoreSet(string leaderboardName, PPPWebSocketData data)
+        public void ScoreSet(string leaderboardName, PPPScoreSetData data)
         {
             IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderboardName);
             if (predictor != null)
             {
-                predictor.ScoreSet(data);
+                predictor.ScoreSet(data).GetAwaiter().GetResult();
             }
         }
     }

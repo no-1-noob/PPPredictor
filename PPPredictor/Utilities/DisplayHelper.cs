@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
+using static PPPredictor.Core.DataType.Enums;
 
 namespace PPPredictor.Utilities
 {

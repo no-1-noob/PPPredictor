@@ -1,8 +1,8 @@
 ﻿namespace PPPredictor.Core.DataType
 {
-    internal class Enums
+    public class Enums
     {
-        internal enum BeatMapDifficulty
+        public enum BeatMapDifficulty
         {
             Easy = 1,
             Normal = 3,
@@ -49,19 +49,19 @@
             AccSaber
         }
 
-        internal enum PPGainCalculationType
+        public enum PPGainCalculationType
         {
             Weighted,
             Raw
         }
 
-        internal enum MapPoolSorting
+        public enum MapPoolSorting
         {
             Alphabetical,
             Popularity
         }
 
-        internal enum Leaderboard
+        public enum Leaderboard
         {
             ScoreSaber,
             BeatLeader,

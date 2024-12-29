@@ -1,35 +1,39 @@
 ﻿namespace PPPredictor.Core.DataType.BeatSaberEncapsulation
 {
-    internal class GameplayModifiers
+    public class GameplayModifiers
     {
-        internal bool disappearingArrows;
-        internal SongSpeed songSpeed;
-        internal bool ghostNotes;
-        internal bool noArrows;
-        internal bool noBombs;
-        internal bool noFailOn0Energy;
-        internal EnabledObstacleType enabledObstacleType;
-        internal bool proMode;
-        internal bool smallCubes;
-        internal bool instaFail;
-        internal EnergyType energyType;
-        internal bool strictAngles;
-        internal bool zenMode;
+        public bool disappearingArrows;
+        public SongSpeed songSpeed;
+        public bool ghostNotes;
+        public bool noArrows;
+        public bool noBombs;
+        public bool noFailOn0Energy;
+        public EnabledObstacleType enabledObstacleType;
+        public bool proMode;
+        public bool smallCubes;
+        public bool instaFail;
+        public EnergyType energyType;
+        public bool strictAngles;
+        public bool zenMode;
 
-        internal enum SongSpeed
+        public enum SongSpeed
         {
+            Normal,
             Faster,
             Slower,
             SuperFast
         }
 
-        internal enum EnergyType
+        public enum EnergyType
         {
+            Bar,
             Battery
         }
 
-        internal enum EnabledObstacleType
+        public enum EnabledObstacleType
         {
+            All,
+            FullHeightOnly,
             NoObstacles
         }
     }

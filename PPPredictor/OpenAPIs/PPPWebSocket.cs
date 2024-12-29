@@ -1,17 +1,19 @@
 ﻿using Newtonsoft.Json;
+using PPPredictor.Core.DataType;
 using PPPredictor.Data;
 using PPPredictor.Interfaces;
 using PPPredictor.Utilities;
 using System;
 using System.Threading.Tasks;
 using WebSocketSharp;
+using static PPPredictor.Core.DataType.Enums;
 
 namespace PPPredictor.OpenAPIs
 {
     internal class PPPWebSocket<T> : IPPPWebSocket where T : IPPPRawWebsocketData
     {
         private WebSocketSharp.WebSocket webSocket;
-        public event EventHandler<PPPWebSocketData> OnScoreSet;
+        public event EventHandler<PPPScoreSetData> OnScoreSet;
         private string userId = string.Empty;
         private string _leaderboardName = string.Empty;
         private string _url = string.Empty;

@@ -1,8 +1,10 @@
 ﻿using Newtonsoft.Json;
+using PPPredictor.Core.DataType.LeaderBoard;
 using PPPredictor.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static PPPredictor.Core.DataType.Enums;
 
 namespace PPPredictor.Data
 {
@@ -42,7 +44,7 @@ namespace PPPredictor.Data
         private bool _isAccSaberEnabledManual;
 
         private string _streamOverlayPort;
-
+        private PPGainCalculationType _ppGainCalculationType;
         internal const int RefetchMapInfoAfterDays = -7;
 
         public ProfileInfo()
@@ -125,12 +127,13 @@ namespace PPPredictor.Data
 
         internal void ClearOldMapInfos()
         {
+#warning reset of saved data
             foreach (PPPLeaderboardInfo leaderboard in LsLeaderboardInfo)
             {
-                foreach (PPPMapPool mapPool in leaderboard.LsMapPools)
-                {
-                    mapPool.LsLeaderboadInfo = mapPool.LsLeaderboadInfo.Where(x => x.FetchTime > DateTime.Now.AddDays(ProfileInfo.RefetchMapInfoAfterDays)).ToList();
-                }
+                //foreach (PPPMapPool mapPool in leaderboard.LsMapPools)
+                //{
+                //    mapPool.LsLeaderboadInfo = mapPool.LsLeaderboadInfo.Where(x => x.FetchTime > DateTime.Now.AddDays(ProfileInfo.RefetchMapInfoAfterDays)).ToList();
+                //}
             }
         }
     }

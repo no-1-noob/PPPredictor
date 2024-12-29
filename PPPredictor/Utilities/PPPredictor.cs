@@ -1,9 +1,12 @@
-﻿using PPPredictor.Core.DataType;
+﻿using PPPredictor.Core;
+using PPPredictor.Core.Calculator;
+using PPPredictor.Core.DataType;
 using PPPredictor.Core.DataType.BeatSaberEncapsulation;
 using PPPredictor.Core.DataType.LeaderBoard;
 using PPPredictor.Data;
 using PPPredictor.Data.DisplayInfos;
 using PPPredictor.Interfaces;
+using PPPredictor.Converter;
 using SongCore.Utilities;
 using System;
 using System.Collections.Generic;
@@ -13,9 +16,9 @@ using System.Threading.Tasks;
 using System.Timers;
 using static PPPredictor.Core.DataType.Enums;
 
-namespace PPPredictor.Core.Calculator
+namespace PPPredictor.Utilities
 {
-    internal class PPPredictor<T> : IPPPredictor where T : PPCalculator, new()
+    internal class PPPredictor : IPPPredictor
     {
         internal Leaderboard leaderboardName;
         #region internal values
@@ -28,6 +31,11 @@ namespace PPPredictor.Core.Calculator
         private DisplayPPInfo _ppDisplay = new DisplayPPInfo();
         private PPGainResult _ppGainResult = new PPGainResult();
         private Timer _rankTimer;
+        private readonly Instance instance;
+#warning set selected map pool
+        private string selectedMapPoolId;
+        private PPPMapPoolShort currentMapPool;
+        private List<PPPMapPoolShort> lsMapPools = new List<PPPMapPoolShort>();
         #endregion
 
         public string LeaderBoardName
@@ -45,18 +53,17 @@ namespace PPPredictor.Core.Calculator
         {
             get
             {
-                string mapPoolIcon = _leaderboardInfo.CurrentMapPool?.IconUrl ?? string.Empty;
+                string mapPoolIcon = currentMapPool?.IconUrl ?? string.Empty;
                 return !string.IsNullOrEmpty(mapPoolIcon) ? mapPoolIcon : _leaderboardInfo.LeaderboardIcon;
             }
         }
         public byte[] MapPoolIconData
         {
-            get { return _leaderboardInfo.CurrentMapPool?.IconData; }
-            set { _leaderboardInfo.CurrentMapPool.IconData = value; }
+            get { return currentMapPool?.IconData; }
+            set { currentMapPool.IconData = value; }
         }
 
         internal PPPLeaderboardInfo _leaderboardInfo;
-        internal PPCalculator _ppCalculator;
         private GameplayModifiers _gameplayModifiers;
 
         public event EventHandler<bool> OnDataLoading;
@@ -65,14 +72,15 @@ namespace PPPredictor.Core.Calculator
         public event EventHandler OnMapPoolRefreshed;
 
         #region
-        public PPPredictor(Leaderboard leaderBoard)
+        public PPPredictor(Leaderboard leaderBoard, Instance instance)
         {
             leaderboardName = leaderBoard;
-            LoadInfos();
-            _ppCalculator = new T() { _leaderboardInfo = _leaderboardInfo };
-            _ppCalculator.OnMapPoolRefreshed += PPCalculator_OnMapPoolRefreshed;
+            this.instance = instance;
+            _leaderboardInfo = new PPPLeaderboardInfo(leaderBoard);
+            lsMapPools = this.instance.GetMapPools(leaderboardName);
+            //_ppCalculator.OnMapPoolRefreshed += PPCalculator_OnMapPoolRefreshed;
 
-            
+
             _rankTimer = new System.Timers.Timer(500);
             _rankTimer.Elapsed += OnRankTimerElapsed;
             _rankTimer.AutoReset = false;
@@ -95,16 +103,16 @@ namespace PPPredictor.Core.Calculator
         {
             get
             {
-                return _leaderboardInfo.LsMapPools.Select(f => (object)f).ToList();
+                return lsMapPools.Select(f => (object)f).ToList();
             }
         }
         public object CurrentMapPool
         {
-            get => (object)_leaderboardInfo.CurrentMapPool;
+            get => (object)currentMapPool;
             set
             {
                 bool isCurrentMapPoolChanging = IsCurrentMapPoolChanging(value);
-                _leaderboardInfo.CurrentMapPool = (PPPMapPool)value;
+                currentMapPool = (PPPMapPoolShort)value;
                 UpdateMapPoolDetails();
                 if (isCurrentMapPoolChanging)
                 {
@@ -119,27 +127,15 @@ namespace PPPredictor.Core.Calculator
             get => _leaderboardInfo.PpSuffix;
         }
         #endregion
-        #region loadInfos
-        internal void LoadInfos()
-        {
-            _leaderboardInfo = Plugin.ProfileInfo.LsLeaderboardInfo.Find(x => x.LeaderboardName == leaderboardName.ToString());
-            _leaderboardInfo?.SetCurrentMapPool();
-            if (_leaderboardInfo == null)
-            {
-                _leaderboardInfo = new PPPLeaderboardInfo(leaderboardName);
-                Plugin.ProfileInfo.LsLeaderboardInfo.Add(_leaderboardInfo);
-            }
-        }
-        #endregion
 
         #region eventHandling
 
-        public void ChangeGameplayModifiers(GameplaySetupViewController gameplaySetupViewController)
+        public async Task ChangeGameplayModifiers(GameplaySetupViewController gameplaySetupViewController)
         {
             if (gameplaySetupViewController != null && gameplaySetupViewController.gameplayModifiers != null)
             {
                 _gameplayModifiers = gameplaySetupViewController.gameplayModifiers;
-                _currentBeatMapInfo = _ppCalculator.ApplyModifiersToBeatmapInfo(_currentBeatMapInfo, _gameplayModifiers);
+                _currentBeatMapInfo = await instance.ApplyModifiersToBeatmapInfo(leaderboardName, selectedMapPoolId, _currentBeatMapInfo, Converter.Converter.ConvertGameplayModifiers(_gameplayModifiers));
                 _currentBeatMapInfo.MaxPP = -1;
                 CalculatePP();
             }
@@ -152,17 +148,18 @@ namespace PPPredictor.Core.Calculator
 
         public async Task UpdateCurrentBeatMapInfos(BeatmapLevel selectedBeatmapLevel, BeatmapKey beatmapKey)
         {
-            _currentBeatMapInfo = new PPPBeatMapInfo(selectedBeatmapLevel, beatmapKey);
+            var v = Converter.Converter.ConvertBeatmapKey(beatmapKey);
+            _currentBeatMapInfo = new PPPBeatMapInfo(Hashing.GetCustomLevelHash(selectedBeatmapLevel), Converter.Converter.ConvertBeatmapKey(beatmapKey));
             await UpdateCurrentBeatMapInfos();
             CalculatePP();
         }
 
         private async Task UpdateCurrentBeatMapInfos()
         {
-            _currentBeatMapInfo = await _ppCalculator.GetBeatMapInfoAsync(_currentBeatMapInfo);
-            _currentBeatMapInfo.SelectedMapSearchString = _currentBeatMapInfo.SelectedCustomBeatmapLevel != null ? _ppCalculator.CreateSeachString(Hashing.GetCustomLevelHash(_currentBeatMapInfo.SelectedCustomBeatmapLevel), "SOLO" + _currentBeatMapInfo.BeatmapKey.beatmapCharacteristic.serializedName, ParsingUtil.ParseDifficultyNameToInt(_currentBeatMapInfo.BeatmapKey.difficulty.ToString())) : string.Empty;
+            _currentBeatMapInfo = await instance.GetBeatMapInfoAsync(leaderboardName, selectedMapPoolId, _currentBeatMapInfo);
+            _currentBeatMapInfo.SelectedMapSearchString = !string.IsNullOrEmpty(_currentBeatMapInfo.CustomLevelHash) ? PPCalculator.CreateSeachString(_currentBeatMapInfo.CustomLevelHash, "SOLO" + _currentBeatMapInfo.BeatmapKey.serializedName, Core.ParsingUtil.ParseDifficultyNameToInt(_currentBeatMapInfo.BeatmapKey.difficulty.ToString())) : string.Empty;
             _currentBeatMapInfo.OldDotsEnabled = IsOldDotsActive(_currentBeatMapInfo.BeatmapKey);
-            _currentBeatMapInfo = GetModifiedBeatMapInfo(_gameplayModifiers);
+            _currentBeatMapInfo = await GetModifiedBeatMapInfo(_gameplayModifiers);
             _currentBeatMapInfo.MaxPP = -1;
         }
         #endregion
@@ -186,54 +183,58 @@ namespace PPPredictor.Core.Calculator
             OnMapPoolRefreshed?.Invoke(this, null);
         }
         #endregion
-        public double CalculatePPatPercentage(double percentage, PPPBeatMapInfo beatMapInfo, bool levelFailed = false, bool levelPaused = false)
+        public async Task<double> CalculatePPatPercentage(double percentage, PPPBeatMapInfo beatMapInfo, bool levelFailed = false, bool levelPaused = false)
         {
-            return _ppCalculator.CalculatePPatPercentage(beatMapInfo, percentage, levelFailed, levelPaused);
+            var v = await instance.CalculatePPatPercentage(leaderboardName, selectedMapPoolId, beatMapInfo, percentage, levelFailed, levelPaused);
+            return v;
         }
 
-        public double CalculateMaxPP()
+        public async Task<double> CalculateMaxPP()
         {
-            return _ppCalculator.CalculateMaxPP(_currentBeatMapInfo);
+            var v = await instance.CalculateMaxPP(leaderboardName, selectedMapPoolId, _currentBeatMapInfo);
+            return v;
         }
 
-        public PPPBeatMapInfo GetModifiedBeatMapInfo(GameplayModifiers gameplayModifiers, bool levelFailed = false, bool levelPaused = false)
+        public async Task<PPPBeatMapInfo> GetModifiedBeatMapInfo(GameplayModifiers gameplayModifiers, bool levelFailed = false, bool levelPaused = false)
         {
-            return _ppCalculator.ApplyModifiersToBeatmapInfo(_currentBeatMapInfo, gameplayModifiers, levelFailed, levelPaused);
+            PPPBeatMapInfo pppBeatMapInfo = await instance.ApplyModifiersToBeatmapInfo(leaderboardName, selectedMapPoolId, _currentBeatMapInfo, Converter.Converter.ConvertGameplayModifiers(gameplayModifiers), levelFailed, levelPaused);
+            return pppBeatMapInfo;
         }
 
-        public bool IsOldDotsActive(BeatmapKey beatmapKey)
+        public bool IsOldDotsActive(Core.DataType.BeatSaberEncapsulation.BeatmapKey beatmapKey)
         {
-            return beatmapKey.serializedName.Contains(Constants.OldDots);
+            return beatmapKey.serializedName.Contains(Core.Constants.OldDots);
         }
 
-        public double CalculatePPGain(double pp)
+        public async Task<double> CalculatePPGain(double pp)
         {
-            return _ppCalculator.GetPlayerScorePPGain(_currentBeatMapInfo.SelectedMapSearchString, pp).GetDisplayPPValue();
+            PPGainResult ppGainResult = await instance.GetPlayerScorePPGain(leaderboardName, selectedMapPoolId, _currentBeatMapInfo.SelectedMapSearchString, pp);
+            return ppGainResult.GetDisplayPPValue();
         }
 
-        public bool IsRanked()
+        public async Task<bool> IsRanked()
         {
-            return _currentBeatMapInfo.BaseStarRating.IsRanked() && (_ppCalculator.hasOldDotRanking || !_currentBeatMapInfo.OldDotsEnabled);
+            return _currentBeatMapInfo.BaseStarRating.IsRanked() && (await instance.HasOldDotRanking(leaderboardName, selectedMapPoolId) || !_currentBeatMapInfo.OldDotsEnabled);
         }
 
-        public double? GetPersonalBest()
+        public async Task<double?> GetPersonalBest()
         {
-            return _ppCalculator.GetPersonalBest(_currentBeatMapInfo.SelectedMapSearchString);
+            return await instance.GetPersonalBest(leaderboardName, selectedMapPoolId, _currentBeatMapInfo.SelectedMapSearchString);
         }
 
         internal bool IsCurrentMapPoolChanging(object value)
         {
-            var currentPool = CurrentMapPool as PPPMapPool;
-            var newMapPool = value as PPPMapPool;
+            var currentPool = CurrentMapPool as PPPMapPoolShort;
+            var newMapPool = value as PPPMapPoolShort;
             return (currentPool != null && newMapPool != null && currentPool.Id != newMapPool.Id);
         }
 
         public async void CalculatePP()
         {
-            if (_currentBeatMapInfo.MaxPP == -1) _currentBeatMapInfo.MaxPP = CalculateMaxPP();
-            double pp = CalculatePPatPercentage(_percentage, _currentBeatMapInfo);
-            _ppGainResult = _ppCalculator.GetPlayerScorePPGain(_currentBeatMapInfo.SelectedMapSearchString, pp);
-            double ppGains = _ppCalculator.Zeroizer(_ppGainResult.GetDisplayPPValue());
+            if (_currentBeatMapInfo.MaxPP == -1) _currentBeatMapInfo.MaxPP = await CalculateMaxPP();
+            double pp = await CalculatePPatPercentage(_percentage, _currentBeatMapInfo);
+            _ppGainResult = await instance.GetPlayerScorePPGain(leaderboardName, selectedMapPoolId, _currentBeatMapInfo.SelectedMapSearchString, pp);
+            double ppGains = PPCalculator.Zeroizer(_ppGainResult.GetDisplayPPValue());
             _ppDisplay = new DisplayPPInfo();
             if (_currentBeatMapInfo.MaxPP > 0 && pp >= _currentBeatMapInfo.MaxPP)
             {
@@ -263,13 +264,13 @@ namespace PPPredictor.Core.Calculator
             if (_lastPPGainCall == 0)
             {
                 _rankGainRunning = true;
-                rankGain = await _ppCalculator.GetPlayerRankGain(_ppGainResult.PpTotal);
+                rankGain = await instance.GetPlayerRankGain(leaderboardName, selectedMapPoolId, _ppGainResult.PpTotal);
                 _rankGainRunning = false;
             }
             if (_lastPPGainCall > 0)
             {
                 _rankGainRunning = true;
-                rankGain = await _ppCalculator.GetPlayerRankGain(_lastPPGainCall);
+                rankGain = await instance.GetPlayerRankGain(leaderboardName, selectedMapPoolId, _lastPPGainCall);
                 _rankGainRunning = false;
                 _lastPPGainCall = 0;
             }
@@ -281,6 +282,7 @@ namespace PPPredictor.Core.Calculator
             if (rankGainResult != null)
             {
                 ppDisplay.PredictedRankDiffColor = DisplayHelper.GetDisplayColor(rankGainResult.RankGainGlobal, false);
+#warning leaderboard info muss weg?
                 ppDisplay.PredictedCountryRankDiffColor = _leaderboardInfo.IsCountryRankEnabled ? DisplayHelper.GetDisplayColor(rankGainResult.RankGainCountry, false) : DisplayHelper.ColorCountryRankDisabled;
                 if (rankGainResult.IsRankGainCanceledByLimit)
                 {
@@ -312,34 +314,34 @@ namespace PPPredictor.Core.Calculator
         private void DisplaySession()
         {
             DisplaySessionInfo sessionDisplay = new DisplaySessionInfo();
-            if (_leaderboardInfo.CurrentMapPool.SessionPlayer != null && _leaderboardInfo.CurrentMapPool.CurrentPlayer != null)
+            if (currentMapPool.SessionPlayer != null && currentMapPool.CurrentPlayer != null)
             {
                 if (Plugin.ProfileInfo.DisplaySessionValues)
                 {
-                    sessionDisplay.SessionRank = $"{_leaderboardInfo.CurrentMapPool.SessionPlayer.Rank:N0}";
-                    sessionDisplay.SessionCountryRank = $"{_leaderboardInfo.CurrentMapPool.SessionPlayer.CountryRank:N0}";
-                    sessionDisplay.SessionPP = $"{_leaderboardInfo.CurrentMapPool.SessionPlayer.Pp:F2}{PPSuffix}";
+                    sessionDisplay.SessionRank = $"{currentMapPool.SessionPlayer.Rank:N0}";
+                    sessionDisplay.SessionCountryRank = $"{currentMapPool.SessionPlayer.CountryRank:N0}";
+                    sessionDisplay.SessionPP = $"{currentMapPool.SessionPlayer.Pp:F2}{PPSuffix}";
                 }
                 else
                 {
-                    sessionDisplay.SessionRank = $"{_leaderboardInfo.CurrentMapPool.CurrentPlayer.Rank:N0}";
-                    sessionDisplay.SessionCountryRank = $"{_leaderboardInfo.CurrentMapPool.CurrentPlayer.CountryRank:N0}";
-                    sessionDisplay.SessionPP = $"{_leaderboardInfo.CurrentMapPool.CurrentPlayer.Pp:F2}{PPSuffix}";
+                    sessionDisplay.SessionRank = $"{currentMapPool.CurrentPlayer.Rank:N0}";
+                    sessionDisplay.SessionCountryRank = $"{currentMapPool.CurrentPlayer.CountryRank:N0}";
+                    sessionDisplay.SessionPP = $"{currentMapPool.CurrentPlayer.Pp:F2}{PPSuffix}";
                 }
-                sessionDisplay.SessionCountryRankDiff = (_leaderboardInfo.CurrentMapPool.CurrentPlayer.CountryRank - _leaderboardInfo.CurrentMapPool.SessionPlayer.CountryRank).ToString("+#;-#;0");
-                sessionDisplay.SessionCountryRankDiffColor = _leaderboardInfo.IsCountryRankEnabled ? DisplayHelper.GetDisplayColor((_leaderboardInfo.CurrentMapPool.CurrentPlayer.CountryRank - _leaderboardInfo.CurrentMapPool.SessionPlayer.CountryRank), true) : DisplayHelper.ColorCountryRankDisabled;
-                sessionDisplay.SessionRankDiff = (_leaderboardInfo.CurrentMapPool.CurrentPlayer.Rank - _leaderboardInfo.CurrentMapPool.SessionPlayer.Rank).ToString("+#;-#;0");
-                sessionDisplay.SessionRankDiffColor = DisplayHelper.GetDisplayColor((_leaderboardInfo.CurrentMapPool.CurrentPlayer.Rank - _leaderboardInfo.CurrentMapPool.SessionPlayer.Rank), true);
-                sessionDisplay.SessionPPDiff = $"{_ppCalculator.Zeroizer(_leaderboardInfo.CurrentMapPool.CurrentPlayer.Pp - _leaderboardInfo.CurrentMapPool.SessionPlayer.Pp):+0.##;-0.##;0}{PPSuffix}";
-                sessionDisplay.SessionPPDiffColor = DisplayHelper.GetDisplayColor((_leaderboardInfo.CurrentMapPool.CurrentPlayer.Pp - _leaderboardInfo.CurrentMapPool.SessionPlayer.Pp), false);
+                sessionDisplay.SessionCountryRankDiff = (currentMapPool.CurrentPlayer.CountryRank - currentMapPool.SessionPlayer.CountryRank).ToString("+#;-#;0");
+                sessionDisplay.SessionCountryRankDiffColor = _leaderboardInfo.IsCountryRankEnabled ? DisplayHelper.GetDisplayColor((currentMapPool.CurrentPlayer.CountryRank - currentMapPool.SessionPlayer.CountryRank), true) : DisplayHelper.ColorCountryRankDisabled;
+                sessionDisplay.SessionRankDiff = (currentMapPool.CurrentPlayer.Rank - currentMapPool.SessionPlayer.Rank).ToString("+#;-#;0");
+                sessionDisplay.SessionRankDiffColor = DisplayHelper.GetDisplayColor((currentMapPool.CurrentPlayer.Rank - currentMapPool.SessionPlayer.Rank), true);
+                sessionDisplay.SessionPPDiff = $"{PPCalculator.Zeroizer(currentMapPool.CurrentPlayer.Pp - currentMapPool.SessionPlayer.Pp):+0.##;-0.##;0}{PPSuffix}";
+                sessionDisplay.SessionPPDiffColor = DisplayHelper.GetDisplayColor((currentMapPool.CurrentPlayer.Pp - currentMapPool.SessionPlayer.Pp), false);
             }
             sessionDisplay.CountryRankFontColor = _leaderboardInfo.IsCountryRankEnabled ? DisplayHelper.ColorWhite : DisplayHelper.ColorCountryRankDisabled;
             SendDisplaySessionInfo(sessionDisplay);
         }
 
-        public void ScoreSet(PPPWebSocketData data)
+        public async Task ScoreSet(PPPScoreSetData data)
         {
-            if(_ppCalculator.IsScoreSetOnCurrentMapPool(data)) 
+            if(await instance.IsScoreSetOnCurrentMapPool(leaderboardName, selectedMapPoolId, data)) 
                 RefreshCurrentData(1, false, true);
         }
 
@@ -347,8 +349,7 @@ namespace PPPredictor.Core.Calculator
         {
             await UpdateCurrentAndCheckResetSession(false);
             IsDataLoading(true);
-            string userId = await GetUserInfo();
-            await _ppCalculator.GetPlayerScores(userId, fetchLength, _leaderboardInfo.LargePageSize, fetchOnePage);
+            await instance.GetPlayerScores(leaderboardName, selectedMapPoolId, fetchLength, _leaderboardInfo.LargePageSize, fetchOnePage);
             if (refreshStars) //MapPool change to a pool that has never been selected before;
             {
                 await UpdateCurrentBeatMapInfos();
@@ -360,13 +361,12 @@ namespace PPPredictor.Core.Calculator
         public async Task UpdateCurrentAndCheckResetSession(bool doResetSession)
         {
             IsDataLoading(true);
-            string userId = await GetUserInfo();
-            PPPPlayer player = await _ppCalculator.GetProfile(userId);
-            _leaderboardInfo.CurrentMapPool.CurrentPlayer = player;
-            if (doResetSession || _leaderboardInfo.CurrentMapPool.SessionPlayer == null || NeedsResetSession())
+            PPPPlayer player = await instance.GetProfile(leaderboardName, selectedMapPoolId);
+            currentMapPool.CurrentPlayer = player;
+            if (doResetSession || currentMapPool.SessionPlayer == null || NeedsResetSession())
             {
                 Plugin.ProfileInfo.LastSessionReset = DateTime.Now;
-                _leaderboardInfo.CurrentMapPool.SessionPlayer = player;
+                currentMapPool.SessionPlayer = player;
             }
             DisplaySession();
             IsDataLoading(false);
@@ -376,8 +376,7 @@ namespace PPPredictor.Core.Calculator
         {
             await UpdateCurrentAndCheckResetSession(resetAll);
             IsDataLoading(true);
-            string userId = await GetUserInfo();
-            await _ppCalculator.GetPlayerScores(userId, 100, 100);
+            await instance.GetPlayerScores(leaderboardName, selectedMapPoolId, 100, 100);
             CalculatePP();
             IsDataLoading(false);
         }
@@ -411,11 +410,11 @@ namespace PPPredictor.Core.Calculator
 
         private async void UpdateMapPoolDetails()
         {
-            if (_leaderboardInfo.CurrentMapPool != null && _leaderboardInfo.CurrentMapPool.DtUtcLastRefresh < DateTime.UtcNow.AddDays(-1))
+            if (currentMapPool != null && currentMapPool.DtUtcLastRefresh < DateTime.UtcNow.AddDays(-1))
             {
                 IsDataLoading(true);
-                await _ppCalculator.UpdateMapPoolDetails(_leaderboardInfo.CurrentMapPool);
-                _leaderboardInfo.CurrentMapPool.DtUtcLastRefresh = DateTime.UtcNow;
+                await instance.UpdateMapPoolDetails(leaderboardName, selectedMapPoolId);
+                currentMapPool.DtUtcLastRefresh = DateTime.UtcNow;
                 IsDataLoading(false);
             }
         }
@@ -440,9 +439,9 @@ namespace PPPredictor.Core.Calculator
             }
         }
 
-        public PPPMapPool FindPoolWithSyncURL(string syncUrl)
+        public async Task<PPPMapPoolShort> FindPoolWithSyncURL(string syncUrl)
         {
-            return _leaderboardInfo.LsMapPools.FirstOrDefault(x => x.SyncUrl == syncUrl);
+            return await instance.FindPoolWithSyncURL(leaderboardName, syncUrl);
         }
     }
 }

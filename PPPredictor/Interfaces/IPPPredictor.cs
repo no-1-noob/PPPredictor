@@ -1,5 +1,7 @@
 ﻿using PPPredictor.Core.DataType;
 using PPPredictor.Core.DataType.BeatSaberEncapsulation;
+using PPPredictor.Data;
+using PPPredictor.Data.DisplayInfos;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -8,23 +10,23 @@ namespace PPPredictor.Interfaces
 {
     interface IPPPredictor
     {
-        void ChangeGameplayModifiers(GameplaySetupViewController gameplaySetupViewController);
+        Task ChangeGameplayModifiers(GameplaySetupViewController gameplaySetupViewController);
         void DifficultyChanged(BeatmapLevel selectedBeatmapLevel, BeatmapKey beatmapKey);
         Task UpdateCurrentAndCheckResetSession(bool doResetSession);
 #warning ScoreSet needed?
-        //void ScoreSet(PPPWebSocketData data);
+        Task ScoreSet(PPPScoreSetData data);
         void RefreshCurrentData(int fetchLength, bool refreshStars = false, bool fetchOnePage = false);
         void ResetDisplay(bool resetAll);
-        double CalculatePPatPercentage(double percentage, PPPBeatMapInfo beatMapInfo, bool levelFailed = false, bool levelPaused = false);
-        double CalculateMaxPP();
-        PPPBeatMapInfo GetModifiedBeatMapInfo(GameplayModifiers gameplayModifiers, bool levelFailed = false, bool levelPaused = false);
-        double CalculatePPGain(double pp);
-        bool IsRanked();
+        Task<double> CalculatePPatPercentage(double percentage, PPPBeatMapInfo beatMapInfo, bool levelFailed = false, bool levelPaused = false);
+        Task<double> CalculateMaxPP();
+        Task<PPPBeatMapInfo> GetModifiedBeatMapInfo(GameplayModifiers gameplayModifiers, bool levelFailed = false, bool levelPaused = false);
+        Task<double> CalculatePPGain(double pp);
+        Task<bool> IsRanked();
 
-        double? GetPersonalBest();
+        Task<double?> GetPersonalBest();
         void CalculatePP();
         void SetActive(bool setActive);
-        PPPMapPool FindPoolWithSyncURL(string syncUrl);
+        Task<PPPMapPoolShort> FindPoolWithSyncURL(string syncUrl);
         Task GetMapPoolIconData();
         Task UpdateCurrentBeatMapInfos(BeatmapLevel selectedBeatmapLevel, BeatmapKey beatmapKey);
         event EventHandler<bool> OnDataLoading;

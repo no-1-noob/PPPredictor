@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace PPPredictor.Core.DataType
 {
-    internal class PPPStarRating
+    public class PPPStarRating
     {
         private double _stars = 0;
         private double _multiplier = 1;
@@ -65,7 +65,7 @@ namespace PPPredictor.Core.DataType
             _techRating = techRating;
         }
 
-        internal bool IsRanked()
+        public bool IsRanked()
         {
             if(_rankedBeatLeader == false){
                 return false;

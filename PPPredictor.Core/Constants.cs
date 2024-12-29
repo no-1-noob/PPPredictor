@@ -1,7 +1,7 @@
 ﻿namespace PPPredictor.Core
 {
-    internal class Constants
+    public class Constants
     {
-        internal const string OldDots = "OldDots";
+        public const string OldDots = "OldDots";
     }
 }

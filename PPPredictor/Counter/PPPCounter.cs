@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Zenject;
+using static PPPredictor.Core.DataType.Enums;
 
 namespace PPPredictor.Counter
 {

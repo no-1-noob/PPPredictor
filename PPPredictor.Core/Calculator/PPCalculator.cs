@@ -5,13 +5,15 @@ using PPPredictor.Core.DataType.Score;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using static PPPredictor.Core.DataType.Enums;
 
 namespace PPPredictor.Core.Calculator
 {
-    abstract class PPCalculator
+    public abstract class PPCalculator
     {
+        private readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
         internal PPPLeaderboardInfo _leaderboardInfo;
         protected int playerPerPages = 0; //Cause a null reference if not set ;)
         protected bool hasGetAllScoresFunctionality = false;
@@ -20,13 +22,28 @@ namespace PPPredictor.Core.Calculator
         protected int taskDelayValue = 250;
         internal bool hasOldDotRanking = true;
         private int pageFetchLimit = 5;
+        internal Dictionary<string, PPPMapPool> _dctMapPool = new Dictionary<string, PPPMapPool>();
+
+        public SemaphoreSlim Semaphore => semaphore;
+
         public event EventHandler OnMapPoolRefreshed;
 
         public PPCalculator()
         {
         }
 
-        public async Task<PPPPlayer> GetProfile(PPPMapPool mapPool, string userId)
+        internal PPPMapPool GetMapPoolById(string mapPoolId)
+        {
+            if(_dctMapPool.TryGetValue(mapPoolId, out var mapPool)){
+                return mapPool;
+            }
+            else
+            {
+                throw new Exception($"MapPool {mapPoolId} for leaderboard {_leaderboardInfo.LeaderboardName} not found");
+            }
+        }
+
+        internal async Task<PPPPlayer> GetProfile(PPPMapPool mapPool, string userId)
         {
             if (long.TryParse(userId, out long longUserId))
             {
@@ -36,7 +53,7 @@ namespace PPPredictor.Core.Calculator
             return new PPPPlayer();
         }
 
-        public async Task GetPlayerScores(PPPMapPool mapPool, string userId, int pageSize, int largePageSize, bool fetchOnePage = false)
+        internal async Task GetPlayerScores(PPPMapPool mapPool, string userId, int pageSize, int largePageSize, bool fetchOnePage = false)
         {
             try
             {
@@ -52,7 +69,7 @@ namespace PPPredictor.Core.Calculator
                     hasNoScores = mapPool.LsScores.Count == 0;
                     if (hasGetAllScoresFunctionality && (!hasGetRecentScoresFunctionality || hasNoScores))
                     {
-                        playerscores = await GetAllScores(userId, mapPool.Id);
+                        playerscores = await GetAllScores(userId, mapPool);
                         hasMoreData = false;
                     }
                     else {
@@ -112,16 +129,16 @@ namespace PPPredictor.Core.Calculator
             }
         }
 
-        public virtual PPGainResult GetPlayerScorePPGain(string mapSearchString, double pp, PPPMapPool mapPool)
+        internal virtual PPGainResult GetPlayerScorePPGain(string mapSearchString, double pp, PPPMapPool mapPool)
         {
-            return GetPlayerScorePPGainInternal(mapSearchString, pp, mapPool);
+            return GetPlayerScorePPGainInternal(mapPool.LsScores, mapSearchString, pp, mapPool.CurrentPlayer.Pp, mapPool);
         }
 
-        protected PPGainResult GetPlayerScorePPGainInternal(string mapSearchString, double pp, PPPMapPool mapPool)
+        internal PPGainResult GetPlayerScorePPGainInternal(List<ShortScore> lsScores, string mapSearchString, double pp, double currentTotalPP, PPPMapPool mapPool)
         {
             try
             {
-                if (mapPool.LsScores.Count > 0 && !string.IsNullOrEmpty(mapSearchString))
+                if (lsScores.Count > 0 && !string.IsNullOrEmpty(mapSearchString))
                 {
                     if (pp > 0)
                     {
@@ -130,7 +147,7 @@ namespace PPPredictor.Core.Calculator
                         bool newPPadded = false;
                         bool newPPSkiped = false;
                         double previousPP = 0;
-                        foreach (ShortScore score in mapPool.LsScores)
+                        foreach (ShortScore score in lsScores)
                         {
                             double weightedPP = WeightPP(score.Pp, index, mapPool);
                             double weightedNewPP = WeightPP(pp, index, mapPool);
@@ -139,7 +156,7 @@ namespace PPPredictor.Core.Calculator
                                 previousPP = score.Pp;
                                 if(pp <= previousPP)
                                 {
-                                    ppAfterPlay = mapPool.CurrentPlayer.Pp; //If old score is better return currentPlayer pp => Otherwise innacuraccies while adding could result in gain
+                                    ppAfterPlay = currentTotalPP; //If old score is better return currentPlayer pp => Otherwise innacuraccies while adding could result in gain
                                     break;
                                 }
                                 if (!newPPadded)
@@ -160,13 +177,13 @@ namespace PPPredictor.Core.Calculator
                             ppAfterPlay += weightedPP;
                             index++;
                         }
-                        return new PPGainResult(Math.Round(ppAfterPlay, 2, MidpointRounding.AwayFromZero), Zeroizer(Math.Round(ppAfterPlay - mapPool.CurrentPlayer.Pp, 2, MidpointRounding.AwayFromZero), 0.02), pp - previousPP);
+                        return new PPGainResult(Math.Round(ppAfterPlay, 2, MidpointRounding.AwayFromZero), Zeroizer(Math.Round(ppAfterPlay - currentTotalPP, 2, MidpointRounding.AwayFromZero), 0.02), pp - previousPP);
                     }
                     //Try to find old pp value if the map has been failed
-                    ShortScore oldScore = mapPool.LsScores.Find(x => x.Searchstring == mapSearchString);
-                    return new PPGainResult(mapPool.CurrentPlayer.Pp, pp, oldScore != null ? -oldScore.Pp : 0);
+                    ShortScore oldScore = lsScores.Find(x => x.Searchstring == mapSearchString);
+                    return new PPGainResult(currentTotalPP, pp, oldScore != null ? -oldScore.Pp : 0);
                 }
-                else if(mapPool.CurrentPlayer.Pp == 0) //If you have not set a score yet, total is = the new pp play
+                else if(currentTotalPP == 0) //If you have not set a score yet, total is = the new pp play
                 {
                     return new PPGainResult(pp, pp, pp);
                 }
@@ -174,12 +191,12 @@ namespace PPPredictor.Core.Calculator
             catch (Exception ex)
             {
                 Logging.ErrorPrint($"PPPredictor {_leaderboardInfo?.LeaderboardName} GetPlayerScorePPGain Error: {ex.Message}");
-                return new PPGainResult(mapPool.CurrentPlayer.Pp, pp, pp);
+                return new PPGainResult(currentTotalPP, pp, pp);
             }
-            return new PPGainResult(mapPool.CurrentPlayer.Pp, pp, pp);
+            return new PPGainResult(currentTotalPP, pp, pp);
         }
 
-        public async Task<RankGainResult> GetPlayerRankGain(double pp, PPPMapPool mapPool)
+        internal async Task<RankGainResult> GetPlayerRankGain(double pp, PPPMapPool mapPool)
         {
             try
             {
@@ -284,7 +301,7 @@ namespace PPPredictor.Core.Calculator
             return mapPool.Curve.CalculateMaxPP(_currentBeatMapInfo, mapPool.LeaderboardContext);
         }
 
-        public double WeightPP(double rawPP, int index, PPPMapPool mapPool)
+        internal double WeightPP(double rawPP, int index, PPPMapPool mapPool)
         {
             return rawPP * GetWeightMulitplier(index, mapPool);
         }
@@ -304,12 +321,12 @@ namespace PPPredictor.Core.Calculator
             return Math.Pow(accumulationConstant, (index - 1));
         }
 
-        public string CreateSeachString(string hash, string gameMode, int difficulty)
+        public static string CreateSeachString(string hash, string gameMode, int difficulty)
         {
             return $"{hash}_{gameMode}_{difficulty}".ToUpper();
         }
 
-        public double Zeroizer(double pp, double limit = 0.01)
+        public static double Zeroizer(double pp, double limit = 0.01)
         {
             if (pp < -limit || pp > limit) return pp;
             if ((pp > -limit && pp < 0) || (pp < limit && pp > 0)) return 0;
@@ -321,7 +338,7 @@ namespace PPPredictor.Core.Calculator
             OnMapPoolRefreshed?.Invoke(this, null);
         }
 
-        protected bool IsPlayerFound(PPPMapPool mapPool)
+        internal bool IsPlayerFound(PPPMapPool mapPool)
         {
             if (!mapPool.IsPlayerFound)
             {
@@ -330,22 +347,30 @@ namespace PPPredictor.Core.Calculator
             return true;
         }
 
-        protected abstract Task<PPPPlayer> GetPlayerInfo(long userId, PPPMapPool mapPool);
+        internal abstract List<PPPMapPoolShort> GetMapPools();
 
-        protected abstract Task<PPPScoreCollection> GetRecentScores(string userId, int pageSize, int page, PPPMapPool mapPool);
+        internal abstract Task<PPPPlayer> GetPlayerInfo(long userId, PPPMapPool mapPool);
 
-        protected abstract Task<PPPScoreCollection> GetAllScores(string userId, string mapPoolId);
+        internal abstract Task<PPPScoreCollection> GetRecentScores(string userId, int pageSize, int page, PPPMapPool mapPool);
 
-        protected abstract Task<List<PPPPlayer>> GetPlayers(double fetchIndexPage, PPPMapPool mapPool);
+        internal abstract Task<PPPScoreCollection> GetAllScores(string userId, PPPMapPool mapPool);
 
-        public abstract Task<PPPBeatMapInfo> GetBeatMapInfoAsync(PPPBeatMapInfo beatMapInfo, PPPMapPool mapPool);
+        internal abstract Task<List<PPPPlayer>> GetPlayers(double fetchIndexPage, PPPMapPool mapPool);
 
-        public abstract PPPBeatMapInfo ApplyModifiersToBeatmapInfo(PPPBeatMapInfo beatMapInfo, PPPMapPool mapPool, GameplayModifiers gameplayModifiers, bool levelFailed = false, bool levelPaused = false);
+        internal abstract Task<PPPBeatMapInfo> GetBeatMapInfoAsync(PPPBeatMapInfo beatMapInfo, PPPMapPool mapPool);
+
+        internal abstract PPPBeatMapInfo ApplyModifiersToBeatmapInfo(PPPBeatMapInfo beatMapInfo, PPPMapPool mapPool, GameplayModifiers gameplayModifiers, bool levelFailed = false, bool levelPaused = false);
 
         public abstract string CreateSeachString(string hash, BeatmapKey beatmapKey);
 
-        public abstract Task UpdateMapPoolDetails(PPPMapPool mapPool);
-#warning IsScoreSetOnCurrentMapPool just trigger from outside?
-        //public abstract bool IsScoreSetOnCurrentMapPool(PPPWebSocketData score);
+        internal abstract Task UpdateMapPoolDetails(PPPMapPool mapPool);
+
+        public abstract Task UpdateAvailableMapPools();
+        internal abstract bool IsScoreSetOnCurrentMapPool(PPPMapPool mapPool, PPPScoreSetData score);
+
+        internal PPPMapPoolShort FindPoolWithSyncURL(string syncUrl)
+        {
+            return _dctMapPool.Values.FirstOrDefault(x => x.SyncUrl == syncUrl);
+        }
     }
 }

@@ -5,6 +5,7 @@ using PPPredictor.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using static PPPredictor.Core.DataType.Enums;
 
 namespace PPPredictor.UI.ViewController
 {

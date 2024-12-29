@@ -28,7 +28,7 @@ namespace PPPredictor.Core.Calculator
             //UpdateAvailableMapPools();
         }
 
-        protected override async Task<PPPPlayer> GetPlayerInfo(long userId, PPPMapPool mapPool)
+        internal override async Task<PPPPlayer> GetPlayerInfo(long userId, PPPMapPool mapPool)
         {
             try
             {
@@ -54,7 +54,7 @@ namespace PPPredictor.Core.Calculator
             }
         }
 
-        protected override async Task<List<PPPPlayer>> GetPlayers(double fetchIndexPage, PPPMapPool mapPool)
+        internal override async Task<List<PPPPlayer>> GetPlayers(double fetchIndexPage, PPPMapPool mapPool)
         {
             try
             {
@@ -81,7 +81,7 @@ namespace PPPredictor.Core.Calculator
             }
         }
 
-        protected override async Task<PPPScoreCollection> GetRecentScores(string userId, int pageSize, int page, PPPMapPool mapPool)
+        internal override async Task<PPPScoreCollection> GetRecentScores(string userId, int pageSize, int page, PPPMapPool mapPool)
         {
             try
             {
@@ -100,27 +100,27 @@ namespace PPPredictor.Core.Calculator
             }
         }
 
-        protected override Task<PPPScoreCollection> GetAllScores(string userId, string mapPoolId)
+        internal override Task<PPPScoreCollection> GetAllScores(string userId, PPPMapPool mapPool)
         {
             return Task.FromResult(new PPPScoreCollection());
         }
 
-        public override async Task<PPPBeatMapInfo> GetBeatMapInfoAsync(PPPBeatMapInfo beatMapInfo, PPPMapPool mapPool)
+        internal override async Task<PPPBeatMapInfo> GetBeatMapInfoAsync(PPPBeatMapInfo beatMapInfo, PPPMapPool mapPool)
         {
             try
             {
-                if (beatMapInfo.SelectedCustomBeatmapLevel != null)
+                if (!string.IsNullOrEmpty(beatMapInfo.CustomLevelHash))
                 {
                     string searchString = CreateSeachString(beatMapInfo.CustomLevelHash, "SOLO" + beatMapInfo.BeatmapKey.serializedName, ParsingUtil.ParseDifficultyNameToInt(beatMapInfo.BeatmapKey.difficulty.ToString()));
                     if(mapPool.MapPoolType == MapPoolType.Custom && !mapPool.LsMapPoolEntries.Where(x => x.Searchstring == searchString).Any())
                     {
                         return new PPPBeatMapInfo(beatMapInfo, new PPPStarRating(0)); //Currently selected map is not contained in selected MapPool
                     }
-                    ShortScore cachedInfo = _leaderboardInfo.DefaultMapPool.LsLeaderboadInfo?.FirstOrDefault(x => x.Searchstring == searchString);
+                    ShortScore cachedInfo = mapPool.LsLeaderboadInfo?.FirstOrDefault(x => x.Searchstring == searchString);
                     bool refetchInfo = cachedInfo != null && cachedInfo.FetchTime < DateTime.Now.AddDays(Settings.RefetchMapInfoAfterDays);
                     if (cachedInfo == null || refetchInfo)
                     {
-                        if (refetchInfo) _leaderboardInfo.DefaultMapPool.LsLeaderboadInfo?.Remove(cachedInfo);
+                        if (refetchInfo) mapPool.LsLeaderboadInfo?.Remove(cachedInfo);
                         BeatLeaderSong song = await beatleaderapi.GetSongByHash(beatMapInfo.CustomLevelHash);
                         if (song != null)
                         {
@@ -149,7 +149,7 @@ namespace PPPredictor.Core.Calculator
             }
         }
 
-        public override PPPBeatMapInfo ApplyModifiersToBeatmapInfo(PPPBeatMapInfo beatMapInfo, PPPMapPool mapPool, GameplayModifiers gameplayModifiers, bool levelFailed, bool levelPaused)
+        internal override PPPBeatMapInfo ApplyModifiersToBeatmapInfo(PPPBeatMapInfo beatMapInfo, PPPMapPool mapPool, GameplayModifiers gameplayModifiers, bool levelFailed, bool levelPaused)
         {
             List<string> lsModifiers = ParseModifiers(gameplayModifiers);
             double accRating = beatMapInfo.BaseStarRating.AccRating;
@@ -228,42 +228,7 @@ namespace PPPredictor.Core.Calculator
             }
         }
 
-        public async void UpdateAvailableMapPools()
-        {
-            try
-            {
-                var events = await beatleaderapi.GetEvents();
-
-                int sortIndex = 0;
-                foreach (BeatLeaderEvent eventItem in events.data)
-                {
-                    PPPMapPool oldPool = _leaderboardInfo.LsMapPools.Find(x => x.Id == eventItem.id.ToString());
-                    if (oldPool == null && eventItem.dtEndDate < DateTime.UtcNow)
-                    {
-                        continue; //Do not add expired events
-                    }
-                    else if (oldPool != null && eventItem.dtEndDate < DateTime.UtcNow)
-                    {
-                        //Remove expired events
-                        _leaderboardInfo.LsMapPools.Remove(oldPool);
-                        continue;
-                    }
-                    if (oldPool == null)
-                    {
-                        var mapPool = new PPPMapPool(eventItem.id.ToString(), eventItem.playListId.ToString(), MapPoolType.Custom, eventItem.name, accumulationConstant, sortIndex, new BeatLeaderPPPCurve(), string.Empty);
-                        sortIndex++;
-                        this._leaderboardInfo.LsMapPools.Add(mapPool);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logging.ErrorPrint($"PPCalculatorBeatLeader UpdateAvailableMapPools Error: {ex.Message}");
-                throw;
-            }
-        }
-
-        override public async Task UpdateMapPoolDetails(PPPMapPool mapPool)
+        override internal async Task UpdateMapPoolDetails(PPPMapPool mapPool)
         {
             if (mapPool.MapPoolType != MapPoolType.Default)
             {
@@ -296,10 +261,25 @@ namespace PPPredictor.Core.Calculator
                 default: return 0;
             }
         }
-#warning IsScoreSetOnCurrentMapPool needed?
-        //public override bool IsScoreSetOnCurrentMapPool(PPPWebSocketData score)
-        //{
-        //    return (GetLeaderboardContextId(_leaderboardInfo.CurrentMapPool.LeaderboardContext) & score.context) > 0;
-        //}
+
+        override public Task UpdateAvailableMapPools()
+        {
+            _dctMapPool.Add("-1", new PPPMapPool("-1", MapPoolType.Default, $"General", accumulationConstant, 0, new BeatLeaderPPPCurve(), LeaderboardContext.BeatLeaderDefault));
+            _dctMapPool.Add("-2", new PPPMapPool("-2", MapPoolType.Default, $"No modifiers", accumulationConstant, 1, new BeatLeaderPPPCurve(), LeaderboardContext.BeatLeaderNoModifiers));
+            _dctMapPool.Add("-3", new PPPMapPool("-3", MapPoolType.Default, $"No pauses", accumulationConstant, 2, new BeatLeaderPPPCurve(), LeaderboardContext.BeatLeaderNoPauses));
+            _dctMapPool.Add("-4", new PPPMapPool("-4", MapPoolType.Default, $"Golf", accumulationConstant, 3, new BeatLeaderPPPCurve(), LeaderboardContext.BeatLeaderGolf));
+            _dctMapPool.Add("-5", new PPPMapPool("-5", MapPoolType.Default, $"SCPM", accumulationConstant, 4, new BeatLeaderPPPCurve(), LeaderboardContext.BeatLeaderSCPM));
+            return Task.CompletedTask;
+        }
+
+        internal override bool IsScoreSetOnCurrentMapPool(PPPMapPool mapPool, PPPScoreSetData score)
+        {
+            return (GetLeaderboardContextId(mapPool.LeaderboardContext) & score.context) > 0;
+        }
+
+        internal override List<PPPMapPoolShort> GetMapPools()
+        {
+            return _dctMapPool.Values.OrderBy(x => x.SortIndex).Select(x => (PPPMapPoolShort)x).ToList();
+        }
     }
 }

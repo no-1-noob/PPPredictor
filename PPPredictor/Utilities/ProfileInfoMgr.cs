@@ -2,6 +2,7 @@
 using HMUI;
 using IPA.Utilities;
 using Newtonsoft.Json;
+using PPPredictor.Core.DataType.LeaderBoard;
 using PPPredictor.Data;
 using PPPredictor.UI;
 using System;

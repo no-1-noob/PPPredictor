@@ -2,7 +2,7 @@
 
 namespace PPPredictor.Core.DataType
 {
-    class PPGainResult
+    public class PPGainResult
     {
         private readonly double _ppTotal;
         private readonly double _ppGainWeighted;
@@ -21,7 +21,7 @@ namespace PPPredictor.Core.DataType
             _ppGainRaw = ppGainRaw;
         }
 
-        internal double GetDisplayPPValue()
+        public double GetDisplayPPValue()
         {
             double retValue = 0;
             switch (Settings.PpGainCalculationType)

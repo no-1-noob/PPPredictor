@@ -1,8 +1,11 @@
 ﻿using PPPredictor.Core.DataType;
 using PPPredictor.Core.DataType.BeatSaberEncapsulation;
+using PPPredictor.Core.DataType.Curve;
 using PPPredictor.Core.DataType.Score;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using static PPPredictor.Core.DataType.Enums;
 
 namespace PPPredictor.Core.Calculator
 {
@@ -10,27 +13,27 @@ namespace PPPredictor.Core.Calculator
     {
         //Dummy class, for when no Leaderboards are selected in the options. mhh... why even use this mod then
 
-        public override Task<PPPBeatMapInfo> GetBeatMapInfoAsync(PPPBeatMapInfo beatMapInfo, PPPMapPool mapPool)
+        internal override Task<PPPBeatMapInfo> GetBeatMapInfoAsync(PPPBeatMapInfo beatMapInfo, PPPMapPool mapPool)
         {
             return Task.FromResult(beatMapInfo);
         }
 
-        protected override Task<PPPPlayer> GetPlayerInfo(long userId, PPPMapPool mapPool)
+        internal override Task<PPPPlayer> GetPlayerInfo(long userId, PPPMapPool mapPool)
         {
             return Task.FromResult(new PPPPlayer());
         }
 
-        protected override Task<List<PPPPlayer>> GetPlayers(double fetchIndexPage, PPPMapPool mapPool)
+        internal override Task<List<PPPPlayer>> GetPlayers(double fetchIndexPage, PPPMapPool mapPool)
         {
             return Task.FromResult(new List<PPPPlayer>());
         }
 
-        protected override Task<PPPScoreCollection> GetRecentScores(string userId, int pageSize, int page, PPPMapPool mapPool)
+        internal override Task<PPPScoreCollection> GetRecentScores(string userId, int pageSize, int page, PPPMapPool mapPool)
         {
             return Task.FromResult(new PPPScoreCollection());
         }
 
-        protected override Task<PPPScoreCollection> GetAllScores(string userId, string mapPoolId)
+        internal override Task<PPPScoreCollection> GetAllScores(string userId, PPPMapPool mapPool)
         {
             return Task.FromResult(new PPPScoreCollection());
         }
@@ -40,16 +43,28 @@ namespace PPPredictor.Core.Calculator
             return $"{hash}_{beatmapKey.difficulty}";
         }
 
-        public override Task UpdateMapPoolDetails(PPPMapPool mapPool)
+        internal override Task UpdateMapPoolDetails(PPPMapPool mapPool)
         {
             return Task.CompletedTask;
         }
 
-        public override PPPBeatMapInfo ApplyModifiersToBeatmapInfo(PPPBeatMapInfo beatMapInfo, PPPMapPool mapPool, GameplayModifiers gameplayModifiers, bool levelFailed = false, bool levelPaused = false)
+        internal override PPPBeatMapInfo ApplyModifiersToBeatmapInfo(PPPBeatMapInfo beatMapInfo, PPPMapPool mapPool, GameplayModifiers gameplayModifiers, bool levelFailed = false, bool levelPaused = false)
         {
             return beatMapInfo;
         }
-#warning IsScoreSetOnCurrentMapPool needed?
-        //public override bool IsScoreSetOnCurrentMapPool(PPPWebSocketData score) { return true; }
+
+        public override Task UpdateAvailableMapPools()
+        {
+            var mapPool = new PPPMapPool(MapPoolType.Default, $"", 0, 0, new CustomPPPCurve(new List<(double, double)>(), CurveType.Linear, 0));
+            _dctMapPool.Add(mapPool.Id, mapPool);
+            return Task.CompletedTask;
+        }
+
+        internal override List<PPPMapPoolShort> GetMapPools()
+        {
+            return _dctMapPool.Values.OrderBy(x => x.SortIndex).Select(x => (PPPMapPoolShort)x).ToList();
+        }
+
+        internal override bool IsScoreSetOnCurrentMapPool(PPPMapPool mapPool, PPPScoreSetData score) { return true; }
     }
 }

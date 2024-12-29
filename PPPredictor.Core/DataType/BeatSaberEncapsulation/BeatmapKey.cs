@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using static PPPredictor.Core.DataType.Enums;
 
 namespace PPPredictor.Core.DataType.BeatSaberEncapsulation
 {
-    internal class BeatmapKey
+    public class BeatmapKey
     {
-        internal string serializedName;
-        internal int difficulty;
+        public string serializedName;
+        public BeatMapDifficulty difficulty;
     }
 }

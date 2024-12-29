@@ -1,23 +1,16 @@
-﻿using PPPredictor.Interfaces;
+﻿using PPPredictor.Core.DataType;
+using PPPredictor.Interfaces;
 
 namespace PPPredictor.Data
 {
-    internal class PPPWebSocketData
-    {
-        public string leaderboardName;
-        public string userId;
-        public int context;
-        public string hash;
-    }
-
     #region scoresaber
     class PPPWsScoreSaberCommand : IPPPRawWebsocketData
     {
         public PPPWsScoreSaberData commandData;
 
-        public PPPWebSocketData ConvertToPPPWebSocketData(string leaderboardName)
+        public PPPScoreSetData ConvertToPPPWebSocketData(string leaderboardName)
         {
-            var data = new PPPWebSocketData();
+            var data = new PPPScoreSetData();
             data.leaderboardName = leaderboardName;
             data.userId = commandData.score.leaderboardPlayerInfo.id;
             data.hash = $"{commandData.leaderboard.songHash}_{commandData.leaderboard.difficulty.gameMode}_{commandData.leaderboard.difficulty.difficulty}".ToUpper();
@@ -66,9 +59,9 @@ namespace PPPredictor.Data
 
         public PPPWsBeatLeaderLeaderboard leaderboard { get; set; }
 
-        public PPPWebSocketData ConvertToPPPWebSocketData(string leaderboardName)
+        public PPPScoreSetData ConvertToPPPWebSocketData(string leaderboardName)
         {
-            var data = new PPPWebSocketData();
+            var data = new PPPScoreSetData();
             data.leaderboardName = leaderboardName;
             data.context = validContexts;
             data.userId = playerId;

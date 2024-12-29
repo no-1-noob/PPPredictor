@@ -216,6 +216,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Converter\Converter.cs" />
     <Compile Include="Counter\CounterInfoHolder.cs" />
     <Compile Include="Counter\PPPCounter.cs" />
     <Compile Include="Counter\Settings\CounterSettings.cs" />
@@ -228,6 +229,7 @@
     <Compile Include="Installers\PPPPredictorDisplayInstaller.cs" />
     <Compile Include="Data\ProfileInfo.cs" />
     <Compile Include="Interfaces\IPPPRawWebsocketData.cs" />
+    <Compile Include="Interfaces\IPPPredictor.cs" />
     <Compile Include="Interfaces\IPPPredictorMgr.cs" />
     <Compile Include="Interfaces\IPPPWebSocket.cs" />
     <Compile Include="OpenAPIs\PPPWebSocket.cs" />
@@ -239,8 +241,8 @@
     <Compile Include="Utilities\Enums.cs" />
     <Compile Include="Utilities\GamePlayMgr.cs" />
     <Compile Include="Utilities\MainMenuMgr.cs" />
-    <Compile Include="Utilities\PPCalculatorAccSaber.cs" />
     <Compile Include="Utilities\PPCalculatorScoreSaber.cs" />
+    <Compile Include="Utilities\PPPredictor.cs" />
     <Compile Include="Utilities\PPPredictorMgr.cs" />
     <Compile Include="Utilities\ProfileInfoMgr.cs" />
     <Compile Include="UI\ViewController\PPPredictorViewController.cs" />
@@ -293,6 +295,11 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\LeaderBoardLogos\AccSaber.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\PPPredictor.Core\PPPredictor.Core.csproj">
+      <Project>{cf89708b-18dd-4f9e-baff-fdafbcdd6e10}</Project>
+      <Name>PPPredictor.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

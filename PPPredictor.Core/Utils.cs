@@ -4,7 +4,7 @@ using System.Text;
 
 namespace PPPredictor.Core
 {
-    internal class ParsingUtil
+    public class ParsingUtil
     {
         static readonly Dictionary<string, int> dctDifficultyNameToInt = new Dictionary<string, int>{
             { "EXPERTPLUS", 9 },
@@ -14,7 +14,7 @@ namespace PPPredictor.Core
             { "EASY", 1 }
         };
 
-        internal static int ParseDifficultyNameToInt(string difficulty)
+        public static int ParseDifficultyNameToInt(string difficulty)
         {
             try
             {

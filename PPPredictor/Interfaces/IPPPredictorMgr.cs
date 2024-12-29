@@ -5,6 +5,9 @@ using PPPredictor.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using static PPPredictor.Core.DataType.Enums;
+using PPPredictor.Core.DataType;
+using BeatSaberPlaylistsLib.Types;
 
 namespace PPPredictor.Interfaces
 {
@@ -36,7 +39,7 @@ namespace PPPredictor.Interfaces
 
         void UpdateCurrentAndCheckResetSession(bool v);
 
-        void ScoreSet(string leaderboardName, PPPWebSocketData data);
+        void ScoreSet(string leaderboardName, PPPScoreSetData data);
 
         void RefreshCurrentData(int v, bool refreshStars = false);
 
@@ -71,6 +74,6 @@ namespace PPPredictor.Interfaces
 
         Task UpdateCurrentBeatMapInfos(BeatmapLevel selectedBeatmapLevel, BeatmapKey beatmap);
 
-        //void FindPoolWithSyncURL(IPlaylist playlist);
+        Task FindPoolWithSyncURL(IPlaylist playlist);
     }
 }

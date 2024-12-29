@@ -4,7 +4,7 @@ using System.Text;
 
 namespace PPPredictor.Core.DataType.BeatSaberEncapsulation
 {
-    internal class BeatmapLevel
+    public class BeatmapLevel
     {
     }
 }

@@ -8,7 +8,7 @@ using static PPPredictor.Core.DataType.Enums;
 
 namespace PPPredictor.Core.DataType
 {
-    class PPPMapPool
+    internal class PPPMapPool
     {
         private string _id;
         private string _playListId;
@@ -120,6 +120,20 @@ namespace PPPredictor.Core.DataType
         public override string ToString()
         {
             return $"{_mapPoolName}";
+        }
+
+        public static implicit operator PPPMapPoolShort(PPPMapPool mapPool)
+        {
+            return new PPPMapPoolShort(
+                mapPool.IconUrl,
+                mapPool.IconData,
+                mapPool.CurrentPlayer,
+                mapPool.SessionPlayer,
+                mapPool.DtUtcLastRefresh,
+                mapPool.Id,
+                mapPool.MapPoolName,
+                mapPool.SortIndex
+            );
         }
     }
 }
