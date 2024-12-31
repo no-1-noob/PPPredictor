@@ -2,12 +2,12 @@
 using IPA.Loader;
 using PPPredictor.Core;
 using PPPredictor.Core.DataType;
+using PPPredictor.Core.DataType.MapPool;
 using PPPredictor.Data;
 using PPPredictor.Data.DisplayInfos;
 using PPPredictor.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Zenject;
@@ -43,6 +43,9 @@ namespace PPPredictor.Utilities
 
         public WebSocketMgr WebsocketMgr { get => _websocketMgr; }
 
+        internal static Instance instance;
+        private float _percentage;
+
         internal PPPredictorMgr()
         {
             this._websocketMgr = new WebSocketMgr(this);
@@ -52,18 +55,28 @@ namespace PPPredictor.Utilities
         public async void ResetPredictors()
         {
             RefreshLeaderboardVisibilityByIPAPluginManager();
-            Instance instance = await Instance.CreateAsync(new Settings(
-                Plugin.ProfileInfo.IsScoreSaberEnabled,
-                Plugin.ProfileInfo.IsBeatLeaderEnabled,
-                Plugin.ProfileInfo.IsHitBloqEnabled,
-                Plugin.ProfileInfo.IsAccSaberEnabled,
-                (await Plugin.GetUserInfoBS()).platformUserId
-                )
+            _lsPPPredictor = new List<IPPPredictor>();
+            _currentPPPredictor = new DummPredictor();
+
+            instance = await Instance.CreateAsync(
+                new Settings(
+                    Plugin.ProfileInfo.IsScoreSaberEnabled,
+                    Plugin.ProfileInfo.IsBeatLeaderEnabled,
+                    Plugin.ProfileInfo.IsHitBloqEnabled,
+                    Plugin.ProfileInfo.IsAccSaberEnabled,
+                    (await Plugin.GetUserInfoBS()).platformUserId,
+                    Plugin.ProfileInfo.PpGainCalculationType,
+                    Plugin.ProfileInfo.HitbloqMapPoolSorting,
+                    //Plugin.ProfileInfo.platformUserId,
+                    "",
+                    ProfileInfo.RefetchMapInfoAfterDays,
+                    Plugin.ProfileInfo.LastSessionReset,
+                    Plugin.ProfileInfo.ResetSessionHours
+                ),
+                Plugin.ProfileInfo.DctleaderBoardData
             );
 #warning not really clean i think
             Logging.OnMessage += Logging_OnMessage;
-            _lsPPPredictor = new List<IPPPredictor>();
-            _currentPPPredictor = null;
             if (Plugin.ProfileInfo.IsScoreSaberEnabled) _lsPPPredictor.Add(new PPPredictor(Leaderboard.ScoreSaber, instance));
             if (Plugin.ProfileInfo.IsBeatLeaderEnabled) _lsPPPredictor.Add(new PPPredictor(Leaderboard.BeatLeader, instance));
             if (Plugin.ProfileInfo.IsHitBloqEnabled) _lsPPPredictor.Add(new PPPredictor(Leaderboard.HitBloq, instance));
@@ -85,6 +98,7 @@ namespace PPPredictor.Utilities
             }
             foreach (IPPPredictor pPPredictor in _lsPPPredictor)
             {
+                pPPredictor.Percentage = _percentage;
                 pPPredictor.OnDataLoading += PPPredictor_OnDataLoading;
                 pPPredictor.OnDisplayPPInfo += PPPredictor_OnDisplayPPInfo;
                 pPPredictor.OnDisplaySessionInfo += PPPredictor_OnDisplaySessionInfo;
@@ -113,10 +127,15 @@ namespace PPPredictor.Utilities
         private void RefreshLeaderboardVisibilityByIPAPluginManager()
         {
             List<PluginMetadata> lsEnabledPlugin = PluginManager.EnabledPlugins.ToList();
-            Plugin.ProfileInfo.IsScoreSaberEnabled = lsEnabledPlugin.FirstOrDefault(x => x.Name == Leaderboard.ScoreSaber.ToString()) != null;
+            //Plugin.ProfileInfo.IsScoreSaberEnabled = lsEnabledPlugin.FirstOrDefault(x => x.Name == Leaderboard.ScoreSaber.ToString()) != null;
+            //Plugin.ProfileInfo.IsBeatLeaderEnabled = lsEnabledPlugin.FirstOrDefault(x => x.Name == Leaderboard.BeatLeader.ToString()) != null;
+            //Plugin.ProfileInfo.IsHitBloqEnabled = lsEnabledPlugin.FirstOrDefault(x => x.Name == CultureInfo.CurrentCulture.TextInfo.ToTitleCase(Leaderboard.HitBloq.ToString())) != null;
+            //Plugin.ProfileInfo.IsAccSaberEnabled = Plugin.ProfileInfo.IsScoreSaberEnabled && Plugin.ProfileInfo.IsAccSaberEnabledManual;
+
+            Plugin.ProfileInfo.IsScoreSaberEnabled = false; // lsEnabledPlugin.FirstOrDefault(x => x.Name == Leaderboard.ScoreSaber.ToString()) != null;
             Plugin.ProfileInfo.IsBeatLeaderEnabled = lsEnabledPlugin.FirstOrDefault(x => x.Name == Leaderboard.BeatLeader.ToString()) != null;
-            Plugin.ProfileInfo.IsHitBloqEnabled = lsEnabledPlugin.FirstOrDefault(x => x.Name == CultureInfo.CurrentCulture.TextInfo.ToTitleCase(Leaderboard.HitBloq.ToString())) != null;
-            Plugin.ProfileInfo.IsAccSaberEnabled = Plugin.ProfileInfo.IsScoreSaberEnabled && Plugin.ProfileInfo.IsAccSaberEnabledManual;
+            Plugin.ProfileInfo.IsHitBloqEnabled = false; //lsEnabledPlugin.FirstOrDefault(x => x.Name == CultureInfo.CurrentCulture.TextInfo.ToTitleCase(Leaderboard.HitBloq.ToString())) != null;
+            Plugin.ProfileInfo.IsAccSaberEnabled = false; //Plugin.ProfileInfo.IsScoreSaberEnabled && Plugin.ProfileInfo.IsAccSaberEnabledManual;
         }
 
         public void RestartOverlayServer()
@@ -203,6 +222,7 @@ namespace PPPredictor.Utilities
 
         public void SetPercentage(float percentage)
         {
+            _percentage = percentage;
             foreach (var item in _lsPPPredictor)
             {
                 item.Percentage = percentage;
@@ -231,7 +251,7 @@ namespace PPPredictor.Utilities
             IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());
             if (predictor != null)
             {
-                return predictor.CalculatePPatPercentage(percentage, beatMapInfo, levelFailed, levelPaused).GetAwaiter().GetResult(); ;
+                return predictor.CalculatePPatPercentage(percentage, beatMapInfo, levelFailed, levelPaused); ;
             }
             return 0;
         }
@@ -250,7 +270,7 @@ namespace PPPredictor.Utilities
             IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());
             if (predictor != null)
             {
-                return predictor.CalculateMaxPP().GetAwaiter().GetResult(); ;
+                return predictor.CalculateMaxPP(); ;
             }
             return 0;
         }
@@ -260,7 +280,7 @@ namespace PPPredictor.Utilities
             IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());
             if (predictor != null)
             {
-                return predictor.GetModifiedBeatMapInfo(gameplayModifiers).GetAwaiter().GetResult(); ;
+                return predictor.GetModifiedBeatMapInfo(gameplayModifiers);
 
             }
             return new PPPBeatMapInfo();
@@ -271,7 +291,7 @@ namespace PPPredictor.Utilities
             IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());
             if (predictor != null)
             {
-                return predictor.IsRanked().GetAwaiter().GetResult(); ;
+                return predictor.IsRanked();
             }
             return false;
         }
@@ -281,7 +301,7 @@ namespace PPPredictor.Utilities
             IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());
             if (predictor != null)
             {
-                return predictor.CalculatePPGain(pp).GetAwaiter().GetResult(); ;
+                return predictor.CalculatePPGain(pp); ;
             }
             return 0;
         }
@@ -291,7 +311,7 @@ namespace PPPredictor.Utilities
             IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());
             if (predictor != null)
             {
-                return predictor.GetPersonalBest().GetAwaiter().GetResult(); ;
+                return predictor.GetPersonalBest(); ;
             }
             return null;
         }

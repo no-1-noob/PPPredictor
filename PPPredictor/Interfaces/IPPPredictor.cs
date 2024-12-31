@@ -1,5 +1,6 @@
 ﻿using PPPredictor.Core.DataType;
 using PPPredictor.Core.DataType.BeatSaberEncapsulation;
+using PPPredictor.Core.DataType.MapPool;
 using PPPredictor.Data;
 using PPPredictor.Data.DisplayInfos;
 using System;
@@ -17,13 +18,13 @@ namespace PPPredictor.Interfaces
         Task ScoreSet(PPPScoreSetData data);
         void RefreshCurrentData(int fetchLength, bool refreshStars = false, bool fetchOnePage = false);
         void ResetDisplay(bool resetAll);
-        Task<double> CalculatePPatPercentage(double percentage, PPPBeatMapInfo beatMapInfo, bool levelFailed = false, bool levelPaused = false);
-        Task<double> CalculateMaxPP();
-        Task<PPPBeatMapInfo> GetModifiedBeatMapInfo(GameplayModifiers gameplayModifiers, bool levelFailed = false, bool levelPaused = false);
-        Task<double> CalculatePPGain(double pp);
-        Task<bool> IsRanked();
+        double CalculatePPatPercentage(double percentage, PPPBeatMapInfo beatMapInfo, bool levelFailed = false, bool levelPaused = false);
+        double CalculateMaxPP();
+        PPPBeatMapInfo GetModifiedBeatMapInfo(GameplayModifiers gameplayModifiers, bool levelFailed = false, bool levelPaused = false);
+        double CalculatePPGain(double pp);
+        bool IsRanked();
 
-        Task<double?> GetPersonalBest();
+        double? GetPersonalBest();
         void CalculatePP();
         void SetActive(bool setActive);
         Task<PPPMapPoolShort> FindPoolWithSyncURL(string syncUrl);

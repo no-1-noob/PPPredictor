@@ -4,7 +4,7 @@ using static PPPredictor.Core.DataType.Enums;
 
 namespace PPPredictor.Core.DataType.Curve
 {
-    class CurveInfo
+    public class CurveInfo
     {
         private CurveType _curveType;
         private List<(double, double)> _arrPPCurve;

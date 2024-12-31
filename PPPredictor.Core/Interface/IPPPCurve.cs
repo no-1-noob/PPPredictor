@@ -2,7 +2,7 @@
 
 namespace PPPredictor.Core.DataType.Curve
 {
-    interface IPPPCurve
+    public interface IPPPCurve
     {
         bool IsDummy { get; }
         double CalculatePPatPercentage(PPPBeatMapInfo _currentBeatMapInfo, double percentage, bool failed, bool paused, LeaderboardContext leaderboardContext = LeaderboardContext.None);

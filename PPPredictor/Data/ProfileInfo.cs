@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using PPPredictor.Core.DataType.LeaderBoard;
+using PPPredictor.Core.DataType.MapPool;
 using PPPredictor.Utilities;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace PPPredictor.Data
 {
     class ProfileInfo
     {
-        List<PPPLeaderboardInfo> _lsLeaderboardInfo;
+        Dictionary<string, LeaderboardData> _dctleaderBoardData;
         private float _lastPercentageSelected;
         private SVector3 _position;
         private SVector3 _eulerAngles;
@@ -18,6 +19,7 @@ namespace PPPredictor.Data
         private int _resetSessionHours;
         private DateTime _lastSessionReset;
         private string _lastLeaderBoardSelected;
+        private Dictionary<string, string> _mapPoolSelection;
         private bool _counterHighlightTargetPercentage;
         private bool _counterUseIcons;
         private bool _counterUseCustomMapPoolIcons;
@@ -49,7 +51,6 @@ namespace PPPredictor.Data
 
         public ProfileInfo()
         {
-            LsLeaderboardInfo = new List<PPPLeaderboardInfo>();
             LastPercentageSelected = 90;
             Position = MenuPositionHelper.UnderScoreboardPosition;
             EulerAngles = MenuPositionHelper.UnderScoreboardEulerAngles;
@@ -57,6 +58,7 @@ namespace PPPredictor.Data
             ResetSessionHours = 12;
             LastSessionReset = new DateTime();
             LastLeaderBoardSelected = Leaderboard.ScoreSaber.ToString();
+            MapPoolSelection = new Dictionary<string, string>();
             CounterDisplayType = CounterDisplayType.PP;
             CounterScoringType = CounterScoringType.Local;
             CounterHighlightTargetPercentage = true;
@@ -81,11 +83,12 @@ namespace PPPredictor.Data
             LastMinPercentageSelected = ((int)(LastPercentageSelected / 10)) * 10;
             LastMaxPercentageSelected = Math.Min((((int)(LastPercentageSelected / 10)) * 10) + 10, 100);
             StreamOverlayPort = "6558";
-    }
+            _dctleaderBoardData = new Dictionary<string, LeaderboardData>();
+        }
 
         internal void ResetCachedData()
         {
-            _lsLeaderboardInfo = new List<PPPLeaderboardInfo>();
+            _dctleaderBoardData = new Dictionary<string, LeaderboardData>();
         }
 
         public float LastPercentageSelected { get => _lastPercentageSelected; set => _lastPercentageSelected = value; }
@@ -94,7 +97,6 @@ namespace PPPredictor.Data
         public bool DisplaySessionValues { get => _displaySessionValues; set => _displaySessionValues = value; }
         public int ResetSessionHours { get => _resetSessionHours; set => _resetSessionHours = value; }
         public DateTime LastSessionReset { get => _lastSessionReset; set => _lastSessionReset = value; }
-        public List<PPPLeaderboardInfo> LsLeaderboardInfo { get => _lsLeaderboardInfo; set => _lsLeaderboardInfo = value; }
         public string LastLeaderBoardSelected { get => _lastLeaderBoardSelected; set => _lastLeaderBoardSelected = value; }
         public CounterScoringType CounterScoringType { get => _counterScoringType; set => _counterScoringType = value; }
         public bool CounterHighlightTargetPercentage { get => _counterHighlightTargetPercentage; set => _counterHighlightTargetPercentage = value; }
@@ -124,17 +126,19 @@ namespace PPPredictor.Data
         public float LastMaxPercentageSelected { get => _lastMaxPercentageSelected; set => _lastMaxPercentageSelected = value; }
         public string StreamOverlayPort { get => _streamOverlayPort; set => _streamOverlayPort = value; }
         public bool IsAccSaberEnabledManual { get => _isAccSaberEnabledManual; set => _isAccSaberEnabledManual = value; }
+        public Dictionary<string, LeaderboardData> DctleaderBoardData { get => _dctleaderBoardData; set => _dctleaderBoardData = value; }
+        public Dictionary<string, string> MapPoolSelection { get => _mapPoolSelection; set => _mapPoolSelection = value; }
 
         internal void ClearOldMapInfos()
         {
 #warning reset of saved data
-            foreach (PPPLeaderboardInfo leaderboard in LsLeaderboardInfo)
-            {
-                //foreach (PPPMapPool mapPool in leaderboard.LsMapPools)
-                //{
-                //    mapPool.LsLeaderboadInfo = mapPool.LsLeaderboadInfo.Where(x => x.FetchTime > DateTime.Now.AddDays(ProfileInfo.RefetchMapInfoAfterDays)).ToList();
-                //}
-            }
+            //foreach (LeaderboardData leaderboard in _dctleaderBoardData.Values.ToList())
+            //{
+            //    foreach (PPPMapPoolShort mappool in leaderboard.)
+            //    {
+            //        mappool.lsleaderboadinfo = mappool.lsleaderboadinfo.where(x => x.fetchtime > datetime.now.adddays(profileinfo.refetchmapinfoafterdays)).tolist();
+            //    }
+            //}
         }
     }
 }

@@ -1,11 +1,13 @@
 ﻿using PPPredictor.Core.DataType;
 using PPPredictor.Core.DataType.BeatSaberEncapsulation;
 using PPPredictor.Core.DataType.Curve;
+using PPPredictor.Core.DataType.MapPool;
 using PPPredictor.Core.DataType.Score;
 using PPPredictor.Core.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime;
 using System.Threading.Tasks;
 using static PPPredictor.Core.DataType.Enums;
 using static PPPredictor.Core.DataType.LeaderBoard.BeatLeaderDataTypes;
@@ -20,7 +22,7 @@ namespace PPPredictor.Core.Calculator
         private const string PassRating = "PassRating";
         private const string TechRating = "TechRating";
 
-        public PPCalculatorBeatLeader() : base() 
+        public PPCalculatorBeatLeader(Dictionary<string, PPPMapPool> dctMapPool, Settings settings) : base(dctMapPool, settings, Leaderboard.BeatLeader) 
         {
             playerPerPages = 50;
             taskDelayValue = 1100;
@@ -117,7 +119,7 @@ namespace PPPredictor.Core.Calculator
                         return new PPPBeatMapInfo(beatMapInfo, new PPPStarRating(0)); //Currently selected map is not contained in selected MapPool
                     }
                     ShortScore cachedInfo = mapPool.LsLeaderboadInfo?.FirstOrDefault(x => x.Searchstring == searchString);
-                    bool refetchInfo = cachedInfo != null && cachedInfo.FetchTime < DateTime.Now.AddDays(Settings.RefetchMapInfoAfterDays);
+                    bool refetchInfo = cachedInfo != null && cachedInfo.FetchTime < DateTime.Now.AddDays(_settings.RefetchMapInfoAfterDays);
                     if (cachedInfo == null || refetchInfo)
                     {
                         if (refetchInfo) mapPool.LsLeaderboadInfo?.Remove(cachedInfo);
@@ -228,7 +230,7 @@ namespace PPPredictor.Core.Calculator
             }
         }
 
-        override internal async Task UpdateMapPoolDetails(PPPMapPool mapPool)
+        override internal async Task InternalUpdateMapPoolDetails(PPPMapPool mapPool)
         {
             if (mapPool.MapPoolType != MapPoolType.Default)
             {
@@ -264,11 +266,11 @@ namespace PPPredictor.Core.Calculator
 
         override public Task UpdateAvailableMapPools()
         {
-            _dctMapPool.Add("-1", new PPPMapPool("-1", MapPoolType.Default, $"General", accumulationConstant, 0, new BeatLeaderPPPCurve(), LeaderboardContext.BeatLeaderDefault));
-            _dctMapPool.Add("-2", new PPPMapPool("-2", MapPoolType.Default, $"No modifiers", accumulationConstant, 1, new BeatLeaderPPPCurve(), LeaderboardContext.BeatLeaderNoModifiers));
-            _dctMapPool.Add("-3", new PPPMapPool("-3", MapPoolType.Default, $"No pauses", accumulationConstant, 2, new BeatLeaderPPPCurve(), LeaderboardContext.BeatLeaderNoPauses));
-            _dctMapPool.Add("-4", new PPPMapPool("-4", MapPoolType.Default, $"Golf", accumulationConstant, 3, new BeatLeaderPPPCurve(), LeaderboardContext.BeatLeaderGolf));
-            _dctMapPool.Add("-5", new PPPMapPool("-5", MapPoolType.Default, $"SCPM", accumulationConstant, 4, new BeatLeaderPPPCurve(), LeaderboardContext.BeatLeaderSCPM));
+            if (!_dctMapPool.ContainsKey("-1")) _dctMapPool.Add("-1", new PPPMapPool("-1", MapPoolType.Default, $"General", accumulationConstant, 0, new BeatLeaderPPPCurve(), LeaderboardContext.BeatLeaderDefault));
+            if (!_dctMapPool.ContainsKey("-2")) _dctMapPool.Add("-2", new PPPMapPool("-2", MapPoolType.Default, $"No modifiers", accumulationConstant, 1, new BeatLeaderPPPCurve(), LeaderboardContext.BeatLeaderNoModifiers));
+            if (!_dctMapPool.ContainsKey("-3")) _dctMapPool.Add("-3", new PPPMapPool("-3", MapPoolType.Default, $"No pauses", accumulationConstant, 2, new BeatLeaderPPPCurve(), LeaderboardContext.BeatLeaderNoPauses));
+            if (!_dctMapPool.ContainsKey("-4")) _dctMapPool.Add("-4", new PPPMapPool("-4", MapPoolType.Default, $"Golf", accumulationConstant, 3, new BeatLeaderPPPCurve(), LeaderboardContext.BeatLeaderGolf));
+            if (!_dctMapPool.ContainsKey("-5")) _dctMapPool.Add("-5", new PPPMapPool("-5", MapPoolType.Default, $"SCPM", accumulationConstant, 4, new BeatLeaderPPPCurve(), LeaderboardContext.BeatLeaderSCPM));
             return Task.CompletedTask;
         }
 

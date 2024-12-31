@@ -22,7 +22,7 @@
             inevent = 6
         }
 
-        internal enum LeaderboardContext
+        public enum LeaderboardContext
         {
             None,
             BeatLeaderDefault,
@@ -32,14 +32,14 @@
             BeatLeaderSCPM
         }
 
-        internal enum MapPoolType
+        public enum MapPoolType
         {
             None,
             Default,
             Custom
         }
 
-        internal enum CurveType
+        public enum CurveType
         {
             ScoreSaber,
             BeatLeader,

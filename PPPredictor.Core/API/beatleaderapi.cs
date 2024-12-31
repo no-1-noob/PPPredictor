@@ -163,7 +163,7 @@ namespace PPPredictor.Core.API
             return new BeatLeaderPlayList();
         }
 
-        [Conditional("BEATLEADERNETWORK")]
+        //[Conditional("BEATLEADERNETWORK")]
         public void DebugPrintBeatLeaderNetwork(string message)
         {
             Logging.DebugNetworkPrint($"BeatLeaderNetwork: {message}");

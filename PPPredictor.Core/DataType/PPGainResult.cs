@@ -7,38 +7,36 @@ namespace PPPredictor.Core.DataType
         private readonly double _ppTotal;
         private readonly double _ppGainWeighted;
         private readonly double _ppGainRaw;
+        private readonly double _ppDisplayValue;
 
         public double PpTotal { get => _ppTotal; }
         public double PpGainWeighted { get => _ppGainWeighted; }
         public double PpGainRaw { get => _ppGainRaw; }
+        public double PpDisplayValue => _ppDisplayValue;
 
-        public PPGainResult() : this(0,0,0) { }
+        public PPGainResult() : this(0,0,0, PPGainCalculationType.Raw) {
+            _ppDisplayValue = 0;
+        }
 
-        public PPGainResult(double ppTotal, double ppGainWeighted, double ppGainRaw)
+        public PPGainResult(double ppTotal, double ppGainWeighted, double ppGainRaw, PPGainCalculationType pPGainCalculationType)
         {
             _ppTotal = ppTotal;
             _ppGainWeighted = ppGainWeighted;
             _ppGainRaw = ppGainRaw;
-        }
-
-        public double GetDisplayPPValue()
-        {
-            double retValue = 0;
-            switch (Settings.PpGainCalculationType)
+            switch (pPGainCalculationType)
             {
                 case PPGainCalculationType.Weighted:
-                    retValue = PpGainWeighted;
+                    _ppDisplayValue = PpGainWeighted;
                     break;
                 case PPGainCalculationType.Raw:
-                    retValue = PpGainRaw;
+                    _ppDisplayValue = PpGainRaw;
                     break;
             }
-            return retValue;
         }
 
         public override string ToString()
         {
-            return $"PPGainResult: PpTotal {PpTotal} PpGainWeighted {PpGainWeighted} PpGainRaw {PpGainRaw} GetDisplayPPValue {GetDisplayPPValue()}";
+            return $"PPGainResult: PpTotal {PpTotal} PpGainWeighted {PpGainWeighted} PpGainRaw {PpGainRaw} GetDisplayPPValue {PpDisplayValue}";
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using PPPredictor.Core.DataType;
 using PPPredictor.Core.DataType.BeatSaberEncapsulation;
 using PPPredictor.Core.DataType.LeaderBoard;
+using PPPredictor.Core.DataType.MapPool;
 using PPPredictor.Core.DataType.Score;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ namespace PPPredictor.Core.Calculator
     {
         private readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
         internal PPPLeaderboardInfo _leaderboardInfo;
+        protected Settings _settings;
         protected int playerPerPages = 0; //Cause a null reference if not set ;)
         protected bool hasGetAllScoresFunctionality = false;
         protected bool hasGetRecentScoresFunctionality = true;
@@ -28,8 +30,14 @@ namespace PPPredictor.Core.Calculator
 
         public event EventHandler OnMapPoolRefreshed;
 
-        public PPCalculator()
+        public PPCalculator(Dictionary<string, PPPMapPool> dctMapPool, Settings settings, Leaderboard leaderboard)
         {
+            if(dctMapPool != null)
+            {
+                _dctMapPool = dctMapPool;
+            }
+            _leaderboardInfo = new PPPLeaderboardInfo(leaderboard);
+            _settings = settings;
         }
 
         internal PPPMapPool GetMapPoolById(string mapPoolId)
@@ -43,9 +51,29 @@ namespace PPPredictor.Core.Calculator
             }
         }
 
-        internal async Task<PPPPlayer> GetProfile(PPPMapPool mapPool, string userId)
+        internal async Task<(PPPPlayer, PPPPlayer)> UpdatePlayer(PPPMapPool mapPool, bool doResetSession)
         {
-            if (long.TryParse(userId, out long longUserId))
+            PPPPlayer player = await GetProfile(mapPool);
+            mapPool.CurrentPlayer = player;
+            if (doResetSession || mapPool.SessionPlayer == null || NeedsResetSession())
+            {
+                _settings.LastSessionReset = DateTime.Now;
+                mapPool.SessionPlayer = player;
+            }
+            return (mapPool.SessionPlayer, mapPool.CurrentPlayer);
+        }
+
+        private bool NeedsResetSession()
+        {
+            return
+                _settings.ResetSessionHours > 0
+                && ((DateTime.Now - _settings.LastSessionReset).TotalHours > _settings.ResetSessionHours
+                || (DateTime.Now - _settings.LastSessionReset).TotalMinutes < 1); //Parallel reset of multiple scoreboards
+        }
+
+        internal async Task<PPPPlayer> GetProfile(PPPMapPool mapPool)
+        {
+            if (long.TryParse(GetUserId(mapPool), out long longUserId))
             {
                 var player = await GetPlayerInfo(longUserId, mapPool); 
                 return player;
@@ -53,10 +81,23 @@ namespace PPPredictor.Core.Calculator
             return new PPPPlayer();
         }
 
-        internal async Task GetPlayerScores(PPPMapPool mapPool, string userId, int pageSize, int largePageSize, bool fetchOnePage = false)
+        private string GetUserId(PPPMapPool mapPool)
+        {
+            if (!string.IsNullOrEmpty(mapPool.CustomLeaderboardUserId))
+            {
+                return mapPool.CustomLeaderboardUserId;
+            }
+            else
+            {
+                return _settings.UserId;
+            }
+        }
+
+        internal async Task GetPlayerScores(PPPMapPool mapPool, int pageSize, int largePageSize, bool fetchOnePage = false)
         {
             try
             {
+                string userId = GetUserId(mapPool);
                 bool hasNoScores = false;
                 bool hasMoreData = true;
                 int page = 1;
@@ -177,23 +218,23 @@ namespace PPPredictor.Core.Calculator
                             ppAfterPlay += weightedPP;
                             index++;
                         }
-                        return new PPGainResult(Math.Round(ppAfterPlay, 2, MidpointRounding.AwayFromZero), Zeroizer(Math.Round(ppAfterPlay - currentTotalPP, 2, MidpointRounding.AwayFromZero), 0.02), pp - previousPP);
+                        return new PPGainResult(Math.Round(ppAfterPlay, 2, MidpointRounding.AwayFromZero), Zeroizer(Math.Round(ppAfterPlay - currentTotalPP, 2, MidpointRounding.AwayFromZero), 0.02), pp - previousPP, _settings.PpGainCalculationType);
                     }
                     //Try to find old pp value if the map has been failed
                     ShortScore oldScore = lsScores.Find(x => x.Searchstring == mapSearchString);
-                    return new PPGainResult(currentTotalPP, pp, oldScore != null ? -oldScore.Pp : 0);
+                    return new PPGainResult(currentTotalPP, pp, oldScore != null ? -oldScore.Pp : 0, _settings.PpGainCalculationType);
                 }
                 else if(currentTotalPP == 0) //If you have not set a score yet, total is = the new pp play
                 {
-                    return new PPGainResult(pp, pp, pp);
+                    return new PPGainResult(pp, pp, pp, _settings.PpGainCalculationType);
                 }
             }
             catch (Exception ex)
             {
                 Logging.ErrorPrint($"PPPredictor {_leaderboardInfo?.LeaderboardName} GetPlayerScorePPGain Error: {ex.Message}");
-                return new PPGainResult(currentTotalPP, pp, pp);
+                return new PPGainResult(currentTotalPP, pp, pp, _settings.PpGainCalculationType);
             }
-            return new PPGainResult(currentTotalPP, pp, pp);
+            return new PPGainResult(currentTotalPP, pp, pp, _settings.PpGainCalculationType);
         }
 
         internal async Task<RankGainResult> GetPlayerRankGain(double pp, PPPMapPool mapPool)
@@ -347,6 +388,14 @@ namespace PPPredictor.Core.Calculator
             return true;
         }
 
+        internal async Task UpdateMapPoolDetails(PPPMapPool mapPool){
+            if (mapPool.DtUtcLastRefresh < DateTime.UtcNow.AddDays(-1))
+            {
+                await InternalUpdateMapPoolDetails(mapPool);
+                mapPool.DtUtcLastRefresh = DateTime.UtcNow;
+            }
+        }
+
         internal abstract List<PPPMapPoolShort> GetMapPools();
 
         internal abstract Task<PPPPlayer> GetPlayerInfo(long userId, PPPMapPool mapPool);
@@ -363,7 +412,7 @@ namespace PPPredictor.Core.Calculator
 
         public abstract string CreateSeachString(string hash, BeatmapKey beatmapKey);
 
-        internal abstract Task UpdateMapPoolDetails(PPPMapPool mapPool);
+        internal abstract Task InternalUpdateMapPoolDetails(PPPMapPool mapPool);
 
         public abstract Task UpdateAvailableMapPools();
         internal abstract bool IsScoreSetOnCurrentMapPool(PPPMapPool mapPool, PPPScoreSetData score);

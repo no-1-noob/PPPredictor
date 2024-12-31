@@ -1,8 +1,4 @@
-﻿using PPPredictor.Core.API;
-using PPPredictor.Core.DataType.Curve;
-using System;
-using System.Collections.Generic;
-using static PPPredictor.Core.DataType.Enums;
+﻿using static PPPredictor.Core.DataType.Enums;
 
 namespace PPPredictor.Core.DataType.LeaderBoard
 {
@@ -10,8 +6,6 @@ namespace PPPredictor.Core.DataType.LeaderBoard
     {
         private string _leaderboardName;
         private string _leaderboardIcon;
-        private string _lastSelectedMapPoolId;
-        private string _customLeaderboardUserId;
         private string _ppSuffix;
         private int _leaderboardFirstPageIndex;
         private bool _isCountryRankEnabled;
@@ -19,9 +13,6 @@ namespace PPPredictor.Core.DataType.LeaderBoard
 
         public string LeaderboardName { get => _leaderboardName; set => _leaderboardName = value; }
         public string LeaderboardIcon { get => _leaderboardIcon; set => _leaderboardIcon = value; }
-        public string LastSelectedMapPoolId { get => _lastSelectedMapPoolId; set => _lastSelectedMapPoolId = value; }
-        //internal PPPMapPool DefaultMapPool { get => _dctMapPool.Find(x => x.MapPoolType == MapPoolType.Default); }
-        public string CustomLeaderboardUserId { get => _customLeaderboardUserId; set => _customLeaderboardUserId = value; }
         public string PpSuffix { get => _ppSuffix; set => _ppSuffix = value; }
         public int LeaderboardFirstPageIndex { get => _leaderboardFirstPageIndex; set => _leaderboardFirstPageIndex = value; }
         public bool IsCountryRankEnabled { get => _isCountryRankEnabled; set => _isCountryRankEnabled = value; }
@@ -34,12 +25,10 @@ namespace PPPredictor.Core.DataType.LeaderBoard
         public PPPLeaderboardInfo(Leaderboard leaderboard)
         {
             this._leaderboardName = leaderboard.ToString();
-            this._customLeaderboardUserId = string.Empty;
             this._ppSuffix = "pp";
             this.LeaderboardFirstPageIndex = 1;
             this.IsCountryRankEnabled = true;
             this.LargePageSize = 10;
-            PPPMapPool mapPool = null;
 
             switch (leaderboard)
             {

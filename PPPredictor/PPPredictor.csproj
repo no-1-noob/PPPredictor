@@ -238,6 +238,7 @@
     <Compile Include="UI\ViewController\SettingsMidViewController.cs" />
     <Compile Include="Utilities\Constants.cs" />
     <Compile Include="Utilities\DisplayHelper.cs" />
+    <Compile Include="Utilities\DummPredictor.cs" />
     <Compile Include="Utilities\Enums.cs" />
     <Compile Include="Utilities\GamePlayMgr.cs" />
     <Compile Include="Utilities\MainMenuMgr.cs" />

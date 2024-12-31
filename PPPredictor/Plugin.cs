@@ -53,7 +53,7 @@ namespace PPPredictor
         [OnExit]
         public void OnApplicationQuit()
         {
-            ProfileInfoMgr.SaveProfile(ProfileInfo);
+            ProfileInfoMgr.SaveProfile(ProfileInfo, PPPredictorMgr.instance.GetSaveData());
         }
 
         public static void ErrorPrint(string text)

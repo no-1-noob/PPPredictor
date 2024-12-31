@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using static PPPredictor.Core.DataType.Enums;
 
-namespace PPPredictor.Core.DataType
+namespace PPPredictor.Core.DataType.MapPool
 {
-    internal class PPPMapPool
+    public class PPPMapPool
     {
         private string _id;
         private string _playListId;
@@ -32,13 +32,14 @@ namespace PPPredictor.Core.DataType
         private LeaderboardContext _leaderboardContext;
         private bool isPlayerFound;
         private Dictionary<int, double> dctWeightLookup;
+        private string _customLeaderboardUserId;
 
         public string MapPoolName { get => _mapPoolName; set => _mapPoolName = value; }
         public float AccumulationConstant { get => _accumulationConstant; set => _accumulationConstant = value; }
         public int SortIndex { get => _sortIndex; set => _sortIndex = value; }
-        public List<ShortScore> LsScores 
-        { 
-            get => _lsScores; 
+        public List<ShortScore> LsScores
+        {
+            get => _lsScores;
             set
             {
                 if (value != null)
@@ -67,7 +68,9 @@ namespace PPPredictor.Core.DataType
         public string SyncUrl { get => _syncUrl; set => _syncUrl = value; }
         public LeaderboardContext LeaderboardContext { get => _leaderboardContext; set => _leaderboardContext = value; }
         public bool IsPlayerFound { get => isPlayerFound; set => isPlayerFound = value; }
+        [JsonIgnore]
         public Dictionary<int, double> DctWeightLookup { get => dctWeightLookup; set => dctWeightLookup = value; }
+        public string CustomLeaderboardUserId { get => _customLeaderboardUserId; set => _customLeaderboardUserId = value; }
 
         [JsonConstructor]
 
@@ -92,6 +95,7 @@ namespace PPPredictor.Core.DataType
             _leaderboardContext = LeaderboardContext.None;
             isPlayerFound = true;
             dctWeightLookup = new Dictionary<int, double>();
+            _customLeaderboardUserId = string.Empty;
         }
 
         public PPPMapPool(string id, string playListId, MapPoolType mapPoolType, string mapPoolName, float accumulationConstant, int sortIndex, IPPPCurve curve, string iconUrl, double popularity = 0, string syncUrl = "", LeaderboardContext leaderboardContext = LeaderboardContext.None) : this()
@@ -103,9 +107,9 @@ namespace PPPredictor.Core.DataType
             _accumulationConstant = accumulationConstant;
             _sortIndex = sortIndex;
             _curve = curve;
-            _iconUrl= iconUrl;
+            _iconUrl = iconUrl;
             _popularity = popularity;
-            _syncUrl= syncUrl;
+            _syncUrl = syncUrl;
             _leaderboardContext = leaderboardContext;
         }
 
@@ -127,9 +131,6 @@ namespace PPPredictor.Core.DataType
             return new PPPMapPoolShort(
                 mapPool.IconUrl,
                 mapPool.IconData,
-                mapPool.CurrentPlayer,
-                mapPool.SessionPlayer,
-                mapPool.DtUtcLastRefresh,
                 mapPool.Id,
                 mapPool.MapPoolName,
                 mapPool.SortIndex

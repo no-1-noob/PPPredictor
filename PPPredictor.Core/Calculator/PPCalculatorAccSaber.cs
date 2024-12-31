@@ -1,6 +1,7 @@
 ﻿using PPPredictor.Core.DataType;
 using PPPredictor.Core.DataType.BeatSaberEncapsulation;
 using PPPredictor.Core.DataType.Curve;
+using PPPredictor.Core.DataType.MapPool;
 using PPPredictor.Core.DataType.Score;
 using PPPredictor.Core.Interface;
 using System;
@@ -22,7 +23,7 @@ namespace PPPredictor.Core.Calculator
         private string getPlayerScorePPGainLastHash = string.Empty;
         private string getPlayerScorePPGainLastCategory = string.Empty;
 
-        public PPCalculatorAccSaber()
+        public PPCalculatorAccSaber(Dictionary<string, PPPMapPool> dctMapPool, Settings settings) : base(dctMapPool, settings, Leaderboard.AccSaber)
         {
             hasGetAllScoresFunctionality = true;
             hasGetRecentScoresFunctionality = false;
@@ -137,7 +138,7 @@ namespace PPPredictor.Core.Calculator
             }
         }
 
-        internal override async Task UpdateMapPoolDetails(PPPMapPool mapPool)
+        internal override async Task InternalUpdateMapPoolDetails(PPPMapPool mapPool)
         {
             if (!IsPlayerFound(mapPool)) return;
             try
@@ -214,10 +215,10 @@ namespace PPPredictor.Core.Calculator
                     {
                         PPGainResult ppGain = GetPlayerScorePPGainInternal(dctScores[categoryDisplayName], mapSearchString, pp, dctScoresSum[categoryDisplayName], mapPool);
                         double otherSum = dctScoresSum.Where(kvp => kvp.Key != categoryDisplayName).Sum(kvp => kvp.Value);
-                        return new PPGainResult(ppGain.PpTotal + otherSum, ppGain.PpGainWeighted, ppGain.PpGainRaw);
+                        return new PPGainResult(ppGain.PpTotal + otherSum, ppGain.PpGainWeighted, ppGain.PpGainRaw, _settings.PpGainCalculationType);
                     }
                 }
-                return new PPGainResult(mapPool.CurrentPlayer.Pp, pp, pp);
+                return new PPGainResult(mapPool.CurrentPlayer.Pp, pp, pp, _settings.PpGainCalculationType);
             }
         }
 

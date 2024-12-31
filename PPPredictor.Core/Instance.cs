@@ -2,6 +2,8 @@
 using PPPredictor.Core.Calculator;
 using PPPredictor.Core.DataType;
 using PPPredictor.Core.DataType.BeatSaberEncapsulation;
+using PPPredictor.Core.DataType.LeaderBoard;
+using PPPredictor.Core.DataType.MapPool;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,14 +24,14 @@ namespace PPPredictor.Core
             this.settings = settings;
         }
 
-        public static async Task<Instance> CreateAsync(Settings settings)
+        public static async Task<Instance> CreateAsync(Settings settings, Dictionary<string, LeaderboardData> dctLeaderboardData)
         {
             var instance = new Instance(settings);
-            await instance.InitializeAsync(settings);
+            await instance.InitializeAsync(settings, dctLeaderboardData);
             return instance;
         }
 
-        private async Task InitializeAsync(Settings settings)
+        private async Task InitializeAsync(Settings settings, Dictionary<string, LeaderboardData> dctLeaderboardData)
         {
 
             if (settings.IsScoreSaberEnabled)
@@ -38,22 +40,22 @@ namespace PPPredictor.Core
             }
             if(settings.IsBeatLeaderEnabled)
             {
-                var v = new PPCalculatorBeatLeader<BeatleaderAPI>();
+                var v = new PPCalculatorBeatLeader<BeatleaderAPI>(dctLeaderboardData.TryGetValue(Leaderboard.BeatLeader.ToString(), out var result) ? result.DctMapPool : null, settings);
                 dctCalculator.Add(Leaderboard.BeatLeader, v);
             }
             if (settings.IsHitbloqEnabled)
             {
-                var v = new PPCalculatorHitBloq<HitbloqAPI>();
+                var v = new PPCalculatorHitBloq<HitbloqAPI>(dctLeaderboardData.TryGetValue(Leaderboard.HitBloq.ToString(), out var result) ? result.DctMapPool : null, settings);
                 dctCalculator.Add(Leaderboard.HitBloq, v);
             }
             if (settings.IsAccSaberEnabled)
             {
-                var v = new PPCalculatorAccSaber<AccSaberApi>();
+                var v = new PPCalculatorAccSaber<AccSaberApi>(dctLeaderboardData.TryGetValue(Leaderboard.AccSaber.ToString(), out var result) ? result.DctMapPool : null, settings);
                 dctCalculator.Add(Leaderboard.AccSaber, v);
             }
             if(dctCalculator.Count == 0)
             {
-                var v = new PPCalculatorNoLeaderboard();
+                var v = new PPCalculatorNoLeaderboard(null, settings);
                 dctCalculator.Add(Leaderboard.AccSaber, v);
             }
 
@@ -74,31 +76,30 @@ namespace PPPredictor.Core
             }
         }
 
-        public async Task<double> CalculatePPatPercentage(Leaderboard leaderBoard, string mapPoolId, PPPBeatMapInfo _currentBeatMapInfo, double percentage, bool failed, bool paused)
+        public double CalculatePPatPercentage(Leaderboard leaderBoard, string mapPoolId, PPPBeatMapInfo _currentBeatMapInfo, double percentage, bool failed, bool paused)
         {
             (PPCalculator calculator, PPPMapPool mapPool) = GetCalculatorAndMapPool(leaderBoard, mapPoolId);
-            var i = await SemaphoreFunction<double>(calculator.Semaphore,
-                () => Task.Run(() => calculator.CalculatePPatPercentage(_currentBeatMapInfo, mapPool, percentage, failed, paused))
-            );
-            return i;
+            return calculator.CalculatePPatPercentage(_currentBeatMapInfo, mapPool, percentage, failed, paused);
         }
 
-        public async Task<PPPBeatMapInfo> ApplyModifiersToBeatmapInfo(Leaderboard leaderBoard, string mapPoolId, PPPBeatMapInfo beatMapInfo, GameplayModifiers gameplayModifiers, bool levelFailed = false, bool levelPaused = false)
+        public PPPBeatMapInfo ApplyModifiersToBeatmapInfo(Leaderboard leaderBoard, string mapPoolId, PPPBeatMapInfo beatMapInfo, GameplayModifiers gameplayModifiers, bool levelFailed = false, bool levelPaused = false)
         {
             (PPCalculator calculator, PPPMapPool mapPool) = GetCalculatorAndMapPool(leaderBoard, mapPoolId);
-            var i = await SemaphoreFunction(calculator.Semaphore,
-                () => Task.Run(() => calculator.ApplyModifiersToBeatmapInfo(beatMapInfo, mapPool, gameplayModifiers, levelFailed, levelPaused))
-            );
-            return i;
+            return calculator.ApplyModifiersToBeatmapInfo(beatMapInfo, mapPool, gameplayModifiers, levelFailed, levelPaused);
         }
 
-        public async Task<double> CalculateMaxPP(Leaderboard leaderBoard, string mapPoolId, PPPBeatMapInfo currentBeatMapInfo)
+        public double CalculateMaxPP(Leaderboard leaderBoard, string mapPoolId, PPPBeatMapInfo currentBeatMapInfo)
         {
-            (PPCalculator calculator, PPPMapPool mapPool) = GetCalculatorAndMapPool(leaderBoard, mapPoolId);
-            var i = await SemaphoreFunction(calculator.Semaphore,
-                () => Task.Run(() => calculator.CalculateMaxPP(currentBeatMapInfo, mapPool))
-            );
-            return i;
+            try
+            {
+                (PPCalculator calculator, PPPMapPool mapPool) = GetCalculatorAndMapPool(leaderBoard, mapPoolId);
+                return calculator.CalculateMaxPP(currentBeatMapInfo, mapPool);
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception($"Error in CalculateMaxPP {ex.Message}");
+            }
         }
 
         public async Task<RankGainResult> GetPlayerRankGain(Leaderboard leaderBoard, string mapPoolId, double pp)
@@ -110,13 +111,10 @@ namespace PPPredictor.Core
             return i;
         }
 
-        public async Task<PPGainResult> GetPlayerScorePPGain(Leaderboard leaderBoard, string mapPoolId, string mapSearchString, double pp)
+        public PPGainResult GetPlayerScorePPGain(Leaderboard leaderBoard, string mapPoolId, string mapSearchString, double pp)
         {
             (PPCalculator calculator, PPPMapPool mapPool) = GetCalculatorAndMapPool(leaderBoard, mapPoolId);
-            var i = await SemaphoreFunction(calculator.Semaphore,
-                () => Task.Run(() => calculator.GetPlayerScorePPGain(mapSearchString, pp, mapPool))
-            );
-            return i;
+            return calculator.GetPlayerScorePPGain(mapSearchString, pp, mapPool);
         }
 
         public async Task<PPPMapPoolShort> FindPoolWithSyncURL(Leaderboard leaderBoard, string syncUrl)
@@ -136,11 +134,18 @@ namespace PPPredictor.Core
         
 
 
-        public async Task<double?> GetPersonalBest(Leaderboard leaderBoard, string mapPoolId, string mapSearchString)
+        public double? GetPersonalBest(Leaderboard leaderBoard, string mapPoolId, string mapSearchString)
+        {
+            (PPCalculator calculator, PPPMapPool mapPool) = GetCalculatorAndMapPool(leaderBoard, mapPoolId);
+            return calculator.GetPersonalBest(mapSearchString, mapPool);
+        }
+
+        
+        public async Task<(PPPPlayer, PPPPlayer)> UpdatePlayer(Leaderboard leaderBoard, string mapPoolId, bool doResetSession)
         {
             (PPCalculator calculator, PPPMapPool mapPool) = GetCalculatorAndMapPool(leaderBoard, mapPoolId);
             var i = await SemaphoreFunction(calculator.Semaphore,
-                () => Task.Run(() => calculator.GetPersonalBest(mapSearchString, mapPool))
+                () => Task.Run(() => calculator.UpdatePlayer(mapPool, doResetSession))
             );
             return i;
         }
@@ -149,18 +154,15 @@ namespace PPPredictor.Core
         {
             (PPCalculator calculator, PPPMapPool mapPool) = GetCalculatorAndMapPool(leaderBoard, mapPoolId);
             var i = await SemaphoreFunction(calculator.Semaphore,
-                () => Task.Run(() => calculator.GetProfile(mapPool, settings.UserId))
+                () => Task.Run(() => calculator.GetProfile(mapPool))
             );
             return i;
         }
 
-        public async Task<bool> HasOldDotRanking(Leaderboard leaderBoard, string mapPoolId)
+        public bool HasOldDotRanking(Leaderboard leaderBoard, string mapPoolId)
         {
             (PPCalculator calculator, PPPMapPool mapPool) = GetCalculatorAndMapPool(leaderBoard, mapPoolId);
-            var i = await SemaphoreFunction(calculator.Semaphore,
-                () => Task.Run(() => calculator.hasOldDotRanking)
-            );
-            return i;
+            return calculator.hasOldDotRanking;
         }
 
         public async Task<bool> IsScoreSetOnCurrentMapPool(Leaderboard leaderBoard, string mapPoolId, PPPScoreSetData data)
@@ -193,8 +195,22 @@ namespace PPPredictor.Core
         {
             (PPCalculator calculator, PPPMapPool mapPool) = GetCalculatorAndMapPool(leaderBoard, mapPoolId);
             await SemaphoreFunction(calculator.Semaphore,
-                () => Task.Run(() => calculator.GetPlayerScores(mapPool, settings.UserId, pageSize, largePageSize, fetchOnePage))
+                () => Task.Run(() => calculator.GetPlayerScores(mapPool, pageSize, largePageSize, fetchOnePage))
             );
+        }
+
+        public Dictionary<string, LeaderboardData> GetSaveData()
+        {
+            Dictionary<string, LeaderboardData> dctLeaderboardData = new Dictionary<string, LeaderboardData>();
+            foreach (var calculator in dctCalculator.Values)
+            {
+                LeaderboardData data = new LeaderboardData()
+                {
+                    DctMapPool = calculator._dctMapPool
+                };
+            dctLeaderboardData.Add(calculator._leaderboardInfo.LeaderboardName, data);
+            }
+            return dctLeaderboardData;
         }
 
         private (PPCalculator, PPPMapPool) GetCalculatorAndMapPool(Leaderboard leaderBoard, string mapPoolId)

@@ -8,7 +8,7 @@ namespace PPPredictor.Converter
         {
             return new Core.DataType.BeatSaberEncapsulation.BeatmapKey
             {
-                serializedName = beatmapKey.SerializedName(),
+                serializedName = beatmapKey.beatmapCharacteristic.serializedName,
                 difficulty = GetBeatMapKeyDifficulty(beatmapKey.difficulty)
             };
         }
@@ -43,6 +43,10 @@ namespace PPPredictor.Converter
 
         public static Core.DataType.BeatSaberEncapsulation.GameplayModifiers ConvertGameplayModifiers(GameplayModifiers gameplayModifiers)
         {
+            if(gameplayModifiers == null)
+            {
+                return new Core.DataType.BeatSaberEncapsulation.GameplayModifiers();
+            }
             return new Core.DataType.BeatSaberEncapsulation.GameplayModifiers
             {
                 disappearingArrows = gameplayModifiers.disappearingArrows,

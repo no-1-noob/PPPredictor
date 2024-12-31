@@ -1,6 +1,8 @@
 ﻿using PPPredictor.Core.DataType;
 using PPPredictor.Core.DataType.BeatSaberEncapsulation;
 using PPPredictor.Core.DataType.Curve;
+using PPPredictor.Core.DataType.LeaderBoard;
+using PPPredictor.Core.DataType.MapPool;
 using PPPredictor.Core.DataType.Score;
 using PPPredictor.Core.Interface;
 using System;
@@ -39,13 +41,12 @@ namespace PPPredictor.Core.Calculator
         };
         private static Dictionary<string, string> DctCharLengthen { get => dctCharShorten.ToDictionary(x => x.Value, x => x.Key); }
         private static Dictionary<string, string> DctDiffLengthen { get => dctDiffShorten.ToDictionary(x => x.Value, x => x.Key); }
-        public PPCalculatorHitBloq() : base()
+        public PPCalculatorHitBloq(Dictionary<string, PPPMapPool> dctMapPool, Settings settings) : base(dctMapPool, settings, Leaderboard.HitBloq)
         {
             playerPerPages = 10;
             hasGetAllScoresFunctionality = true;
             hasPPToRankFunctionality = true;
             hitbloqapi = new HBAPI();
-            UpdateUserId();
         }
 
         internal override PPPBeatMapInfo ApplyModifiersToBeatmapInfo(PPPBeatMapInfo beatMapInfo, PPPMapPool mapPool, GameplayModifiers gameplayModifiers, bool levelFailed = false, bool levelPaused = false)
@@ -62,7 +63,7 @@ namespace PPPredictor.Core.Calculator
                 {
                     string searchString = CreateSeachString(beatMapInfo.CustomLevelHash, beatMapInfo.BeatmapKey);
                     ShortScore cachedInfo = mapPool.LsLeaderboadInfo?.FirstOrDefault(x => x.Searchstring.ToUpper() == searchString.ToUpper());
-                    bool refetchInfo = cachedInfo != null && cachedInfo.FetchTime < DateTime.Now.AddDays(Settings.RefetchMapInfoAfterDays);
+                    bool refetchInfo = cachedInfo != null && cachedInfo.FetchTime < DateTime.Now.AddDays(_settings.RefetchMapInfoAfterDays);
                     if (cachedInfo == null || refetchInfo)
                     {
                         if (refetchInfo) mapPool.LsLeaderboadInfo?.Remove(cachedInfo);
@@ -166,21 +167,22 @@ namespace PPPredictor.Core.Calculator
             }
         }
 
-        public async void UpdateUserId()
+        public async Task<string> UpdateUserId()
         {
             try
             {
-                string platformUserId = Settings.platformUserId;
+                string platformUserId = _settings.UserId;
                 HitBloqUserId userId = await hitbloqapi.GetHitBloqUserIdByUserId(platformUserId);
                 if (userId != null)
                 {
-                    _leaderboardInfo.CustomLeaderboardUserId = userId.id.ToString();
+                    return userId.id.ToString();
                 }
             }
             catch (Exception ex)
             {
                 Logging.ErrorPrint($"PPCalculatorHitBloq UpdateUserId Error: {ex.Message}");
             }
+            return null;
         }
 
         public override async Task UpdateAvailableMapPools()
@@ -188,6 +190,7 @@ namespace PPPredictor.Core.Calculator
             var defaultMapPool = new PPPMapPool(MapPoolType.Default, $"☞ Select a map pool ☜", 0, 0, new CustomPPPCurve(new List<(double, double)>(), CurveType.Linear, 0));
             _dctMapPool.Add(defaultMapPool.Id, defaultMapPool);
             List<HitBloqMapPool> hbMapPool = await hitbloqapi.GetHitBloqMapPools();
+            string customUserId = await UpdateUserId();
             //check if this map pool is already in list
             foreach (HitBloqMapPool newMapPool in hbMapPool)
             {
@@ -201,25 +204,16 @@ namespace PPPredictor.Core.Calculator
                 else
                 {
                     PPPMapPool insertMapPool = new PPPMapPool(newMapPool.id, newMapPool.id, MapPoolType.Custom, newMapPool.title, 0, 0, CustomPPPCurve.CreateDummyPPPCurve(), newMapPool.image, newMapPool.popularity, newMapPool.download_url);
+                    insertMapPool.CustomLeaderboardUserId = customUserId;
                     _dctMapPool.Add(insertMapPool.Id, insertMapPool);
                 }
             }
-#warning sorting needs to be done in mod display
-            //switch (Settings.HitbloqMapPoolSorting)
-            //{
-            //    case MapPoolSorting.Alphabetical:
-            //        _dctMapPool = _dctMapPool.OrderBy(x => x.MapPoolType).ThenBy(x => x.MapPoolName).ToList();
-            //        break;
-            //    case MapPoolSorting.Popularity:
-            //        _dctMapPool = _dctMapPool.OrderBy(x => x.MapPoolType).ThenByDescending(x => x.Popularity).ThenBy(x => x.MapPoolName).ToList();
-            //        break;
-            //}
             SendMapPoolRefreshed();
         }
 
         internal override List<PPPMapPoolShort> GetMapPools()
         {
-            switch (Settings.HitbloqMapPoolSorting)
+            switch (_settings.HitbloqMapPoolSorting)
             {
                 case MapPoolSorting.Alphabetical:
                     return _dctMapPool.Values.OrderBy(x => x.MapPoolType).ThenBy(x => x.MapPoolName).Select(x => (PPPMapPoolShort)x).ToList();
@@ -230,7 +224,7 @@ namespace PPPredictor.Core.Calculator
             }
         }
 
-        override internal async Task UpdateMapPoolDetails(PPPMapPool mapPool)
+        override internal async Task InternalUpdateMapPoolDetails(PPPMapPool mapPool)
         {
             if (mapPool.MapPoolType != MapPoolType.Default) //Filter out default 
             {

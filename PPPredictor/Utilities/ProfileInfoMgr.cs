@@ -42,11 +42,12 @@ namespace PPPredictor.Utilities
             return info;
         }
 
-        internal static bool SaveProfile(ProfileInfo profile)
+        internal static bool SaveProfile(ProfileInfo profile, Dictionary<string, LeaderboardData> dctLeaderBoardData)
         {
             bool saved = true;
             try
             {
+                profile.DctleaderBoardData = dctLeaderBoardData;
                 profile.ProfileInfoVersion = _profileInfoVersion;
                 profile.ClearOldMapInfos();
                 File.WriteAllText(profilePath, JsonConvert.SerializeObject(profile, Formatting.Indented, new JsonSerializerSettings
@@ -66,14 +67,14 @@ namespace PPPredictor.Utilities
 
         internal static void ResetSettings()
         {
-            List<PPPLeaderboardInfo> lsCachedData = Plugin.ProfileInfo.LsLeaderboardInfo;
+            Dictionary<string, LeaderboardData> dctCachedData = Plugin.ProfileInfo.DctleaderBoardData;
             Plugin.ProfileInfo = new ProfileInfo();
-            Plugin.ProfileInfo.LsLeaderboardInfo = lsCachedData;
+            Plugin.ProfileInfo.DctleaderBoardData = dctCachedData;
         }
 
         internal static void ResetCache()
         {
-            Plugin.ProfileInfo.LsLeaderboardInfo = new List<PPPLeaderboardInfo>();
+            Plugin.ProfileInfo.DctleaderBoardData = new Dictionary<string, LeaderboardData>();
         }
 
         public static void ShowSettingsFlow()

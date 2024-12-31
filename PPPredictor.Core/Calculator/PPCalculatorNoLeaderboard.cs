@@ -1,6 +1,7 @@
 ﻿using PPPredictor.Core.DataType;
 using PPPredictor.Core.DataType.BeatSaberEncapsulation;
 using PPPredictor.Core.DataType.Curve;
+using PPPredictor.Core.DataType.MapPool;
 using PPPredictor.Core.DataType.Score;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,10 @@ namespace PPPredictor.Core.Calculator
 {
     class PPCalculatorNoLeaderboard : PPCalculator
     {
+        public PPCalculatorNoLeaderboard(Dictionary<string, PPPMapPool> dctMapPool, Settings settings) : base(dctMapPool, settings, Leaderboard.NoLeaderboard)
+        {
+        }
+
         //Dummy class, for when no Leaderboards are selected in the options. mhh... why even use this mod then
 
         internal override Task<PPPBeatMapInfo> GetBeatMapInfoAsync(PPPBeatMapInfo beatMapInfo, PPPMapPool mapPool)
@@ -43,7 +48,7 @@ namespace PPPredictor.Core.Calculator
             return $"{hash}_{beatmapKey.difficulty}";
         }
 
-        internal override Task UpdateMapPoolDetails(PPPMapPool mapPool)
+        internal override Task InternalUpdateMapPoolDetails(PPPMapPool mapPool)
         {
             return Task.CompletedTask;
         }

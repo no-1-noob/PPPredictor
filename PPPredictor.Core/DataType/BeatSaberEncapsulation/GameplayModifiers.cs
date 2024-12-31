@@ -2,19 +2,19 @@
 {
     public class GameplayModifiers
     {
-        public bool disappearingArrows;
-        public SongSpeed songSpeed;
-        public bool ghostNotes;
-        public bool noArrows;
-        public bool noBombs;
-        public bool noFailOn0Energy;
-        public EnabledObstacleType enabledObstacleType;
-        public bool proMode;
-        public bool smallCubes;
-        public bool instaFail;
-        public EnergyType energyType;
-        public bool strictAngles;
-        public bool zenMode;
+        public bool disappearingArrows = false;
+        public SongSpeed songSpeed = SongSpeed.Normal;
+        public bool ghostNotes = false;
+        public bool noArrows = false;
+        public bool noBombs = false;
+        public bool noFailOn0Energy = false;
+        public EnabledObstacleType enabledObstacleType = EnabledObstacleType.All;
+        public bool proMode = false;
+        public bool smallCubes = false;
+        public bool instaFail = false;
+        public EnergyType energyType = EnergyType.Bar;
+        public bool strictAngles = false;
+        public bool zenMode = false;
 
         public enum SongSpeed
         {
