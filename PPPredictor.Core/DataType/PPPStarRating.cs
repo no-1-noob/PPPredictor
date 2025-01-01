@@ -40,7 +40,7 @@ namespace PPPredictor.Core.DataType
         {
         }
 
-        internal PPPStarRating(double starRating)
+        public PPPStarRating(double starRating)
         {
             _stars = _predictedAcc = _passRating = _accRating = _techRating = starRating;
         }

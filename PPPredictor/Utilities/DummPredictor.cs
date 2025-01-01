@@ -26,10 +26,12 @@ namespace PPPredictor.Utilities
 
         public string PPSuffix => string.Empty;
 
+#pragma warning disable CS0067
         public event EventHandler<bool> OnDataLoading;
         public event EventHandler<DisplaySessionInfo> OnDisplaySessionInfo;
         public event EventHandler<DisplayPPInfo> OnDisplayPPInfo;
         public event EventHandler OnMapPoolRefreshed;
+#pragma warning restore CS0067
 
         public double CalculateMaxPP()
         {
@@ -51,9 +53,9 @@ namespace PPPredictor.Utilities
             return 0D;
         }
 
-        public Task ChangeGameplayModifiers(GameplaySetupViewController gameplaySetupViewController)
+        public void ChangeGameplayModifiers(GameplaySetupViewController gameplaySetupViewController)
         {
-            return Task.CompletedTask;
+            return;
         }
 
         public void DifficultyChanged(BeatmapLevel selectedBeatmapLevel, BeatmapKey beatmapKey)
@@ -97,9 +99,9 @@ namespace PPPredictor.Utilities
             return;
         }
 
-        public Task ScoreSet(PPPScoreSetData data)
+        public void ScoreSet(PPPScoreSetData data)
         {
-            return Task.CompletedTask;
+            return;
         }
 
         public void SetActive(bool setActive)

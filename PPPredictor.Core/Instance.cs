@@ -24,19 +24,21 @@ namespace PPPredictor.Core
             this.settings = settings;
         }
 
-        public static async Task<Instance> CreateAsync(Settings settings, Dictionary<string, LeaderboardData> dctLeaderboardData)
+        public static async Task<Instance> CreateAsync(Settings settings, Dictionary<string, LeaderboardData> dctLeaderboardData, Func<PPPBeatMapInfo, PPPBeatMapInfo> scoreSaberLookUpFunction)
         {
             var instance = new Instance(settings);
-            await instance.InitializeAsync(settings, dctLeaderboardData);
+            await instance.InitializeAsync(settings, dctLeaderboardData, scoreSaberLookUpFunction);
             return instance;
         }
 
-        private async Task InitializeAsync(Settings settings, Dictionary<string, LeaderboardData> dctLeaderboardData)
+        private async Task InitializeAsync(Settings settings, Dictionary<string, LeaderboardData> dctLeaderboardData, Func<PPPBeatMapInfo, PPPBeatMapInfo> scoreSaberLookUpFunction)
         {
 
             if (settings.IsScoreSaberEnabled)
             {
-#warning todo;
+                if (scoreSaberLookUpFunction == null) throw new Exception("ScoreSaberLookUpFunction is missing");
+                var v = new PPCalculatorScoreSaber<ScoresaberAPI>(dctLeaderboardData.TryGetValue(Leaderboard.ScoreSaber.ToString(), out var result) ? result.DctMapPool : null, settings, scoreSaberLookUpFunction);
+                dctCalculator.Add(Leaderboard.ScoreSaber, v);
             }
             if(settings.IsBeatLeaderEnabled)
             {
@@ -63,7 +65,25 @@ namespace PPPredictor.Core
             await Task.WhenAll(updateAvailableMapPoolsTask);
         }
 
+        public void ResetCache()
+        {
+            foreach (var item in dctCalculator.Values)
+            {
+                foreach (var items in item._dctMapPool.Values)
+                {
+#warning reset
+                    //items.
+                }
+            }
+        }
 
+        public void AssignSettings(Settings settings)
+        {
+            foreach (var item in dctCalculator.Values)
+            {
+                item.Settings = settings;
+            }
+        }
 
         private PPCalculator GetCalculator(Leaderboard leaderboard)
         {
@@ -150,28 +170,10 @@ namespace PPPredictor.Core
             return i;
         }
 
-        public async Task<PPPPlayer> GetProfile(Leaderboard leaderBoard, string mapPoolId)
+        public bool IsScoreSetOnCurrentMapPool(Leaderboard leaderBoard, string mapPoolId, PPPScoreSetData data)
         {
             (PPCalculator calculator, PPPMapPool mapPool) = GetCalculatorAndMapPool(leaderBoard, mapPoolId);
-            var i = await SemaphoreFunction(calculator.Semaphore,
-                () => Task.Run(() => calculator.GetProfile(mapPool))
-            );
-            return i;
-        }
-
-        public bool HasOldDotRanking(Leaderboard leaderBoard, string mapPoolId)
-        {
-            (PPCalculator calculator, PPPMapPool mapPool) = GetCalculatorAndMapPool(leaderBoard, mapPoolId);
-            return calculator.hasOldDotRanking;
-        }
-
-        public async Task<bool> IsScoreSetOnCurrentMapPool(Leaderboard leaderBoard, string mapPoolId, PPPScoreSetData data)
-        {
-            (PPCalculator calculator, PPPMapPool mapPool) = GetCalculatorAndMapPool(leaderBoard, mapPoolId);
-            var i = await SemaphoreFunction(calculator.Semaphore,
-                () => Task.Run(() => calculator.IsScoreSetOnCurrentMapPool(mapPool, data))
-            );
-            return i;
+            return calculator.IsScoreSetOnCurrentMapPool(mapPool, data);
         }
 
         public async Task<PPPBeatMapInfo> GetBeatMapInfoAsync(Leaderboard leaderBoard, string mapPoolId, PPPBeatMapInfo beatMapInfo)

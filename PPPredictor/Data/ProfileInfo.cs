@@ -1,10 +1,12 @@
 ﻿using Newtonsoft.Json;
+using PPPredictor.Core;
 using PPPredictor.Core.DataType.LeaderBoard;
 using PPPredictor.Core.DataType.MapPool;
 using PPPredictor.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using static PPPredictor.Core.DataType.Enums;
 
 namespace PPPredictor.Data
@@ -131,14 +133,31 @@ namespace PPPredictor.Data
 
         internal void ClearOldMapInfos()
         {
-#warning reset of saved data
-            //foreach (LeaderboardData leaderboard in _dctleaderBoardData.Values.ToList())
-            //{
-            //    foreach (PPPMapPoolShort mappool in leaderboard.)
-            //    {
-            //        mappool.lsleaderboadinfo = mappool.lsleaderboadinfo.where(x => x.fetchtime > datetime.now.adddays(profileinfo.refetchmapinfoafterdays)).tolist();
-            //    }
-            //}
+            foreach (LeaderboardData leaderboard in _dctleaderBoardData.Values.ToList())
+            {
+                foreach (PPPMapPool mappool in leaderboard.DctMapPool.Values)
+                {
+                    mappool.LsLeaderboadInfo = mappool.LsLeaderboadInfo.Where(x => x.FetchTime > DateTime.Now.AddDays(ProfileInfo.RefetchMapInfoAfterDays)).ToList();
+                }
+            }
+        }
+
+        public async Task<Settings> ParseToSetting()
+        {
+            return new Settings(
+                    IsScoreSaberEnabled,
+                    IsBeatLeaderEnabled,
+                    IsHitBloqEnabled,
+                    IsAccSaberEnabled,
+                    (await Plugin.GetUserInfoBS()).platformUserId,
+                    PpGainCalculationType,
+                    HitbloqMapPoolSorting,
+                    //Plugin.ProfileInfo.platformUserId,
+                    "",
+                    RefetchMapInfoAfterDays,
+                    LastSessionReset,
+                    ResetSessionHours
+                );
         }
     }
 }

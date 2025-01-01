@@ -43,9 +43,6 @@ namespace PPPredictor.Core.Calculator
         private static Dictionary<string, string> DctDiffLengthen { get => dctDiffShorten.ToDictionary(x => x.Value, x => x.Key); }
         public PPCalculatorHitBloq(Dictionary<string, PPPMapPool> dctMapPool, Settings settings) : base(dctMapPool, settings, Leaderboard.HitBloq)
         {
-            playerPerPages = 10;
-            hasGetAllScoresFunctionality = true;
-            hasPPToRankFunctionality = true;
             hitbloqapi = new HBAPI();
         }
 

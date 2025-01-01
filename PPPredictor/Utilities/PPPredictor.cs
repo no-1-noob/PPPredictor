@@ -132,7 +132,7 @@ namespace PPPredictor.Utilities
 
         #region eventHandling
 
-        public async Task ChangeGameplayModifiers(GameplaySetupViewController gameplaySetupViewController)
+        public void ChangeGameplayModifiers(GameplaySetupViewController gameplaySetupViewController)
         {
             if (gameplaySetupViewController != null && gameplaySetupViewController.gameplayModifiers != null)
             {
@@ -218,7 +218,7 @@ namespace PPPredictor.Utilities
         {
             try
             {
-                return _currentBeatMapInfo.BaseStarRating.IsRanked() && (instance.HasOldDotRanking(leaderboardName, currentMapPool.Id) || !_currentBeatMapInfo.OldDotsEnabled);
+                return _currentBeatMapInfo.BaseStarRating.IsRanked() && (_leaderboardInfo.HasOldDotRanking || !_currentBeatMapInfo.OldDotsEnabled);
             }
             catch (Exception ex)
             {
@@ -240,7 +240,7 @@ namespace PPPredictor.Utilities
             return (currentPool == null || (currentPool != null && newMapPool != null && currentPool.Id != newMapPool.Id));
         }
 
-        public async void CalculatePP()
+        public void CalculatePP()
         {
             if(currentMapPool == null) return;
             if (_currentBeatMapInfo.MaxPP == -1) _currentBeatMapInfo.MaxPP = CalculateMaxPP();
@@ -351,9 +351,9 @@ namespace PPPredictor.Utilities
             SendDisplaySessionInfo(sessionDisplay);
         }
 
-        public async Task ScoreSet(PPPScoreSetData data)
+        public void ScoreSet(PPPScoreSetData data)
         {
-            if(await instance.IsScoreSetOnCurrentMapPool(leaderboardName, currentMapPool.Id, data)) 
+            if(instance.IsScoreSetOnCurrentMapPool(leaderboardName, currentMapPool.Id, data)) 
                 RefreshCurrentData(1, false, true);
         }
 

@@ -242,7 +242,6 @@
     <Compile Include="Utilities\Enums.cs" />
     <Compile Include="Utilities\GamePlayMgr.cs" />
     <Compile Include="Utilities\MainMenuMgr.cs" />
-    <Compile Include="Utilities\PPCalculatorScoreSaber.cs" />
     <Compile Include="Utilities\PPPredictor.cs" />
     <Compile Include="Utilities\PPPredictorMgr.cs" />
     <Compile Include="Utilities\ProfileInfoMgr.cs" />

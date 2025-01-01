@@ -6,6 +6,8 @@ using PPPredictor.Core.DataType.MapPool;
 using PPPredictor.Data;
 using PPPredictor.Data.DisplayInfos;
 using PPPredictor.Interfaces;
+using SongDetailsCache;
+using SongDetailsCache.Structs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,6 +46,7 @@ namespace PPPredictor.Utilities
         public WebSocketMgr WebsocketMgr { get => _websocketMgr; }
 
         internal static Instance instance;
+        private SongDetails songDetails { get; set; }
         private float _percentage;
 
         internal PPPredictorMgr()
@@ -58,22 +61,11 @@ namespace PPPredictor.Utilities
             _lsPPPredictor = new List<IPPPredictor>();
             _currentPPPredictor = new DummPredictor();
 
+            songDetails = await SongDetails.Init();
             instance = await Instance.CreateAsync(
-                new Settings(
-                    Plugin.ProfileInfo.IsScoreSaberEnabled,
-                    Plugin.ProfileInfo.IsBeatLeaderEnabled,
-                    Plugin.ProfileInfo.IsHitBloqEnabled,
-                    Plugin.ProfileInfo.IsAccSaberEnabled,
-                    (await Plugin.GetUserInfoBS()).platformUserId,
-                    Plugin.ProfileInfo.PpGainCalculationType,
-                    Plugin.ProfileInfo.HitbloqMapPoolSorting,
-                    //Plugin.ProfileInfo.platformUserId,
-                    "",
-                    ProfileInfo.RefetchMapInfoAfterDays,
-                    Plugin.ProfileInfo.LastSessionReset,
-                    Plugin.ProfileInfo.ResetSessionHours
-                ),
-                Plugin.ProfileInfo.DctleaderBoardData
+                await Plugin.ProfileInfo.ParseToSetting(),
+                Plugin.ProfileInfo.DctleaderBoardData,
+                (PPPBeatMapInfo beatMapInfo) => ScoreSaberSongCore(beatMapInfo)
             );
 #warning not really clean i think
             Logging.OnMessage += Logging_OnMessage;
@@ -122,6 +114,18 @@ namespace PPPredictor.Utilities
                 default:
                     return;
             }
+        }
+
+        private PPPBeatMapInfo ScoreSaberSongCore(PPPBeatMapInfo beatMapInfo)
+        {
+            if (songDetails.songs.FindByHash(beatMapInfo.CustomLevelHash, out Song song))
+            {
+                if (song.GetDifficulty(out SongDifficulty songDiff, (MapDifficulty)beatMapInfo.BeatmapKey.difficulty))
+                {
+                    return new PPPBeatMapInfo(beatMapInfo, new PPPStarRating(songDiff.stars));
+                }
+            }
+            return new PPPBeatMapInfo(beatMapInfo, new PPPStarRating(0));
         }
 
         private void RefreshLeaderboardVisibilityByIPAPluginManager()
@@ -173,8 +177,6 @@ namespace PPPredictor.Utilities
             CurrentPPPredictor.SetActive(true);
             Plugin.ProfileInfo.LastLeaderBoardSelected = CurrentPPPredictor.LeaderBoardName;
             SetNavigationArrowInteractivity();
-            //TODO: Reload also when scoresaber doesnt upload...
-            //TODO: Beatleader played score reload is sometimes slow
         }
 
         private void SetNavigationArrowInteractivity()
@@ -419,7 +421,7 @@ namespace PPPredictor.Utilities
             IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderboardName);
             if (predictor != null)
             {
-                predictor.ScoreSet(data).GetAwaiter().GetResult();
+                predictor.ScoreSet(data);
             }
         }
     }

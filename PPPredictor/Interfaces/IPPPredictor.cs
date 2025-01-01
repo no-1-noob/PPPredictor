@@ -11,11 +11,10 @@ namespace PPPredictor.Interfaces
 {
     interface IPPPredictor
     {
-        Task ChangeGameplayModifiers(GameplaySetupViewController gameplaySetupViewController);
+        void ChangeGameplayModifiers(GameplaySetupViewController gameplaySetupViewController);
         void DifficultyChanged(BeatmapLevel selectedBeatmapLevel, BeatmapKey beatmapKey);
         Task UpdateCurrentAndCheckResetSession(bool doResetSession);
-#warning ScoreSet needed?
-        Task ScoreSet(PPPScoreSetData data);
+        void ScoreSet(PPPScoreSetData data);
         void RefreshCurrentData(int fetchLength, bool refreshStars = false, bool fetchOnePage = false);
         void ResetDisplay(bool resetAll);
         double CalculatePPatPercentage(double percentage, PPPBeatMapInfo beatMapInfo, bool levelFailed = false, bool levelPaused = false);

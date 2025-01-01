@@ -65,16 +65,15 @@ namespace PPPredictor.Utilities
             return saved;
         }
 
-        internal static void ResetSettings()
+        internal static async void ResetSettings()
         {
-            Dictionary<string, LeaderboardData> dctCachedData = Plugin.ProfileInfo.DctleaderBoardData;
             Plugin.ProfileInfo = new ProfileInfo();
-            Plugin.ProfileInfo.DctleaderBoardData = dctCachedData;
+            PPPredictorMgr.instance.AssignSettings(await Plugin.ProfileInfo.ParseToSetting());
         }
 
         internal static void ResetCache()
         {
-            Plugin.ProfileInfo.DctleaderBoardData = new Dictionary<string, LeaderboardData>();
+            PPPredictorMgr.instance.ResetCache();
         }
 
         public static void ShowSettingsFlow()

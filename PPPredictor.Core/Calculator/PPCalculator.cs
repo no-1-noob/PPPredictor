@@ -17,16 +17,11 @@ namespace PPPredictor.Core.Calculator
         private readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
         internal PPPLeaderboardInfo _leaderboardInfo;
         protected Settings _settings;
-        protected int playerPerPages = 0; //Cause a null reference if not set ;)
-        protected bool hasGetAllScoresFunctionality = false;
-        protected bool hasGetRecentScoresFunctionality = true;
-        protected bool hasPPToRankFunctionality = false;
-        protected int taskDelayValue = 250;
-        internal bool hasOldDotRanking = true;
-        private int pageFetchLimit = 5;
         internal Dictionary<string, PPPMapPool> _dctMapPool = new Dictionary<string, PPPMapPool>();
 
         public SemaphoreSlim Semaphore => semaphore;
+
+        public Settings Settings { set => _settings = value; }
 
         public event EventHandler OnMapPoolRefreshed;
 
@@ -108,7 +103,7 @@ namespace PPPredictor.Core.Calculator
                     if (mapPool.LsScores == null) mapPool.LsScores = new List<ShortScore>();
                     PPPScoreCollection playerscores = null;
                     hasNoScores = mapPool.LsScores.Count == 0;
-                    if (hasGetAllScoresFunctionality && (!hasGetRecentScoresFunctionality || hasNoScores))
+                    if (_leaderboardInfo.HasGetAllScoresFunctionality && (!_leaderboardInfo.HasGetRecentScoresFunctionality || hasNoScores))
                     {
                         playerscores = await GetAllScores(userId, mapPool);
                         hasMoreData = false;
@@ -146,7 +141,7 @@ namespace PPPredictor.Core.Calculator
                         dtNewLastScoreSet = scores.TimeSet > dtNewLastScoreSet ? scores.TimeSet : dtNewLastScoreSet;
                     }
                     page++;
-                    await Task.Delay(taskDelayValue);
+                    await Task.Delay(_leaderboardInfo.TaskDelayValue);
                 }
                 //Update after fetching all data. So when closing while fetching the incomplete data is not saved.
                 foreach (ShortScore newScore in lsNewScores)
@@ -244,21 +239,21 @@ namespace PPPredictor.Core.Calculator
                 if (pp == mapPool.CurrentPlayer.Pp || pp < mapPool.CurrentPlayer.Pp) return new RankGainResult(mapPool.CurrentPlayer.Rank, mapPool.CurrentPlayer.CountryRank, mapPool.CurrentPlayer); //Fucking bullshit
                                                                                                                                                                                                                                                                                                                                 //Refetch if the current rank has decrease outside of fetched range (first GetPlayerRankGain call after loading saved Session data, then update from web)
                 double worstRankFetched = mapPool.LsPlayerRankings.Select(x => x.Rank).DefaultIfEmpty(Double.MaxValue).Max();
-                if (!hasPPToRankFunctionality && mapPool.CurrentPlayer.Rank > worstRankFetched) mapPool.LsPlayerRankings = new List<PPPPlayer>();
+                if (!_leaderboardInfo.HasPPToRankFunctionality && mapPool.CurrentPlayer.Rank > worstRankFetched) mapPool.LsPlayerRankings = new List<PPPPlayer>();
 
                 double bestRankFetched = mapPool.LsPlayerRankings.Select(x => x.Rank).DefaultIfEmpty(-1).Min();
-                double fetchIndexPage = bestRankFetched > 0 ? Math.Floor((bestRankFetched - 1) / playerPerPages) + _leaderboardInfo.LeaderboardFirstPageIndex : Math.Floor(mapPool.CurrentPlayer.Rank / playerPerPages) + _leaderboardInfo.LeaderboardFirstPageIndex;
+                double fetchIndexPage = bestRankFetched > 0 ? Math.Floor((bestRankFetched - 1) / _leaderboardInfo.PlayerPerPages) + _leaderboardInfo.LeaderboardFirstPageIndex : Math.Floor(mapPool.CurrentPlayer.Rank / _leaderboardInfo.PlayerPerPages) + _leaderboardInfo.LeaderboardFirstPageIndex;
                 bool needMoreData = true;
                 int pageFetchCount = 0;
-                while (needMoreData && pageFetchCount < pageFetchLimit)
+                while (needMoreData && pageFetchCount < _leaderboardInfo.PageFetchLimit)
                 {
                     int indexOfBetterPlayer = mapPool.LsPlayerRankings.FindLastIndex(x => x.Pp > pp);
                     //Check if the rank before is actually the rank before, gaps can be created when using PPToRank
                     bool isNextRankActuallyNext = indexOfBetterPlayer > -1 && mapPool.LsPlayerRankings.Count - 1 > indexOfBetterPlayer &&
                                                         mapPool.LsPlayerRankings[indexOfBetterPlayer].Rank + 1 == mapPool.LsPlayerRankings[indexOfBetterPlayer + 1].Rank;
                     var ppBetterPlayer = indexOfBetterPlayer > -1 ? mapPool.LsPlayerRankings[indexOfBetterPlayer].Pp : -1d;
-                    if ((hasPPToRankFunctionality && ((isNextRankActuallyNext && indexOfBetterPlayer != -1) || (bestRankFetched == 1 && indexOfBetterPlayer == -1)))
-                        || (!hasPPToRankFunctionality && (indexOfBetterPlayer != -1 || fetchIndexPage == _leaderboardInfo.LeaderboardFirstPageIndex - 1 || (bestRankFetched == 1 && indexOfBetterPlayer == -1)))) //bestRankFetched == 1: Special case for first place; congratz ;)
+                    if ((_leaderboardInfo.HasPPToRankFunctionality && ((isNextRankActuallyNext && indexOfBetterPlayer != -1) || (bestRankFetched == 1 && indexOfBetterPlayer == -1)))
+                        || (!_leaderboardInfo.HasPPToRankFunctionality && (indexOfBetterPlayer != -1 || fetchIndexPage == _leaderboardInfo.LeaderboardFirstPageIndex - 1 || (bestRankFetched == 1 && indexOfBetterPlayer == -1)))) //bestRankFetched == 1: Special case for first place; congratz ;)
                     {
                         //Found a better player or already fetched until rank 1
                         needMoreData = false;
@@ -267,15 +262,15 @@ namespace PPPredictor.Core.Calculator
                     else
                     {
                         bool isLastRankOnPage = false;
-                        if (hasPPToRankFunctionality)
+                        if (_leaderboardInfo.HasPPToRankFunctionality)
                         {
                             int newRank = await GetPPToRank(mapPool.Id, pp);
-                            fetchIndexPage = ((newRank - 1) / playerPerPages);
-                            isLastRankOnPage = newRank % playerPerPages == 0;
+                            fetchIndexPage = ((newRank - 1) / _leaderboardInfo.PlayerPerPages);
+                            isLastRankOnPage = newRank % _leaderboardInfo.PlayerPerPages == 0;
                         }
                         await FetchPlayerPageAndAddToList(fetchIndexPage, mapPool);
                         indexOfBetterPlayer = mapPool.LsPlayerRankings.FindIndex(x => x.Pp > pp);
-                        if (hasPPToRankFunctionality && indexOfBetterPlayer == -1 && fetchIndexPage > _leaderboardInfo.LeaderboardFirstPageIndex)
+                        if (_leaderboardInfo.HasPPToRankFunctionality && indexOfBetterPlayer == -1 && fetchIndexPage > _leaderboardInfo.LeaderboardFirstPageIndex)
                         {
                             //Fetch one more page, when it is the first rank on the page, since i check for the index of the better player, otherwise endless loop
                             await FetchPlayerPageAndAddToList(fetchIndexPage - 1, mapPool);
@@ -288,7 +283,7 @@ namespace PPPredictor.Core.Calculator
                     fetchIndexPage--;
                     pageFetchCount++;
                     bestRankFetched = mapPool.LsPlayerRankings.Select(x => x.Rank).DefaultIfEmpty(-1).Min();
-                    await Task.Delay(taskDelayValue);
+                    await Task.Delay(_leaderboardInfo.TaskDelayValue);
                 }
                 double rankAfterPlay = mapPool.LsPlayerRankings.Where(x => Math.Round(x.Pp, 2, MidpointRounding.AwayFromZero) <= pp).Select(x => x.Rank).DefaultIfEmpty(-1).Min();
                 double rankCountryAfterPlay = mapPool.LsPlayerRankings.Where(x => Math.Round(x.Pp, 2, MidpointRounding.AwayFromZero) <= pp && x.Country == mapPool.CurrentPlayer.Country).Select(x => x.CountryRank).DefaultIfEmpty(-1).Min();
@@ -296,7 +291,7 @@ namespace PPPredictor.Core.Calculator
                 {
                     rankAfterPlay = rankCountryAfterPlay = 0; //Special case for when no leaderboard is active;
                 }
-                return new RankGainResult(rankAfterPlay, rankCountryAfterPlay, mapPool.CurrentPlayer, pageFetchCount >= pageFetchLimit);
+                return new RankGainResult(rankAfterPlay, rankCountryAfterPlay, mapPool.CurrentPlayer, pageFetchCount >= _leaderboardInfo.PageFetchLimit);
             }
             catch (Exception ex)
             {
@@ -308,7 +303,7 @@ namespace PPPredictor.Core.Calculator
         private async Task FetchPlayerPageAndAddToList(double fetchIndexPage, PPPMapPool mapPool)
         {
             List<PPPPlayer> playerscores = await GetPlayers(fetchIndexPage, mapPool);
-            if (hasPPToRankFunctionality)
+            if (_leaderboardInfo.HasPPToRankFunctionality)
             {
                 //Clear possible duplicates
                 mapPool.LsPlayerRankings = mapPool.LsPlayerRankings.Where(x => !playerscores.Select(y => y.Rank).Contains(x.Rank)).ToList();

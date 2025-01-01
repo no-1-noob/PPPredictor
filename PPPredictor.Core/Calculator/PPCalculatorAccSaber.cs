@@ -25,8 +25,6 @@ namespace PPPredictor.Core.Calculator
 
         public PPCalculatorAccSaber(Dictionary<string, PPPMapPool> dctMapPool, Settings settings) : base(dctMapPool, settings, Leaderboard.AccSaber)
         {
-            hasGetAllScoresFunctionality = true;
-            hasGetRecentScoresFunctionality = false;
             accsaberapi = new ASAPI();
         }
         internal override Task<PPPBeatMapInfo> GetBeatMapInfoAsync(PPPBeatMapInfo beatMapInfo, PPPMapPool mapPool)

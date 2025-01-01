@@ -24,10 +24,7 @@ namespace PPPredictor.Core.Calculator
 
         public PPCalculatorBeatLeader(Dictionary<string, PPPMapPool> dctMapPool, Settings settings) : base(dctMapPool, settings, Leaderboard.BeatLeader) 
         {
-            playerPerPages = 50;
-            taskDelayValue = 1100;
             beatleaderapi = new BLAPI();
-            //UpdateAvailableMapPools();
         }
 
         internal override async Task<PPPPlayer> GetPlayerInfo(long userId, PPPMapPool mapPool)
@@ -64,11 +61,11 @@ namespace PPPredictor.Core.Calculator
                 List<PPPPlayer> lsPlayer = new List<PPPPlayer>();
                 if(mapPool != null && mapPool.MapPoolType == MapPoolType.Default)
                 {
-                    scoreSaberPlayerCollection = await beatleaderapi.GetPlayersInLeaderboard("pp", (int)fetchIndexPage, playerPerPages, "desc", GetLeaderboardContextId(mapPool.LeaderboardContext));
+                    scoreSaberPlayerCollection = await beatleaderapi.GetPlayersInLeaderboard("pp", (int)fetchIndexPage, _leaderboardInfo.PlayerPerPages, "desc", GetLeaderboardContextId(mapPool.LeaderboardContext));
                 }
                 else if(mapPool != null)
                 {
-                    scoreSaberPlayerCollection = await beatleaderapi.GetPlayersInEventLeaderboard(long.Parse(mapPool.Id), "pp", (int)fetchIndexPage, playerPerPages, "desc");
+                    scoreSaberPlayerCollection = await beatleaderapi.GetPlayersInEventLeaderboard(long.Parse(mapPool.Id), "pp", (int)fetchIndexPage, _leaderboardInfo.PlayerPerPages, "desc");
                 }
                 foreach (var scoreSaberPlayer in scoreSaberPlayerCollection.data)
                 {
