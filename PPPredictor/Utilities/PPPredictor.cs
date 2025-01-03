@@ -32,7 +32,7 @@ namespace PPPredictor.Utilities
         private DisplayPPInfo _ppDisplay = new DisplayPPInfo();
         private PPGainResult _ppGainResult = new PPGainResult();
         private Timer _rankTimer;
-        private readonly Instance instance;
+        private readonly CalculatorInstance calculatorInstance;
         private PPPMapPoolShort currentMapPool;
         private List<PPPMapPoolShort> lsMapPools = new List<PPPMapPoolShort>();
         #endregion
@@ -71,12 +71,12 @@ namespace PPPredictor.Utilities
         public event EventHandler OnMapPoolRefreshed;
 
         #region
-        public PPPredictor(Leaderboard leaderBoard, Instance instance)
+        public PPPredictor(Leaderboard leaderBoard, CalculatorInstance calculatorInstance)
         {
             leaderboardName = leaderBoard;
-            this.instance = instance;
+            this.calculatorInstance = calculatorInstance;
             _leaderboardInfo = new PPPLeaderboardInfo(leaderBoard);
-            lsMapPools = this.instance.GetMapPools(leaderboardName);
+            lsMapPools = this.calculatorInstance.GetMapPools(leaderboardName);
             //Select current map pool from save data
             int index = 0;
             if(Plugin.ProfileInfo.MapPoolSelection.TryGetValue(leaderboardName.ToString(), out string value))
@@ -147,7 +147,7 @@ namespace PPPredictor.Utilities
             if (currentMapPool != null && gameplaySetupViewController != null && gameplaySetupViewController.gameplayModifiers != null)
             {
                 _gameplayModifiers = gameplaySetupViewController.gameplayModifiers;
-                _currentBeatMapInfo = instance.ApplyModifiersToBeatmapInfo(leaderboardName, currentMapPool.Id, _currentBeatMapInfo, Converter.Converter.ConvertGameplayModifiers(_gameplayModifiers));
+                _currentBeatMapInfo = calculatorInstance.ApplyModifiersToBeatmapInfo(leaderboardName, currentMapPool.Id, _currentBeatMapInfo, Converter.Converter.ConvertGameplayModifiers(_gameplayModifiers));
                 _currentBeatMapInfo.MaxPP = -1;
                 CalculatePP();
             }
@@ -168,7 +168,7 @@ namespace PPPredictor.Utilities
 
         private async Task UpdateCurrentBeatMapInfos()
         {
-            _currentBeatMapInfo = await instance.GetBeatMapInfoAsync(leaderboardName, currentMapPool.Id, _currentBeatMapInfo);
+            _currentBeatMapInfo = await calculatorInstance.GetBeatMapInfoAsync(leaderboardName, currentMapPool.Id, _currentBeatMapInfo);
             _currentBeatMapInfo.SelectedMapSearchString = !string.IsNullOrEmpty(_currentBeatMapInfo.CustomLevelHash) ? PPCalculator.CreateSeachString(_currentBeatMapInfo.CustomLevelHash, "SOLO" + _currentBeatMapInfo.BeatmapKey.serializedName, Core.ParsingUtil.ParseDifficultyNameToInt(_currentBeatMapInfo.BeatmapKey.difficulty.ToString())) : string.Empty;
             _currentBeatMapInfo.OldDotsEnabled = IsOldDotsActive(_currentBeatMapInfo.BeatmapKey);
             _currentBeatMapInfo = GetModifiedBeatMapInfo(_gameplayModifiers);
@@ -197,19 +197,19 @@ namespace PPPredictor.Utilities
         #endregion
         public double CalculatePPatPercentage(double percentage, PPPBeatMapInfo beatMapInfo, bool levelFailed = false, bool levelPaused = false)
         {
-            var v = instance.CalculatePPatPercentage(leaderboardName, currentMapPool.Id, beatMapInfo, percentage, levelFailed, levelPaused);
+            var v = calculatorInstance.CalculatePPatPercentage(leaderboardName, currentMapPool.Id, beatMapInfo, percentage, levelFailed, levelPaused);
             return v;
         }
 
         public double CalculateMaxPP()
         {
-            var v = instance.CalculateMaxPP(leaderboardName, currentMapPool.Id, _currentBeatMapInfo);
+            var v = calculatorInstance.CalculateMaxPP(leaderboardName, currentMapPool.Id, _currentBeatMapInfo);
             return v;
         }
 
         public PPPBeatMapInfo GetModifiedBeatMapInfo(GameplayModifiers gameplayModifiers, bool levelFailed = false, bool levelPaused = false)
         {
-            PPPBeatMapInfo pppBeatMapInfo = instance.ApplyModifiersToBeatmapInfo(leaderboardName, currentMapPool.Id, _currentBeatMapInfo, Converter.Converter.ConvertGameplayModifiers(gameplayModifiers), levelFailed, levelPaused);
+            PPPBeatMapInfo pppBeatMapInfo = calculatorInstance.ApplyModifiersToBeatmapInfo(leaderboardName, currentMapPool.Id, _currentBeatMapInfo, Converter.Converter.ConvertGameplayModifiers(gameplayModifiers), levelFailed, levelPaused);
             return pppBeatMapInfo;
         }
 
@@ -220,7 +220,7 @@ namespace PPPredictor.Utilities
 
         public double CalculatePPGain(double pp)
         {
-            PPGainResult ppGainResult = instance.GetPlayerScorePPGain(leaderboardName, currentMapPool.Id, _currentBeatMapInfo.SelectedMapSearchString, pp);
+            PPGainResult ppGainResult = calculatorInstance.GetPlayerScorePPGain(leaderboardName, currentMapPool.Id, _currentBeatMapInfo.SelectedMapSearchString, pp);
             return ppGainResult.PpDisplayValue;
         }
 
@@ -239,7 +239,7 @@ namespace PPPredictor.Utilities
 
         public double? GetPersonalBest()
         {
-            return instance.GetPersonalBest(leaderboardName, currentMapPool.Id, _currentBeatMapInfo.SelectedMapSearchString);
+            return calculatorInstance.GetPersonalBest(leaderboardName, currentMapPool.Id, _currentBeatMapInfo.SelectedMapSearchString);
         }
 
         internal bool IsCurrentMapPoolChanging(object value)
@@ -255,7 +255,7 @@ namespace PPPredictor.Utilities
             if(currentMapPool == null) return;
             if (_currentBeatMapInfo.MaxPP == -1) _currentBeatMapInfo.MaxPP = CalculateMaxPP();
             double pp = CalculatePPatPercentage(_percentage, _currentBeatMapInfo);
-            _ppGainResult = instance.GetPlayerScorePPGain(leaderboardName, currentMapPool.Id, _currentBeatMapInfo.SelectedMapSearchString, pp);
+            _ppGainResult = calculatorInstance.GetPlayerScorePPGain(leaderboardName, currentMapPool.Id, _currentBeatMapInfo.SelectedMapSearchString, pp);
             double ppGains = PPCalculator.Zeroizer(_ppGainResult.PpDisplayValue);
             _ppDisplay = new DisplayPPInfo();
             if (_currentBeatMapInfo.MaxPP > 0 && pp >= _currentBeatMapInfo.MaxPP)
@@ -286,13 +286,13 @@ namespace PPPredictor.Utilities
             if (_lastPPGainCall == 0)
             {
                 _rankGainRunning = true;
-                rankGain = await instance.GetPlayerRankGain(leaderboardName, currentMapPool.Id, _ppGainResult.PpTotal);
+                rankGain = await calculatorInstance.GetPlayerRankGain(leaderboardName, currentMapPool.Id, _ppGainResult.PpTotal);
                 _rankGainRunning = false;
             }
             if (_lastPPGainCall > 0)
             {
                 _rankGainRunning = true;
-                rankGain = await instance.GetPlayerRankGain(leaderboardName, currentMapPool.Id, _lastPPGainCall);
+                rankGain = await calculatorInstance.GetPlayerRankGain(leaderboardName, currentMapPool.Id, _lastPPGainCall);
                 _rankGainRunning = false;
                 _lastPPGainCall = 0;
             }
@@ -334,7 +334,7 @@ namespace PPPredictor.Utilities
 
         private async Task DisplaySession(bool doResetSession)
         {
-            (PPPPlayer sessionPlayer, PPPPlayer currentPlayer) = await instance.UpdatePlayer(leaderboardName, currentMapPool.Id, doResetSession);
+            (PPPPlayer sessionPlayer, PPPPlayer currentPlayer) = await calculatorInstance.UpdatePlayer(leaderboardName, currentMapPool.Id, doResetSession);
             DisplaySessionInfo sessionDisplay = new DisplaySessionInfo();
             if (sessionPlayer != null && currentPlayer != null)
             {
@@ -363,7 +363,7 @@ namespace PPPredictor.Utilities
 
         public void ScoreSet(PPPScoreSetData data)
         {
-            if(instance.IsScoreSetOnCurrentMapPool(leaderboardName, currentMapPool.Id, data)) 
+            if(calculatorInstance.IsScoreSetOnCurrentMapPool(leaderboardName, currentMapPool.Id, data)) 
                 RefreshCurrentData(1, false, true);
         }
 
@@ -371,7 +371,7 @@ namespace PPPredictor.Utilities
         {
             await UpdateCurrentAndCheckResetSession(false);
             IsDataLoading(true);
-            await instance.GetPlayerScores(leaderboardName, currentMapPool.Id, fetchLength, _leaderboardInfo.LargePageSize, fetchOnePage);
+            await calculatorInstance.GetPlayerScores(leaderboardName, currentMapPool.Id, fetchLength, _leaderboardInfo.LargePageSize, fetchOnePage);
             if (refreshStars) //MapPool change to a pool that has never been selected before;
             {
                 await UpdateCurrentBeatMapInfos();
@@ -391,7 +391,7 @@ namespace PPPredictor.Utilities
         {
             await UpdateCurrentAndCheckResetSession(resetAll);
             IsDataLoading(true);
-            await instance.GetPlayerScores(leaderboardName, currentMapPool.Id, 100, 100);
+            await calculatorInstance.GetPlayerScores(leaderboardName, currentMapPool.Id, 100, 100);
             CalculatePP();
             IsDataLoading(false);
         }
@@ -411,7 +411,7 @@ namespace PPPredictor.Utilities
             if (currentMapPool != null)
             {
                 IsDataLoading(true);
-                await instance.UpdateMapPoolDetails(leaderboardName, currentMapPool.Id);
+                await calculatorInstance.UpdateMapPoolDetails(leaderboardName, currentMapPool.Id);
                 IsDataLoading(false);
             }
         }
@@ -438,7 +438,7 @@ namespace PPPredictor.Utilities
 
         public async Task<PPPMapPoolShort> FindPoolWithSyncURL(string syncUrl)
         {
-            return await instance.FindPoolWithSyncURL(leaderboardName, syncUrl);
+            return await calculatorInstance.FindPoolWithSyncURL(leaderboardName, syncUrl);
         }
     }
 }

@@ -20,9 +20,6 @@ namespace PPPredictor.Core.Calculator
         private Dictionary<string, List<ShortScore>> dctScores = new Dictionary<string, List<ShortScore>>();
         private Dictionary<string, double> dctScoresSum = new Dictionary<string, double>();
 
-        private string getPlayerScorePPGainLastHash = string.Empty;
-        private string getPlayerScorePPGainLastCategory = string.Empty;
-
         public PPCalculatorAccSaber(Dictionary<string, PPPMapPool> dctMapPool, Settings settings) : base(dctMapPool, settings, Leaderboard.AccSaber)
         {
             accsaberapi = new ASAPI();
@@ -155,7 +152,7 @@ namespace PPPredictor.Core.Calculator
                 }
                 foreach (AccSaberRankedMap song in rankedSongs)
                 {
-                    mapPool.LsLeaderboadInfo.Add(new ShortScore(CreateSeachString(song.songHash, "SoloStandard", (int)ParsingUtil.ParseDifficultyNameToInt(song.difficulty)), new PPPStarRating(song.complexity), DateTime.Now));
+                    mapPool.LsLeaderboadInfo.Add(new ShortScore(CreateSeachString(song.songHash, "SoloStandard", (int)ParsingUtil.ParseDifficultyNameToInt(song.difficulty)), new PPPStarRating(song.complexity), DateTime.Now, song.categoryDisplayName));
                 }
             }
             catch (Exception ex)
@@ -195,26 +192,9 @@ namespace PPPredictor.Core.Calculator
                 var rankedMapInfo = mapPool.LsLeaderboadInfo.FirstOrDefault(x => x.Searchstring == mapSearchString);
                 if (rankedMapInfo != null)
                 {
-                    string categoryDisplayName = getPlayerScorePPGainLastCategory;
-                    if(getPlayerScorePPGainLastHash != mapSearchString)
-                    {
-                        foreach (var group in dctScores)
-                        {
-                            if (group.Value.FindIndex(x => x.Searchstring == mapSearchString) > -1)
-                            {
-                                categoryDisplayName = group.Key;
-                                getPlayerScorePPGainLastCategory = group.Key;
-                                getPlayerScorePPGainLastHash = mapSearchString;
-                                break;
-                            }
-                        }
-                    }
-                    if (!string.IsNullOrEmpty(categoryDisplayName))
-                    {
-                        PPGainResult ppGain = GetPlayerScorePPGainInternal(dctScores[categoryDisplayName], mapSearchString, pp, dctScoresSum[categoryDisplayName], mapPool);
-                        double otherSum = dctScoresSum.Where(kvp => kvp.Key != categoryDisplayName).Sum(kvp => kvp.Value);
-                        return new PPGainResult(ppGain.PpTotal + otherSum, ppGain.PpGainWeighted, ppGain.PpGainRaw, _settings.PpGainCalculationType);
-                    }
+                    PPGainResult ppGain = GetPlayerScorePPGainInternal(dctScores[rankedMapInfo.Category], mapSearchString, pp, dctScoresSum[rankedMapInfo.Category], mapPool);
+                    double otherSum = dctScoresSum.Where(kvp => kvp.Key != rankedMapInfo.Category).Sum(kvp => kvp.Value);
+                    return new PPGainResult(ppGain.PpTotal + otherSum, ppGain.PpGainWeighted, ppGain.PpGainRaw, _settings.PpGainCalculationType);
                 }
                 return new PPGainResult(mapPool.CurrentPlayer.Pp, pp, pp, _settings.PpGainCalculationType);
             }
@@ -253,7 +233,7 @@ namespace PPPredictor.Core.Calculator
                 if(!_dctMapPool.ContainsKey("overall"))
                 {
                     var overallMapPool = new PPPMapPool("overall", "overall", MapPoolType.Default, "Overall", 0, 0, CurveParser.ParseToCurve(new CurveInfo(CurveType.AccSaber)), string.Empty);
-                    if (!_dctMapPool.ContainsKey(overallMapPool.Id)) _dctMapPool.Add("overall", overallMapPool);
+                    if (!_dctMapPool.ContainsKey(overallMapPool.Id)) _dctMapPool.Add(overallMapPool.Id, overallMapPool);
                 }
                 SendMapPoolRefreshed();
             }

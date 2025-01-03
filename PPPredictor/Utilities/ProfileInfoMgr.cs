@@ -68,12 +68,12 @@ namespace PPPredictor.Utilities
         internal static async void ResetSettings()
         {
             Plugin.ProfileInfo = new ProfileInfo();
-            PPPredictorMgr.instance.AssignSettings(await Plugin.ProfileInfo.ParseToSetting());
+            PPPredictorMgr.CalculatorInstance.AssignSettings(await Plugin.ProfileInfo.ParseToSetting());
         }
 
         internal static void ResetCache()
         {
-            PPPredictorMgr.instance.ResetCache();
+            PPPredictorMgr.CalculatorInstance.ResetCache();
         }
 
         public static void ShowSettingsFlow()

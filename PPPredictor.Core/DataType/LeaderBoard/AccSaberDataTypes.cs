@@ -31,6 +31,7 @@ namespace PPPredictor.Core.DataType.LeaderBoard
             public string difficulty { get; set; }
             public string songHash { get; set; }
             public double complexity { get; set; }
+            public string categoryDisplayName { get; set; }
         }
     }
 }

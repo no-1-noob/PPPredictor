@@ -44,7 +44,7 @@ namespace PPPredictor.Utilities
 
         public WebSocketMgr WebsocketMgr { get => _websocketMgr; }
 
-        internal static Instance instance;
+        internal static CalculatorInstance CalculatorInstance;
         private SongDetails songDetails { get; set; }
         private float _percentage;
 
@@ -61,20 +61,20 @@ namespace PPPredictor.Utilities
             _currentPPPredictor = new DummPredictor();
 
             songDetails = await SongDetails.Init();
-            instance = await Instance.CreateAsync(
+            CalculatorInstance = await CalculatorInstance.CreateAsync(
                 await Plugin.ProfileInfo.ParseToSetting(),
                 Plugin.ProfileInfo.DctleaderBoardData,
                 (PPPBeatMapInfo beatMapInfo) => ScoreSaberSongCoreLookUp(beatMapInfo)
             );
 #warning not really clean i think
             Logging.OnMessage += Logging_OnMessage;
-            if (Plugin.ProfileInfo.IsScoreSaberEnabled) _lsPPPredictor.Add(new PPPredictor(Leaderboard.ScoreSaber, instance));
-            if (Plugin.ProfileInfo.IsBeatLeaderEnabled) _lsPPPredictor.Add(new PPPredictor(Leaderboard.BeatLeader, instance));
-            if (Plugin.ProfileInfo.IsHitBloqEnabled) _lsPPPredictor.Add(new PPPredictor(Leaderboard.HitBloq, instance));
-            if (Plugin.ProfileInfo.IsAccSaberEnabled) _lsPPPredictor.Add(new PPPredictor(Leaderboard.AccSaber, instance));
+            if (Plugin.ProfileInfo.IsScoreSaberEnabled) _lsPPPredictor.Add(new PPPredictor(Leaderboard.ScoreSaber, CalculatorInstance));
+            if (Plugin.ProfileInfo.IsBeatLeaderEnabled) _lsPPPredictor.Add(new PPPredictor(Leaderboard.BeatLeader, CalculatorInstance));
+            if (Plugin.ProfileInfo.IsHitBloqEnabled) _lsPPPredictor.Add(new PPPredictor(Leaderboard.HitBloq, CalculatorInstance));
+            if (Plugin.ProfileInfo.IsAccSaberEnabled) _lsPPPredictor.Add(new PPPredictor(Leaderboard.AccSaber, CalculatorInstance));
             if (_lsPPPredictor.Count == 0)
             {
-                _lsPPPredictor.Add(new PPPredictor(Leaderboard.NoLeaderboard, instance));
+                _lsPPPredictor.Add(new PPPredictor(Leaderboard.NoLeaderboard, CalculatorInstance));
             }
 
 
@@ -130,15 +130,10 @@ namespace PPPredictor.Utilities
         private void RefreshLeaderboardVisibilityByIPAPluginManager()
         {
             List<PluginMetadata> lsEnabledPlugin = PluginManager.EnabledPlugins.ToList();
-            //Plugin.ProfileInfo.IsScoreSaberEnabled = lsEnabledPlugin.FirstOrDefault(x => x.Name == Leaderboard.ScoreSaber.ToString()) != null;
-            //Plugin.ProfileInfo.IsBeatLeaderEnabled = lsEnabledPlugin.FirstOrDefault(x => x.Name == Leaderboard.BeatLeader.ToString()) != null;
-            //Plugin.ProfileInfo.IsHitBloqEnabled = lsEnabledPlugin.FirstOrDefault(x => x.Name == CultureInfo.CurrentCulture.TextInfo.ToTitleCase(Leaderboard.HitBloq.ToString())) != null;
-            //Plugin.ProfileInfo.IsAccSaberEnabled = Plugin.ProfileInfo.IsScoreSaberEnabled && Plugin.ProfileInfo.IsAccSaberEnabledManual;
-
             Plugin.ProfileInfo.IsScoreSaberEnabled = lsEnabledPlugin.FirstOrDefault(x => x.Name == Leaderboard.ScoreSaber.ToString()) != null;
             Plugin.ProfileInfo.IsBeatLeaderEnabled = lsEnabledPlugin.FirstOrDefault(x => x.Name == Leaderboard.BeatLeader.ToString()) != null;
             Plugin.ProfileInfo.IsHitBloqEnabled = false; //lsEnabledPlugin.FirstOrDefault(x => x.Name == CultureInfo.CurrentCulture.TextInfo.ToTitleCase(Leaderboard.HitBloq.ToString())) != null;
-            Plugin.ProfileInfo.IsAccSaberEnabled = false; //Plugin.ProfileInfo.IsScoreSaberEnabled && Plugin.ProfileInfo.IsAccSaberEnabledManual;
+            Plugin.ProfileInfo.IsAccSaberEnabled = Plugin.ProfileInfo.IsScoreSaberEnabled && Plugin.ProfileInfo.IsAccSaberEnabledManual;
         }
 
         public void RestartOverlayServer()

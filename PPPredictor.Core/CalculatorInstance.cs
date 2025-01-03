@@ -13,20 +13,20 @@ using static PPPredictor.Core.DataType.Enums;
 
 namespace PPPredictor.Core
 {
-    public class Instance
+    public class CalculatorInstance
     {
         Dictionary<Leaderboard, PPCalculator> dctCalculator = new Dictionary<Leaderboard, PPCalculator> ();
         public Logging logging = new Logging();
         private readonly Settings settings;
 
-        public Instance(Settings settings)
+        public CalculatorInstance(Settings settings)
         {
             this.settings = settings;
         }
 
-        public static async Task<Instance> CreateAsync(Settings settings, Dictionary<string, LeaderboardData> dctLeaderboardData, Func<PPPBeatMapInfo, PPPBeatMapInfo> scoreSaberLookUpFunction)
+        public static async Task<CalculatorInstance> CreateAsync(Settings settings, Dictionary<string, LeaderboardData> dctLeaderboardData, Func<PPPBeatMapInfo, PPPBeatMapInfo> scoreSaberLookUpFunction)
         {
-            var instance = new Instance(settings);
+            var instance = new CalculatorInstance(settings);
             await instance.InitializeAsync(settings, dctLeaderboardData, scoreSaberLookUpFunction);
             return instance;
         }
