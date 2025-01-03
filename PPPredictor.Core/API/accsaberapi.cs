@@ -25,10 +25,9 @@ namespace PPPredictor.Core.API
             client.BaseAddress = new Uri(baseUrl);
         }
 
-        [Conditional("ACCSABERNETWORK")]
         public void DebugPrintAccSaberNetwork(string message)
         {
-            Logging.DebugNetworkPrint($"AccSaberNetwork: {message}");
+            Logging.DebugNetworkPrint($"AccSaberNetwork: {message}", DataType.Enums.Leaderboard.AccSaber);
         }
 
         public async Task<List<AccSaberScores>> GetAllScores(string userId)

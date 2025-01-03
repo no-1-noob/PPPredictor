@@ -77,6 +77,15 @@ namespace PPPredictor.Utilities
             this.instance = instance;
             _leaderboardInfo = new PPPLeaderboardInfo(leaderBoard);
             lsMapPools = this.instance.GetMapPools(leaderboardName);
+            //Select current map pool from save data
+            int index = 0;
+            if(Plugin.ProfileInfo.MapPoolSelection.TryGetValue(leaderboardName.ToString(), out string value))
+            {
+                index = Math.Max(lsMapPools.FindIndex(x => x.Id == value), index);
+            }
+            currentMapPool = lsMapPools[index];
+            currentMapPool.SelectedByLoading = true;
+
             //_ppCalculator.OnMapPoolRefreshed += PPCalculator_OnMapPoolRefreshed;
 
             _rankTimer = new System.Timers.Timer(500);
@@ -114,6 +123,7 @@ namespace PPPredictor.Utilities
                 UpdateMapPoolDetails();
                 if (isCurrentMapPoolChanging)
                 {
+                    currentMapPool.SelectedByLoading = false;
                     this.RefreshCurrentData(10, true);
                 }
                 if(currentMapPool != null)
@@ -134,7 +144,7 @@ namespace PPPredictor.Utilities
 
         public void ChangeGameplayModifiers(GameplaySetupViewController gameplaySetupViewController)
         {
-            if (gameplaySetupViewController != null && gameplaySetupViewController.gameplayModifiers != null)
+            if (currentMapPool != null && gameplaySetupViewController != null && gameplaySetupViewController.gameplayModifiers != null)
             {
                 _gameplayModifiers = gameplaySetupViewController.gameplayModifiers;
                 _currentBeatMapInfo = instance.ApplyModifiersToBeatmapInfo(leaderboardName, currentMapPool.Id, _currentBeatMapInfo, Converter.Converter.ConvertGameplayModifiers(_gameplayModifiers));
@@ -237,7 +247,7 @@ namespace PPPredictor.Utilities
             
             var currentPool = CurrentMapPool as PPPMapPoolShort;
             var newMapPool = value as PPPMapPoolShort;
-            return (currentPool == null || (currentPool != null && newMapPool != null && currentPool.Id != newMapPool.Id));
+            return (currentPool == null || (currentPool != null && ((newMapPool != null && currentPool.Id != newMapPool.Id) || currentMapPool.SelectedByLoading)));
         }
 
         public void CalculatePP()
@@ -389,8 +399,11 @@ namespace PPPredictor.Utilities
         public void SetActive(bool setActive)
         {
             _isActive = setActive;
-            _ = DisplaySession(false);
-            CalculatePP();
+            if (setActive)
+            {
+                _ = DisplaySession(false);
+                CalculatePP();
+            }
         }
 
         private async void UpdateMapPoolDetails()

@@ -185,7 +185,7 @@ namespace PPPredictor.Core.Calculator
         public override async Task UpdateAvailableMapPools()
         {
             var defaultMapPool = new PPPMapPool(MapPoolType.Default, $"☞ Select a map pool ☜", 0, 0, new CustomPPPCurve(new List<(double, double)>(), CurveType.Linear, 0));
-            _dctMapPool.Add(defaultMapPool.Id, defaultMapPool);
+            if (!_dctMapPool.ContainsKey(defaultMapPool.Id))  _dctMapPool.Add(defaultMapPool.Id, defaultMapPool);
             List<HitBloqMapPool> hbMapPool = await hitbloqapi.GetHitBloqMapPools();
             string customUserId = await UpdateUserId();
             //check if this map pool is already in list
@@ -202,7 +202,7 @@ namespace PPPredictor.Core.Calculator
                 {
                     PPPMapPool insertMapPool = new PPPMapPool(newMapPool.id, newMapPool.id, MapPoolType.Custom, newMapPool.title, 0, 0, CustomPPPCurve.CreateDummyPPPCurve(), newMapPool.image, newMapPool.popularity, newMapPool.download_url);
                     insertMapPool.CustomLeaderboardUserId = customUserId;
-                    _dctMapPool.Add(insertMapPool.Id, insertMapPool);
+                    if (!_dctMapPool.ContainsKey(insertMapPool.Id)) _dctMapPool.Add(insertMapPool.Id, insertMapPool);
                 }
             }
             SendMapPoolRefreshed();

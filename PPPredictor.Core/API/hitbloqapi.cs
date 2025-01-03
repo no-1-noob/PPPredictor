@@ -198,10 +198,9 @@ namespace PPPredictor.Core.API
             return new HitBloqLeaderboardInfo();
         }
 
-        [Conditional("HITBLOQNETWORK")]
         public void DebugPrintHitbloqNetwork(string message)
         {
-            Logging.DebugNetworkPrint($"HitbloqNetwork: {message}");
+            Logging.DebugNetworkPrint($"HitbloqNetwork: {message}", DataType.Enums.Leaderboard.HitBloq);
         }
     }
 }

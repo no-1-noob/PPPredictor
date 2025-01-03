@@ -8,6 +8,7 @@ namespace PPPredictor.Core.DataType.MapPool
         private string _id;
         private string _mapPoolName;
         private int _sortIndex;
+        private bool _selectedByLoading = false;
 
 
         public string Id { get => _id; set => _id = value; }
@@ -15,6 +16,7 @@ namespace PPPredictor.Core.DataType.MapPool
         public byte[] IconData { get => _iconData; set => _iconData = value; }
         public string MapPoolName { get => _mapPoolName; set => _mapPoolName = value; }
         public int SortIndex { get => _sortIndex; set => _sortIndex = value; }
+        public bool SelectedByLoading { get => _selectedByLoading; set => _selectedByLoading = value; }
 
         public PPPMapPoolShort()
         {

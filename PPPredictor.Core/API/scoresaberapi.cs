@@ -24,10 +24,9 @@ namespace PPPredictor.Core.API
             client.BaseAddress = new Uri(baseUrl);
         }
 
-        [Conditional("SCORESABERNETWORK")]
         public void DebugPrintBeatLeaderNetwork(string message)
         {
-            Logging.DebugNetworkPrint($"ScoreSaberNetwork: {message}");
+            Logging.DebugNetworkPrint($"ScoreSaberNetwork: {message}", DataType.Enums.Leaderboard.ScoreSaber);
         }
 
         public async Task<ScoreSaberPlayerList> GetPlayers(double? page)

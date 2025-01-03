@@ -5,6 +5,7 @@ using PPPredictor.UI.ViewController;
 using PPPredictor.Utilities;
 using SiraUtil.Zenject;
 using System.Threading.Tasks;
+using static PPPredictor.Core.DataType.Enums;
 using IPALogger = IPA.Logging.Logger;
 
 namespace PPPredictor
@@ -66,8 +67,30 @@ namespace PPPredictor
             Plugin.Log?.Error(text);
         }
 
-        public static void DebugNetworkPrint(string text)
+        public static void DebugNetworkPrint(string text, Leaderboard leaderBoard)
         {
+
+            switch (leaderBoard)
+            {
+#if SCORESABERNETWORK
+                case Leaderboard.ScoreSaber:
+                    break;
+#endif
+#if BEATLEADERNETWORK
+                case Leaderboard.BeatLeader:
+                    break;
+#endif
+#if ACCSABERNETWORK
+                case Leaderboard.AccSaber:
+                    break;
+#endif
+#if HITBLOQNETWORK
+                case Leaderboard.HitBloq:
+                    break;
+#endif
+                default:
+                    return;
+            }
             Plugin.Log?.Error(text);
         }
 

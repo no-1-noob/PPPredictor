@@ -20,7 +20,7 @@ namespace PPPredictor.Core.Calculator
         private Func<PPPBeatMapInfo, PPPBeatMapInfo> scoreSaberLookUpFunction;
         private readonly SSAPI scoresaberAPI;
 
-        public PPCalculatorScoreSaber(Dictionary<string, PPPMapPool> dctMapPool, Settings settings, Func<PPPBeatMapInfo, PPPBeatMapInfo> scoreSaberLookUpFunction) : base(dctMapPool, settings, Leaderboard.HitBloq)
+        public PPCalculatorScoreSaber(Dictionary<string, PPPMapPool> dctMapPool, Settings settings, Func<PPPBeatMapInfo, PPPBeatMapInfo> scoreSaberLookUpFunction) : base(dctMapPool, settings, Leaderboard.ScoreSaber)
         {
             this.scoreSaberLookUpFunction = scoreSaberLookUpFunction;
             scoresaberAPI = new SSAPI();
@@ -122,7 +122,7 @@ namespace PPPredictor.Core.Calculator
         public override Task UpdateAvailableMapPools()
         {
             PPPMapPool mapPool = new PPPMapPool(MapPoolType.Default, $"", PPCalculatorScoreSaber<ScoresaberAPI>.accumulationConstant, 0, CurveParser.ParseToCurve(new CurveInfo(CurveType.ScoreSaber)));
-            _dctMapPool.Add(mapPool.Id, mapPool);
+            if (!_dctMapPool.ContainsKey(mapPool.Id)) _dctMapPool.Add(mapPool.Id, mapPool);
             return Task.CompletedTask;
         }
 

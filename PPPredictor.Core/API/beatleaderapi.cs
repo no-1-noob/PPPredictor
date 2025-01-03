@@ -12,7 +12,7 @@ namespace PPPredictor.Core.API
 {
     class BeatleaderAPI : IBeatLeaderAPI
     {
-        private static readonly string baseUrl = "https://api.beatleader.xyz";
+        private static readonly string baseUrl = "https://api.beatleader.com";
         private readonly HttpClient client;
 
         public BeatleaderAPI()
@@ -163,10 +163,9 @@ namespace PPPredictor.Core.API
             return new BeatLeaderPlayList();
         }
 
-        //[Conditional("BEATLEADERNETWORK")]
         public void DebugPrintBeatLeaderNetwork(string message)
         {
-            Logging.DebugNetworkPrint($"BeatLeaderNetwork: {message}");
+            Logging.DebugNetworkPrint($"BeatLeaderNetwork: {message}", DataType.Enums.Leaderboard.BeatLeader);
         }
     }
 }

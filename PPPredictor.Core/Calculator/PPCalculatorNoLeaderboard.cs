@@ -61,7 +61,7 @@ namespace PPPredictor.Core.Calculator
         public override Task UpdateAvailableMapPools()
         {
             var mapPool = new PPPMapPool(MapPoolType.Default, $"", 0, 0, new CustomPPPCurve(new List<(double, double)>(), CurveType.Linear, 0));
-            _dctMapPool.Add(mapPool.Id, mapPool);
+            if (!_dctMapPool.ContainsKey(mapPool.Id)) _dctMapPool.Add(mapPool.Id, mapPool);
             return Task.CompletedTask;
         }
 

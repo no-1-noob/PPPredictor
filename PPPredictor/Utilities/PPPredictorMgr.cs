@@ -3,7 +3,6 @@ using IPA.Loader;
 using PPPredictor.Core;
 using PPPredictor.Core.DataType;
 using PPPredictor.Core.DataType.MapPool;
-using PPPredictor.Data;
 using PPPredictor.Data.DisplayInfos;
 using PPPredictor.Interfaces;
 using SongDetailsCache;
@@ -65,7 +64,7 @@ namespace PPPredictor.Utilities
             instance = await Instance.CreateAsync(
                 await Plugin.ProfileInfo.ParseToSetting(),
                 Plugin.ProfileInfo.DctleaderBoardData,
-                (PPPBeatMapInfo beatMapInfo) => ScoreSaberSongCore(beatMapInfo)
+                (PPPBeatMapInfo beatMapInfo) => ScoreSaberSongCoreLookUp(beatMapInfo)
             );
 #warning not really clean i think
             Logging.OnMessage += Logging_OnMessage;
@@ -109,14 +108,14 @@ namespace PPPredictor.Utilities
                     Plugin.ErrorPrint(e.message);
                     break;
                 case LoggingMessage.LoggingType.DebugNetworkPrint:
-                    Plugin.DebugNetworkPrint(e.message);
+                    Plugin.DebugNetworkPrint(e.message, e.leaderboard);
                     break;
                 default:
                     return;
             }
         }
 
-        private PPPBeatMapInfo ScoreSaberSongCore(PPPBeatMapInfo beatMapInfo)
+        private PPPBeatMapInfo ScoreSaberSongCoreLookUp(PPPBeatMapInfo beatMapInfo)
         {
             if (songDetails.songs.FindByHash(beatMapInfo.CustomLevelHash, out Song song))
             {
@@ -136,7 +135,7 @@ namespace PPPredictor.Utilities
             //Plugin.ProfileInfo.IsHitBloqEnabled = lsEnabledPlugin.FirstOrDefault(x => x.Name == CultureInfo.CurrentCulture.TextInfo.ToTitleCase(Leaderboard.HitBloq.ToString())) != null;
             //Plugin.ProfileInfo.IsAccSaberEnabled = Plugin.ProfileInfo.IsScoreSaberEnabled && Plugin.ProfileInfo.IsAccSaberEnabledManual;
 
-            Plugin.ProfileInfo.IsScoreSaberEnabled = false; // lsEnabledPlugin.FirstOrDefault(x => x.Name == Leaderboard.ScoreSaber.ToString()) != null;
+            Plugin.ProfileInfo.IsScoreSaberEnabled = lsEnabledPlugin.FirstOrDefault(x => x.Name == Leaderboard.ScoreSaber.ToString()) != null;
             Plugin.ProfileInfo.IsBeatLeaderEnabled = lsEnabledPlugin.FirstOrDefault(x => x.Name == Leaderboard.BeatLeader.ToString()) != null;
             Plugin.ProfileInfo.IsHitBloqEnabled = false; //lsEnabledPlugin.FirstOrDefault(x => x.Name == CultureInfo.CurrentCulture.TextInfo.ToTitleCase(Leaderboard.HitBloq.ToString())) != null;
             Plugin.ProfileInfo.IsAccSaberEnabled = false; //Plugin.ProfileInfo.IsScoreSaberEnabled && Plugin.ProfileInfo.IsAccSaberEnabledManual;
