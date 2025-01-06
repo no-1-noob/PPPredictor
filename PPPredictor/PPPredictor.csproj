@@ -241,18 +241,18 @@
     <Compile Include="UI\ViewController\SettingsMidViewController.cs" />
     <Compile Include="Utilities\Constants.cs" />
     <Compile Include="Utilities\DisplayHelper.cs" />
-    <Compile Include="Utilities\DummPredictor.cs" />
+    <Compile Include="Predictor\PPPredictorDummy.cs" />
     <Compile Include="Utilities\Enums.cs" />
-    <Compile Include="Utilities\GamePlayMgr.cs" />
-    <Compile Include="Utilities\MainMenuMgr.cs" />
-    <Compile Include="Utilities\PPPredictor.cs" />
-    <Compile Include="Utilities\PPPredictorMgr.cs" />
-    <Compile Include="Utilities\ProfileInfoMgr.cs" />
+    <Compile Include="Manager\GamePlayMgr.cs" />
+    <Compile Include="Manager\MainMenuMgr.cs" />
+    <Compile Include="Predictor\PPPredictor.cs" />
+    <Compile Include="Manager\PPPredictorMgr.cs" />
+    <Compile Include="Manager\ProfileInfoMgr.cs" />
     <Compile Include="UI\ViewController\PPPredictorViewController.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Data\SVector3.cs" />
-    <Compile Include="WebSocket\WebSocketMgr.cs" />
+    <Compile Include="Manager\WebSocketMgr.cs" />
     <Compile Include="VersionChecker\VersionChecker.cs" />
     <Compile Include="VersionChecker\VersionInfo.cs" />
   </ItemGroup>

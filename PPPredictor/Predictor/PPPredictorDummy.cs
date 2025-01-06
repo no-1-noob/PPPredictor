@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace PPPredictor.Utilities
 {
-    internal class DummPredictor : IPPPredictor
+    internal class PPPredictorDummy : IPPPredictor
     {
         public float Percentage { get => 0; set { return; } }
 

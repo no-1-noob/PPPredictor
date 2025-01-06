@@ -59,7 +59,7 @@ namespace PPPredictor.Utilities
         {
             RefreshLeaderboardVisibilityByIPAPluginManager();
             _lsPPPredictor = new List<IPPPredictor>();
-            _currentPPPredictor = new DummPredictor();
+            _currentPPPredictor = new PPPredictorDummy();
 
             songDetails = await SongDetails.Init();
             CalculatorInstance = await CalculatorInstance.CreateAsync(
