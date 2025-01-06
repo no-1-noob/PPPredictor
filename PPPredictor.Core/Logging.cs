@@ -3,7 +3,7 @@ using static PPPredictor.Core.DataType.Enums;
 
 namespace PPPredictor.Core
 {
-    public class Logging
+    internal class Logging
     {
         public static event EventHandler<LoggingMessage> OnMessage;
 

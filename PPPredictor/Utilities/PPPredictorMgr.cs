@@ -66,8 +66,7 @@ namespace PPPredictor.Utilities
                 Plugin.ProfileInfo.DctleaderBoardData,
                 (PPPBeatMapInfo beatMapInfo) => ScoreSaberSongCoreLookUp(beatMapInfo)
             );
-#warning not really clean i think
-            Logging.OnMessage += Logging_OnMessage;
+            CalculatorInstance.OnMessage += Logging_OnMessage;
             if (Plugin.ProfileInfo.IsScoreSaberEnabled) _lsPPPredictor.Add(new PPPredictor(Leaderboard.ScoreSaber, CalculatorInstance));
             if (Plugin.ProfileInfo.IsBeatLeaderEnabled) _lsPPPredictor.Add(new PPPredictor(Leaderboard.BeatLeader, CalculatorInstance));
             if (Plugin.ProfileInfo.IsHitBloqEnabled) _lsPPPredictor.Add(new PPPredictor(Leaderboard.HitBloq, CalculatorInstance));

@@ -16,12 +16,13 @@ namespace PPPredictor.Core
     public class CalculatorInstance
     {
         Dictionary<Leaderboard, PPCalculator> dctCalculator = new Dictionary<Leaderboard, PPCalculator> ();
-        public Logging logging = new Logging();
+        public event EventHandler<LoggingMessage> OnMessage;
         private readonly Settings settings;
 
         public CalculatorInstance(Settings settings)
         {
             this.settings = settings;
+            Logging.OnMessage += (sender, message) => OnMessage?.Invoke(this, message);
         }
 
         public static async Task<CalculatorInstance> CreateAsync(Settings settings, Dictionary<string, LeaderboardData> dctLeaderboardData, Func<PPPBeatMapInfo, PPPBeatMapInfo> scoreSaberLookUpFunction)
