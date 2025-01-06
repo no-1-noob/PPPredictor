@@ -128,6 +128,7 @@ namespace PPPredictor.Core.DataType.MapPool
 
         public static implicit operator PPPMapPoolShort(PPPMapPool mapPool)
         {
+            if(mapPool == null) return null;
             return new PPPMapPoolShort(
                 mapPool.IconUrl,
                 mapPool.IconData,

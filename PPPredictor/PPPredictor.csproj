@@ -117,6 +117,9 @@
     <Reference Include="PlatformUserModel">
       <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\PlatformUserModel.dll</HintPath>
     </Reference>
+    <Reference Include="PlaylistManager">
+      <HintPath>$(GameDirectory)\Plugins\PlaylistManager.dll</HintPath>
+    </Reference>
     <Reference Include="SegmentedControl">
       <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\SegmentedControl.dll</HintPath>
     </Reference>

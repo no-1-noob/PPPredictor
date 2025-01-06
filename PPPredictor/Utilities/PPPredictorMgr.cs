@@ -382,7 +382,7 @@ namespace PPPredictor.Utilities
             _websocketMgr.Dispose();
         }
 
-        public async Task FindPoolWithSyncURL(IPlaylist playlist)
+        public void FindPoolWithSyncURL(IPlaylist playlist)
         {
             if (playlist != null && Plugin.ProfileInfo.IsPredictorSwitchBySyncUrlEnabled)
             {
@@ -397,7 +397,7 @@ namespace PPPredictor.Utilities
                             CyclePredictors(0);
                             break;
                         }
-                        PPPMapPoolShort mapPool = await predictor.FindPoolWithSyncURL(outSyncURL as string);
+                        PPPMapPoolShort mapPool = predictor.FindPoolWithSyncURL(outSyncURL as string);
                         if(mapPool != null)
                         {
                             predictor.CurrentMapPool = mapPool;

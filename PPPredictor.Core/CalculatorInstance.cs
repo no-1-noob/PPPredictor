@@ -65,18 +65,6 @@ namespace PPPredictor.Core
             await Task.WhenAll(updateAvailableMapPoolsTask);
         }
 
-        public void ResetCache()
-        {
-            foreach (var item in dctCalculator.Values)
-            {
-                foreach (var items in item._dctMapPool.Values)
-                {
-#warning reset
-                    //items.
-                }
-            }
-        }
-
         public void AssignSettings(Settings settings)
         {
             foreach (var item in dctCalculator.Values)
@@ -137,13 +125,10 @@ namespace PPPredictor.Core
             return calculator.GetPlayerScorePPGain(mapSearchString, pp, mapPool);
         }
 
-        public async Task<PPPMapPoolShort> FindPoolWithSyncURL(Leaderboard leaderBoard, string syncUrl)
+        public PPPMapPoolShort FindPoolWithSyncURL(Leaderboard leaderBoard, string syncUrl)
         {
             PPCalculator calculator = GetCalculator(leaderBoard);
-            var i = await SemaphoreFunction(calculator.Semaphore,
-                () => Task.Run(() => calculator.FindPoolWithSyncURL(syncUrl))
-            );
-            return i;
+            return calculator.FindPoolWithSyncURL(syncUrl);
         }
 
         public List<PPPMapPoolShort> GetMapPools(Leaderboard leaderBoard)

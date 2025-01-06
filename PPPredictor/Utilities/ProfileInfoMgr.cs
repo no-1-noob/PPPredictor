@@ -73,7 +73,7 @@ namespace PPPredictor.Utilities
 
         internal static void ResetCache()
         {
-            PPPredictorMgr.CalculatorInstance.ResetCache();
+            Plugin.ProfileInfo.ResetCachedData();
         }
 
         public static void ShowSettingsFlow()

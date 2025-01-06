@@ -161,7 +161,7 @@ namespace PPPredictor.Utilities
         public async Task UpdateCurrentBeatMapInfos(BeatmapLevel selectedBeatmapLevel, BeatmapKey beatmapKey)
         {
             var v = Converter.Converter.ConvertBeatmapKey(beatmapKey);
-            _currentBeatMapInfo = new PPPBeatMapInfo(Hashing.GetCustomLevelHash(selectedBeatmapLevel), Converter.Converter.ConvertBeatmapKey(beatmapKey));
+            _currentBeatMapInfo = new PPPBeatMapInfo(selectedBeatmapLevel != null ? Hashing.GetCustomLevelHash(selectedBeatmapLevel) : null, Converter.Converter.ConvertBeatmapKey(beatmapKey));
             await UpdateCurrentBeatMapInfos();
             CalculatePP();
         }
@@ -436,9 +436,9 @@ namespace PPPredictor.Utilities
             }
         }
 
-        public async Task<PPPMapPoolShort> FindPoolWithSyncURL(string syncUrl)
+        public PPPMapPoolShort FindPoolWithSyncURL(string syncUrl)
         {
-            return await calculatorInstance.FindPoolWithSyncURL(leaderboardName, syncUrl);
+            return calculatorInstance.FindPoolWithSyncURL(leaderboardName, syncUrl);
         }
     }
 }

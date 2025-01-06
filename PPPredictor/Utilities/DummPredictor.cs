@@ -63,9 +63,9 @@ namespace PPPredictor.Utilities
             return;
         }
 
-        public Task<PPPMapPoolShort> FindPoolWithSyncURL(string syncUrl)
+        public PPPMapPoolShort FindPoolWithSyncURL(string syncUrl)
         {
-            return Task.FromResult(new PPPMapPoolShort());
+            return new PPPMapPoolShort();
         }
 
         public Task GetMapPoolIconData()

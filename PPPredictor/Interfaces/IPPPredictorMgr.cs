@@ -74,6 +74,6 @@ namespace PPPredictor.Interfaces
 
         Task UpdateCurrentBeatMapInfos(BeatmapLevel selectedBeatmapLevel, BeatmapKey beatmap);
 
-        Task FindPoolWithSyncURL(IPlaylist playlist);
+        void FindPoolWithSyncURL(IPlaylist playlist);
     }
 }

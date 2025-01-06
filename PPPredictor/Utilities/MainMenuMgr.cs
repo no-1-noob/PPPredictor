@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Reflection;
 using Zenject;
 using BeatSaberMarkupLanguage.MenuButtons;
-//using BeatSaberPlaylistsLib.Types;
+using BeatSaberPlaylistsLib.Types;
 using PPPredictor.Interfaces;
 using SongCore.Utilities;
 
@@ -33,7 +32,7 @@ namespace PPPredictor.Utilities
             levelSelectionNavigationController.didActivateEvent -= OnLevelSelectionActivated;
             levelSelectionNavigationController.didDeactivateEvent -= OnLevelSelectionDeactivated;
             gameplaySetupViewController._gameplayModifiersPanelController.didChangeGameplayModifiersEvent -= DidChangeGameplayModifiersEvent;
-            //annotatedBeatmapLevelCollectionsViewController.didSelectAnnotatedBeatmapLevelCollectionEvent -= AnnotatedBeatmapLevelCollectionsViewController_didSelectAnnotatedBeatmapLevelCollectionEvent;
+            annotatedBeatmapLevelCollectionsViewController.didSelectAnnotatedBeatmapLevelCollectionEvent -= AnnotatedBeatmapLevelCollectionsViewController_didSelectAnnotatedBeatmapLevelCollectionEvent;
         }
 
         public void Initialize()
@@ -44,7 +43,7 @@ namespace PPPredictor.Utilities
             levelSelectionNavigationController.didActivateEvent += OnLevelSelectionActivated;
             levelSelectionNavigationController.didDeactivateEvent += OnLevelSelectionDeactivated;
             gameplaySetupViewController._gameplayModifiersPanelController.didChangeGameplayModifiersEvent += DidChangeGameplayModifiersEvent;
-            //annotatedBeatmapLevelCollectionsViewController.didSelectAnnotatedBeatmapLevelCollectionEvent += AnnotatedBeatmapLevelCollectionsViewController_didSelectAnnotatedBeatmapLevelCollectionEvent;
+            annotatedBeatmapLevelCollectionsViewController.didSelectAnnotatedBeatmapLevelCollectionEvent += AnnotatedBeatmapLevelCollectionsViewController_didSelectAnnotatedBeatmapLevelCollectionEvent;
         }
 
         private void DidChangeGameplayModifiersEvent()
@@ -87,10 +86,10 @@ namespace PPPredictor.Utilities
             this.ppPredictorMgr.ActivateView(false);
         }
 
-        //private void AnnotatedBeatmapLevelCollectionsViewController_didSelectAnnotatedBeatmapLevelCollectionEvent(IAnnotatedBeatmapLevelCollection annotatedBeatmapLevelCollection)
-        //{
-        //    this.ppPredictorMgr.FindPoolWithSyncURL(annotatedBeatmapLevelCollection as IPlaylist);
-        //}
+        private void AnnotatedBeatmapLevelCollectionsViewController_didSelectAnnotatedBeatmapLevelCollectionEvent(BeatmapLevelPack lvlPack)
+        {
+            this.ppPredictorMgr.FindPoolWithSyncURL((lvlPack as PlaylistLevelPack)?.playlist);
+        }
 
         /// <summary>
         /// Check if we are NOT in a lobby

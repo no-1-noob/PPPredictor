@@ -7,7 +7,6 @@ using PPPredictor.Core.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime;
 using System.Threading.Tasks;
 using static PPPredictor.Core.DataType.Enums;
 using static PPPredictor.Core.DataType.LeaderBoard.BeatLeaderDataTypes;

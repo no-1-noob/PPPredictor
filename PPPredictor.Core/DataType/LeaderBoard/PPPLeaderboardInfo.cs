@@ -78,19 +78,6 @@ namespace PPPredictor.Core.DataType.LeaderBoard
                     HasGetRecentScoresFunctionality = false;
                     break;
             }
-
-            //THIS IS DEBUG STUFF FOR NOW
-            SetCurrentMapPool();
-        }
-
-        internal void SetCurrentMapPool()
-        {
-#warning needed? I dont think so
-            //if (_lsMapPools != null && _lsMapPools.Count > 0)
-            //{
-            //    int index = Math.Max(_lsMapPools.FindIndex(x => x.Id == LastSelectedMapPoolId), 0); //Set the last used map pool
-            //    this._currentMapPool = _lsMapPools[index];
-            //}
         }
     }
 }
