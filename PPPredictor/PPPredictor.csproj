@@ -298,11 +298,5 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\LeaderBoardLogos\AccSaber.png" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\PPPredictor.Core\PPPredictor.Core.csproj">
-      <Project>{cf89708b-18dd-4f9e-baff-fdafbcdd6e10}</Project>
-      <Name>PPPredictor.Core</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
