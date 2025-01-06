@@ -1,6 +1,4 @@
-﻿using static PlayerSaveData;
-
-namespace PPPredictor.Converter
+﻿namespace PPPredictor.Converter
 {
     internal class Converter
     {
@@ -31,15 +29,6 @@ namespace PPPredictor.Converter
                     return Core.DataType.Enums.BeatMapDifficulty.Easy;
             }
         }
-
-        //public static Core.DataType.BeatSaberEncapsulation.BeatmapLevel ConvertBeatMapLevel(BeatmapLevel beatmapLevel)
-        //{
-        //    return new Core.DataType.BeatSaberEncapsulation.BeatmapLevel
-        //    {
-        //        serializedName = beatmapKey.SerializedName(),
-        //        difficulty = GetBeatMapKeyDifficulty(beatmapKey.difficulty)
-        //    };
-        //}
 
         public static Core.DataType.BeatSaberEncapsulation.GameplayModifiers ConvertGameplayModifiers(GameplayModifiers gameplayModifiers)
         {

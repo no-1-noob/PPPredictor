@@ -1,15 +1,13 @@
 ﻿using PPPredictor.Core.DataType;
 using PPPredictor.Data;
 using PPPredictor.Interfaces;
-using PPPredictor.OpenAPIs;
-using PPPredictor.OverlayServer;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Zenject;
 using static PPPredictor.Core.DataType.Enums;
 
-namespace PPPredictor.Utilities
+namespace PPPredictor.WebSocket
 {
     internal class WebSocketMgr : IInitializable, IDisposable
     {

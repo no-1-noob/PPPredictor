@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using WebSocketSharp;
 using static PPPredictor.Core.DataType.Enums;
 
-namespace PPPredictor.OpenAPIs
+namespace PPPredictor.WebSocket
 {
     internal class PPPWebSocket<T> : IPPPWebSocket where T : IPPPRawWebsocketData
     {

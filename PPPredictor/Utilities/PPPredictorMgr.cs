@@ -5,6 +5,7 @@ using PPPredictor.Core.DataType;
 using PPPredictor.Core.DataType.MapPool;
 using PPPredictor.Data.DisplayInfos;
 using PPPredictor.Interfaces;
+using PPPredictor.WebSocket;
 using SongDetailsCache;
 using SongDetailsCache.Structs;
 using System;

@@ -1,7 +1,7 @@
 ﻿using WebSocketSharp;
 using WebSocketSharp.Server;
 
-namespace PPPredictor.OverlayServer
+namespace PPPredictor.WebSocket
 {
     internal class WebSocketOverlayServer
     {

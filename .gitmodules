@@ -1,0 +1,4 @@
+[submodule "PPPredictor.Core"]
+	path = PPPredictor.Core
+	url = https://github.com/no-1-noob/PPPredictor.Core.git
+	branch = coreinit

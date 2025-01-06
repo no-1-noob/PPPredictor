@@ -235,8 +235,8 @@
     <Compile Include="Interfaces\IPPPredictor.cs" />
     <Compile Include="Interfaces\IPPPredictorMgr.cs" />
     <Compile Include="Interfaces\IPPPWebSocket.cs" />
-    <Compile Include="OpenAPIs\PPPWebSocket.cs" />
-    <Compile Include="OverlayServer\WebSocketOverlayServer.cs" />
+    <Compile Include="WebSocket\PPPWebSocket.cs" />
+    <Compile Include="WebSocket\WebSocketOverlayServer.cs" />
     <Compile Include="UI\PPPredictorFlowCoordinator.cs" />
     <Compile Include="UI\ViewController\SettingsMidViewController.cs" />
     <Compile Include="Utilities\Constants.cs" />
@@ -252,7 +252,7 @@
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Data\SVector3.cs" />
-    <Compile Include="Utilities\WebSocketMgr.cs" />
+    <Compile Include="WebSocket\WebSocketMgr.cs" />
     <Compile Include="VersionChecker\VersionChecker.cs" />
     <Compile Include="VersionChecker\VersionInfo.cs" />
   </ItemGroup>
@@ -299,4 +299,9 @@
     <EmbeddedResource Include="Resources\LeaderBoardLogos\AccSaber.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Compile Include="..\PPPredictor.Core\**\*.cs" Link="%(RecursiveDir)%(FileName)%(Extension)" />
+    <Compile Remove="..\PPPredictor.Core\obj\**\*;..\PPPredictor.Core\**\obj\**\*" />
+    <Compile Remove="..\PPPredictor.Core\**\AssemblyInfo.cs" />
+  </ItemGroup>
 </Project>
