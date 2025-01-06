@@ -45,7 +45,7 @@ namespace PPPredictor.UI.ViewController
             Plugin.pppViewController = this;
             displaySessionInfo = new DisplaySessionInfo();
             displayPPInfo = new DisplayPPInfo();
-            floatingScreen = FloatingScreen.CreateFloatingScreen(new Vector2(75, 100), true, Plugin.ProfileInfo.Position, new Quaternion(0, 0, 0, 0), curvatureRadius: 0);
+            floatingScreen = FloatingScreen.CreateFloatingScreen(new Vector2(75, 100), true, Plugin.ProfileInfo.Position, new Quaternion(0, 0, 0, 0));
             floatingScreen.gameObject.name = "BSMLFloatingScreen_PPPredictor";
             floatingScreen.gameObject.SetActive(false);
             floatingScreen.transform.eulerAngles = Plugin.ProfileInfo.EulerAngles;
