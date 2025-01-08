@@ -10,6 +10,7 @@ using SongDetailsCache;
 using SongDetailsCache.Structs;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Zenject;
@@ -52,15 +53,19 @@ namespace PPPredictor.Utilities
         internal PPPredictorMgr()
         {
             this._websocketMgr = new WebSocketMgr(this);
-            ResetPredictors();
+            ResetPredictors(true);
         }
 
-        public async void ResetPredictors()
+        public async void ResetPredictors(bool isConstructor = false)
         {
             RefreshLeaderboardVisibilityByIPAPluginManager();
             _lsPPPredictor = new List<IPPPredictor>();
             _currentPPPredictor = new PPPredictorDummy();
-
+            if (!isConstructor)
+            {
+                _websocketMgr.CloseScoreWebSockets();
+                CalculatorInstance.OnMessage -= Logging_OnMessage;
+            }
             songDetails = await SongDetails.Init();
             CalculatorInstance = await CalculatorInstance.CreateAsync(
                 await Plugin.ProfileInfo.ParseToSetting(),
@@ -132,7 +137,7 @@ namespace PPPredictor.Utilities
             List<PluginMetadata> lsEnabledPlugin = PluginManager.EnabledPlugins.ToList();
             Plugin.ProfileInfo.IsScoreSaberEnabled = lsEnabledPlugin.FirstOrDefault(x => x.Name == Leaderboard.ScoreSaber.ToString()) != null;
             Plugin.ProfileInfo.IsBeatLeaderEnabled = lsEnabledPlugin.FirstOrDefault(x => x.Name == Leaderboard.BeatLeader.ToString()) != null;
-            Plugin.ProfileInfo.IsHitBloqEnabled = false; //lsEnabledPlugin.FirstOrDefault(x => x.Name == CultureInfo.CurrentCulture.TextInfo.ToTitleCase(Leaderboard.HitBloq.ToString())) != null;
+            Plugin.ProfileInfo.IsHitBloqEnabled = lsEnabledPlugin.FirstOrDefault(x => x.Name == CultureInfo.CurrentCulture.TextInfo.ToTitleCase(Leaderboard.HitBloq.ToString())) != null;
             Plugin.ProfileInfo.IsAccSaberEnabled = Plugin.ProfileInfo.IsScoreSaberEnabled && Plugin.ProfileInfo.IsAccSaberEnabledManual;
         }
 

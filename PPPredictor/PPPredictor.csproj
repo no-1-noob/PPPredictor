@@ -300,7 +300,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Compile Include="..\PPPredictor.Core\**\*.cs" Link="%(RecursiveDir)%(FileName)%(Extension)" />
+    <Compile Include="..\PPPredictor.Core\PPPredictor.Core\**\*.cs" Link="Core\%(RecursiveDir)%(FileName)%(Extension)" />
     <Compile Remove="..\PPPredictor.Core\obj\**\*;..\PPPredictor.Core\**\obj\**\*" />
     <Compile Remove="..\PPPredictor.Core\**\AssemblyInfo.cs" />
   </ItemGroup>

@@ -75,11 +75,17 @@ namespace PPPredictor.WebSocket
         public void Dispose()
         {
             OverlayServer.CloseSocket();
+            CloseScoreWebSockets();
+        }
+
+        public void CloseScoreWebSockets()
+        {
             foreach (var socket in _lsWebSockets)
             {
                 socket.StopWebSocket();
                 socket.OnScoreSet -= PPPWebsocket_OnScoreSet;
             }
+            _lsWebSockets.Clear();
         }
 
         public void Initialize()

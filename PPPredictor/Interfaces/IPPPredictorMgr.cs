@@ -25,7 +25,7 @@ namespace PPPredictor.Interfaces
         event EventHandler<DisplayPPInfo> OnDisplayPPInfo;
         event EventHandler OnMapPoolRefreshed;
 
-        void ResetPredictors();
+        void ResetPredictors(bool isConstructor = false);
 
         void CyclePredictors(int offset);
 
