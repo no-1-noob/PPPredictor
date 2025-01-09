@@ -9,7 +9,7 @@ namespace PPPredictor.UI
     {
         private static PPPredictorFlowCoordinator instance = null;
         private static SettingsMidViewController settingsMidView;
-        protected override void DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
+        public override void DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
         {
             instance = this;
             SetTitle("PPPredictor");
@@ -18,7 +18,7 @@ namespace PPPredictor.UI
             ProvideInitialViewControllers(settingsMidView);
         }
 
-        protected override void BackButtonWasPressed(HMUI.ViewController topViewController) => Close();
+        public override void BackButtonWasPressed(HMUI.ViewController topViewController) => Close();
 
         private void Close()
         {

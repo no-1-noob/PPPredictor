@@ -1,9 +1,12 @@
-﻿using IPA;
+﻿using HarmonyLib;
+using IPA;
 using PPPredictor.Data;
 using PPPredictor.Installers;
 using PPPredictor.UI.ViewController;
 using PPPredictor.Utilities;
 using SiraUtil.Zenject;
+using System.Reflection;
+using System;
 using System.Threading.Tasks;
 using static PPPredictor.Core.DataType.Enums;
 using IPALogger = IPA.Logging.Logger;
@@ -20,6 +23,9 @@ namespace PPPredictor
         internal static ProfileInfo ProfileInfo;
 
         internal static PPPredictorViewController pppViewController;
+
+        private const string kHarmonyID = "com.github.no-1-noob.PPPredictor";
+        private static readonly Harmony harmony = new Harmony(kHarmonyID);
 
         //Only Used for UnitTests
         internal Plugin()
@@ -49,12 +55,46 @@ namespace PPPredictor
         [OnStart]
         public void OnApplicationStart()
         {
+            ApplyHarmonyPatches();
+        }
+
+        private static void ApplyHarmonyPatches()
+        {
+            try
+            {
+                Log?.Debug("Applying Harmony patches.");
+                harmony.PatchAll(Assembly.GetExecutingAssembly());
+            }
+            catch (Exception ex)
+            {
+                Log?.Error("Error applying Harmony patches: " + ex.Message);
+                Log?.Debug(ex);
+            }
         }
 
         [OnExit]
         public void OnApplicationQuit()
         {
             ProfileInfoMgr.SaveProfile(ProfileInfo, PPPredictorMgr.CalculatorInstance.GetSaveData());
+        }
+
+        [OnDisable]
+        public void OnDisable()
+        {
+            RemoveHarmonyPatches();
+        }
+
+        private static void RemoveHarmonyPatches()
+        {
+            try
+            {
+                harmony.UnpatchSelf();
+            }
+            catch (Exception ex)
+            {
+                Log?.Error("Error removing Harmony patches: " + ex.Message);
+                Log?.Debug(ex);
+            }
         }
 
         public static void ErrorPrint(string text)

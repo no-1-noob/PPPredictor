@@ -108,7 +108,7 @@
     <Reference Include="BeatSaberPlaylistsLib">
       <HintPath>$(GameDirectory)\Libs\BeatSaberPlaylistsLib.dll</HintPath>
     </Reference>
-    <Reference Include="BeatSaber.ViewSystem">
+    <Reference Include="BeatSaber.ViewSystem" Publicize="true">
       <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\BeatSaber.ViewSystem.dll</HintPath>
     </Reference>
     <Reference Include="DataModels">
@@ -169,7 +169,7 @@
       <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\HMLib.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="HMUI">
+    <Reference Include="HMUI" Publicize="true">
       <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\HMUI.dll</HintPath>
       <Private>False</Private>
     </Reference>
@@ -177,7 +177,7 @@
       <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\IPA.Loader.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Unity.TextMeshPro">
+    <Reference Include="Unity.TextMeshPro" Publicize="true">
       <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\Unity.TextMeshPro.dll</HintPath>
       <Private>False</Private>
     </Reference>
@@ -235,6 +235,7 @@
     <Compile Include="Interfaces\IPPPredictor.cs" />
     <Compile Include="Interfaces\IPPPredictorMgr.cs" />
     <Compile Include="Interfaces\IPPPWebSocket.cs" />
+    <Compile Include="HarmonyPatch\HarmonyPatch.cs" />
     <Compile Include="WebSocket\PPPWebSocket.cs" />
     <Compile Include="WebSocket\WebSocketOverlayServer.cs" />
     <Compile Include="UI\PPPredictorFlowCoordinator.cs" />

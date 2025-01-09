@@ -73,7 +73,7 @@
           </vertical>
           <vertical preferred-height='14'>
             <vertical vertical-fit='PreferredSize' align='Left' ignore-layout='true' pad-top='0' pad-right='37' spacing='-1'>
-              <slider-setting id='sliderFine' text='' formatter='sliderFormat' value='sliderFineValue' hover-hint='What percentage to calculate PP at (fine adjust)' interactable='~isNoDataLoading' min='0' max='100' increment='0.1' apply-on-change='true' bind-value='true' show-buttons='true' align='Left' anchor-pos-y='5'/>
+              <slider-setting id='sliderFine' text='' formatter='sliderFormat' value='sliderFineValue' hover-hint='What percentage to calculate PP at' interactable='~isNoDataLoading' min='0' max='100' increment='0.1' apply-on-change='true' bind-value='true' show-buttons='true' align='Left' anchor-pos-y='5'/>
             </vertical>
           </vertical>
         </vertical>
