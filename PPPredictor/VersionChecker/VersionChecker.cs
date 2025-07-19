@@ -10,7 +10,7 @@ namespace PPPredictor.VersionChecker
     {
 #pragma warning disable CS0414
         private static readonly string baseUrl = "https://mods.no1noob.net";
-        private static readonly string pageUrl = "api/PPPredictorVersion_1_38";
+        private static readonly string pageUrl = "api/PPPredictorVersion_1_40";
 #pragma warning disable CS0414
 
 #pragma warning disable CS1998

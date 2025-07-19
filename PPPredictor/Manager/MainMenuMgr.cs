@@ -3,7 +3,8 @@ using Zenject;
 using BeatSaberMarkupLanguage.MenuButtons;
 using BeatSaberPlaylistsLib.Types;
 using PPPredictor.Interfaces;
-using SongCore.Utilities;
+using System.Threading.Tasks;
+using SongCore;
 
 namespace PPPredictor.Utilities
 {
@@ -20,7 +21,7 @@ namespace PPPredictor.Utilities
         private readonly MenuButton menuButton;
 
         public MainMenuMgr()
-        {
+        { 
             menuButton = new MenuButton("PPPredictor", "Predict PP gains", ProfileInfoMgr.ShowSettingsFlow, true);
         }
 
@@ -33,6 +34,7 @@ namespace PPPredictor.Utilities
             levelSelectionNavigationController.didDeactivateEvent -= OnLevelSelectionDeactivated;
             gameplaySetupViewController._gameplayModifiersPanelController.didChangeGameplayModifiersEvent -= DidChangeGameplayModifiersEvent;
             annotatedBeatmapLevelCollectionsViewController.didSelectAnnotatedBeatmapLevelCollectionEvent -= AnnotatedBeatmapLevelCollectionsViewController_didSelectAnnotatedBeatmapLevelCollectionEvent;
+            ppPredictorMgr.OnDataLoading -= PpPredictorMgr_OnDataLoading;
         }
 
         public void Initialize()
@@ -44,6 +46,12 @@ namespace PPPredictor.Utilities
             levelSelectionNavigationController.didDeactivateEvent += OnLevelSelectionDeactivated;
             gameplaySetupViewController._gameplayModifiersPanelController.didChangeGameplayModifiersEvent += DidChangeGameplayModifiersEvent;
             annotatedBeatmapLevelCollectionsViewController.didSelectAnnotatedBeatmapLevelCollectionEvent += AnnotatedBeatmapLevelCollectionsViewController_didSelectAnnotatedBeatmapLevelCollectionEvent;
+            ppPredictorMgr.OnDataLoading += PpPredictorMgr_OnDataLoading;
+        }
+
+        private void PpPredictorMgr_OnDataLoading(object sender, bool isDataLoading)
+        {
+            RefreshButtonInteraction();
         }
 
         private void DidChangeGameplayModifiersEvent()
@@ -66,7 +74,7 @@ namespace PPPredictor.Utilities
 
         private void DiffultyChangedDecideCustomMap(LevelSelectionNavigationController lvlSelectionNavigationCtrl)
         {
-            if (!string.IsNullOrEmpty(Hashing.GetCustomLevelHash(lvlSelectionNavigationCtrl.beatmapLevel)) && IsNormalMainMenu()) //Checking if it is a custom map
+            if (!string.IsNullOrEmpty(Collections.GetCustomLevelHash(lvlSelectionNavigationCtrl.beatmapLevel.levelID)) && IsNormalMainMenu()) //Checking if it is a custom map
             {
                 this.ppPredictorMgr.DifficultyChanged(lvlSelectionNavigationCtrl.beatmapLevel, lvlSelectionNavigationCtrl.beatmapKey);
             }
@@ -83,12 +91,30 @@ namespace PPPredictor.Utilities
         }
         private void OnLevelSelectionDeactivated(bool removedFromHierarchy, bool screenSystemDisabling)
         {
+            RefreshButtonInteraction(true);
             this.ppPredictorMgr.ActivateView(false);
         }
 
         private void AnnotatedBeatmapLevelCollectionsViewController_didSelectAnnotatedBeatmapLevelCollectionEvent(BeatmapLevelPack lvlPack)
         {
             this.ppPredictorMgr.FindPoolWithSyncURL((lvlPack as PlaylistLevelPack)?.playlist);
+        }
+
+        private void RefreshButtonInteraction(bool forceRefresh = false)
+        {
+            //Deactivate Settings while data is loading
+            bool isInteractable = !this.ppPredictorMgr.IsDataLoading();
+            if (menuButton.Interactable != isInteractable || forceRefresh)
+            {
+                menuButton.Interactable = isInteractable;
+                _ = RefreshDelay();
+            }
+        }
+
+        private async Task RefreshDelay()
+        {
+            await Task.Delay(250);
+            MenuButtons.Instance.Refresh();
         }
 
         /// <summary>

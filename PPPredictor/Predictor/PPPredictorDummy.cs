@@ -104,7 +104,7 @@ namespace PPPredictor.Utilities
             return;
         }
 
-        public void SetActive(bool setActive)
+        public void SetActive(bool setActive, bool hasPoolChanged = false)
         {
             return;
         }

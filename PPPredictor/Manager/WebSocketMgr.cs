@@ -33,7 +33,7 @@ namespace PPPredictor.WebSocket
             }
             if (Plugin.ProfileInfo.IsBeatLeaderEnabled)
             {
-                PPPWebSocket<PPPWsBeatLeaderData> socket = new PPPWebSocket<PPPWsBeatLeaderData>("wss://sockets.api.beatleader.xyz/scores", Leaderboard.BeatLeader.ToString());
+                PPPWebSocket<PPPWsBeatLeaderData> socket = new PPPWebSocket<PPPWsBeatLeaderData>("wss://sockets.api.beatleader.com/scores", Leaderboard.BeatLeader.ToString());
                 socket.OnScoreSet += PPPWebsocket_OnScoreSet;
                 _lsWebSockets.Add(socket);
             }

@@ -25,7 +25,7 @@ namespace PPPredictor.Interfaces
         event EventHandler<DisplayPPInfo> OnDisplayPPInfo;
         event EventHandler OnMapPoolRefreshed;
 
-        void ResetPredictors(bool isConstructor = false);
+        Task ResetPredictors(bool isConstructor = false);
 
         void CyclePredictors(int offset);
 
@@ -73,5 +73,7 @@ namespace PPPredictor.Interfaces
         Task UpdateCurrentBeatMapInfos(BeatmapLevel selectedBeatmapLevel, BeatmapKey beatmap);
 
         void FindPoolWithSyncURL(IPlaylist playlist);
+
+        bool IsDataLoading();
     }
 }

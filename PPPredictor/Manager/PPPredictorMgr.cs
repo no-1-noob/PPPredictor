@@ -31,6 +31,7 @@ namespace PPPredictor.Utilities
         private bool isRightArrowActive = false;
         private bool isMapPoolDropDownActive = true;
         private bool isLeaderboardNavigationActive = false;
+        private int _loadingCounter = 0;
 
         public event EventHandler<bool> ViewActivated;
         public event EventHandler<bool> OnDataLoading;
@@ -53,12 +54,13 @@ namespace PPPredictor.Utilities
         internal PPPredictorMgr()
         {
             this._websocketMgr = new WebSocketMgr(this);
-            ResetPredictors(true);
+            _ = ResetPredictors(true);
         }
 
-        public async void ResetPredictors(bool isConstructor = false)
+        public async Task ResetPredictors(bool isConstructor = false)
         {
             RefreshLeaderboardVisibilityByIPAPluginManager();
+            _loadingCounter = 0;
             _lsPPPredictor = new List<IPPPredictor>();
             _currentPPPredictor = new PPPredictorDummy();
             if (!isConstructor)
@@ -124,10 +126,13 @@ namespace PPPredictor.Utilities
         {
             if (songDetails.songs.FindByHash(beatMapInfo.CustomLevelHash, out Song song))
             {
-                if (song.GetDifficulty(out SongDifficulty songDiff, (MapDifficulty)beatMapInfo.BeatmapKey.difficulty))
+                if(Enum.TryParse(beatMapInfo.BeatmapKey.difficulty.ToString(), out MapDifficulty mapDifficulty))
+                {
+                    if (song.GetDifficulty(out SongDifficulty songDiff, mapDifficulty))
                 {
                     return new PPPBeatMapInfo(beatMapInfo, new PPPStarRating(songDiff.stars));
                 }
+            }
             }
             return new PPPBeatMapInfo(beatMapInfo, new PPPStarRating(0));
         }
@@ -164,7 +169,16 @@ namespace PPPredictor.Utilities
 
         private void PPPredictor_OnDataLoading(object sender, bool isDataLoading)
         {
+            _loadingCounter = Math.Max(_loadingCounter + (isDataLoading ? +1 : -1), 0);
+            if ((isDataLoading && _loadingCounter == 1) || (!isDataLoading && !IsDataLoading()))
+            {
             OnDataLoading?.Invoke(this, isDataLoading);
+        }
+        }
+
+        public bool IsDataLoading()
+        {
+            return _loadingCounter > 0;
         }
         #endregion
 

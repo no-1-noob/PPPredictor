@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using static PPPredictor.Core.DataType.Enums;
 using PPPredictor.Core.DataType.MapPool;
+using SongCore;
 
 namespace PPPredictor.Utilities
 {
@@ -28,7 +29,6 @@ namespace PPPredictor.Utilities
         private bool _rankGainRunning = false;
         private double _lastPPGainCall = 0;
         private bool _isActive = false;
-        private int _loadingCounter = 0;
         private DisplayPPInfo _ppDisplay = new DisplayPPInfo();
         private PPGainResult _ppGainResult = new PPGainResult();
         private Timer _rankTimer;
@@ -130,7 +130,7 @@ namespace PPPredictor.Utilities
                 {
                     Plugin.ProfileInfo.MapPoolSelection[leaderboardName.ToString()] = currentMapPool.Id;
                 }
-                SetActive(true);
+                SetActive(true, isCurrentMapPoolChanging);
             }
         }
         #endregion
@@ -160,8 +160,7 @@ namespace PPPredictor.Utilities
 
         public async Task UpdateCurrentBeatMapInfos(BeatmapLevel selectedBeatmapLevel, BeatmapKey beatmapKey)
         {
-            var v = Converter.Converter.ConvertBeatmapKey(beatmapKey);
-            _currentBeatMapInfo = new PPPBeatMapInfo(selectedBeatmapLevel != null ? Hashing.GetCustomLevelHash(selectedBeatmapLevel) : null, Converter.Converter.ConvertBeatmapKey(beatmapKey));
+            _currentBeatMapInfo = new PPPBeatMapInfo(selectedBeatmapLevel != null ? Collections.GetCustomLevelHash(selectedBeatmapLevel.levelID) : null, Converter.Converter.ConvertBeatmapKey(beatmapKey));
             await UpdateCurrentBeatMapInfos();
             CalculatePP();
         }
@@ -179,8 +178,7 @@ namespace PPPredictor.Utilities
         #region event sending
         private void IsDataLoading(bool isDataLoading)
         {
-            _loadingCounter += isDataLoading ? +1 : -1;
-            if (_isActive && ((isDataLoading && _loadingCounter == 1) || (!isDataLoading && _loadingCounter == 0))) OnDataLoading?.Invoke(this, isDataLoading);
+            OnDataLoading?.Invoke(this, isDataLoading);
         }
         private void SendDisplayPPInfo(DisplayPPInfo displayPPInfo)
         {
@@ -396,10 +394,11 @@ namespace PPPredictor.Utilities
             IsDataLoading(false);
         }
 
-        public void SetActive(bool setActive)
+        public void SetActive(bool setActive, bool hasPoolChanged = false)
         {
+            if (_isActive && setActive && !hasPoolChanged) return;
             _isActive = setActive;
-            if (setActive)
+            if (setActive || hasPoolChanged)
             {
                 _ = DisplaySession(false);
                 CalculatePP();

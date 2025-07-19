@@ -101,10 +101,10 @@ namespace PPPredictor.UI.ViewController
             UpdateLoadingDisplay();
         }
 
-        internal void ApplySettings()
+        internal async void ApplySettings()
         {
             this.ppPredictorMgr.RestartOverlayServer();
-            this.ppPredictorMgr.ResetPredictors();
+            await this.ppPredictorMgr.ResetPredictors();
             ResetDisplay(false);
         }
 

@@ -111,14 +111,14 @@
     <Reference Include="BeatSaber.ViewSystem" Publicize="true">
       <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\BeatSaber.ViewSystem.dll</HintPath>
     </Reference>
+    <Reference Include="Counters+">
+      <HintPath>$(GameDirectory)\Plugins\Counters+.dll</HintPath>
+    </Reference>
     <Reference Include="DataModels">
       <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\DataModels.dll</HintPath>
     </Reference>
     <Reference Include="PlatformUserModel">
       <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\PlatformUserModel.dll</HintPath>
-    </Reference>
-    <Reference Include="PlaylistManager">
-      <HintPath>$(GameDirectory)\Plugins\PlaylistManager.dll</HintPath>
     </Reference>
     <Reference Include="SegmentedControl">
       <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\SegmentedControl.dll</HintPath>
@@ -126,15 +126,11 @@
     <Reference Include="BGNetCore">
       <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\BGNetCore.dll</HintPath>
     </Reference>
-    <Reference Include="BSML">
+    <Reference Include="BSML" Publicize="true">
       <HintPath>$(GameDirectory)\Plugins\BSML.dll</HintPath>
     </Reference>
     <Reference Include="BS_Utils">
       <HintPath>$(GameDirectory)\Plugins\BS_Utils.dll</HintPath>
-    </Reference>
-    <Reference Include="Counters+, Version=2.3.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(GameDirectory)\Plugins\Counters+.dll</HintPath>
     </Reference>
     <Reference Include="DataModels">
       <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\DataModels.dll</HintPath>
@@ -304,5 +300,8 @@
     <Compile Include="..\PPPredictor.Core\PPPredictor.Core\**\*.cs" Link="Core\%(RecursiveDir)%(FileName)%(Extension)" />
     <Compile Remove="..\PPPredictor.Core\obj\**\*;..\PPPredictor.Core\**\obj\**\*" />
     <Compile Remove="..\PPPredictor.Core\**\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\LeaderBoardLogos\Empty.png" />
   </ItemGroup>
 </Project>
