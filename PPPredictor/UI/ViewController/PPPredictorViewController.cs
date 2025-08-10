@@ -16,6 +16,7 @@ using Zenject;
 using HarmonyLib;
 using System.Threading.Tasks;
 using PPPredictor.Interfaces;
+using PPPredictor.Core.DataType.MapPool;
 
 namespace PPPredictor.UI.ViewController
 {
@@ -33,6 +34,7 @@ namespace PPPredictor.UI.ViewController
         private DisplayPPInfo displayPPInfo;
         private bool _isDataLoading;
         private bool _isScreenMoving = false;
+        private List<Action> _lsPropertyChangedActions = new List<Action>();
 
         public PPPredictorViewController() { }
 
@@ -511,6 +513,15 @@ namespace PPPredictor.UI.ViewController
         {
             RefreshTabSelection();
             floatingScreen.gameObject.SetActive(active);
+            if (active)
+            {
+                foreach (var action in _lsPropertyChangedActions)
+                {
+                    //Plugin.DebugPrint($"Executing Action delayed: {action.Method.Name}");
+                    action?.Invoke();
+                }
+                _lsPropertyChangedActions.Clear();
+            }
         }
 
         private async void RefreshTabSelection()
@@ -562,13 +573,42 @@ namespace PPPredictor.UI.ViewController
 
         private void UpdateMapPoolChoices()
         {
+            //Get the actual object
+            object newMappool = null;
+            try
+            {
+                var currentMappoolShort = this.ppPredictorMgr.CurrentPPPredictor.CurrentMapPool as PPPMapPoolShort;
+                foreach (var possibleMappool in this.ppPredictorMgr.CurrentPPPredictor.MapPoolOptions)
+                {
+                    var possibleMappoolShort = possibleMappool as PPPMapPoolShort;
+                    if(currentMappoolShort != null && currentMappoolShort != null)
+                    {
+                        if(possibleMappoolShort.Id == currentMappoolShort.Id)
+                        {
+                            newMappool = possibleMappool;
+                            break;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Plugin.ErrorPrint($"UpdateMapPoolChoices error while finding pool: {ex.Message}");
+                newMappool = this.ppPredictorMgr.CurrentPPPredictor.CurrentMapPool;
+            }
+
             dropDownMapPools.Values = this.ppPredictorMgr.CurrentPPPredictor.MapPoolOptions;
-            dropDownMapPools.Value = this.ppPredictorMgr.CurrentPPPredictor.CurrentMapPool;
+            dropDownMapPools?.UpdateChoices();
+            dropDownMapPools.Value = newMappool;
             dropDownMapPools.ApplyValue();
-            dropDownMapPools?.UpdateChoices(); //Refresh map pools here...
         }
 
         private void UpdateSessionDisplay()
+        {
+            StartCoroutine(UpdateSessionDisplayInternal);
+        }
+
+        private void UpdateSessionDisplayInternal()
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionRank)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SessionRankDiff)));
@@ -584,6 +624,11 @@ namespace PPPredictor.UI.ViewController
 
         private void UpdatePPDisplay()
         {
+            StartCoroutine(UpdatePPDisplayInternal);
+        }
+
+        private void UpdatePPDisplayInternal()
+        {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PPRaw)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PPGain)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PPGainDiffColor)));
@@ -597,6 +642,11 @@ namespace PPPredictor.UI.ViewController
 
         private void UpdateLeaderBoardDisplay()
         {
+            StartCoroutine(UpdateLeaderBoardDisplayInternal);
+        }
+
+        private void UpdateLeaderBoardDisplayInternal()
+        {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LeaderBoardName)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LeaderBoardIcon)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MapPoolOptions)));
@@ -609,8 +659,33 @@ namespace PPPredictor.UI.ViewController
 
         private void UpdateLoadingDisplay()
         {
+            StartCoroutine(UpdateLoadingDisplayInternal);
+        }
+        private void UpdateLoadingDisplayInternal()
+        {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsDataLoading)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsNoDataLoading)));
+        }
+
+        private void StartCoroutine(Action methodToExecute)
+        {
+            if (floatingScreen != null && floatingScreen.isActiveAndEnabled)
+            {
+                //Plugin.DebugPrint($"Executing Action {methodToExecute.Method.Name}");
+                floatingScreen.StartCoroutine(InvokeOnMainThread(methodToExecute));
+            }
+            else
+            {
+                //Plugin.DebugPrint($"Floating screen is not active, adding method to property changed actions {methodToExecute.Method.Name}");
+                _lsPropertyChangedActions.Add(methodToExecute);
+            }
+        }
+
+
+        private System.Collections.IEnumerator InvokeOnMainThread(Action methodToExecute)
+        {
+            yield return null; // Wait for next frame
+            methodToExecute?.Invoke();
         }
 
         private void UpdateAllDisplay()

@@ -50,6 +50,7 @@ namespace PPPredictor.Data
         private string _streamOverlayPort;
         private PPGainCalculationType _ppGainCalculationType;
         internal const int RefetchMapInfoAfterDays = -7;
+        private bool _refreshAllLeaderboards = false;
 
         public ProfileInfo()
         {
@@ -90,6 +91,7 @@ namespace PPPredictor.Data
 
         internal void ResetCachedData()
         {
+            _refreshAllLeaderboards = true;
             _dctleaderBoardData = new Dictionary<string, LeaderboardData>();
         }
 
@@ -130,6 +132,8 @@ namespace PPPredictor.Data
         public bool IsAccSaberEnabledManual { get => _isAccSaberEnabledManual; set => _isAccSaberEnabledManual = value; }
         public Dictionary<string, LeaderboardData> DctleaderBoardData { get => _dctleaderBoardData; set => _dctleaderBoardData = value; }
         public Dictionary<string, string> MapPoolSelection { get => _mapPoolSelection; set => _mapPoolSelection = value; }
+        [JsonIgnore]
+        public bool RefreshAllLeaderboards { get => _refreshAllLeaderboards; set => _refreshAllLeaderboards = value; }
 
         internal void ClearOldMapInfos()
         {

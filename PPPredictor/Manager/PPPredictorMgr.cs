@@ -102,7 +102,25 @@ namespace PPPredictor.Utilities
                 pPPredictor.OnDisplaySessionInfo += PPPredictor_OnDisplaySessionInfo;
                 pPPredictor.OnMapPoolRefreshed += PPPredictor_OnMapPoolRefreshed;
             }
-            CurrentPPPredictor.SetActive(true);
+            if(isConstructor && Plugin.ProfileInfo.RefreshAllLeaderboards)
+            {
+                //Case when the leaderboard info is cleared while loading from json, start refresh of scores
+                foreach (var item in _lsPPPredictor)
+                {
+                    if(item.LeaderBoardName == CurrentPPPredictor.LeaderBoardName)
+                    {
+                        CurrentPPPredictor.SetActive(true);
+                    }
+                    else
+                    {
+                        item.ResetDisplay(false);
+                    }
+                }
+            }
+            else
+            {
+                CurrentPPPredictor.SetActive(true);
+            }
             SetNavigationArrowInteractivity();
             _websocketMgr.CreateScoreWebSockets();
         }
@@ -129,10 +147,10 @@ namespace PPPredictor.Utilities
                 if(Enum.TryParse(beatMapInfo.BeatmapKey.difficulty.ToString(), out MapDifficulty mapDifficulty))
                 {
                     if (song.GetDifficulty(out SongDifficulty songDiff, mapDifficulty))
-                {
-                    return new PPPBeatMapInfo(beatMapInfo, new PPPStarRating(songDiff.stars));
+                    {
+                        return new PPPBeatMapInfo(beatMapInfo, new PPPStarRating(songDiff.stars));
+                    }
                 }
-            }
             }
             return new PPPBeatMapInfo(beatMapInfo, new PPPStarRating(0));
         }
@@ -172,8 +190,8 @@ namespace PPPredictor.Utilities
             _loadingCounter = Math.Max(_loadingCounter + (isDataLoading ? +1 : -1), 0);
             if ((isDataLoading && _loadingCounter == 1) || (!isDataLoading && !IsDataLoading()))
             {
-            OnDataLoading?.Invoke(this, isDataLoading);
-        }
+                OnDataLoading?.Invoke(this, isDataLoading);
+            }
         }
 
         public bool IsDataLoading()
@@ -182,17 +200,17 @@ namespace PPPredictor.Utilities
         }
         #endregion
 
-        public void CyclePredictors(int offset)
+        public void CyclePredictors(int offset, bool triggerMapPoolRefresh = true)
         {
             _lsPPPredictor.ForEach(item => item.SetActive(false));
             index = Math.Min(Math.Max((index + offset), 0), _lsPPPredictor.Count() - 1);
             _currentPPPredictor = _lsPPPredictor[index];
-            CurrentPPPredictor.SetActive(true);
+            //CurrentPPPredictor.SetActive(true);
             Plugin.ProfileInfo.LastLeaderBoardSelected = CurrentPPPredictor.LeaderBoardName;
-            SetNavigationArrowInteractivity();
+            SetNavigationArrowInteractivity(triggerMapPoolRefresh);
         }
 
-        private void SetNavigationArrowInteractivity()
+        private void SetNavigationArrowInteractivity(bool triggerMapPoolRefresh = true)
         {
             if (_lsPPPredictor.Count() == 1) isLeaderboardNavigationActive = false;
             else isLeaderboardNavigationActive = true;
@@ -200,7 +218,7 @@ namespace PPPredictor.Utilities
             isRightArrowActive = index < _lsPPPredictor.Count() - 1;
             isMapPoolDropDownActive = CurrentPPPredictor.MapPoolOptions.Count() > 1;
             CurrentPPPredictor.CalculatePP();
-            OnMapPoolRefreshed?.Invoke(this, null);
+            if(triggerMapPoolRefresh) OnMapPoolRefreshed?.Invoke(this, null);
         }
 
         public void ChangeGameplayModifiers(GameplaySetupViewController gameplaySetupViewController)
@@ -421,12 +439,19 @@ namespace PPPredictor.Utilities
                         {
                             predictor.CurrentMapPool = mapPool;
                             index = _lsPPPredictor.FindIndex(x => x.LeaderBoardName == predictor.LeaderBoardName);
-                            CyclePredictors(0);
+                            CyclePredictors(0, false);
+                            _ = RefreshPoolDisplay(500);
                             break;
                         }
                     }
                 }
             }
+        }
+
+        public async Task RefreshPoolDisplay(int msDelay)
+        {
+            await Task.Delay(msDelay);
+            OnMapPoolRefreshed?.Invoke(this, null);
         }
 
         public void ScoreSet(string leaderboardName, PPPScoreSetData data)

@@ -27,7 +27,7 @@ namespace PPPredictor.Interfaces
 
         Task ResetPredictors(bool isConstructor = false);
 
-        void CyclePredictors(int offset);
+        void CyclePredictors(int offset, bool triggerPoolChange = true);
 
         void RestartOverlayServer();
 
