@@ -112,5 +112,15 @@ namespace PPPredictor.Counter.Settings
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CounterGainSilentMode)));
             }
         }
+        [UIValue("counter-show-stars")]
+        public bool CounterShowStars
+        {
+            get => Plugin.ProfileInfo.CounterShowStars;
+            set
+            {
+                Plugin.ProfileInfo.CounterShowStars = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CounterShowStars)));
+            }
+        }
     }
 }

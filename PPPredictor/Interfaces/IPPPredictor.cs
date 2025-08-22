@@ -1,7 +1,5 @@
 ﻿using PPPredictor.Core.DataType;
-using PPPredictor.Core.DataType.BeatSaberEncapsulation;
 using PPPredictor.Core.DataType.MapPool;
-using PPPredictor.Data;
 using PPPredictor.Data.DisplayInfos;
 using System;
 using System.Collections.Generic;
@@ -18,6 +16,7 @@ namespace PPPredictor.Interfaces
         void RefreshCurrentData(int fetchLength, bool refreshStars = false, bool fetchOnePage = false);
         void ResetDisplay(bool resetAll);
         double CalculatePPatPercentage(double percentage, PPPBeatMapInfo beatMapInfo, bool levelFailed = false, bool levelPaused = false);
+        string GetStarDisplay(PPPBeatMapInfo beatMapInfo);
         double CalculateMaxPP();
         PPPBeatMapInfo GetModifiedBeatMapInfo(GameplayModifiers gameplayModifiers, bool levelFailed = false, bool levelPaused = false);
         double CalculatePPGain(double pp);

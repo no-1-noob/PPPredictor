@@ -1,8 +1,6 @@
 ﻿using Newtonsoft.Json;
 using PPPredictor.Core.DataType;
-using PPPredictor.Data;
 using PPPredictor.Interfaces;
-using PPPredictor.Utilities;
 using System;
 using System.Threading.Tasks;
 using WebSocketSharp;

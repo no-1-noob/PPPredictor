@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using PPPredictor.Core.DataType;
-using PPPredictor.Data;
 using PPPredictor.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -199,6 +198,7 @@ namespace PPPredictor.Utilities
                 gamePlayInfo.percentage = percentage;
                 gamePlayInfo.pp = ppPredictorMgr.GetPPAtPercentageForCalculator(gamePlayInfo.leaderboard, percentage, _levelFailed, _levelPause, _levelFailed ? gamePlayInfo.failedBeatMapInfo : gamePlayInfo.modifiedBeatMapInfo);
                 gamePlayInfo.ppGain = Math.Round(ppPredictorMgr.GetPPGainForCalculator(gamePlayInfo.leaderboard, gamePlayInfo.pp), 2);
+                if(string.IsNullOrEmpty(gamePlayInfo.starDisplay)) gamePlayInfo.starDisplay = ppPredictorMgr.GetStarDisplayForCalculator(gamePlayInfo.leaderboard, gamePlayInfo.modifiedBeatMapInfo);
                 if (gamePlayInfo.maxPP == -1) gamePlayInfo.maxPP = ppPredictorMgr.GetMaxPPForCalculator(gamePlayInfo.leaderboard);
             }
             OnGameplayInfoChanged?.Invoke(this, gamePlayInfo);
@@ -327,6 +327,7 @@ namespace PPPredictor.Utilities
         public double? personalBest;
         public string iconPath;
         public bool isRanked;
+        public string starDisplay;
 
         public LeaderBoardGameplayInfo(Leaderboard leaderboard, IPPPredictorMgr ppPredictorMgr, GameplayModifiers gameplayModifiers)
         {
@@ -337,6 +338,7 @@ namespace PPPredictor.Utilities
             this.ppGain = 0;
             this.pp = 0;
             this.percentage = 0;
+            this.starDisplay = string.Empty;
             this.targetPercentage = ppPredictorMgr.GetPercentage();
             this.maxPP = ppPredictorMgr.GetMaxPPForCalculator(leaderboard);
             this.personalBest = ppPredictorMgr.GetPersonalBest(leaderboard);

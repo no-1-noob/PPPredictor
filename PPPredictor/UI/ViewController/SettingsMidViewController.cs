@@ -255,6 +255,16 @@ namespace PPPredictor.UI.ViewController
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CounterGainSilentMode)));
             }
         }
+        [UIValue("counter-show-stars")]
+        public bool CounterShowStars
+        {
+            get => Plugin.ProfileInfo.CounterShowStars;
+            set
+            {
+                Plugin.ProfileInfo.CounterShowStars = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CounterShowStars)));
+            }
+        }
         #endregion
 
         #region Menu Positioning
@@ -342,6 +352,7 @@ namespace PPPredictor.UI.ViewController
             CounterGainSilentMode = Plugin.ProfileInfo.IsCounterGainSilentModeEnabled;
             StreamOverlayPort = Plugin.ProfileInfo.StreamOverlayPort;
             AccSaberEnabled = Plugin.ProfileInfo.IsAccSaberEnabledManual && Plugin.ProfileInfo.IsScoreSaberEnabled;
+            CounterShowStars = Plugin.ProfileInfo.CounterShowStars;
         }
     }
 }

@@ -21,6 +21,7 @@ namespace PPPredictor.Counter
         private readonly TMP_Text personalBestText;
         private readonly TMP_Text ppGainText;
         private readonly TMP_Text headerText;
+        private readonly TMP_Text starText;
         private readonly ImageView icon;
         private readonly bool showInfo;
         private readonly bool useIcon;
@@ -70,19 +71,26 @@ namespace PPPredictor.Counter
             ppGainText.rectTransform.anchoredPosition += new Vector2((1.2f + iconTextOffset + displayTypeOffset + centerOffset) * positionScaleFactor, lineOffset) * positionScale;
             personalBestText = canvasUtility.CreateTextFromSettings(settings);
             personalBestText.rectTransform.anchoredPosition += new Vector2((1.2f + iconTextOffset + displayTypeOffset + centerOffset) * positionScaleFactor, lineOffset) * positionScale;
+            starText = canvasUtility.CreateTextFromSettings(settings);
+            starText.rectTransform.anchoredPosition += new Vector2(((-1.5f + centerOffset) * positionScaleFactor), lineOffset) * positionScale;
             headerText.alignment = TextAlignmentOptions.BottomLeft;
             ppGainText.alignment = gainAlignment;
-            ppText.alignment = personalBestText.alignment = TextAlignmentOptions.BottomRight;
-            headerText.fontSize = ppText.fontSize = ppGainText.fontSize = personalBestText.fontSize = fontSize;
+            ppText.alignment = personalBestText.alignment = starText.alignment = TextAlignmentOptions.BottomRight;
+            headerText.fontSize = ppText.fontSize = ppGainText.fontSize = personalBestText.fontSize = starText.fontSize = fontSize;
             string iconPath = leaderBoardGameplayInfo.iconPath;
             if (useIcon)
             {
                 icon = CreateIcon(canvas, iconPath, new Vector3((-1f + centerOffset) * positionScaleFactor, lineOffset, 0), Math.Abs(offsetByLine));
                 LoadImage(icon, iconPath);
             }
+
             personalBestText.text = FormatPBText(leaderBoardGameplayInfo);
+            starText.text = leaderBoardGameplayInfo.starDisplay;
+            if (showInfo && !Plugin.ProfileInfo.CounterUseIcons) headerText.text = $"{leaderboard}";
+
             ppText.enabled = false;
             ppGainText.enabled = false;
+            starText.enabled = Plugin.ProfileInfo.CounterShowStars;
 
             _ = StartPersonalBestAnimation(5000);
         }
@@ -238,6 +246,7 @@ namespace PPPredictor.Counter
             Task t1 = MoveTextWithAnimation(AnimateableCounterText.PP, 100f, new Vector3(-.6f, 0, 0), true, true, true, true);
             Task t2 = MoveTextWithAnimation(AnimateableCounterText.PPGAIN, 100f, new Vector3(-.6f, 0, 0), true, true, !Plugin.ProfileInfo.IsCounterGainSilentModeEnabled, !Plugin.ProfileInfo.IsCounterGainSilentModeEnabled);
             Task t3 = MoveTextWithAnimation(AnimateableCounterText.PERSONALBEST, 100f, new Vector3(.6f, 0, 0), false, false, true, false);
+            Task t4 = MoveTextWithAnimation(AnimateableCounterText.STARDISPLAY, 100f, new Vector3(.6f, 0, 0), false, false, Plugin.ProfileInfo.CounterShowStars, false);
         }
 
         internal bool IsPersonalBestAnimationDone()
@@ -281,6 +290,8 @@ namespace PPPredictor.Counter
                     return ppText;
                 case AnimateableCounterText.PERSONALBEST :
                     return personalBestText;
+                case AnimateableCounterText.STARDISPLAY:
+                    return starText;
                 default: return ppText;
             }
         }
@@ -291,6 +302,7 @@ namespace PPPredictor.Counter
     {
         PPGAIN,
         PP,
-        PERSONALBEST
+        PERSONALBEST,
+        STARDISPLAY
     }
 }

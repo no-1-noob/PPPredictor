@@ -1,5 +1,4 @@
 ﻿using PPPredictor.Core.DataType;
-using PPPredictor.Data;
 using System;
 
 namespace PPPredictor.Interfaces

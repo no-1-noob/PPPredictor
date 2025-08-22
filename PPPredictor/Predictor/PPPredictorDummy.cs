@@ -84,6 +84,11 @@ namespace PPPredictor.Utilities
             return d;
         }
 
+        public string GetStarDisplay(PPPBeatMapInfo beatMapInfo)
+        {
+            return "0★";
+        }
+
         public bool IsRanked()
         {
             return false;
