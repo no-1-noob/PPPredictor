@@ -49,6 +49,8 @@ namespace PPPredictor.Interfaces
 
         double GetPPAtPercentageForCalculator(Leaderboard leaderBoardName, double percentage, bool levelFailed, bool levelPaused, PPPBeatMapInfo beatMapInfo);
 
+        string GetStarDisplayForCalculator(Leaderboard leaderBoardName, PPPBeatMapInfo beatMapInfo);
+
         double? GetPersonalBest(Leaderboard leaderBoardName);
 
         string GetPPSuffixForLeaderboard(Leaderboard leaderBoardName);

@@ -24,6 +24,7 @@
     <bool-setting text='Use custom map pool icons (if available)' value='counter-use-custom-mappool-icons' bind-value='true' apply-on-change='true'></bool-setting>
     <bool-setting text='Highlight if target % is reached (when icons are not used)' value='counter-highlight-target-percentage' bind-value='true' apply-on-change='true'></bool-setting>
     <bool-setting text='Hide when unranked' value='counter-hide-when-unranked' bind-value='true' apply-on-change='true'></bool-setting>
+    <bool-setting text='Show stars' value='counter-show-stars' bind-value='true' apply-on-change='true'></bool-setting>
     <text text='Stream overlay' italics='true' align='Center' font-size='4' />
     <string-setting text='Port' value='stream-overlay-port' bind-value='true' apply-on-change='true'></string-setting>
     <text text='Reset' italics='true' align='Center' font-size='4' />

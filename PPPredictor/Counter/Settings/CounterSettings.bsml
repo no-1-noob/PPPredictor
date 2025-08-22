@@ -8,5 +8,6 @@
     <bool-setting text='Use custom map pool icons (if available)' value='counter-use-custom-mappool-icons' apply-on-change='true'></bool-setting>
     <bool-setting text='Highlight if target % is reached (when icons are not used)' value='counter-highlight-target-percentage' apply-on-change='true'></bool-setting>
     <bool-setting text='Hide when unranked' value='counter-hide-when-unranked' apply-on-change='true'></bool-setting>
+    <bool-setting text='Show stars' value='counter-show-stars' bind-value='true' apply-on-change='true'></bool-setting>
   </vertical>
 </vertical>

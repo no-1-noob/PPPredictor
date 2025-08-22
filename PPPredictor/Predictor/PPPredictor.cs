@@ -1,13 +1,9 @@
 ﻿using PPPredictor.Core;
 using PPPredictor.Core.Calculator;
 using PPPredictor.Core.DataType;
-using PPPredictor.Core.DataType.BeatSaberEncapsulation;
 using PPPredictor.Core.DataType.LeaderBoard;
-using PPPredictor.Data;
 using PPPredictor.Data.DisplayInfos;
 using PPPredictor.Interfaces;
-using PPPredictor.Converter;
-using SongCore.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -196,6 +192,12 @@ namespace PPPredictor.Utilities
         public double CalculatePPatPercentage(double percentage, PPPBeatMapInfo beatMapInfo, bool levelFailed = false, bool levelPaused = false)
         {
             var v = calculatorInstance.CalculatePPatPercentage(leaderboardName, currentMapPool.Id, beatMapInfo, percentage, levelFailed, levelPaused);
+            return v;
+        }
+
+        public string GetStarDisplay(PPPBeatMapInfo beatMapInfo)
+        {
+            var v = calculatorInstance.GetStarDisplayForCalculator(leaderboardName, currentMapPool.Id, beatMapInfo);
             return v;
         }
 

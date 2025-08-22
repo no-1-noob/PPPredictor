@@ -288,6 +288,17 @@ namespace PPPredictor.Utilities
             }
             return 0;
         }
+
+        public string GetStarDisplayForCalculator(Leaderboard leaderBoardName, PPPBeatMapInfo beatMapInfo)
+        {
+            IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());
+            if (predictor != null)
+            {
+                return predictor.GetStarDisplay(beatMapInfo);
+            }
+            return string.Empty;
+        }
+
         public string GetPPSuffixForLeaderboard(Leaderboard leaderBoardName)
         {
             IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());
