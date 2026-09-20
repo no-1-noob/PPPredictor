@@ -1,0 +1,97 @@
+name: Build draft release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Release tag to create
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build Beat Saber ${{ matrix.beat_saber_version }}
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Add future Beat Saber targets here; every entry is built in this run.
+          - project: PPPredictor_1_40_8/PPPredictor_1_40_8.csproj
+            manifest: PPPredictor_1_40_8/manifest.json
+            game_directory_property: GameDirectory_1_40_8
+            beat_saber_version: 1.40.8
+            beat_saber_label: 1_40_8
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Set up NuGet
+        uses: NuGet/setup-nuget@v2
+
+      - name: Restore NuGet packages
+        run: nuget restore PPPredictor.sln
+
+      - name: Initialize Beat Saber references
+        uses: beat-forge/init-beatsaber@v1.1.0
+        with:
+          token: ${{ github.token }}
+          version: ${{ matrix.beat_saber_version }}
+          path: ${{ github.workspace }}\Refs
+
+      - name: Download mod dependencies
+        uses: Goobwabber/download-beatmods-deps@1.2
+        with:
+          manifest: ${{ github.workspace }}\${{ matrix.manifest }}
+          path: ${{ github.workspace }}\Refs
+
+      - name: Build
+        run: msbuild ${{ matrix.project }} /property:Configuration=Release /property:${{ matrix.game_directory_property }}="${{ github.workspace }}\Refs"
+
+      - name: Package DLL
+        id: package
+        shell: pwsh
+        run: |
+          $project = '${{ matrix.project }}'
+          [xml]$projectXml = Get-Content -Raw $project
+          $pluginVersion = ($projectXml.Project.PropertyGroup | Where-Object { $_.Version }).Version | Select-Object -First 1
+          if (-not $pluginVersion) { throw "No <Version> was found in $project." }
+          $assetName = "PPPredictor_${pluginVersion}_BS_${{ matrix.beat_saber_label }}"
+          $dllPath = Join-Path (Split-Path $project) 'bin\Release\net48\PPPredictor.dll'
+          if (-not (Test-Path $dllPath)) { throw "Build output not found: $dllPath" }
+          New-Item -ItemType Directory -Path release-assets -Force | Out-Null
+          Compress-Archive -Path $dllPath -DestinationPath "release-assets\$assetName.zip"
+          "asset_name=$assetName" >> $env:GITHUB_OUTPUT
+
+      - name: Upload release asset
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.package.outputs.asset_name }}
+          path: release-assets/${{ steps.package.outputs.asset_name }}.zip
+          if-no-files-found: error
+
+  release:
+    name: Create draft release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download release assets
+        uses: actions/download-artifact@v4
+        with:
+          pattern: PPPredictor_*_BS_*
+          path: release-assets
+          merge-multiple: true
+
+      - name: Create draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: gh release create "$RELEASE_TAG" release-assets/*.zip --draft --generate-notes

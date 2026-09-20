@@ -44,14 +44,12 @@ namespace PPPredictor
         {
             Instance = this;
             Log = new PPPLogger(logger);
-            Plugin.DebugPrint("Ctor Start");
             ProfileInfo = ProfileInfoMgr.LoadProfileInfo();
             zenjector.UseSiraSync();
             zenjector.Install<PPPPredictorDisplayInstaller>(Location.Menu);
             zenjector.Install<MainMenuInstaller>(Location.Menu);
             zenjector.Install<CoreInstaller>(Location.App);
             zenjector.Install<GamePlayInstaller>(Location.StandardPlayer | Location.CampaignPlayer);
-            Plugin.DebugPrint("Ctor End");
         }
 
         [OnStart]

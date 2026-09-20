@@ -34,12 +34,14 @@ namespace PPPredictor.Utilities
                     Plugin.WarnPrint(ex);
                     Plugin.WarnPrint("Unable to load Profile from file. Creating new Profile.");
                     info = new ProfileInfo();
+                    info.RefreshAllLeaderboards = true;
                 }
             }
             else
             {
-                Plugin.DebugPrint("Unable to load Profile from file. Creating new Profile.");
+                Plugin.WarnPrint("Unable to load Profile from file. Creating new Profile.");
                 info = new ProfileInfo();
+                info.RefreshAllLeaderboards = true;
             }
             return info;
         }
