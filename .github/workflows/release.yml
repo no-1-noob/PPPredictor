@@ -53,6 +53,26 @@ jobs:
           manifest: ${{ github.workspace }}\${{ matrix.manifest }}
           path: ${{ github.workspace }}\Refs
 
+      - name: Download project build dependencies
+        shell: pwsh
+        run: |
+          $projectDirectory = Split-Path '${{ matrix.project }}'
+          $dependencyManifest = Join-Path $projectDirectory 'build-dependencies.json'
+          if (-not (Test-Path $dependencyManifest)) { exit 0 }
+
+          $referencesDirectory = Join-Path $env:GITHUB_WORKSPACE 'Refs'
+          $dependencies = (Get-Content -Raw $dependencyManifest | ConvertFrom-Json).dependencies
+          foreach ($dependency in $dependencies) {
+            $archive = Join-Path $env:RUNNER_TEMP ([IO.Path]::GetRandomFileName() + '.zip')
+            Invoke-WebRequest -Uri $dependency.url -OutFile $archive
+            Expand-Archive -Path $archive -DestinationPath $referencesDirectory -Force
+
+            $expectedFile = Join-Path $referencesDirectory $dependency.expectedFile
+            if (-not (Test-Path $expectedFile)) {
+              throw "Dependency did not contain expected file: $($dependency.expectedFile)"
+            }
+          }
+
       - name: Build
         run: msbuild ${{ matrix.project }} /property:Configuration=Release /property:${{ matrix.game_directory_property }}="${{ github.workspace }}\Refs"
 

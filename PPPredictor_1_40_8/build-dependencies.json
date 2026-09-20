@@ -1,0 +1,8 @@
+{
+  "dependencies": [
+    {
+      "url": "https://github.com/NuggoDEV/CountersPlus/releases/download/2.3.11/Counters%2B-2.3.11-bs1.40.0-49cf7df.zip",
+      "expectedFile": "Plugins/Counters+.dll"
+    }
+  ]
+}
