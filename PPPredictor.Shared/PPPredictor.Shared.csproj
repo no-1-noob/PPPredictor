@@ -1,0 +1,75 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net48</TargetFramework>
+        <Configurations>Debug;Release;DEBUG Test;Debug ACCSABERNETWORK;Debug BEATLEADERNETWORK;Debug SCORESABERNETWORK;Debug HITBLOQNETWORK;Debug ALLNETWORK;ACCSABERRELOADEDNETWORK</Configurations>
+        <Platforms>AnyCPU</Platforms>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug ACCSABERNETWORK' ">
+      <DefineConstants>TRACE;DEBUG;ACCSABERNETWORK</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug BEATLEADERNETWORK' ">
+      <DefineConstants>TRACE;DEBUG;BEATLEADERNETWORK</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug HITBLOQNETWORK' ">
+      <DefineConstants>TRACE;DEBUG;HITBLOQNETWORK</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug SCORESABERNETWORK' ">
+      <DefineConstants>TRACE;DEBUG;SCORESABERNETWORK</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug ALLNETWORK' ">
+      <DefineConstants>TRACE;DEBUG;ACCSABERNETWORK;BEATLEADERNETWORK;HITBLOQNETWORK;SCORESABERNETWORK;ACCSABERRELOADEDNETWORK</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'ACCSABERRELOADEDNETWORK' ">
+      <DefineConstants>TRACE;ACCSABERRELOADEDNETWORK</DefineConstants>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Include="Directory.Build.props" Condition="Exists('Directory.Build.props')" />
+    </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.3">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="..\PPPredictor.Core\PPPredictor.Core\**\*.cs" Link="Core\%(RecursiveDir)%(FileName)%(Extension)" />
+        <Compile Remove="..\PPPredictor.Core\obj\**\*;..\PPPredictor.Core\**\obj\**\*" />
+        <Compile Remove="..\PPPredictor.Core\**\AssemblyInfo.cs" />
+    </ItemGroup>
+<!--    <ItemGroup>-->
+<!--        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">-->
+<!--            <_Parameter1>PPPredictor</_Parameter1>-->
+<!--        </AssemblyAttribute>-->
+<!--    </ItemGroup>-->
+    <ItemGroup>
+        <Reference Include="System.Net.Http">
+            <HintPath>$(GameDirectory)\Beat Saber_Data\Managed\System.Net.Http.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+    <ItemGroup>
+      <EmbeddedResource Include="Resources\gIconLockClosed.png" />
+      <EmbeddedResource Include="Resources\gIconLockOpen.png" />
+      <EmbeddedResource Include="Resources\gIconRefresh.png" />
+      <EmbeddedResource Include="Resources\gIconTrash.png" />
+      <EmbeddedResource Include="Resources\icon.png" />
+      <EmbeddedResource Include="Resources\LeaderBoardLogos\AccSaber.png" />
+      <EmbeddedResource Include="Resources\LeaderBoardLogos\AccSaberReloaded.png" />
+      <EmbeddedResource Include="Resources\LeaderBoardLogos\BeatLeader.png" />
+      <EmbeddedResource Include="Resources\LeaderBoardLogos\Empty.png" />
+      <EmbeddedResource Include="Resources\LeaderBoardLogos\HitBloq.png" />
+      <EmbeddedResource Include="Resources\LeaderBoardLogos\ScoreSaber.png" />
+      <EmbeddedResource Include="Resources\moveIcon.png" />
+    </ItemGroup>
+  <PropertyGroup>
+    <Title>PPPredictor.Shared</Title>
+    <Description>See potential PP of selected map</Description>
+    <Company>No.1 N[][]b</Company>
+    <Product>PPPredictor.Shared</Product>
+    <Copyright>Copyright © 2026</Copyright>
+    <AssemblyVersion>1.2.1</AssemblyVersion>
+    <FileVersion>1.2.1</FileVersion>
+    <Version>1.2.1</Version>
+    <ComVisible>false</ComVisible>
+  </PropertyGroup>
+</Project>

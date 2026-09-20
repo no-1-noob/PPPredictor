@@ -1,0 +1,222 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net48</TargetFramework>
+        <Configurations>Debug;Release;DEBUG Test;Debug ACCSABERNETWORK;Debug BEATLEADERNETWORK;Debug SCORESABERNETWORK;Debug HITBLOQNETWORK;Debug ALLNETWORK;ACCSABERRELOADEDNETWORK</Configurations>
+        <Platforms>AnyCPU</Platforms>
+        <RootNamespace>PPPredictor</RootNamespace>
+        <AssemblyName>PPPredictor</AssemblyName>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug ACCSABERNETWORK' ">
+      <DefineConstants>TRACE;DEBUG;ACCSABERNETWORK</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug BEATLEADERNETWORK' ">
+      <DefineConstants>TRACE;DEBUG;BEATLEADERNETWORK</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug HITBLOQNETWORK' ">
+      <DefineConstants>TRACE;DEBUG;HITBLOQNETWORK</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug SCORESABERNETWORK' ">
+      <DefineConstants>TRACE;DEBUG;SCORESABERNETWORK</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug ALLNETWORK' ">
+      <DefineConstants>TRACE;DEBUG;ACCSABERNETWORK;BEATLEADERNETWORK;HITBLOQNETWORK;SCORESABERNETWORK;ACCSABERRELOADEDNETWORK</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'ACCSABERRELOADEDNETWORK' ">
+      <DefineConstants>TRACE;ACCSABERRELOADEDNETWORK</DefineConstants>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Include="Directory.Build.props" Condition="Exists('Directory.Build.props')" />
+    </ItemGroup>
+    <ItemGroup>
+      <Reference Include="0Harmony">
+        <HintPath>$(GameDirectory_1_40_8)\Libs\0Harmony.dll</HintPath>
+      </Reference>
+      <Reference Include="BeatmapCore">
+        <HintPath>$(GameDirectory_1_40_8)\Beat Saber_Data\Managed\BeatmapCore.dll</HintPath>
+      </Reference>
+      <Reference Include="BeatSaber.ViewSystem" Publicize="true">
+        <HintPath>$(GameDirectory_1_40_8)\Beat Saber_Data\Managed\BeatSaber.ViewSystem.dll</HintPath>
+      </Reference>
+      <Reference Include="BeatSaberPlaylistsLib">
+        <HintPath>$(GameDirectory_1_40_8)\Libs\BeatSaberPlaylistsLib.dll</HintPath>
+      </Reference>
+      <Reference Include="BGNetCore">
+        <HintPath>$(GameDirectory_1_40_8)\Beat Saber_Data\Managed\BGNetCore.dll</HintPath>
+      </Reference>
+      <Reference Include="BSML" Publicize="true">
+        <HintPath>$(GameDirectory_1_40_8)\Plugins\BSML.dll</HintPath>
+      </Reference>
+      <Reference Include="BS_Utils">
+        <HintPath>$(GameDirectory_1_40_8)\Plugins\BS_Utils.dll</HintPath>
+      </Reference>
+      <Reference Include="Counters+">
+        <HintPath>$(GameDirectory_1_40_8)\Plugins\Counters+.dll</HintPath>
+      </Reference>
+      <Reference Include="DataModels">
+        <HintPath>$(GameDirectory_1_40_8)\Beat Saber_Data\Managed\DataModels.dll</HintPath>
+      </Reference>
+      <Reference Include="GameplayCore">
+        <HintPath>$(GameDirectory_1_40_8)\Beat Saber_Data\Managed\GameplayCore.dll</HintPath>
+      </Reference>
+      <Reference Include="HMLib">
+        <HintPath>$(GameDirectory_1_40_8)\Beat Saber_Data\Managed\HMLib.dll</HintPath>
+      </Reference>
+      <Reference Include="HMUI" Publicize="true">
+        <HintPath>$(GameDirectory_1_40_8)\Beat Saber_Data\Managed\HMUI.dll</HintPath>
+      </Reference>
+      <Reference Include="IPA.Loader">
+        <HintPath>$(GameDirectory_1_40_8)\Beat Saber_Data\Managed\IPA.Loader.dll</HintPath>
+      </Reference>
+      <Reference Include="Main" Publicize="true">
+        <HintPath>$(GameDirectory_1_40_8)\Beat Saber_Data\Managed\Main.dll</HintPath>
+      </Reference>
+      <Reference Include="Newtonsoft.Json">
+        <HintPath>$(GameDirectory_1_40_8)\Beat Saber_Data\Managed\Newtonsoft.Json.dll</HintPath>
+      </Reference>
+      <Reference Include="PlatformUserModel">
+        <HintPath>$(GameDirectory_1_40_8)\Beat Saber_Data\Managed\PlatformUserModel.dll</HintPath>
+      </Reference>
+      <Reference Include="SegmentedControl">
+        <HintPath>$(GameDirectory_1_40_8)\Beat Saber_Data\Managed\SegmentedControl.dll</HintPath>
+      </Reference>
+      <Reference Include="SiraUtil">
+        <HintPath>$(GameDirectory_1_40_8)\Plugins\SiraUtil.dll</HintPath>
+      </Reference>
+      <Reference Include="SongCore">
+        <HintPath>$(GameDirectory_1_40_8)\Plugins\SongCore.dll</HintPath>
+      </Reference>
+      <Reference Include="SongDetailsCache">
+        <HintPath>$(GameDirectory_1_40_8)\Libs\SongDetailsCache.dll</HintPath>
+      </Reference>
+      <Reference Include="System.ComponentModel.DataAnnotations">
+        <HintPath>$(GameDirectory_1_40_8)\Beat Saber_Data\Managed\System.ComponentModel.DataAnnotations.dll</HintPath>
+      </Reference>
+      <Reference Include="System.Data.DataSetExtensions">
+        <HintPath>$(GameDirectory_1_40_8)\Beat Saber_Data\Managed\System.Data.DataSetExtensions.dll</HintPath>
+      </Reference>
+      <Reference Include="System.Net.Http">
+        <HintPath>$(GameDirectory_1_40_8)\Beat Saber_Data\Managed\System.Net.Http.dll</HintPath>
+      </Reference>
+      <Reference Include="Unity.TextMeshPro" Publicize="true">
+        <HintPath>$(GameDirectory_1_40_8)\Beat Saber_Data\Managed\Unity.TextMeshPro.dll</HintPath>
+      </Reference>
+      <Reference Include="UnityEngine">
+        <HintPath>$(GameDirectory_1_40_8)\Beat Saber_Data\Managed\UnityEngine.dll</HintPath>
+      </Reference>
+      <Reference Include="UnityEngine.CoreModule">
+        <HintPath>$(GameDirectory_1_40_8)\Beat Saber_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      </Reference>
+      <Reference Include="UnityEngine.ImageConversionModule">
+        <HintPath>$(GameDirectory_1_40_8)\Beat Saber_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
+      </Reference>
+      <Reference Include="UnityEngine.UI">
+        <HintPath>$(GameDirectory_1_40_8)\Beat Saber_Data\Managed\UnityEngine.UI.dll</HintPath>
+      </Reference>
+      <Reference Include="UnityEngine.UIModule">
+        <HintPath>$(GameDirectory_1_40_8)\Beat Saber_Data\Managed\UnityEngine.UIModule.dll</HintPath>
+      </Reference>
+      <Reference Include="UnityEngine.VRModule">
+        <HintPath>$(GameDirectory_1_40_8)\Beat Saber_Data\Managed\UnityEngine.VRModule.dll</HintPath>
+      </Reference>
+      <Reference Include="websocket-sharp">
+        <HintPath>$(GameDirectory_1_40_8)\Libs\websocket-sharp.dll</HintPath>
+      </Reference>
+      <Reference Include="Zenject">
+        <HintPath>$(GameDirectory_1_40_8)\Beat Saber_Data\Managed\Zenject.dll</HintPath>
+      </Reference>
+      <Reference Include="Zenject-usage">
+        <HintPath>$(GameDirectory_1_40_8)\Beat Saber_Data\Managed\Zenject-usage.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+    <ItemGroup>
+      <EmbeddedResource Include="manifest.json" />
+      <None Remove="UI\Views\PPPredictorView.bsml" />
+      <EmbeddedResource Include="UI\Views\PPPredictorView.bsml" />
+      <None Remove="UI\Views\SettingsMidView.bsml" />
+      <EmbeddedResource Include="UI\Views\SettingsMidView.bsml" />
+      <EmbeddedResource Include="..\PPPredictor.Shared\Resources\LeaderBoardLogos\AccSaber.png">
+        <Visible>false</Visible>
+        <LogicalName>PPPredictor.Shared.Resources.LeaderBoardLogos.AccSaber.png</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Include="..\PPPredictor.Shared\Resources\LeaderBoardLogos\BeatLeader.png">
+        <Visible>false</Visible>
+        <LogicalName>PPPredictor.Shared.Resources.LeaderBoardLogos.BeatLeader.png</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Include="..\PPPredictor.Shared\Resources\LeaderBoardLogos\Empty.png">
+        <Visible>false</Visible>
+        <LogicalName>PPPredictor.Shared.Resources.LeaderBoardLogos.Empty.png</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Include="..\PPPredictor.Shared\Resources\LeaderBoardLogos\HitBloq.png">
+        <Visible>false</Visible>
+        <LogicalName>PPPredictor.Shared.Resources.LeaderBoardLogos.HitBloq.png</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Include="..\PPPredictor.Shared\Resources\LeaderBoardLogos\ScoreSaber.png">
+        <Visible>false</Visible>
+        <LogicalName>PPPredictor.Shared.Resources.LeaderBoardLogos.ScoreSaber.png</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Include="..\PPPredictor.Shared\Resources\icon.png">
+        <Visible>false</Visible>
+        <LogicalName>PPPredictor.Shared.Resources.icon.png</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Include="..\PPPredictor.Shared\Resources\moveIcon.png">
+        <Visible>false</Visible>
+        <LogicalName>PPPredictor.Shared.Resources.moveIcon.png</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Include="..\PPPredictor.Shared\Resources\gIconLockClosed.png">
+        <Visible>false</Visible>
+        <LogicalName>PPPredictor.Shared.Resources.gIconLockClosed.png</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Include="..\PPPredictor.Shared\Resources\gIconLockOpen.png">
+        <Visible>false</Visible>
+        <LogicalName>PPPredictor.Shared.Resources.gIconLockOpen.png</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Include="..\PPPredictor.Shared\Resources\gIconRefresh.png">
+        <Visible>false</Visible>
+        <LogicalName>PPPredictor.Shared.Resources.gIconRefresh.png</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Include="..\PPPredictor.Shared\Resources\gIconTrash.png">
+        <Visible>false</Visible>
+        <LogicalName>PPPredictor.Shared.Resources.gIconTrash.png</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Include="..\PPPredictor.Shared\Resources\LeaderBoardLogos\AccSaberReloaded.png">
+        <Visible>false</Visible>
+        <LogicalName>PPPredictor.Shared.Resources.LeaderBoardLogos.AccSaberReloaded.png</LogicalName>
+      </EmbeddedResource>
+    </ItemGroup>
+    <ItemGroup>
+      <Compile Include="..\PPPredictor.Shared\**\*.cs" Link="Shared\%(RecursiveDir)%(FileName)%(Extension)" />
+<!--      <Content Include="..\PPPredictor.Shared\**\*.png" Link="Shared\%(RecursiveDir)%(FileName)%(Extension)" />-->
+      <Compile Remove="..\PPPredictor.Shared\obj\**\*;..\PPPredictor.Shared\**\obj\**\*" />
+      <Compile Remove="..\PPPredictor.Shared\**\AssemblyInfo.cs" />
+    </ItemGroup>
+    <ItemGroup>
+      <Compile Include="..\PPPredictor.Core\PPPredictor.Core\**\*.cs" Link="Shared\Core\%(RecursiveDir)%(FileName)%(Extension)" />
+      <Compile Remove="..\PPPredictor.Core\obj\**\*;..\PPPredictor.Core\**\obj\**\*" />
+      <Compile Remove="..\PPPredictor.Core\**\AssemblyInfo.cs" />
+    </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.3">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="..\PPPredictor.Shared\Data\BeatsaberEncapsulation\">
+        <Link>Shared\Data\BeatsaberEncapsulation</Link>
+      </Folder>
+    </ItemGroup>
+    <Target Name="CopyPlugin" AfterTargets="Build">
+      <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(GameDirectory_1_40_8)\Plugins\" SkipUnchangedFiles="false" />
+    </Target>
+  <PropertyGroup>
+    <Title>PPPredictor</Title>
+    <Description>See potential PP of selected map</Description>
+    <Company>No.1 N[][]b</Company>
+    <Product>PPPredictor</Product>
+    <Copyright>Copyright © 2026</Copyright>
+    <AssemblyVersion>1.3.0</AssemblyVersion>
+    <FileVersion>1.3.0</FileVersion>
+    <Version>1.3.0</Version>
+    <ComVisible>false</ComVisible>
+  </PropertyGroup>
+</Project>
