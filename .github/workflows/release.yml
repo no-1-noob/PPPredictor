@@ -114,4 +114,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ inputs.release_tag }}
-        run: gh release create "$RELEASE_TAG" release-assets/*.zip --draft --generate-notes
+        run: gh release create "$RELEASE_TAG" release-assets/*.zip --draft --generate-notes --repo "${{ github.repository }}"
