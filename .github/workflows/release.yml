@@ -47,10 +47,35 @@ jobs:
           version: ${{ matrix.beat_saber_version }}
           path: ${{ github.workspace }}\Refs
 
+      - name: Prepare mod dependency manifest
+        id: dependency_manifest
+        shell: pwsh
+        run: |
+          $manifestPath = Join-Path $env:GITHUB_WORKSPACE '${{ matrix.manifest }}'
+          $buildManifestPath = Join-Path (Split-Path $manifestPath) 'manifest.build.json'
+          $dependencyManifestPath = Join-Path $env:RUNNER_TEMP 'manifest.dependencies.json'
+
+          $manifest = Get-Content -Raw $manifestPath | ConvertFrom-Json
+          if (Test-Path $buildManifestPath) {
+            $buildManifest = Get-Content -Raw $buildManifestPath | ConvertFrom-Json
+            if ($buildManifest.dependsOn) {
+              if (-not $manifest.dependsOn) {
+                $manifest | Add-Member -NotePropertyName dependsOn -NotePropertyValue ([pscustomobject]@{})
+              }
+
+              foreach ($dependency in $buildManifest.dependsOn.psobject.Properties) {
+                $manifest.dependsOn | Add-Member -NotePropertyName $dependency.Name -NotePropertyValue $dependency.Value -Force
+              }
+            }
+          }
+
+          $manifest | ConvertTo-Json -Depth 100 | Set-Content -Path $dependencyManifestPath
+          "path=$dependencyManifestPath" >> $env:GITHUB_OUTPUT
+
       - name: Download mod dependencies
         uses: Goobwabber/download-beatmods-deps@1.3
         with:
-          manifest: ${{ github.workspace }}\${{ matrix.manifest }}
+          manifest: ${{ steps.dependency_manifest.outputs.path }}
           path: ${{ github.workspace }}\Refs
 
       - name: Download project build dependencies
