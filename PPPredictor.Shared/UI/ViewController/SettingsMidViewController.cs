@@ -135,17 +135,6 @@ namespace PPPredictor.UI.ViewController
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AccSaberEnabled)));
             }
         }
-        
-        [UIValue("accsaber-reloaded-enabled")]
-        public bool AccSaberReloadedEnabled
-        {
-            get => Plugin.ProfileInfo.IsAccSaberReloadedEnabledManual && (Plugin.ProfileInfo.IsBeatLeaderEnabled || Plugin.ProfileInfo.IsScoreSaberEnabled);
-            set
-            {
-                Plugin.ProfileInfo.IsAccSaberReloadedEnabledManual = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AccSaberReloadedEnabled)));
-            }
-        }
 
         [UIValue("scoresaber-enabled")]
         public bool ScoreSaberEnabled
@@ -359,7 +348,6 @@ namespace PPPredictor.UI.ViewController
             CounterGainSilentMode = Plugin.ProfileInfo.IsCounterGainSilentModeEnabled;
             StreamOverlayPort = Plugin.ProfileInfo.StreamOverlayPort;
             AccSaberEnabled = Plugin.ProfileInfo.IsAccSaberEnabledManual && Plugin.ProfileInfo.IsScoreSaberEnabled;
-            AccSaberReloadedEnabled = Plugin.ProfileInfo.IsAccSaberReloadedEnabled && (Plugin.ProfileInfo.IsBeatLeaderEnabled || Plugin.ProfileInfo.IsScoreSaberEnabled);
         }
     }
 }

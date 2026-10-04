@@ -80,7 +80,6 @@ namespace PPPredictor.Shared.Manager
             if (PluginBase.ProfileInfo.IsBeatLeaderEnabled) _lsPPPredictor.Add(new Shared.Predictor.PPPredictor(Leaderboard.BeatLeader, CalculatorInstance));
             if (PluginBase.ProfileInfo.IsHitBloqEnabled) _lsPPPredictor.Add(new Shared.Predictor.PPPredictor(Leaderboard.HitBloq, CalculatorInstance));
             if (PluginBase.ProfileInfo.IsAccSaberEnabled) _lsPPPredictor.Add(new Shared.Predictor.PPPredictor(Leaderboard.AccSaber, CalculatorInstance));
-            if (PluginBase.ProfileInfo.IsAccSaberReloadedEnabled) _lsPPPredictor.Add(new Shared.Predictor.PPPredictor(Leaderboard.AccSaberReloaded, CalculatorInstance));
             if (_lsPPPredictor.Count == 0)
             {
                 _lsPPPredictor.Add(new Shared.Predictor.PPPredictor(Leaderboard.NoLeaderboard, CalculatorInstance));
@@ -148,8 +147,9 @@ namespace PPPredictor.Shared.Manager
             PluginBase.ProfileInfo.IsScoreSaberEnabled = lsEnabledPlugin.FirstOrDefault(x => x == Leaderboard.ScoreSaber.ToString()) != null;
             PluginBase.ProfileInfo.IsBeatLeaderEnabled = lsEnabledPlugin.FirstOrDefault(x => x == Leaderboard.BeatLeader.ToString()) != null;
             PluginBase.ProfileInfo.IsHitBloqEnabled = lsEnabledPlugin.FirstOrDefault(x => x == CultureInfo.CurrentCulture.TextInfo.ToTitleCase(Leaderboard.HitBloq.ToString())) != null;
-            PluginBase.ProfileInfo.IsAccSaberEnabled = PluginBase.ProfileInfo.IsScoreSaberEnabled && PluginBase.ProfileInfo.IsAccSaberEnabledManual;
-            PluginBase.ProfileInfo.IsAccSaberReloadedEnabled = (PluginBase.ProfileInfo.IsBeatLeaderEnabled || PluginBase.ProfileInfo.IsScoreSaberEnabled) && PluginBase.ProfileInfo.IsAccSaberReloadedEnabledManual;
+            PluginBase.ProfileInfo.IsAccSaberModPresent = lsEnabledPlugin.FirstOrDefault(x => x == Leaderboard.AccSaber.ToString()) != null;
+            if (PluginBase.ProfileInfo.IsAccSaberModPresent) PluginBase.ProfileInfo.IsAccSaberEnabled = true;
+            PluginBase.ProfileInfo.IsAccSaberEnabled = ((PluginBase.ProfileInfo.IsBeatLeaderEnabled || PluginBase.ProfileInfo.IsScoreSaberEnabled) && (PluginBase.ProfileInfo.IsAccSaberEnabledManual || PluginBase.ProfileInfo.IsAccSaberModPresent));
         }
 
         public void RestartOverlayServer()

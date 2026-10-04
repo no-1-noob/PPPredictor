@@ -92,7 +92,6 @@ namespace PPPredictor.Manager
                 if (ShowBeatLeader()) gamePlayInfo.lsInfo.Add(new LeaderBoardGameplayInfo(Leaderboard.BeatLeader, ppPredictorMgr, Plugin.Converter.ConvertGameplayModifiers(setupData.gameplayModifiers)));
                 if (ShowHitBloq()) gamePlayInfo.lsInfo.Add(new LeaderBoardGameplayInfo(Leaderboard.HitBloq, ppPredictorMgr, Plugin.Converter.ConvertGameplayModifiers(setupData.gameplayModifiers)));
                 if (ShowAccSaber()) gamePlayInfo.lsInfo.Add(new LeaderBoardGameplayInfo(Leaderboard.AccSaber, ppPredictorMgr, Plugin.Converter.ConvertGameplayModifiers(setupData.gameplayModifiers)));
-                if (ShowAccSaberReloaded()) gamePlayInfo.lsInfo.Add(new LeaderBoardGameplayInfo(Leaderboard.AccSaberReloaded, ppPredictorMgr, Plugin.Converter.ConvertGameplayModifiers(setupData.gameplayModifiers)));
 
                 maxPossibleScore = ScoreModel.ComputeMaxMultipliedScoreForBeatmap(setupData.transformedBeatmapData);
                 scoreController.scoreDidChangeEvent += ScoreController_scoreDidChangeEvent;
@@ -234,10 +233,6 @@ namespace PPPredictor.Manager
         private bool ShowAccSaber()
         {
             return Plugin.ProfileInfo.IsAccSaberEnabled && ShowCounter(Leaderboard.AccSaber);
-        }
-        private bool ShowAccSaberReloaded()
-        {
-            return Plugin.ProfileInfo.IsAccSaberReloadedEnabled && ShowCounter(Leaderboard.AccSaberReloaded);
         }
         #endregion
 

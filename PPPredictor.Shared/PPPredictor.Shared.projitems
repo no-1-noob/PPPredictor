@@ -24,10 +24,6 @@
    </ItemGroup>
 
    <ItemGroup>
-      <EmbeddedResource Include="..\PPPredictor.Shared\Resources\LeaderBoardLogos\AccSaber.png">
-        <Visible>false</Visible>
-        <LogicalName>PPPredictor.Shared.Resources.LeaderBoardLogos.AccSaber.png</LogicalName>
-      </EmbeddedResource>
       <EmbeddedResource Include="..\PPPredictor.Shared\Resources\LeaderBoardLogos\BeatLeader.png">
         <Visible>false</Visible>
         <LogicalName>PPPredictor.Shared.Resources.LeaderBoardLogos.BeatLeader.png</LogicalName>
