@@ -5,10 +5,5 @@
     {
         internal static string Beta = string.Empty;
         internal static string BeatSaberVersion = "1_40";
-        // Ai chat nochmal lesen
-    
-        
-    
-        
     }
 }
