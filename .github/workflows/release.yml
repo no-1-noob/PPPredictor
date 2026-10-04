@@ -28,6 +28,7 @@ jobs:
           - project: PPPredictor_1_44_1/PPPredictor_1_44_1.csproj
             manifest: PPPredictor_1_44_1/manifest.json
             game_directory_property: GameDirectory_1_44_1
+            reference_version: 1.42.0
             beat_saber_version: 1.44.1
             beat_saber_label: 1_44_1
 
@@ -49,7 +50,7 @@ jobs:
         uses: beat-forge/init-beatsaber@v1.6.6
         with:
           token: ${{ github.token }}
-          version: ${{ matrix.beat_saber_version }}
+          version: ${{ matrix.reference_version || matrix.beat_saber_version }}
           path: ${{ github.workspace }}\Refs
 
       - name: Prepare mod dependency manifest

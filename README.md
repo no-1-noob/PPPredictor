@@ -56,6 +56,7 @@ If you only want to use one version, set its path and unload the other projects.
 <Project>
   <PropertyGroup>
     <GameDirectory_1_40_8>/var/home/nub/.local/share/Steam/steamapps/common/Beat Saber</GameDirectory_1_40_8>
+   <GameDirectory_1_44_1>/var/home/nub/.local/share/Steam/steamapps/common/Beat Saber</GameDirectory_1_44_1>
   </PropertyGroup>
 </Project>
 
