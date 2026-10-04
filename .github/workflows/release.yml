@@ -22,7 +22,7 @@ jobs:
           # Add future Beat Saber targets here; every entry is built in this run.
           - project: PPPredictor_1_38_0/PPPredictor_1_38_0.csproj
             manifest: PPPredictor_1_38_0/manifest.json
-            game_directory_property: PPPredictor_1_38_0
+            game_directory_property: GameDirectory_1_38_0
             beat_saber_version: 1.38.0
             beat_saber_label: 1_38_0
           - project: PPPredictor_1_40_8/PPPredictor_1_40_8.csproj
