@@ -70,30 +70,10 @@ namespace PPPredictor.WebSocket
             {
                 var socketData = JsonConvert.DeserializeObject<T>(e.Data);
                 var v = socketData.ConvertToPPPWebSocketData(_leaderboardName);
-                string messageId = Guid.NewGuid().ToString("N");
                 bool matchesPlayer = v.userId == userId;
-                if (Enum.TryParse(_leaderboardName, out Leaderboard leaderboard))
-                {
-                    Plugin.DebugNetworkPrint($"[PPPredictor][ScoreRefresh][WebSocketReceived] messageId={messageId} leaderboard={_leaderboardName} receivedPlayerId={v.userId} configuredPlayerId={userId} matchesPlayer={matchesPlayer} hash={v.hash} context={v.context}", leaderboard);
-                }
                 if (matchesPlayer)
                 {
-                    v.messageId = messageId;
-                    v.refreshId = Guid.NewGuid().ToString("N");
-                    if (Enum.TryParse(_leaderboardName, out leaderboard))
-                    {
-                        Plugin.DebugNetworkPrint($"[PPPredictor][ScoreRefresh][WebSocketAccepted] refreshId={v.refreshId} messageId={messageId} leaderboard={_leaderboardName} mapPoolId=-1", leaderboard);
-                        Plugin.DebugNetworkPrint($"[PPPredictor][ScoreRefresh][WebSocketDispatching] refreshId={v.refreshId} messageId={messageId} leaderboard={_leaderboardName} subscriberCount={OnScoreSet?.GetInvocationList().Length ?? 0}", leaderboard);
-                    }
                     OnScoreSet?.Invoke(this, v);
-                    if (Enum.TryParse(_leaderboardName, out leaderboard))
-                    {
-                        Plugin.DebugNetworkPrint($"[PPPredictor][ScoreRefresh][WebSocketDispatched] refreshId={v.refreshId} messageId={messageId} leaderboard={_leaderboardName}", leaderboard);
-                    }
-                }
-                else if (Enum.TryParse(_leaderboardName, out leaderboard))
-                {
-                    Plugin.DebugNetworkPrint($"[PPPredictor][ScoreRefresh][WebSocketIgnored] messageId={messageId} reason=PlayerIdMismatch", leaderboard);
                 }
             }
             catch (Exception ex)

@@ -27,15 +27,7 @@ namespace PPPredictor.Shared.Manager
 
         internal void PPPWebsocket_OnScoreSet(object sender, PPPScoreSetData data)
         {
-            if (Enum.TryParse(data.leaderboardName, out Enums.Leaderboard leaderboard))
-            {
-                PluginBase.DebugNetworkPrint($"[PPPredictor][ScoreRefresh][WebSocketManagerReceived] refreshId={data.refreshId} messageId={data.messageId} leaderboard={data.leaderboardName} hash={data.hash} context={data.context} subscriberCount={OnScoreSet?.GetInvocationList().Length ?? 0}", leaderboard);
-            }
             OnScoreSet?.Invoke(this, data);
-            if (Enum.TryParse(data.leaderboardName, out leaderboard))
-            {
-                PluginBase.DebugNetworkPrint($"[PPPredictor][ScoreRefresh][WebSocketManagerForwarded] refreshId={data.refreshId} messageId={data.messageId} leaderboard={data.leaderboardName}", leaderboard);
-            }
             if (PluginBase.ProfileInfo.IsHitBloqEnabled)
             {
                 AddDelayedRefresh(Enums.Leaderboard.HitBloq ,data);
