@@ -25,6 +25,11 @@ jobs:
             game_directory_property: GameDirectory_1_40_8
             beat_saber_version: 1.40.8
             beat_saber_label: 1_40_8
+          - project: PPPredictor_1_44_1/PPPredictor_1_44_1.csproj
+            manifest: PPPredictor_1_44_1/manifest.json
+            game_directory_property: GameDirectory_1_44_1
+            beat_saber_version: 1.44.1
+            beat_saber_label: 1_44_1
 
     steps:
       - uses: actions/checkout@v4

@@ -10,7 +10,7 @@ using static PPPredictor.Core.DataType.Enums;
 namespace PPPredictor.UI.ViewController
 {
     [HotReload(RelativePathToLayout = @"SettingsMidViewController.bsml")]
-    [ViewDefinition("PPPredictor.UI.Views.SettingsMidView.bsml")]
+    [ViewDefinition("PPPredictor.Shared.UI.Views.SettingsMidView.bsml")]
     class SettingsMidViewController : BSMLAutomaticViewController, INotifyPropertyChanged
     {
         public new event PropertyChangedEventHandler PropertyChanged;

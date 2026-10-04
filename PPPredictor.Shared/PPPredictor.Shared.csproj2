@@ -4,23 +4,23 @@
         <Configurations>Debug;Release;DEBUG Test;Debug ACCSABERNETWORK;Debug BEATLEADERNETWORK;Debug SCORESABERNETWORK;Debug HITBLOQNETWORK;Debug ALLNETWORK;ACCSABERRELOADEDNETWORK</Configurations>
         <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)' == 'Debug ACCSABERNETWORK' ">
-      <DefineConstants>TRACE;DEBUG;ACCSABERNETWORK</DefineConstants>
+    <PropertyGroup Condition="'$(ACCSABERNETWORK)' == 'true'">
+        <DefineConstants>$(DefineConstants);ACCSABERNETWORK</DefineConstants>
     </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)' == 'Debug BEATLEADERNETWORK' ">
-      <DefineConstants>TRACE;DEBUG;BEATLEADERNETWORK</DefineConstants>
+    <PropertyGroup Condition="'$(BEATLEADERNETWORK)' == 'true'">
+        <DefineConstants>$(DefineConstants);BEATLEADERNETWORK</DefineConstants>
     </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)' == 'Debug HITBLOQNETWORK' ">
-      <DefineConstants>TRACE;DEBUG;HITBLOQNETWORK</DefineConstants>
+    <PropertyGroup Condition="'$(HITBLOQNETWORK)' == 'true'">
+        <DefineConstants>$(DefineConstants);HITBLOQNETWORK</DefineConstants>
     </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)' == 'Debug SCORESABERNETWORK' ">
-      <DefineConstants>TRACE;DEBUG;SCORESABERNETWORK</DefineConstants>
+    <PropertyGroup Condition="'$(SCORESABERNETWORK)' == 'true'">
+        <DefineConstants>$(DefineConstants);SCORESABERNETWORK</DefineConstants>
     </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)' == 'Debug ALLNETWORK' ">
-      <DefineConstants>TRACE;DEBUG;ACCSABERNETWORK;BEATLEADERNETWORK;HITBLOQNETWORK;SCORESABERNETWORK;ACCSABERRELOADEDNETWORK</DefineConstants>
+    <PropertyGroup Condition="'$(ACCSABERRELOADEDNETWORK)' == 'true'">
+        <DefineConstants>$(DefineConstants);ACCSABERRELOADEDNETWORK</DefineConstants>
     </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)' == 'ACCSABERRELOADEDNETWORK' ">
-      <DefineConstants>TRACE;ACCSABERRELOADEDNETWORK</DefineConstants>
+    <PropertyGroup Condition="'$(MOCK_API)' == 'true'">
+        <DefineConstants>$(DefineConstants);MOCK_API</DefineConstants>
     </PropertyGroup>
     <ItemGroup>
         <None Include="Directory.Build.props" Condition="Exists('Directory.Build.props')" />
@@ -60,6 +60,8 @@
       <EmbeddedResource Include="Resources\LeaderBoardLogos\HitBloq.png" />
       <EmbeddedResource Include="Resources\LeaderBoardLogos\ScoreSaber.png" />
       <EmbeddedResource Include="Resources\moveIcon.png" />
+      <EmbeddedResource Include="UI\Views\PPPredictorView.bsml" />
+      <EmbeddedResource Include="UI\Views\SettingsMidView.bsml" />
     </ItemGroup>
   <PropertyGroup>
     <Title>PPPredictor.Shared</Title>

@@ -1,4 +1,4 @@
-﻿using PPPredictor.Utilities;
+﻿using PPPredictor.Manager;
 using Zenject;
 
 namespace PPPredictor.Installers

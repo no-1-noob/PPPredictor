@@ -90,7 +90,7 @@ namespace PPPredictor.Shared.Predictor
             return false;
         }
 
-        public void RefreshCurrentData(int fetchLength, bool refreshStars = false, bool fetchOnePage = false)
+        public void RefreshCurrentData(int fetchLength, bool refreshStars = false, bool fetchOnePage = false, string source = "RefreshProfileButton", string refreshId = null, string messageId = null)
         {
             return;
         }

@@ -1,19 +1,107 @@
+using HarmonyLib;
+using IPA;
 using PPPredictor.Core.DataType;
-using PPPredictor.Data;
+using PPPredictor.Installers;
+using PPPredictor.Manager;
 using PPPredictor.Shared.Data;
-using PPPredictor.Shared.Interfaces;
+using PPPredictor.UI.ViewController;
+using PPPredictor.Utilities;
+using SiraUtil.Zenject;
+using System.Reflection;
 using System;
 using System.Threading.Tasks;
+using IPALogger = IPA.Logging.Logger;
+
 namespace PPPredictor.Shared
 {
+    [Plugin(RuntimeOptions.DynamicInit)]
     abstract class PluginBase
     {
-        internal static IPluginLog Log { get; set; }
         public static PluginBase Instance { get; internal set; }
         
-        internal static ProfileInfo ProfileInfo;
+        internal static ProfileInfo ProfileInfo = new ProfileInfo();
+        internal static IPALogger Log;
         
-        public abstract Task<string> GetPlatformUserId();
+        internal static PPPredictorViewController pppViewController;
+
+        private const string kHarmonyID = "com.github.no-1-noob.PPPredictor";
+        private static readonly Harmony harmony = new Harmony(kHarmonyID);
+
+        //Only Used for UnitTests
+        internal PluginBase()
+        {
+            Instance = this;
+            ProfileInfo = new ProfileInfo();
+        }
+        
+        [Init]
+        /// <summary>
+        /// Called when the plugin is first loaded by IPA (either when the game starts or when the plugin is enabled if it starts disabled).
+        /// [Init] methods that use a Constructor or called before regular methods like InitWithConfig.
+        /// Only use [Init] with one Constructor.
+        /// </summary>
+        public PluginBase(IPALogger logger, Zenjector zenjector)
+        {
+            Instance = this;
+            Log = logger;
+            ProfileInfo = ProfileInfoMgr.LoadProfileInfo();
+            zenjector.UseSiraSync();
+            zenjector.Install<PPPPredictorDisplayInstaller>(Location.Menu);
+            zenjector.Install<MainMenuInstaller>(Location.Menu);
+            zenjector.Install<CoreInstaller>(Location.App);
+            zenjector.Install<GamePlayInstaller>(Location.StandardPlayer | Location.CampaignPlayer);
+        }
+
+        [OnStart]
+        public void OnApplicationStart()
+        {
+            ApplyHarmonyPatches();
+        }
+
+        private static void ApplyHarmonyPatches()
+        {
+            try
+            {
+                Log?.Debug("Applying Harmony patches.");
+                harmony.PatchAll(Assembly.GetExecutingAssembly());
+            }
+            catch (Exception ex)
+            {
+                Log?.Error("Error applying Harmony patches: " + ex.Message);
+                Log?.Debug(ex);
+            }
+        }
+
+        [OnExit]
+        public void OnApplicationQuit()
+        {
+            ProfileInfoMgr.SaveProfile(ProfileInfo, PPPredictorMgr.CalculatorInstance.GetSaveData());
+        }
+
+        [OnDisable]
+        public void OnDisable()
+        {
+            RemoveHarmonyPatches();
+        }
+
+        private static void RemoveHarmonyPatches()
+        {
+            try
+            {
+                harmony.UnpatchSelf();
+            }
+            catch (Exception ex)
+            {
+                Log?.Error("Error removing Harmony patches: " + ex.Message);
+                Log?.Debug(ex);
+            }
+        }
+
+        public async Task<string> GetPlatformUserId()
+        {
+            UserInfo user = await BS_Utils.Gameplay.GetUserInfo.GetUserAsync();
+            return user.platformUserId;
+        }
 
         public static void ErrorPrint(string text)
         {

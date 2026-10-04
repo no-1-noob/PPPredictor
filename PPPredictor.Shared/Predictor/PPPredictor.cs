@@ -122,7 +122,7 @@ namespace PPPredictor.Shared.Predictor
                 if (isCurrentMapPoolChanging)
                 {
                     currentMapPool.SelectedByLoading = false;
-                    this.RefreshCurrentData(10, true);
+                    this.RefreshCurrentData(10, true, source: "MapPoolChanged");
                 }
                 if(currentMapPool != null)
                 {
@@ -358,15 +358,30 @@ namespace PPPredictor.Shared.Predictor
 
         public void ScoreSet(PPPScoreSetData data)
         {
-            if(calculatorInstance.IsScoreSetOnCurrentMapPool(leaderboardName, currentMapPool.Id, data)) 
-                RefreshCurrentData(1, false, true);
+            bool isOnCurrentMapPool = calculatorInstance.IsScoreSetOnCurrentMapPool(leaderboardName, currentMapPool.Id, data);
+            PluginBase.DebugNetworkPrint($"[PPPredictor][ScoreRefresh][MapPoolFilterEvaluated] refreshId={data.refreshId} messageId={data.messageId} leaderboard={leaderboardName} mapPoolId={currentMapPool.Id} hash={data.hash} context={data.context} accepted={isOnCurrentMapPool}", leaderboardName);
+            if (isOnCurrentMapPool)
+            {
+                PluginBase.DebugNetworkPrint($"[PPPredictor][ScoreRefresh][RefreshRequested] refreshId={data.refreshId} messageId={data.messageId} source=WebSocket leaderboard={leaderboardName} mapPoolId={currentMapPool.Id} fetchLength=1 largePageSize={_leaderboardInfo.LargePageSize} fetchOnePage=true", leaderboardName);
+                RefreshCurrentData(1, false, true, "WebSocket", data.refreshId, data.messageId);
+            }
+            else
+            {
+                PluginBase.DebugNetworkPrint($"[PPPredictor][ScoreRefresh][RefreshRejected] refreshId={data.refreshId} messageId={data.messageId} leaderboard={leaderboardName} mapPoolId={currentMapPool.Id} reason=ScoreNotOnCurrentMapPool", leaderboardName);
+            }
         }
 
-        public async void RefreshCurrentData(int fetchLength, bool refreshStars = false, bool fetchOnePage = false)
+        public async void RefreshCurrentData(int fetchLength, bool refreshStars = false, bool fetchOnePage = false, string source = "RefreshProfileButton", string refreshId = null, string messageId = null)
         {
+            refreshId = refreshId ?? Guid.NewGuid().ToString("N");
+            double profilePpBefore = calculatorInstance.GetCurrentPlayerPp(leaderboardName, currentMapPool.Id);
+            PluginBase.DebugNetworkPrint($"[PPPredictor][ScoreRefresh][ProfileRefreshStarted] refreshId={refreshId} messageId={messageId} source={source} leaderboard={leaderboardName} mapPoolId={currentMapPool.Id} profilePpBefore={profilePpBefore}", leaderboardName);
             await UpdateCurrentAndCheckResetSession(false);
+            double profilePpAfter = calculatorInstance.GetCurrentPlayerPp(leaderboardName, currentMapPool.Id);
+            PluginBase.DebugNetworkPrint($"[PPPredictor][ScoreRefresh][ProfileRefreshCompleted] refreshId={refreshId} messageId={messageId} source={source} leaderboard={leaderboardName} mapPoolId={currentMapPool.Id} profilePpBefore={profilePpBefore} profilePpAfter={profilePpAfter}", leaderboardName);
             IsDataLoading(true);
-            await calculatorInstance.GetPlayerScores(leaderboardName, currentMapPool.Id, fetchLength, _leaderboardInfo.LargePageSize, fetchOnePage);
+            PluginBase.DebugNetworkPrint($"[PPPredictor][ScoreRefresh][ScoreFetchDispatching] refreshId={refreshId} messageId={messageId} source={source} leaderboard={leaderboardName} mapPoolId={currentMapPool.Id} fetchLength={fetchLength} largePageSize={_leaderboardInfo.LargePageSize} fetchOnePage={fetchOnePage}", leaderboardName);
+            await calculatorInstance.GetPlayerScores(leaderboardName, currentMapPool.Id, fetchLength, _leaderboardInfo.LargePageSize, fetchOnePage, refreshId, source, messageId, profilePpBefore, profilePpAfter);
             if (refreshStars) //MapPool change to a pool that has never been selected before;
             {
                 await UpdateCurrentBeatMapInfos();

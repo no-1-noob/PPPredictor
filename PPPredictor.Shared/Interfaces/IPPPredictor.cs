@@ -15,7 +15,7 @@ namespace PPPredictor.Shared.Interfaces
         void DifficultyChanged(PPPBeatMapInfo beatMapInfo);
         Task UpdateCurrentAndCheckResetSession(bool doResetSession);
         void ScoreSet(PPPScoreSetData data);
-        void RefreshCurrentData(int fetchLength, bool refreshStars = false, bool fetchOnePage = false);
+        void RefreshCurrentData(int fetchLength, bool refreshStars = false, bool fetchOnePage = false, string source = "RefreshProfileButton", string refreshId = null, string messageId = null);
         void ResetDisplay(bool resetAll);
         double CalculatePPatPercentage(double percentage, PPPBeatMapInfo beatMapInfo, bool levelFailed = false, bool levelPaused = false);
         double CalculateMaxPP();

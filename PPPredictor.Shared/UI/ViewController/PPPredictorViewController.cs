@@ -20,8 +20,8 @@ using PPPredictor.Manager;
 
 namespace PPPredictor.UI.ViewController
 {
-    [ViewDefinition("PPPredictor.UI.Views.PPPredictorView.bsml")]
-    [HotReload(RelativePathToLayout = @"..\Views\PPPredictorView.bsml")]
+    [ViewDefinition("PPPredictor.Shared.UI.Views.PPPredictorView.bsml")]
+    [HotReload(RelativePathToLayout = @"PPPredictorView.bsml")]
     class PPPredictorViewController : IInitializable, IDisposable, INotifyPropertyChanged
     {
         private static readonly string githubUrl = "https://github.com/no-1-noob/PPPredictor/releases/latest";
@@ -62,7 +62,7 @@ namespace PPPredictor.UI.ViewController
 
             floatingScreen.HandleReleased += OnScreenHandleReleased;
             BSMLParser.Instance.Initialize();
-            BSMLParser.Instance.Parse(BeatSaberMarkupLanguage.Utilities.GetResourceContent(Assembly.GetExecutingAssembly(), "PPPredictor.UI.Views.PPPredictorView.bsml"), floatingScreen.gameObject, this);
+            BSMLParser.Instance.Parse(BeatSaberMarkupLanguage.Utilities.GetResourceContent(Assembly.GetExecutingAssembly(), "PPPredictor.Shared.UI.Views.PPPredictorView.bsml"), floatingScreen.gameObject, this);
             ppPredictorMgr.ViewActivated += PpPredictorMgr_ViewActivated;
             ppPredictorMgr.OnDataLoading += PpPredictorMgr_OnDataLoading;
             ppPredictorMgr.OnDisplayPPInfo += PpPredictorMgr_OnDisplayPPInfo;

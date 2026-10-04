@@ -431,9 +431,18 @@ namespace PPPredictor.Shared.Manager
         public void ScoreSet(string leaderboardName, PPPScoreSetData data)
         {
             IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderboardName);
+            bool predictorFound = predictor != null;
+            if (Enum.TryParse(leaderboardName, out Leaderboard leaderboard))
+            {
+                PluginBase.DebugNetworkPrint($"[PPPredictor][ScoreRefresh][PredictorRouteEvaluated] refreshId={data.refreshId} messageId={data.messageId} leaderboard={leaderboardName} predictorFound={predictorFound} predictorCount={_lsPPPredictor.Count}", leaderboard);
+            }
             if (predictor != null)
             {
                 predictor.ScoreSet(data);
+            }
+            else if (Enum.TryParse(leaderboardName, out leaderboard))
+            {
+                PluginBase.DebugNetworkPrint($"[PPPredictor][ScoreRefresh][RefreshRejected] refreshId={data.refreshId} messageId={data.messageId} leaderboard={leaderboardName} reason=PredictorNotFound", leaderboard);
             }
         }
     }

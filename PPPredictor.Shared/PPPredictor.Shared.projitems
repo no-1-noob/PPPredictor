@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <MSBuildAllProjects>
+      $(MSBuildAllProjects);$(MSBuildThisFileFullPath)
+    </MSBuildAllProjects>
+
+    <HasSharedItems>true</HasSharedItems>
+
+    <SharedGUID>
+      {CF97CBCA-DDD6-4559-BD6F-A60885C78470}
+    </SharedGUID>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>PPPredictor</Import_RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)**\*.cs" />
+    <Compile Remove="..\PPPredictor.Shared\obj\**\*;..\PPPredictor.Shared\**\obj\**\*" />
+    <Compile Remove="..\PPPredictor.Shared\**\AssemblyInfo.cs" />
+   </ItemGroup>
+
+   <ItemGroup>
+      <EmbeddedResource Include="..\PPPredictor.Shared\Resources\LeaderBoardLogos\AccSaber.png">
+        <Visible>false</Visible>
+        <LogicalName>PPPredictor.Shared.Resources.LeaderBoardLogos.AccSaber.png</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Include="..\PPPredictor.Shared\Resources\LeaderBoardLogos\BeatLeader.png">
+        <Visible>false</Visible>
+        <LogicalName>PPPredictor.Shared.Resources.LeaderBoardLogos.BeatLeader.png</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Include="..\PPPredictor.Shared\Resources\LeaderBoardLogos\Empty.png">
+        <Visible>false</Visible>
+        <LogicalName>PPPredictor.Shared.Resources.LeaderBoardLogos.Empty.png</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Include="..\PPPredictor.Shared\Resources\LeaderBoardLogos\HitBloq.png">
+        <Visible>false</Visible>
+        <LogicalName>PPPredictor.Shared.Resources.LeaderBoardLogos.HitBloq.png</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Include="..\PPPredictor.Shared\Resources\LeaderBoardLogos\ScoreSaber.png">
+        <Visible>false</Visible>
+        <LogicalName>PPPredictor.Shared.Resources.LeaderBoardLogos.ScoreSaber.png</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Include="..\PPPredictor.Shared\Resources\icon.png">
+        <Visible>false</Visible>
+        <LogicalName>PPPredictor.Shared.Resources.icon.png</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Include="..\PPPredictor.Shared\Resources\moveIcon.png">
+        <Visible>false</Visible>
+        <LogicalName>PPPredictor.Shared.Resources.moveIcon.png</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Include="..\PPPredictor.Shared\Resources\gIconLockClosed.png">
+        <Visible>false</Visible>
+        <LogicalName>PPPredictor.Shared.Resources.gIconLockClosed.png</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Include="..\PPPredictor.Shared\Resources\gIconLockOpen.png">
+        <Visible>false</Visible>
+        <LogicalName>PPPredictor.Shared.Resources.gIconLockOpen.png</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Include="..\PPPredictor.Shared\Resources\gIconRefresh.png">
+        <Visible>false</Visible>
+        <LogicalName>PPPredictor.Shared.Resources.gIconRefresh.png</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Include="..\PPPredictor.Shared\Resources\gIconTrash.png">
+        <Visible>false</Visible>
+        <LogicalName>PPPredictor.Shared.Resources.gIconTrash.png</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Include="..\PPPredictor.Shared\Resources\LeaderBoardLogos\AccSaberReloaded.png">
+        <Visible>false</Visible>
+        <LogicalName>PPPredictor.Shared.Resources.LeaderBoardLogos.AccSaberReloaded.png</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Include="..\PPPredictor.Shared\UI\Views\CounterSettings.bsml">
+        <LogicalName>PPPredictor.Shared.UI.Views.CounterSettings.bsml</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Include="..\PPPredictor.Shared\UI\Views\PPPredictorView.bsml">
+        <LogicalName>PPPredictor.Shared.UI.Views.PPPredictorView.bsml</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Include="..\PPPredictor.Shared\UI\Views\SettingsMidView.bsml">
+        <LogicalName>PPPredictor.Shared.UI.Views.SettingsMidView.bsml</LogicalName>
+      </EmbeddedResource>
+    </ItemGroup>
+
+</Project>

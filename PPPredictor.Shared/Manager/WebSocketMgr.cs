@@ -29,19 +29,32 @@ namespace PPPredictor.Manager
         {
             if (Plugin.ProfileInfo.IsScoreSaberEnabled)
             {
+#if !MOCK_WEBSOCKET
                 PPPWebSocket<PPPWsScoreSaberCommand> socket = new PPPWebSocket<PPPWsScoreSaberCommand>("wss://scoresaber.com/ws", Enums.Leaderboard.ScoreSaber.ToString());
+#else
+                PPPWebSocket<PPPWsScoreSaberCommand> socket = new PPPWebSocket<PPPWsScoreSaberCommand>("ws://localhost:5080/ws", Enums.Leaderboard.ScoreSaber.ToString());
+#endif
+                
                 socket.OnScoreSet += PPPWebsocket_OnScoreSet;
                 _lsWebSockets.Add(socket);
             }
             if (Plugin.ProfileInfo.IsBeatLeaderEnabled)
             {
+#if !MOCK_WEBSOCKET
                 PPPWebSocket<PPPWsBeatLeaderData> socket = new PPPWebSocket<PPPWsBeatLeaderData>("wss://sockets.api.beatleader.com/scores", Enums.Leaderboard.BeatLeader.ToString());
+#else
+                PPPWebSocket<PPPWsBeatLeaderData> socket = new PPPWebSocket<PPPWsBeatLeaderData>("ws://localhost:5080/scores", Enums.Leaderboard.BeatLeader.ToString());
+#endif
                 socket.OnScoreSet += PPPWebsocket_OnScoreSet;
                 _lsWebSockets.Add(socket);
             }
             if (Plugin.ProfileInfo.IsAccSaberReloadedEnabled)
             {
+#if !MOCK_WEBSOCKET
                 PPPWebSocket<PPPWsAccSaberReloadedData> socket = new PPPWebSocket<PPPWsAccSaberReloadedData>("wss://accsaberreloaded.com/ws/scores", Enums.Leaderboard.AccSaberReloaded.ToString());
+#else
+                PPPWebSocket<PPPWsAccSaberReloadedData> socket = new PPPWebSocket<PPPWsAccSaberReloadedData>("ws://localhost:5080/ws/scores", Enums.Leaderboard.AccSaberReloaded.ToString());
+#endif
                 socket.OnScoreSet += PPPWebsocket_OnScoreSet;
                 _lsWebSockets.Add(socket);
             }
