@@ -15,11 +15,10 @@ using IPALogger = IPA.Logging.Logger;
 
 namespace PPPredictor.Shared
 {
-    [Plugin(RuntimeOptions.DynamicInit)]
-    abstract class PluginBase
+    public abstract class PluginBase
     {
         public static PluginBase Instance { get; internal set; }
-        public static ConverterBase Converter { get; internal set; }
+        internal static ConverterBase Converter { get; set; }
 
         internal static ProfileInfo ProfileInfo = new ProfileInfo();
         internal static IPALogger Log;
@@ -38,12 +37,6 @@ namespace PPPredictor.Shared
             ProfileInfo = new ProfileInfo();
         }
         
-        [Init]
-        /// <summary>
-        /// Called when the plugin is first loaded by IPA (either when the game starts or when the plugin is enabled if it starts disabled).
-        /// [Init] methods that use a Constructor or called before regular methods like InitWithConfig.
-        /// Only use [Init] with one Constructor.
-        /// </summary>
         public PluginBase(IPALogger logger, Zenjector zenjector)
         {
             Instance = this;
@@ -55,12 +48,22 @@ namespace PPPredictor.Shared
             zenjector.Install<CoreInstaller>(Location.App);
             zenjector.Install<GamePlayInstaller>(Location.StandardPlayer | Location.CampaignPlayer);
         }
-
-        [OnStart]
+        
         public void OnApplicationStart()
         {
+            Log?.Debug("OnApplicationStart.");
             CreateConverter();
             ApplyHarmonyPatches();
+        }
+        
+        public void OnApplicationQuit()
+        {
+            ProfileInfoMgr.SaveProfile(ProfileInfo, PPPredictorMgr.CalculatorInstance.GetSaveData());
+        }
+        
+        public void OnDisable()
+        {
+            RemoveHarmonyPatches();
         }
 
         private static void ApplyHarmonyPatches()
@@ -77,17 +80,7 @@ namespace PPPredictor.Shared
             }
         }
 
-        [OnExit]
-        public void OnApplicationQuit()
-        {
-            ProfileInfoMgr.SaveProfile(ProfileInfo, PPPredictorMgr.CalculatorInstance.GetSaveData());
-        }
-
-        [OnDisable]
-        public void OnDisable()
-        {
-            RemoveHarmonyPatches();
-        }
+        
 
         private static void RemoveHarmonyPatches()
         {

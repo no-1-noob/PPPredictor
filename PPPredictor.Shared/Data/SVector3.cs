@@ -4,7 +4,7 @@ namespace PPPredictor.Shared.Data
 {
     //http://answers.unity.com/answers/1580674/view.html
     [Serializable]
-    struct SVector3
+    internal struct SVector3
     {
         public float x;
         public float y;
