@@ -1,0 +1,164 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net48</TargetFramework>
+        <Configurations>Debug;Release;</Configurations>
+        <Platforms>AnyCPU</Platforms>
+        <RootNamespace>PPPredictor</RootNamespace>
+        <AssemblyName>PPPredictor</AssemblyName>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(ACCSABERNETWORK)' == 'true'">
+      <DefineConstants>$(DefineConstants);ACCSABERNETWORK</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(BEATLEADERNETWORK)' == 'true'">
+      <DefineConstants>$(DefineConstants);BEATLEADERNETWORK</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(HITBLOQNETWORK)' == 'true'">
+      <DefineConstants>$(DefineConstants);HITBLOQNETWORK</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(SCORESABERNETWORK)' == 'true'">
+      <DefineConstants>$(DefineConstants);SCORESABERNETWORK</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(ACCSABERRELOADEDNETWORK)' == 'true'">
+      <DefineConstants>$(DefineConstants);ACCSABERRELOADEDNETWORK</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(MOCK_API)' == 'true'">
+      <DefineConstants>$(DefineConstants);MOCK_API</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(MOCK_WEBSOCKET)' == 'true'">
+      <DefineConstants>$(DefineConstants);MOCK_WEBSOCKET</DefineConstants>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Include="Directory.Build.props" Condition="Exists('Directory.Build.props')" />
+    </ItemGroup>
+    <ItemGroup>
+      <Reference Include="0Harmony">
+        <HintPath>$(GameDirectory_1_38_0)\Libs\0Harmony.dll</HintPath>
+      </Reference>
+      <Reference Include="BeatmapCore">
+        <HintPath>$(GameDirectory_1_38_0)\Beat Saber_Data\Managed\BeatmapCore.dll</HintPath>
+      </Reference>
+      <Reference Include="BeatSaber.ViewSystem" Publicize="true">
+        <HintPath>$(GameDirectory_1_38_0)\Beat Saber_Data\Managed\BeatSaber.ViewSystem.dll</HintPath>
+      </Reference>
+      <Reference Include="BeatSaberPlaylistsLib">
+        <HintPath>$(GameDirectory_1_38_0)\Libs\BeatSaberPlaylistsLib.dll</HintPath>
+      </Reference>
+      <Reference Include="BGNetCore">
+        <HintPath>$(GameDirectory_1_38_0)\Beat Saber_Data\Managed\BGNetCore.dll</HintPath>
+      </Reference>
+      <Reference Include="BSML" Publicize="true">
+        <HintPath>$(GameDirectory_1_38_0)\Plugins\BSML.dll</HintPath>
+      </Reference>
+      <Reference Include="BS_Utils">
+        <HintPath>$(GameDirectory_1_38_0)\Plugins\BS_Utils.dll</HintPath>
+      </Reference>
+      <Reference Include="Counters+">
+        <HintPath>$(GameDirectory_1_38_0)\Plugins\Counters+.dll</HintPath>
+      </Reference>
+      <Reference Include="DataModels">
+        <HintPath>$(GameDirectory_1_38_0)\Beat Saber_Data\Managed\DataModels.dll</HintPath>
+      </Reference>
+      <Reference Include="GameplayCore">
+        <HintPath>$(GameDirectory_1_38_0)\Beat Saber_Data\Managed\GameplayCore.dll</HintPath>
+      </Reference>
+      <Reference Include="HMLib">
+        <HintPath>$(GameDirectory_1_38_0)\Beat Saber_Data\Managed\HMLib.dll</HintPath>
+      </Reference>
+      <Reference Include="HMUI" Publicize="true">
+        <HintPath>$(GameDirectory_1_38_0)\Beat Saber_Data\Managed\HMUI.dll</HintPath>
+      </Reference>
+      <Reference Include="IPA.Loader">
+        <HintPath>$(GameDirectory_1_38_0)\Beat Saber_Data\Managed\IPA.Loader.dll</HintPath>
+      </Reference>
+      <Reference Include="Main" Publicize="true">
+        <HintPath>$(GameDirectory_1_38_0)\Beat Saber_Data\Managed\Main.dll</HintPath>
+      </Reference>
+      <Reference Include="Newtonsoft.Json">
+        <HintPath>$(GameDirectory_1_38_0)\Beat Saber_Data\Managed\Newtonsoft.Json.dll</HintPath>
+      </Reference>
+      <Reference Include="PlatformUserModel">
+        <HintPath>$(GameDirectory_1_38_0)\Beat Saber_Data\Managed\PlatformUserModel.dll</HintPath>
+      </Reference>
+      <Reference Include="SegmentedControl">
+        <HintPath>$(GameDirectory_1_38_0)\Beat Saber_Data\Managed\SegmentedControl.dll</HintPath>
+      </Reference>
+      <Reference Include="SiraUtil">
+        <HintPath>$(GameDirectory_1_38_0)\Plugins\SiraUtil.dll</HintPath>
+      </Reference>
+      <Reference Include="SongCore">
+        <HintPath>$(GameDirectory_1_38_0)\Plugins\SongCore.dll</HintPath>
+      </Reference>
+      <Reference Include="SongDetailsCache">
+        <HintPath>$(GameDirectory_1_38_0)\Libs\SongDetailsCache.dll</HintPath>
+      </Reference>
+      <Reference Include="System.ComponentModel.DataAnnotations">
+        <HintPath>$(GameDirectory_1_38_0)\Beat Saber_Data\Managed\System.ComponentModel.DataAnnotations.dll</HintPath>
+      </Reference>
+      <Reference Include="System.Data.DataSetExtensions">
+        <HintPath>$(GameDirectory_1_38_0)\Beat Saber_Data\Managed\System.Data.DataSetExtensions.dll</HintPath>
+      </Reference>
+      <Reference Include="System.Net.Http">
+        <HintPath>$(GameDirectory_1_38_0)\Beat Saber_Data\Managed\System.Net.Http.dll</HintPath>
+      </Reference>
+      <Reference Include="Unity.TextMeshPro" Publicize="true">
+        <HintPath>$(GameDirectory_1_38_0)\Beat Saber_Data\Managed\Unity.TextMeshPro.dll</HintPath>
+      </Reference>
+      <Reference Include="UnityEngine">
+        <HintPath>$(GameDirectory_1_38_0)\Beat Saber_Data\Managed\UnityEngine.dll</HintPath>
+      </Reference>
+      <Reference Include="UnityEngine.CoreModule">
+        <HintPath>$(GameDirectory_1_38_0)\Beat Saber_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      </Reference>
+      <Reference Include="UnityEngine.ImageConversionModule">
+        <HintPath>$(GameDirectory_1_38_0)\Beat Saber_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
+      </Reference>
+      <Reference Include="UnityEngine.UI">
+        <HintPath>$(GameDirectory_1_38_0)\Beat Saber_Data\Managed\UnityEngine.UI.dll</HintPath>
+      </Reference>
+      <Reference Include="UnityEngine.UIModule">
+        <HintPath>$(GameDirectory_1_38_0)\Beat Saber_Data\Managed\UnityEngine.UIModule.dll</HintPath>
+      </Reference>
+      <Reference Include="UnityEngine.VRModule">
+        <HintPath>$(GameDirectory_1_38_0)\Beat Saber_Data\Managed\UnityEngine.VRModule.dll</HintPath>
+      </Reference>
+      <Reference Include="websocket-sharp">
+        <HintPath>$(GameDirectory_1_38_0)\Libs\websocket-sharp.dll</HintPath>
+      </Reference>
+      <Reference Include="Zenject">
+        <HintPath>$(GameDirectory_1_38_0)\Beat Saber_Data\Managed\Zenject.dll</HintPath>
+      </Reference>
+      <Reference Include="Zenject-usage">
+        <HintPath>$(GameDirectory_1_38_0)\Beat Saber_Data\Managed\Zenject-usage.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+    <ItemGroup>
+      <EmbeddedResource Include="manifest.json" />
+    </ItemGroup>
+    <Import Project="..\PPPredictor.Shared\PPPredictor.Shared.projitems"
+          Label="Shared" />
+    <ItemGroup>
+      <Compile Include="..\PPPredictor.Core\PPPredictor.Core\**\*.cs" Link="Core\%(RecursiveDir)%(FileName)%(Extension)" />
+      <Compile Remove="..\PPPredictor.Core\obj\**\*;..\PPPredictor.Core\**\obj\**\*" />
+      <Compile Remove="..\PPPredictor.Core\**\AssemblyInfo.cs" />
+    </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.3">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+    </ItemGroup>
+    <Target Name="CopyPlugin" AfterTargets="Build">
+      <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(GameDirectory_1_38_0)\Plugins\" SkipUnchangedFiles="false" />
+    </Target>
+  <PropertyGroup>
+    <Title>PPPredictor</Title>
+    <Description>See potential PP of selected map</Description>
+    <Company>No.1 N[][]b</Company>
+    <Product>PPPredictor</Product>
+    <Copyright>Copyright © 2026</Copyright>
+    <AssemblyVersion>1.3.0</AssemblyVersion>
+    <FileVersion>1.3.0</FileVersion>
+    <Version>1.3.0</Version>
+    <ComVisible>false</ComVisible>
+  </PropertyGroup>
+</Project>

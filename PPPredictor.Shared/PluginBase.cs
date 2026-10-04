@@ -1,5 +1,6 @@
 using HarmonyLib;
 using IPA;
+using PPPredictor.Converter;
 using PPPredictor.Core.DataType;
 using PPPredictor.Installers;
 using PPPredictor.Manager;
@@ -18,7 +19,8 @@ namespace PPPredictor.Shared
     abstract class PluginBase
     {
         public static PluginBase Instance { get; internal set; }
-        
+        public static ConverterBase Converter { get; internal set; }
+
         internal static ProfileInfo ProfileInfo = new ProfileInfo();
         internal static IPALogger Log;
         
@@ -26,6 +28,8 @@ namespace PPPredictor.Shared
 
         private const string kHarmonyID = "com.github.no-1-noob.PPPredictor";
         private static readonly Harmony harmony = new Harmony(kHarmonyID);
+
+        internal abstract void CreateConverter();
 
         //Only Used for UnitTests
         internal PluginBase()
@@ -55,6 +59,7 @@ namespace PPPredictor.Shared
         [OnStart]
         public void OnApplicationStart()
         {
+            CreateConverter();
             ApplyHarmonyPatches();
         }
 

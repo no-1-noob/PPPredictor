@@ -1,18 +1,19 @@
 ﻿using JetBrains.Annotations;
 using PPPredictor.Core.DataType;
 using PPPredictor.Shared.Data;
-using SongCore;
 using UnityEngine;
 namespace PPPredictor.Converter
 {
-    internal class Converter
+    internal abstract class ConverterBase
     {
-        public static PPPBeatMapInfo GetBeatMapInfo(BeatmapLevel selectedBeatmapLevel,BeatmapKey beatmapKey)
+        public abstract string GetCustomLevelHash(BeatmapLevel beatmapLevel);
+        
+        public PPPBeatMapInfo GetBeatMapInfo(BeatmapLevel selectedBeatmapLevel,BeatmapKey beatmapKey)
         {
-            return new PPPBeatMapInfo(selectedBeatmapLevel != null ? Collections.GetCustomLevelHash(selectedBeatmapLevel.levelID) : null, ConvertBeatmapKey(beatmapKey));
+            return new PPPBeatMapInfo(selectedBeatmapLevel != null ? GetCustomLevelHash(selectedBeatmapLevel) : null, ConvertBeatmapKey(beatmapKey));
         }
         
-        public static Core.DataType.BeatSaberEncapsulation.BeatmapKey ConvertBeatmapKey(BeatmapKey beatmapKey)
+        public Core.DataType.BeatSaberEncapsulation.BeatmapKey ConvertBeatmapKey(BeatmapKey beatmapKey)
         {
             return new Core.DataType.BeatSaberEncapsulation.BeatmapKey
             {
@@ -21,7 +22,7 @@ namespace PPPredictor.Converter
             };
         }
 
-        private static Core.DataType.Enums.BeatMapDifficulty GetBeatMapKeyDifficulty(BeatmapDifficulty diff)
+        private Core.DataType.Enums.BeatMapDifficulty GetBeatMapKeyDifficulty(BeatmapDifficulty diff)
         {
             switch (diff)
             {
@@ -41,12 +42,12 @@ namespace PPPredictor.Converter
         }
 
         [CanBeNull]
-        public static Core.DataType.BeatSaberEncapsulation.GameplayModifiers ConvertGameplayModifiers(GameplaySetupViewController gameplaySetupViewController)
+        public Core.DataType.BeatSaberEncapsulation.GameplayModifiers ConvertGameplayModifiers(GameplaySetupViewController gameplaySetupViewController)
         {
             return gameplaySetupViewController?.gameplayModifiers != null ? ConvertGameplayModifiers(gameplaySetupViewController?.gameplayModifiers) : null;
         }
 
-        public static Core.DataType.BeatSaberEncapsulation.GameplayModifiers ConvertGameplayModifiers(GameplayModifiers gameplayModifiers)
+        public Core.DataType.BeatSaberEncapsulation.GameplayModifiers ConvertGameplayModifiers(GameplayModifiers gameplayModifiers)
         {
             if(gameplayModifiers == null)
             {
@@ -70,7 +71,7 @@ namespace PPPredictor.Converter
             };
         }
 
-        private static Core.DataType.BeatSaberEncapsulation.GameplayModifiers.SongSpeed GetSongSpeed(GameplayModifiers.SongSpeed speed)
+        private Core.DataType.BeatSaberEncapsulation.GameplayModifiers.SongSpeed GetSongSpeed(GameplayModifiers.SongSpeed speed)
         {
             switch (speed)
             {
@@ -87,7 +88,7 @@ namespace PPPredictor.Converter
             }
         }
 
-        private static Core.DataType.BeatSaberEncapsulation.GameplayModifiers.EnabledObstacleType GetObstacleType(GameplayModifiers.EnabledObstacleType obstacleType)
+        private Core.DataType.BeatSaberEncapsulation.GameplayModifiers.EnabledObstacleType GetObstacleType(GameplayModifiers.EnabledObstacleType obstacleType)
         {
             switch (obstacleType)
             {
@@ -102,7 +103,7 @@ namespace PPPredictor.Converter
             }
         }
 
-        private static Core.DataType.BeatSaberEncapsulation.GameplayModifiers.EnergyType GetEnergyType(GameplayModifiers.EnergyType energyType)
+        private Core.DataType.BeatSaberEncapsulation.GameplayModifiers.EnergyType GetEnergyType(GameplayModifiers.EnergyType energyType)
         {
             switch (energyType)
             {
@@ -115,10 +116,10 @@ namespace PPPredictor.Converter
             }
         }
         
-        public static Vector3 SVectorToVector3(SVector3 s)
+        public Vector3 SVectorToVector3(SVector3 s)
             => new Vector3(s.x, s.y, s.z);
 
-        public static SVector3 Vector3ToSVector(Vector3 v)
+        public SVector3 Vector3ToSVector(Vector3 v)
             => new SVector3(v.x, v.y, v.z);
     }
 }

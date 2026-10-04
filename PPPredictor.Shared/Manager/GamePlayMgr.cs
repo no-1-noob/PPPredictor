@@ -72,7 +72,7 @@ namespace PPPredictor.Manager
             {
                 try
                 {
-                    await ppPredictorMgr.UpdateCurrentBeatMapInfos(Converter.Converter.GetBeatMapInfo(setupData.beatmapLevel, setupData.beatmapKey));
+                    await ppPredictorMgr.UpdateCurrentBeatMapInfos(Plugin.Converter.GetBeatMapInfo(setupData.beatmapLevel, setupData.beatmapKey));
                 }
                 catch (Exception ex)
                 {
@@ -88,11 +88,11 @@ namespace PPPredictor.Manager
 
                 gamePlayInfo = new GamePlayInfo();
                 gamePlayInfo.scoreboardCount = GetActiveScoreboardsCount();
-                if (ShowScoreSaber()) gamePlayInfo.lsInfo.Add(new LeaderBoardGameplayInfo(Leaderboard.ScoreSaber, ppPredictorMgr, Converter.Converter.ConvertGameplayModifiers(setupData.gameplayModifiers)));
-                if (ShowBeatLeader()) gamePlayInfo.lsInfo.Add(new LeaderBoardGameplayInfo(Leaderboard.BeatLeader, ppPredictorMgr, Converter.Converter.ConvertGameplayModifiers(setupData.gameplayModifiers)));
-                if (ShowHitBloq()) gamePlayInfo.lsInfo.Add(new LeaderBoardGameplayInfo(Leaderboard.HitBloq, ppPredictorMgr, Converter.Converter.ConvertGameplayModifiers(setupData.gameplayModifiers)));
-                if (ShowAccSaber()) gamePlayInfo.lsInfo.Add(new LeaderBoardGameplayInfo(Leaderboard.AccSaber, ppPredictorMgr, Converter.Converter.ConvertGameplayModifiers(setupData.gameplayModifiers)));
-                if (ShowAccSaberReloaded()) gamePlayInfo.lsInfo.Add(new LeaderBoardGameplayInfo(Leaderboard.AccSaberReloaded, ppPredictorMgr, Converter.Converter.ConvertGameplayModifiers(setupData.gameplayModifiers)));
+                if (ShowScoreSaber()) gamePlayInfo.lsInfo.Add(new LeaderBoardGameplayInfo(Leaderboard.ScoreSaber, ppPredictorMgr, Plugin.Converter.ConvertGameplayModifiers(setupData.gameplayModifiers)));
+                if (ShowBeatLeader()) gamePlayInfo.lsInfo.Add(new LeaderBoardGameplayInfo(Leaderboard.BeatLeader, ppPredictorMgr, Plugin.Converter.ConvertGameplayModifiers(setupData.gameplayModifiers)));
+                if (ShowHitBloq()) gamePlayInfo.lsInfo.Add(new LeaderBoardGameplayInfo(Leaderboard.HitBloq, ppPredictorMgr, Plugin.Converter.ConvertGameplayModifiers(setupData.gameplayModifiers)));
+                if (ShowAccSaber()) gamePlayInfo.lsInfo.Add(new LeaderBoardGameplayInfo(Leaderboard.AccSaber, ppPredictorMgr, Plugin.Converter.ConvertGameplayModifiers(setupData.gameplayModifiers)));
+                if (ShowAccSaberReloaded()) gamePlayInfo.lsInfo.Add(new LeaderBoardGameplayInfo(Leaderboard.AccSaberReloaded, ppPredictorMgr, Plugin.Converter.ConvertGameplayModifiers(setupData.gameplayModifiers)));
 
                 maxPossibleScore = ScoreModel.ComputeMaxMultipliedScoreForBeatmap(setupData.transformedBeatmapData);
                 scoreController.scoreDidChangeEvent += ScoreController_scoreDidChangeEvent;

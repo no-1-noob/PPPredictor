@@ -47,10 +47,10 @@ namespace PPPredictor.UI.ViewController
             Plugin.pppViewController = this;
             displaySessionInfo = new DisplaySessionInfo();
             displayPPInfo = new DisplayPPInfo();
-            floatingScreen = FloatingScreen.CreateFloatingScreen(new Vector2(75, 100), true, Converter.Converter.SVectorToVector3(Plugin.ProfileInfo.Position), new Quaternion(0, 0, 0, 0));
+            floatingScreen = FloatingScreen.CreateFloatingScreen(new Vector2(75, 100), true, Plugin.Converter.SVectorToVector3(Plugin.ProfileInfo.Position), new Quaternion(0, 0, 0, 0));
             floatingScreen.gameObject.name = "BSMLFloatingScreen_PPPredictor";
             floatingScreen.gameObject.SetActive(false);
-            floatingScreen.transform.eulerAngles = Converter.Converter.SVectorToVector3(Plugin.ProfileInfo.EulerAngles);
+            floatingScreen.transform.eulerAngles = Plugin.Converter.SVectorToVector3(Plugin.ProfileInfo.EulerAngles);
             floatingScreen.transform.localScale = new Vector3(0.03f, 0.03f, 0.03f);
             floatingScreen.Handle.transform.localScale = new Vector2(25, 25);
             floatingScreen.Handle.transform.localPosition = new Vector3(0, 1, -.1f);
@@ -112,8 +112,8 @@ namespace PPPredictor.UI.ViewController
 
         public void OnScreenHandleReleased(object sender, FloatingScreenHandleEventArgs args)
         {
-            Plugin.ProfileInfo.Position = Converter.Converter.Vector3ToSVector(floatingScreen.transform.position);
-            Plugin.ProfileInfo.EulerAngles = Converter.Converter.Vector3ToSVector(floatingScreen.transform.eulerAngles);
+            Plugin.ProfileInfo.Position = Plugin.Converter.Vector3ToSVector(floatingScreen.transform.position);
+            Plugin.ProfileInfo.EulerAngles = Plugin.Converter.Vector3ToSVector(floatingScreen.transform.eulerAngles);
         }
 
         public void Dispose()
@@ -548,8 +548,8 @@ namespace PPPredictor.UI.ViewController
 
         public void ResetPosition()
         {
-            floatingScreen.transform.eulerAngles = Converter.Converter.SVectorToVector3(Plugin.ProfileInfo.EulerAngles);
-            floatingScreen.transform.position = Converter.Converter.SVectorToVector3(Plugin.ProfileInfo.Position);
+            floatingScreen.transform.eulerAngles = Plugin.Converter.SVectorToVector3(Plugin.ProfileInfo.EulerAngles);
+            floatingScreen.transform.position = Plugin.Converter.SVectorToVector3(Plugin.ProfileInfo.Position);
         }
 
         private async void CheckVersion()

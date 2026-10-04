@@ -56,7 +56,7 @@ namespace PPPredictor.Manager
 
         private void DidChangeGameplayModifiersEvent()
         {
-            if (IsNormalMainMenu()) this.ppPredictorMgr.ChangeGameplayModifiers(Converter.Converter.ConvertGameplayModifiers(this.gameplaySetupViewController));
+            if (IsNormalMainMenu()) this.ppPredictorMgr.ChangeGameplayModifiers(Plugin.Converter.ConvertGameplayModifiers(this.gameplaySetupViewController));
         }
 
         private void OnDifficultyChanged(LevelSelectionNavigationController lvlSelectionNavigationCtrl)
@@ -74,13 +74,13 @@ namespace PPPredictor.Manager
 
         private void DiffultyChangedDecideCustomMap(LevelSelectionNavigationController lvlSelectionNavigationCtrl)
         {
-            if (!string.IsNullOrEmpty(Collections.GetCustomLevelHash(lvlSelectionNavigationCtrl.beatmapLevel.levelID)) && IsNormalMainMenu()) //Checking if it is a custom map
+            if (!string.IsNullOrEmpty(Plugin.Converter.GetCustomLevelHash(lvlSelectionNavigationCtrl.beatmapLevel)) && IsNormalMainMenu()) //Checking if it is a custom map
             {
-                this.ppPredictorMgr.DifficultyChanged(Converter.Converter.GetBeatMapInfo(lvlSelectionNavigationCtrl.beatmapLevel, lvlSelectionNavigationCtrl.beatmapKey));
+                this.ppPredictorMgr.DifficultyChanged(Plugin.Converter.GetBeatMapInfo(lvlSelectionNavigationCtrl.beatmapLevel, lvlSelectionNavigationCtrl.beatmapKey));
             }
             else
             {
-                this.ppPredictorMgr.DifficultyChanged(Converter.Converter.GetBeatMapInfo(null, lvlSelectionNavigationCtrl.beatmapKey));
+                this.ppPredictorMgr.DifficultyChanged(Plugin.Converter.GetBeatMapInfo(null, lvlSelectionNavigationCtrl.beatmapKey));
             }
 
         }
