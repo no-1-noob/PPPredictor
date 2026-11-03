@@ -78,11 +78,16 @@ jobs:
           $manifest | ConvertTo-Json -Depth 100 | Set-Content -Path $dependencyManifestPath
           "path=$dependencyManifestPath" >> $env:GITHUB_OUTPUT
 
-      - name: Download mod dependencies
-        uses: Goobwabber/download-beatmods-deps@1.3
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          manifest: ${{ steps.dependency_manifest.outputs.path }}
-          path: ${{ github.workspace }}\Refs
+          node-version: 22
+
+      - name: Install dependency downloader
+        run: npm ci --prefix .github/scripts
+
+      - name: Download mod dependencies
+        run: node .github/scripts/download-beatmods-deps.cjs "${{ steps.dependency_manifest.outputs.path }}" "${{ github.workspace }}\Refs"
 
       - name: Download project build dependencies
         shell: pwsh

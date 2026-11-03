@@ -1,0 +1,11 @@
+{
+  "name": "pppredictor-build-scripts",
+  "private": true,
+  "scripts": {
+    "test": "node --test *.test.cjs"
+  },
+  "dependencies": {
+    "fflate": "0.8.3",
+    "semver": "7.7.3"
+  }
+}
