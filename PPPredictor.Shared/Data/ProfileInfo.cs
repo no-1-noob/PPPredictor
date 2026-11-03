@@ -161,8 +161,6 @@ namespace PPPredictor.Shared.Data
                     userId,
                     PpGainCalculationType,
                     HitbloqMapPoolSorting,
-                    //Plugin.ProfileInfo.platformUserId,
-                    "",
                     RefetchMapInfoAfterDays,
                     ResetSessionHours
                 );

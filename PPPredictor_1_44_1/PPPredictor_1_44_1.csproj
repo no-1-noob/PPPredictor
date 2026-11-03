@@ -18,9 +18,6 @@
     <PropertyGroup Condition="'$(SCORESABERNETWORK)' == 'true'">
       <DefineConstants>$(DefineConstants);SCORESABERNETWORK</DefineConstants>
     </PropertyGroup>
-    <PropertyGroup Condition="'$(ACCSABERRELOADEDNETWORK)' == 'true'">
-      <DefineConstants>$(DefineConstants);ACCSABERRELOADEDNETWORK</DefineConstants>
-    </PropertyGroup>
     <PropertyGroup Condition="'$(MOCK_API)' == 'true'">
       <DefineConstants>$(DefineConstants);MOCK_API</DefineConstants>
     </PropertyGroup>

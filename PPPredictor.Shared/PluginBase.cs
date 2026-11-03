@@ -18,7 +18,7 @@ namespace PPPredictor.Shared
     public abstract class PluginBase
     {
         public static PluginBase Instance { get; internal set; }
-        internal static ConverterBase Converter { get; set; }
+        internal static Converter.Converter Converter { get; set; }
 
         internal static ProfileInfo ProfileInfo = new ProfileInfo();
         internal static IPALogger Log;
@@ -128,28 +128,27 @@ namespace PPPredictor.Shared
             {
 #if SCORESABERNETWORK
                 case Enums.Leaderboard.ScoreSaber:
+                    Log?.Error(text);
                     break;
 #endif
 #if BEATLEADERNETWORK
                 case Enums.Leaderboard.BeatLeader:
+                    Log?.Error(text);
                     break;
 #endif
 #if ACCSABERNETWORK
                 case Enums.Leaderboard.AccSaber:
+                    Log?.Error(text);
                     break;
 #endif
 #if HITBLOQNETWORK
                 case Enums.Leaderboard.HitBloq:
-                    break;
-#endif
-#if ACCSABERRELOADEDNETWORK
-                case Enums.Leaderboard.AccSaberReloaded:
+                    Log?.Error(text);
                     break;
 #endif
                 default:
                     return;
             }
-            PluginBase.Log?.Error(text);
         }
     }
 }

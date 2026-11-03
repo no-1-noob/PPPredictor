@@ -18,7 +18,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)**\*.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converter\Converter.cs" />
+    <Compile Include="..\PPPredictor.Shared\**\*.cs" />
     <Compile Remove="..\PPPredictor.Shared\obj\**\*;..\PPPredictor.Shared\**\obj\**\*" />
     <Compile Remove="..\PPPredictor.Shared\**\AssemblyInfo.cs" />
    </ItemGroup>
@@ -64,9 +65,9 @@
         <Visible>false</Visible>
         <LogicalName>PPPredictor.Shared.Resources.gIconTrash.png</LogicalName>
       </EmbeddedResource>
-      <EmbeddedResource Include="..\PPPredictor.Shared\Resources\LeaderBoardLogos\AccSaberReloaded.png">
+      <EmbeddedResource Include="..\PPPredictor.Shared\Resources\LeaderBoardLogos\AccSaber.png">
         <Visible>false</Visible>
-        <LogicalName>PPPredictor.Shared.Resources.LeaderBoardLogos.AccSaberReloaded.png</LogicalName>
+        <LogicalName>PPPredictor.Shared.Resources.LeaderBoardLogos.AccSaber.png</LogicalName>
       </EmbeddedResource>
       <EmbeddedResource Include="..\PPPredictor.Shared\UI\Views\CounterSettings.bsml">
         <LogicalName>PPPredictor.Shared.UI.Views.CounterSettings.bsml</LogicalName>

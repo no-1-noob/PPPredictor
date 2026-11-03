@@ -102,8 +102,8 @@ namespace PPPredictor.Shared.Data
     }
     #endregion
 
-    #region AccSaberReloaded
-    class PPPWsAccSaberReloadedData : IPPPRawWebsocketData
+    #region AccSaber
+    class PPPWsAccSaberData : IPPPRawWebsocketData
     {
         public string userId { get; set; }
         public string songHash { get; set; }

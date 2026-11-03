@@ -18,7 +18,7 @@ namespace PPPredictor.Utilities
         internal static FlowCoordinator ParentFlow { get; private set; }
         private static PPPredictorFlowCoordinator _flow;
         private static readonly string profilePath = Path.Combine(UnityGame.UserDataPath, "PPPredictorProfileInfo.json");
-        private static readonly int _profileInfoVersion = 6;
+        private static readonly int _profileInfoVersion = 7;
         internal static ProfileInfo LoadProfileInfo()
         {
             ProfileInfo info;

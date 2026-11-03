@@ -20,11 +20,6 @@ jobs:
       matrix:
         include:
           # Add future Beat Saber targets here; every entry is built in this run.
-          - project: PPPredictor_1_38_0/PPPredictor_1_38_0.csproj
-            manifest: PPPredictor_1_38_0/manifest.json
-            game_directory_property: GameDirectory_1_38_0
-            beat_saber_version: 1.38.0
-            beat_saber_label: 1_38_0
           - project: PPPredictor_1_40_8/PPPredictor_1_40_8.csproj
             manifest: PPPredictor_1_40_8/manifest.json
             game_directory_property: GameDirectory_1_40_8
@@ -124,7 +119,7 @@ jobs:
           $dllPath = Join-Path (Split-Path $project) 'bin\Release\net48\PPPredictor.dll'
           if (-not (Test-Path $dllPath)) { throw "Build output not found: $dllPath" }
           New-Item -ItemType Directory -Path release-assets -Force | Out-Null
-          Compress-Archive -Path $dllPath -DestinationPath "release-assets\$assetName.zip"
+          Compress-Archive -Path $dllPath, 'ThirdPartyNotices_PPPredictor.txt' -DestinationPath "release-assets\$assetName.zip"
           "asset_name=$assetName" >> $env:GITHUB_OUTPUT
 
       - name: Upload release asset

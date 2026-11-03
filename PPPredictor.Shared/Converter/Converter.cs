@@ -1,12 +1,16 @@
 ﻿using JetBrains.Annotations;
 using PPPredictor.Core.DataType;
-using PPPredictor.Shared.Data;
 using UnityEngine;
+using PPPredictor.Shared.Data;
+using SongCore;
 namespace PPPredictor.Converter
 {
-    internal abstract class ConverterBase
+    internal class Converter
     {
-        public abstract string GetCustomLevelHash(BeatmapLevel beatmapLevel);
+        public string GetCustomLevelHash(BeatmapLevel beatmapLevel)
+        {
+            return Collections.GetCustomLevelHash(beatmapLevel.levelID);
+        }
         
         public PPPBeatMapInfo GetBeatMapInfo(BeatmapLevel selectedBeatmapLevel,BeatmapKey beatmapKey)
         {

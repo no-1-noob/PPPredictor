@@ -51,9 +51,9 @@ namespace PPPredictor.Manager
             if (Plugin.ProfileInfo.IsAccSaberEnabled)
             {
 #if !MOCK_WEBSOCKET
-                PPPWebSocket<PPPWsAccSaberReloadedData> socket = new PPPWebSocket<PPPWsAccSaberReloadedData>("wss://api.accsaber.com/ws/scores", Enums.Leaderboard.AccSaber.ToString());
+                PPPWebSocket<PPPWsAccSaberData> socket = new PPPWebSocket<PPPWsAccSaberData>("wss://api.accsaber.com/ws/scores", Enums.Leaderboard.AccSaber.ToString());
 #else
-                PPPWebSocket<PPPWsAccSaberReloadedData> socket = new PPPWebSocket<PPPWsAccSaberReloadedData>("ws://localhost:5080/ws/scores", Enums.Leaderboard.AccSaberReloaded.ToString());
+                PPPWebSocket<PPPWsAccSaberData> socket = new PPPWebSocket<PPPWsAccSaberData>("ws://localhost:5080/ws/scores", Enums.Leaderboard.AccSaber.ToString());
 #endif
                 socket.OnScoreSet += PPPWebsocket_OnScoreSet;
                 _lsWebSockets.Add(socket);
