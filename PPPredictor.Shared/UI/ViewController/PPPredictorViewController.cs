@@ -300,6 +300,7 @@ namespace PPPredictor.UI.ViewController
         {
             sliderFine.Slider.minValue = Plugin.ProfileInfo.LastMinPercentageSelected;
             sliderFine.Slider.maxValue = Plugin.ProfileInfo.LastMaxPercentageSelected;
+            sliderFine.Slider.numberOfSteps = (int)Math.Round((sliderFine.Slider.maxValue - sliderFine.Slider.minValue) / sliderFine.Increments) + 1;
             SliderFineValue = Math.Max(Math.Min(oldSliderValue, Plugin.ProfileInfo.LastMaxPercentageSelected), Plugin.ProfileInfo.LastMinPercentageSelected);
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MaxValue)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MinValue)));
