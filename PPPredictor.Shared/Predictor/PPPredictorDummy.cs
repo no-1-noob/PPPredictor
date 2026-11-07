@@ -74,9 +74,9 @@ namespace PPPredictor.Shared.Predictor
             return Task.CompletedTask;
         }
 
-        public PPPBeatMapInfo GetModifiedBeatMapInfo(Core.DataType.BeatSaberEncapsulation.GameplayModifiers gameplayModifiers, bool levelFailed = false, bool levelPaused = false)
+        public Task<PPPBeatMapInfo> GetModifiedBeatMapInfo(Core.DataType.BeatSaberEncapsulation.GameplayModifiers gameplayModifiers, bool levelFailed = false, bool levelPaused = false)
         {
-            return new PPPBeatMapInfo();
+            return Task.FromResult(new PPPBeatMapInfo());
         }
 
         public double? GetPersonalBest()

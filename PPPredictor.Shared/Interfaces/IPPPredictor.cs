@@ -19,7 +19,7 @@ namespace PPPredictor.Shared.Interfaces
         void ResetDisplay(bool resetAll);
         double CalculatePPatPercentage(double percentage, PPPBeatMapInfo beatMapInfo, bool levelFailed = false, bool levelPaused = false);
         double CalculateMaxPP();
-        PPPBeatMapInfo GetModifiedBeatMapInfo(PPPredictor.Core.DataType.BeatSaberEncapsulation.GameplayModifiers gameplayModifiers, bool levelFailed = false, bool levelPaused = false);
+        Task<PPPBeatMapInfo> GetModifiedBeatMapInfo(PPPredictor.Core.DataType.BeatSaberEncapsulation.GameplayModifiers gameplayModifiers, bool levelFailed = false, bool levelPaused = false);
         double CalculatePPGain(double pp);
         bool IsRanked();
 

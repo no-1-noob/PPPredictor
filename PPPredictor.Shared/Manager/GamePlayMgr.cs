@@ -1,10 +1,10 @@
 ﻿using Newtonsoft.Json;
 using PPPredictor.Core.DataType;
-using PPPredictor.Manager;
 using PPPredictor.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Zenject;
 using static PPPredictor.Core.DataType.Enums;
 
@@ -88,10 +88,10 @@ namespace PPPredictor.Manager
 
                 gamePlayInfo = new GamePlayInfo();
                 gamePlayInfo.scoreboardCount = GetActiveScoreboardsCount();
-                if (ShowScoreSaber()) gamePlayInfo.lsInfo.Add(new LeaderBoardGameplayInfo(Leaderboard.ScoreSaber, ppPredictorMgr, Plugin.Converter.ConvertGameplayModifiers(setupData.gameplayModifiers)));
-                if (ShowBeatLeader()) gamePlayInfo.lsInfo.Add(new LeaderBoardGameplayInfo(Leaderboard.BeatLeader, ppPredictorMgr, Plugin.Converter.ConvertGameplayModifiers(setupData.gameplayModifiers)));
-                if (ShowHitBloq()) gamePlayInfo.lsInfo.Add(new LeaderBoardGameplayInfo(Leaderboard.HitBloq, ppPredictorMgr, Plugin.Converter.ConvertGameplayModifiers(setupData.gameplayModifiers)));
-                if (ShowAccSaber()) gamePlayInfo.lsInfo.Add(new LeaderBoardGameplayInfo(Leaderboard.AccSaber, ppPredictorMgr, Plugin.Converter.ConvertGameplayModifiers(setupData.gameplayModifiers)));
+                if (ShowScoreSaber()) gamePlayInfo.lsInfo.Add(await LeaderBoardGameplayInfo.CreateAsync(Leaderboard.ScoreSaber, ppPredictorMgr, Plugin.Converter.ConvertGameplayModifiers(setupData.gameplayModifiers)));
+                if (ShowBeatLeader()) gamePlayInfo.lsInfo.Add(await LeaderBoardGameplayInfo.CreateAsync(Leaderboard.BeatLeader, ppPredictorMgr, Plugin.Converter.ConvertGameplayModifiers(setupData.gameplayModifiers)));
+                if (ShowHitBloq()) gamePlayInfo.lsInfo.Add(await LeaderBoardGameplayInfo.CreateAsync(Leaderboard.HitBloq, ppPredictorMgr, Plugin.Converter.ConvertGameplayModifiers(setupData.gameplayModifiers)));
+                if (ShowAccSaber()) gamePlayInfo.lsInfo.Add(await LeaderBoardGameplayInfo.CreateAsync(Leaderboard.AccSaber, ppPredictorMgr, Plugin.Converter.ConvertGameplayModifiers(setupData.gameplayModifiers)));
 
                 maxPossibleScore = ScoreModel.ComputeMaxMultipliedScoreForBeatmap(setupData.transformedBeatmapData);
                 scoreController.scoreDidChangeEvent += ScoreController_scoreDidChangeEvent;
@@ -327,12 +327,28 @@ namespace PPPredictor.Manager
         public double? personalBest;
         public string iconPath;
         public bool isRanked;
-
-        public LeaderBoardGameplayInfo(Leaderboard leaderboard, PPPredictorMgr ppPredictorMgr, PPPredictor.Core.DataType.BeatSaberEncapsulation.GameplayModifiers gameplayModifiers)
+        
+        public static async Task<LeaderBoardGameplayInfo> CreateAsync(
+            Leaderboard leaderboard,
+            PPPredictorMgr ppPredictorMgr,
+            PPPredictor.Core.DataType.BeatSaberEncapsulation.GameplayModifiers gameplayModifiers)
         {
-            modifiedBeatMapInfo = ppPredictorMgr.GetModifiedBeatMapInfo(leaderboard, gameplayModifiers);
-            failedBeatMapInfo = ppPredictorMgr.GetModifiedBeatMapInfo(leaderboard, gameplayModifiers);
-            ppSuffix = ppPredictorMgr.GetPPSuffixForLeaderboard(leaderboard);
+            var modifiedBeatMapInfo =
+                await ppPredictorMgr.GetModifiedBeatMapInfo(leaderboard, gameplayModifiers);
+            var failedBeatMapInfo =
+                await ppPredictorMgr.GetModifiedBeatMapInfo(leaderboard, gameplayModifiers);
+            return new LeaderBoardGameplayInfo(
+                leaderboard, ppPredictorMgr, modifiedBeatMapInfo, failedBeatMapInfo);
+        }
+        
+        private LeaderBoardGameplayInfo(
+            Leaderboard leaderboard,
+            PPPredictorMgr ppPredictorMgr,
+            PPPBeatMapInfo modifiedBeatMapInfo,
+            PPPBeatMapInfo failedBeatMapInfo)
+        {
+            this.modifiedBeatMapInfo = modifiedBeatMapInfo;
+            this.failedBeatMapInfo = failedBeatMapInfo;
             this.leaderboard = leaderboard;
             this.ppGain = 0;
             this.pp = 0;

@@ -296,12 +296,12 @@ namespace PPPredictor.Shared.Manager
             return 0;
         }
 
-        public PPPBeatMapInfo GetModifiedBeatMapInfo(Leaderboard leaderBoardName, PPPredictor.Core.DataType.BeatSaberEncapsulation.GameplayModifiers gameplayModifiers)
+        public async Task<PPPBeatMapInfo> GetModifiedBeatMapInfo(Leaderboard leaderBoardName, PPPredictor.Core.DataType.BeatSaberEncapsulation.GameplayModifiers gameplayModifiers)
         {
             IPPPredictor predictor = _lsPPPredictor.Find(x => x.LeaderBoardName == leaderBoardName.ToString());
             if (predictor != null)
             {
-                return predictor.GetModifiedBeatMapInfo(gameplayModifiers);
+                return await predictor.GetModifiedBeatMapInfo(gameplayModifiers);
 
             }
             return new PPPBeatMapInfo();

@@ -124,7 +124,7 @@ jobs:
           $dllPath = Join-Path (Split-Path $project) 'bin\Release\net48\PPPredictor.dll'
           if (-not (Test-Path $dllPath)) { throw "Build output not found: $dllPath" }
           New-Item -ItemType Directory -Path release-assets -Force | Out-Null
-          Compress-Archive -Path $dllPath, 'ThirdPartyNotices_PPPredictor.txt' -DestinationPath "release-assets\$assetName.zip"
+          Compress-Archive -Path $dllPath -DestinationPath "release-assets\$assetName.zip"
           "asset_name=$assetName" >> $env:GITHUB_OUTPUT
 
       - name: Upload release asset

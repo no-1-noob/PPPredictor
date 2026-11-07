@@ -39,11 +39,6 @@ A list/explanation of all options is available [here](https://github.com/no-1-no
 You can use [this](https://mods.no1noob.net/PPPOverlay) website to have a stream overlay.
 More infos on how to use it at the GitHub repo [PPPOverlay](https://github.com/no-1-noob/PPPOverlay)
 
-### Attribution
-
-PPPredictor.Core includes code adapted from [BeatLeader/beatleader-server](https://github.com/BeatLeader/beatleader-server/tree/52a50edfd172c37bab4c5d278b10aae47ccbc8f6), licensed under MIT. See [ThirdPartyNotices_PPPredictor.txt](ThirdPartyNotices_PPPredictor.txt) for the full notice, which is also included in release packages.
-
-
 Dependencies
 -----
  - Check the release page for your BeatSaber version

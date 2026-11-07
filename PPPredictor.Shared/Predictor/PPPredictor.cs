@@ -139,12 +139,12 @@ namespace PPPredictor.Shared.Predictor
         #endregion
 
         #region eventHandling
-        public void ChangeGameplayModifiers(Core.DataType.BeatSaberEncapsulation.GameplayModifiers gameplayModifiers)
+        public async void ChangeGameplayModifiers(Core.DataType.BeatSaberEncapsulation.GameplayModifiers gameplayModifiers)
         {
             if (currentMapPool != null && gameplayModifiers != null)
             {
                 _gameplayModifiers = gameplayModifiers;
-                _currentBeatMapInfo = calculatorInstance.ApplyModifiersToBeatmapInfo(leaderboardName, currentMapPool.Id, _currentBeatMapInfo, gameplayModifiers);
+                _currentBeatMapInfo = await calculatorInstance.ApplyModifiersToBeatmapInfo(leaderboardName, currentMapPool.Id, _currentBeatMapInfo, gameplayModifiers);
                 _currentBeatMapInfo.MaxPP = -1;
                 CalculatePP();
             }
@@ -164,10 +164,10 @@ namespace PPPredictor.Shared.Predictor
 
         private async Task UpdateCurrentBeatMapInfos()
         {
-            _currentBeatMapInfo = await calculatorInstance.GetBeatMapInfoAsync(leaderboardName, currentMapPool.Id, _currentBeatMapInfo);
+            _currentBeatMapInfo = await calculatorInstance.GetBeatMapInfoAsync(leaderboardName, currentMapPool.Id, _currentBeatMapInfo, _gameplayModifiers);
             _currentBeatMapInfo.SelectedMapSearchString = !string.IsNullOrEmpty(_currentBeatMapInfo.CustomLevelHash) ? PPCalculator.CreateSeachString(_currentBeatMapInfo.CustomLevelHash, "SOLO" + _currentBeatMapInfo.BeatmapKey.serializedName, Core.ParsingUtil.ParseDifficultyNameToInt(_currentBeatMapInfo.BeatmapKey.difficulty.ToString())) : string.Empty;
             _currentBeatMapInfo.OldDotsEnabled = IsOldDotsActive(_currentBeatMapInfo.BeatmapKey);
-            _currentBeatMapInfo = GetModifiedBeatMapInfo(_gameplayModifiers);
+            _currentBeatMapInfo = await GetModifiedBeatMapInfo(_gameplayModifiers);
             _currentBeatMapInfo.MaxPP = -1;
         }
         #endregion
@@ -202,9 +202,9 @@ namespace PPPredictor.Shared.Predictor
             return v;
         }
 
-        public PPPBeatMapInfo GetModifiedBeatMapInfo(Core.DataType.BeatSaberEncapsulation.GameplayModifiers gameplayModifiers, bool levelFailed = false, bool levelPaused = false)
+        public async Task<PPPBeatMapInfo> GetModifiedBeatMapInfo(Core.DataType.BeatSaberEncapsulation.GameplayModifiers gameplayModifiers, bool levelFailed = false, bool levelPaused = false)
         {
-            PPPBeatMapInfo pppBeatMapInfo = calculatorInstance.ApplyModifiersToBeatmapInfo(leaderboardName, currentMapPool.Id, _currentBeatMapInfo, gameplayModifiers, levelFailed, levelPaused);
+            PPPBeatMapInfo pppBeatMapInfo = await calculatorInstance.ApplyModifiersToBeatmapInfo(leaderboardName, currentMapPool.Id, _currentBeatMapInfo, gameplayModifiers, levelFailed, levelPaused);
             return pppBeatMapInfo;
         }
 
