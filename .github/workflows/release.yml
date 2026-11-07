@@ -33,15 +33,15 @@ jobs:
             beat_saber_label: 1_44_1
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7.0.1
         with:
           submodules: recursive
 
       - name: Set up MSBuild
-        uses: microsoft/setup-msbuild@v2
+        uses: microsoft/setup-msbuild@v3
 
       - name: Set up NuGet
-        uses: NuGet/setup-nuget@v2
+        uses: NuGet/setup-nuget@v4.0
 
       - name: Restore NuGet packages
         run: nuget restore PPPredictor.sln
@@ -79,9 +79,10 @@ jobs:
           "path=$dependencyManifestPath" >> $env:GITHUB_OUTPUT
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7.1.0
         with:
           node-version: 22
+          package-manager-cache: false
 
       - name: Install dependency downloader
         run: npm ci --prefix .github/scripts
@@ -128,7 +129,7 @@ jobs:
           "asset_name=$assetName" >> $env:GITHUB_OUTPUT
 
       - name: Upload release asset
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: ${{ steps.package.outputs.asset_name }}
           path: release-assets/${{ steps.package.outputs.asset_name }}.zip
@@ -140,7 +141,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download release assets
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8.0.2
         with:
           pattern: PPPredictor_*_BS_*
           path: release-assets

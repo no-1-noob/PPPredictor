@@ -323,7 +323,7 @@ namespace PPPredictor.Manager
         public double percentage;
         public PPPBeatMapInfo modifiedBeatMapInfo;
         public PPPBeatMapInfo failedBeatMapInfo;
-        public string ppSuffix;
+        public string ppSuffix = string.Empty;
         public double? personalBest;
         public string iconPath;
         public bool isRanked;
