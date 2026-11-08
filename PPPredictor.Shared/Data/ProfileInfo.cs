@@ -146,7 +146,7 @@ namespace PPPredictor.Shared.Data
             {
                 foreach (PPPMapPool mappool in leaderboard.DctMapPool.Values)
                 {
-                    mappool.LsLeaderboadInfo = mappool.LsLeaderboadInfo.Where(x => x.FetchTime > DateTime.Now.AddDays(ProfileInfo.RefetchMapInfoAfterDays)).ToList();
+                    mappool.LsLeaderboadInfo = mappool.LsLeaderboadInfo.Where(x => x.FetchTime > DateTime.Now.AddDays(ProfileInfo.RefetchMapInfoAfterDays) || x.IsPlaceHolder).ToList();
                 }
             }
         }
