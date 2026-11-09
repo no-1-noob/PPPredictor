@@ -19,7 +19,7 @@ namespace PPPredictor.Shared.Predictor
 
         public string MapPoolIcon => string.Empty;
 
-        public byte[] MapPoolIconData { get => throw new NotImplementedException(); set { return; } }
+        public byte[] MapPoolIconData { get => null; set { return; } }
 
         public List<object> MapPoolOptions => new List<object>();
 

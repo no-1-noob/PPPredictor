@@ -31,12 +31,6 @@ namespace PPPredictor.HarmonyPatches
                 }
 
                 float num = ((curvedCanvasSettings == null) ? 0f : curvedCanvasSettings.radius);
-                
-                //Continue applying 0 radius
-                //if (Mathf.Approximately(num, 0f) && !__instance._useScriptableObjectColors)
-                //{
-                //    return false;
-                //}
 
                 Vector2 curveUV = new Vector2(num, 0f);
                 int materialCount = __instance.m_textInfo.materialCount;
