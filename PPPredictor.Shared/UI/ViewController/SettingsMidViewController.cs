@@ -128,7 +128,7 @@ namespace PPPredictor.UI.ViewController
         [UIValue("accsaber-enabled")]
         public bool AccSaberEnabled
         {
-            get => Plugin.ProfileInfo.IsAccSaberEnabledManual && Plugin.ProfileInfo.IsScoreSaberEnabled;
+            get => Plugin.ProfileInfo.IsAccSaberEnabledManual && (Plugin.ProfileInfo.IsScoreSaberEnabled || Plugin.ProfileInfo.IsBeatLeaderEnabled);
             set
             {
                 Plugin.ProfileInfo.IsAccSaberEnabledManual = value;
@@ -347,7 +347,7 @@ namespace PPPredictor.UI.ViewController
             GeneralRawPPLossHighlightThreshold = Plugin.ProfileInfo.RawPPLossHighlightThreshold;
             CounterGainSilentMode = Plugin.ProfileInfo.IsCounterGainSilentModeEnabled;
             StreamOverlayPort = Plugin.ProfileInfo.StreamOverlayPort;
-            AccSaberEnabled = Plugin.ProfileInfo.IsAccSaberEnabledManual && Plugin.ProfileInfo.IsScoreSaberEnabled;
+            AccSaberEnabled = Plugin.ProfileInfo.IsAccSaberEnabledManual && (Plugin.ProfileInfo.IsScoreSaberEnabled || Plugin.ProfileInfo.IsBeatLeaderEnabled);
         }
     }
 }
