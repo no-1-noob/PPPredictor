@@ -13,9 +13,9 @@ namespace PPPredictor.Shared.Interfaces
     {
         void ChangeGameplayModifiers(PPPredictor.Core.DataType.BeatSaberEncapsulation.GameplayModifiers gameplayModifiers);
         void DifficultyChanged(PPPBeatMapInfo beatMapInfo);
-        Task UpdateCurrentAndCheckResetSession(bool doResetSession);
+        Task UpdateCurrentAndCheckResetSession(bool doResetSession, bool doPlayerFetch);
         void ScoreSet(PPPScoreSetData data);
-        void RefreshCurrentData(int fetchLength, bool refreshStars = false, bool fetchOnePage = false);
+        void RefreshCurrentData(int fetchLength, bool doPlayerFetch, bool refreshStars = false, bool fetchOnePage = false);
         void ResetDisplay(bool resetAll);
         double CalculatePPatPercentage(double percentage, PPPBeatMapInfo beatMapInfo, bool levelFailed = false, bool levelPaused = false);
         double CalculateMaxPP();
@@ -28,7 +28,7 @@ namespace PPPredictor.Shared.Interfaces
         void SetActive(bool setActive, bool hasPoolChanged = false);
         PPPMapPoolShort FindPoolWithSyncURL(string syncUrl);
         Task GetMapPoolIconData();
-        Task UpdateCurrentBeatMapInfos(PPPBeatMapInfo beatMapInfo);
+        Task UpdateCurrentBeatMapInfos(PPPBeatMapInfo beatMapInfo, Core.DataType.BeatSaberEncapsulation.GameplayModifiers gameplayModifiers);
         event EventHandler<bool> OnDataLoading;
         event EventHandler<DisplaySessionInfo> OnDisplaySessionInfo;
         event EventHandler<DisplayPPInfo> OnDisplayPPInfo;

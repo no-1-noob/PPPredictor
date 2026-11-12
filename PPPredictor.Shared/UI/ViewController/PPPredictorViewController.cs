@@ -192,7 +192,7 @@ namespace PPPredictor.UI.ViewController
         [UIAction("refresh-profile-clicked")]
         private void RefreshProfileClicked()
         {
-            this.ppPredictorMgr.RefreshCurrentData(10);
+            this.ppPredictorMgr.RefreshCurrentData(10, true);
         }
 #pragma warning restore IDE0051 // Remove unused private members
 

@@ -72,7 +72,7 @@ namespace PPPredictor.Manager
             {
                 try
                 {
-                    await ppPredictorMgr.UpdateCurrentBeatMapInfos(Plugin.Converter.GetBeatMapInfo(setupData.beatmapLevel, setupData.beatmapKey));
+                    await ppPredictorMgr.UpdateCurrentBeatMapInfos(Plugin.Converter.GetBeatMapInfo(setupData.beatmapLevel, setupData.beatmapKey), null);
                 }
                 catch (Exception ex)
                 {

@@ -122,7 +122,7 @@ namespace PPPredictor.Shared.Predictor
                 if (isCurrentMapPoolChanging)
                 {
                     currentMapPool.SelectedByLoading = false;
-                    this.RefreshCurrentData(10, true);
+                    this.RefreshCurrentData(10,  false, true);
                 }
                 if(currentMapPool != null)
                 {
@@ -152,11 +152,12 @@ namespace PPPredictor.Shared.Predictor
         
         public async void DifficultyChanged(PPPBeatMapInfo beatMapInfo)
         {
-            await UpdateCurrentBeatMapInfos(beatMapInfo);
+            await UpdateCurrentBeatMapInfos(beatMapInfo, null);
         }
-        
-        public async Task UpdateCurrentBeatMapInfos(PPPBeatMapInfo beatMapInfo)
+
+        public async Task UpdateCurrentBeatMapInfos(PPPBeatMapInfo beatMapInfo, Core.DataType.BeatSaberEncapsulation.GameplayModifiers gameplayModifiers)
         {
+            if (gameplayModifiers != null) _gameplayModifiers = gameplayModifiers;
             _currentBeatMapInfo = beatMapInfo;
             await UpdateCurrentBeatMapInfos();
             CalculatePP();
@@ -327,9 +328,9 @@ namespace PPPredictor.Shared.Predictor
             SendDisplayPPInfo(ppDisplay);
         }
 
-        private async Task DisplaySession(bool doResetSession)
+        private async Task DisplaySession(bool doResetSession, bool doPlayerFetch)
         {
-            (PPPPlayer sessionPlayer, PPPPlayer currentPlayer) = await calculatorInstance.UpdatePlayer(leaderboardName, currentMapPool.Id, doResetSession);
+            (PPPPlayer sessionPlayer, PPPPlayer currentPlayer) = await calculatorInstance.UpdatePlayer(leaderboardName, currentMapPool.Id, doResetSession, doPlayerFetch);
             DisplaySessionInfo sessionDisplay = new DisplaySessionInfo();
             if (sessionPlayer != null && currentPlayer != null)
             {
@@ -361,13 +362,13 @@ namespace PPPredictor.Shared.Predictor
             bool isOnCurrentMapPool = calculatorInstance.IsScoreSetOnCurrentMapPool(leaderboardName, currentMapPool.Id, data);
             if (isOnCurrentMapPool)
             {
-                RefreshCurrentData(1, false, true);
+                RefreshCurrentData(1, true, false, true);
             }
         }
 
-        public async void RefreshCurrentData(int fetchLength, bool refreshStars = false, bool fetchOnePage = false)
+        public async void RefreshCurrentData(int fetchLength, bool doPlayerFetch, bool refreshStars = false, bool fetchOnePage = false)
         {
-            await UpdateCurrentAndCheckResetSession(false);
+            await UpdateCurrentAndCheckResetSession(false, doPlayerFetch);
             IsDataLoading(true);
             await calculatorInstance.GetPlayerScores(leaderboardName, currentMapPool.Id, fetchLength, _leaderboardInfo.LargePageSize, fetchOnePage);
             if (refreshStars) //MapPool change to a pool that has never been selected before;
@@ -378,16 +379,16 @@ namespace PPPredictor.Shared.Predictor
             IsDataLoading(false);
         }
 
-        public async Task UpdateCurrentAndCheckResetSession(bool doResetSession)
+        public async Task UpdateCurrentAndCheckResetSession(bool doResetSession, bool doPlayerFetch)
         {
             IsDataLoading(true);
-            await DisplaySession(doResetSession);
+            await DisplaySession(doResetSession, doPlayerFetch);
             IsDataLoading(false);
         }
 
         public async void ResetDisplay(bool resetAll)
         {
-            await UpdateCurrentAndCheckResetSession(resetAll);
+            await UpdateCurrentAndCheckResetSession(resetAll, false);
             IsDataLoading(true);
             await calculatorInstance.GetPlayerScores(leaderboardName, currentMapPool.Id, 100, 100);
             CalculatePP();
@@ -400,7 +401,7 @@ namespace PPPredictor.Shared.Predictor
             _isActive = setActive;
             if (setActive || hasPoolChanged)
             {
-                _ = DisplaySession(false);
+                _ = DisplaySession(false, false);
                 CalculatePP();
             }
         }

@@ -90,7 +90,7 @@ namespace PPPredictor.Shared.Predictor
             return false;
         }
 
-        public void RefreshCurrentData(int fetchLength, bool refreshStars = false, bool fetchOnePage = false)
+        public void RefreshCurrentData(int fetchLength, bool doPlayerFetch, bool refreshStars = false, bool fetchOnePage = false)
         {
             return;
         }
@@ -110,12 +110,12 @@ namespace PPPredictor.Shared.Predictor
             return;
         }
 
-        public Task UpdateCurrentAndCheckResetSession(bool doResetSession)
+        public Task UpdateCurrentAndCheckResetSession(bool doResetSession, bool doPlayerFetch)
         {
             return Task.CompletedTask;
         }
 
-        public Task UpdateCurrentBeatMapInfos(PPPBeatMapInfo beatMapInfo)
+        public Task UpdateCurrentBeatMapInfos(PPPBeatMapInfo beatMapInfo, Core.DataType.BeatSaberEncapsulation.GameplayModifiers gameplayModifiers)
         {
             return Task.CompletedTask;
         }

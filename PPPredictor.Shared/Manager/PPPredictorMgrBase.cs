@@ -27,6 +27,9 @@ namespace PPPredictor.Shared.Manager
         private bool isLeaderboardNavigationActive = false;
         private int _loadingCounter = 0;
 
+        private PPPredictor.Core.DataType.BeatSaberEncapsulation.GameplayModifiers _gameplayModifiers = null;
+        private PPPBeatMapInfo _beatMapInfo = null;
+
         public event EventHandler<bool> ViewActivated;
         internal event EventHandler<bool> OnDataLoading;
         internal  event EventHandler<DisplaySessionInfo> OnDisplaySessionInfo;
@@ -124,6 +127,8 @@ namespace PPPredictor.Shared.Manager
             }
             SetNavigationArrowInteractivity();
             _websocketMgr.CreateScoreWebSockets();
+
+            if (_beatMapInfo != null) await UpdateCurrentBeatMapInfos(_beatMapInfo, _gameplayModifiers);
         }
 
         private void Logging_OnMessage(object sender, LoggingMessage e)
@@ -211,6 +216,7 @@ namespace PPPredictor.Shared.Manager
 
         public void ChangeGameplayModifiers(PPPredictor.Core.DataType.BeatSaberEncapsulation.GameplayModifiers gameplayModifiers)
         {
+            _gameplayModifiers = gameplayModifiers;
             foreach (var item in _lsPPPredictor)
             {
                 item.ChangeGameplayModifiers(gameplayModifiers);
@@ -219,6 +225,7 @@ namespace PPPredictor.Shared.Manager
 
         public void DifficultyChanged(PPPBeatMapInfo beatMapInfo)
         {
+            _beatMapInfo = beatMapInfo;
             foreach (var item in _lsPPPredictor)
             {
                 item.DifficultyChanged(beatMapInfo);
@@ -229,15 +236,15 @@ namespace PPPredictor.Shared.Manager
         {
             foreach (var item in _lsPPPredictor)
             {
-                item.UpdateCurrentAndCheckResetSession(v);
+                item.UpdateCurrentAndCheckResetSession(v, false);
             }
         }
 
-        public void RefreshCurrentData(int v, bool refreshStars = false)
+        public void RefreshCurrentData(int v, bool doPlayerFetch, bool refreshStars = false)
         {
             foreach (var item in _lsPPPredictor)
             {
-                item.RefreshCurrentData(v, refreshStars);
+                item.RefreshCurrentData(v, doPlayerFetch, refreshStars);
             }
         }
 
@@ -385,9 +392,9 @@ namespace PPPredictor.Shared.Manager
             return new List<object>();
         }
 
-        public async Task UpdateCurrentBeatMapInfos(PPPBeatMapInfo beatMapInfo)
+        public async Task UpdateCurrentBeatMapInfos(PPPBeatMapInfo beatMapInfo, PPPredictor.Core.DataType.BeatSaberEncapsulation.GameplayModifiers gameplayModifiers)
         {
-            await Task.WhenAll(_lsPPPredictor.Select(predictor => predictor.UpdateCurrentBeatMapInfos(beatMapInfo)));
+            await Task.WhenAll(_lsPPPredictor.Select(predictor => predictor.UpdateCurrentBeatMapInfos(beatMapInfo, gameplayModifiers)));
         }
 
         public void FindPoolWithSyncURL(string syncURL)
